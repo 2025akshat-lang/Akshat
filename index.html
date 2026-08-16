@@ -117,6 +117,18 @@
     .theme-tag{
       margin-top:10px;font-size:12px;letter-spacing:1.2px;color:#d2ffea;opacity:.9;
     }
+    #fps-crosshair{
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:26px; height:26px; border-radius:50%;
+      border:2px solid rgba(255,255,255,0.75);
+      box-shadow:0 0 12px rgba(0,194,255,0.55);
+      z-index:9; pointer-events:none; display:none;
+    }
+    #fps-crosshair::before,#fps-crosshair::after{
+      content:""; position:absolute; background:rgba(255,255,255,0.8);
+    }
+    #fps-crosshair::before{ width:2px; height:34px; left:50%; top:50%; transform:translate(-50%,-50%); }
+    #fps-crosshair::after{ width:34px; height:2px; left:50%; top:50%; transform:translate(-50%,-50%); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -133,10 +145,15 @@
       <span class="label">Coins</span>
       <span id="coin-val" class="value" style="color:#ffd166;">0</span>
     </div>
+    <div class="hud-box">
+      <span class="label">Level</span>
+      <span id="level-val" class="value" style="color:#9be7ff;">1</span>
+    </div>
   </div>
   <div id="level-indicator">LEVEL 1</div>
   <div id="boss-indicator">🚔 POLICE CHASE ACTIVE</div>
 </div>
+<div id="fps-crosshair"></div>
 
 <div id="start-screen" class="overlay">
   <h1 class="title">METRO RUNNER INDIA</h1>
@@ -193,6 +210,12 @@ let isGameStarted = false, isGameOver = false;
 
 let score = 0, coins = 0, currentLevel = 1;
 let speed = 0.28, maxSpeed = 0.82;
+const LEVEL_DEFS = [
+  { score: 0, label: "LEVEL 1 • STREET WARMUP", fogDensity: 0.011, spawnBase: 25 },
+  { score: 520, label: "LEVEL 2 • TRAFFIC CHAOS", fogDensity: 0.0135, spawnBase: 22 },
+  { score: 1200, label: "LEVEL 3 • NIGHT RUSH", fogDensity: 0.016, spawnBase: 19 },
+  { score: 2100, label: "LEVEL 4 • MEGA CITY BLITZ", fogDensity: 0.0185, spawnBase: 17 }
+];
 
 let playerY = 0.8, velocityY = 0;
 const gravity = -0.016, jumpStrength = 0.36;
@@ -426,8 +449,8 @@ function init(){
   scene.fog = new THREE.FogExp2(0x1d1610, 0.011);
 
   camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1100);
-  camera.position.set(0,4.8,-8.4);
-  camera.lookAt(0,0.1,12);
+  camera.position.set(0,2.35,-2.15);
+  camera.lookAt(0,1.25,18);
 
   renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:"high-performance" });
   renderer.setSize(innerWidth, innerHeight);
@@ -613,6 +636,7 @@ function buildChunkProps(chunk, zBase){
     b.position.set(side*(8.5+Math.random()*2.2), h/2 - 0.1, zBase+3+Math.random()*24);
     chunk.add(b);
   }
+  addDistantSkyline(chunk, zBase);
 
   const trees = 2 + Math.floor(Math.random()*2);
   for(let i=0;i<trees;i++){
@@ -631,6 +655,35 @@ function buildChunkProps(chunk, zBase){
     tree.add(trunk,leaves);
     tree.position.set(side*5.3,0,zBase + 2 + Math.random()*25);
     chunk.add(tree);
+  }
+}
+
+function addDistantSkyline(chunk, zBase){
+  const clusters = 3 + Math.floor(Math.random()*2);
+  for(let c=0; c<clusters; c++){
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const clusterXBase = side * (12 + Math.random()*10);
+    const towerCount = 3 + Math.floor(Math.random()*4);
+    for(let i=0;i<towerCount;i++){
+      const h = 7 + Math.random()*13;
+      const w = 1.2 + Math.random()*1.8;
+      const d = 1.2 + Math.random()*2.2;
+      const tower = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, d),
+        new THREE.MeshStandardMaterial({
+          color: side < 0 ? 0x1b2c3f : 0x342a20,
+          roughness: 0.88,
+          emissive: 0x111111,
+          emissiveIntensity: 0.28
+        })
+      );
+      tower.position.set(
+        clusterXBase + (Math.random()-0.5)*4.5,
+        h/2 - 0.1,
+        zBase + 2 + Math.random()*25
+      );
+      chunk.add(tower);
+    }
   }
 }
 
@@ -1073,6 +1126,7 @@ function showBossIndicator(show){
 }
 function startGame(){
   document.getElementById("start-screen").style.display = "none";
+  document.getElementById("fps-crosshair").style.display = "block";
   isGameStarted = true;
 }
 
@@ -1090,23 +1144,22 @@ function updateGameLogic(){
   distanceTraveled += speed;
   score = Math.floor(distanceTraveled * 4.25); 
 
-  // FIX 2: Level 3 ka score 200 se badha kar 1000 kar diya hai
-  if (score > 1100 && currentLevel === 1) { 
-    currentLevel = 2; 
-    showLevelUpBanner("LEVEL 2 • TRAFFIC CHAOS"); 
+  let nextLevel = 1;
+  for(let i=0;i<LEVEL_DEFS.length;i++){
+    if(score >= LEVEL_DEFS[i].score) nextLevel = i+1;
   }
-  else if (score > 1000 && currentLevel === 2) { // Yahan pehle 200 tha!
-    currentLevel = 3; 
-    showLevelUpBanner("LEVEL 3 • NIGHT RUSH"); 
+  if(nextLevel !== currentLevel){
+    currentLevel = nextLevel;
+    showLevelUpBanner(LEVEL_DEFS[currentLevel-1].label);
   }
+  scene.fog.density += (LEVEL_DEFS[currentLevel-1].fogDensity - scene.fog.density)*0.04;
 
 
 
   if(speed<maxSpeed) speed += 0.000033 + currentLevel*0.000012;
   document.getElementById("score-val").innerText = score;
   document.getElementById("coin-val").innerText = coins;
-
-  distanceTraveled += speed;
+  document.getElementById("level-val").innerText = currentLevel;
 
   const tx = LANES[currentLane];
   const dx = tx - playerGroup.position.x;
@@ -1122,8 +1175,10 @@ function updateGameLogic(){
   const sh = Math.max(0.5, 1-(playerY-0.8)*0.3);
   shadowMesh.scale.set(sh,sh,sh);
 
-  camera.position.x += (playerGroup.position.x*0.34 - camera.position.x)*0.08;
-  camera.position.y += ((4.7 + Math.sin(distanceTraveled*0.03)*0.08) - camera.position.y)*0.05;
+  camera.position.x += (playerGroup.position.x*0.78 - camera.position.x)*0.16;
+  camera.position.y += ((isRolling ? 1.72 : 2.35) - camera.position.y)*0.1;
+  camera.position.z += (-1.95 - camera.position.z)*0.1;
+  camera.lookAt(playerGroup.position.x*0.3, 1.35 + (isJumping ? 0.2 : 0), 18);
 
   for(let i=0;i<trackSegments.length;i++) trackSegments[i].position.z -= speed;
   trackSegments.sort((a,b)=>(a.userData.baseZ+a.position.z)-(b.userData.baseZ+b.position.z));
@@ -1169,7 +1224,7 @@ function updateGameLogic(){
 
   if(distanceTraveled > nextObstacleSpawn){
     spawnObstacleGroup(playerGroup.position.z + 70);
-    nextObstacleSpawn += Math.max(14, 25-currentLevel*3) + Math.random()*8;
+    nextObstacleSpawn += Math.max(12, LEVEL_DEFS[currentLevel-1].spawnBase-currentLevel*2) + Math.random()*8;
   }
 
     policeActive = score < 300 && !isGameOver; // Testing ke liye threshold
@@ -1297,6 +1352,7 @@ function endGame(){
   document.getElementById("final-score").innerText = score;
   document.getElementById("final-coins").innerText = coins;
   document.getElementById("final-level").innerText = currentLevel;
+  document.getElementById("fps-crosshair").style.display = "none";
   document.getElementById("game-over-screen").style.display = "flex";
 }
 function resetGame(){
@@ -1320,6 +1376,8 @@ function resetGame(){
   showBossIndicator(false);
 
   playerGroup.position.set(LANES[currentLane], playerY, 0);
+  document.getElementById("level-val").innerText = currentLevel;
+  document.getElementById("fps-crosshair").style.display = "none";
   document.getElementById("game-over-screen").style.display = "none";
   animate(); 
 }
