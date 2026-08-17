@@ -3,7 +3,7 @@
 [![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)
 
 ### 📚 Experiments List
-- [Distillation setup.html](Distillation setup.html)
+- [Distillation_setup.html](Distillation_setup.html)
 - [Evaporation Vs boiling.html](Evaporation Vs boiling.html)
 - [Fps.html](Fps.html)
 - [Ludo.html](Ludo.html)
