@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Tactical Building FPS 3D</title>
+  <style>
+    html, body { height: 100%; margin: 0; background: #000; font-family: sans-serif; overflow: hidden; touch-action: none; }
+    #crosshair {
+      position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+      border: 2px solid rgba(255,255,255,0.95); border-radius: 50%; pointer-events: none; z-index: 20;
+      box-shadow: 0 0 8px rgba(255,100,100,0.65); transition: transform 80ms ease;
+    }
+    #info {
+      position: absolute; left: 10px; top: 10px; color: #fff; z-index: 40;
+      background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 8px; font-size: 13px;
+    }
+    #hud {
+      position: absolute; left: 10px; top: 60px; z-index: 40; color: #fff;
+      background: rgba(0,0,0,.45); padding: 8px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; min-width: 150px;
+    }
+    #factBox {
+      position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 45; color: #fff;
+      background: rgba(20,20,20,.6); padding: 6px 12px; border-radius: 999px; font-size: 12px; border: 1px solid rgba(255,255,255,.25);
+    }
+    #damageFlash { position: absolute; inset: 0; pointer-events: none; z-index: 35; background: rgba(255,0,0,.22); opacity: 0; transition: opacity .12s; }
+    #weapon-select { position: absolute; top: 10px; right: 10px; z-index: 40; display: flex; gap: 6px; }
+    .gun-btn { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .gun-btn.active { background: #e74c3c; border-color: #ff7675; }
+    .controls-container { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
+    .touch-btn {
+      position: absolute; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.6);
+      color: white; font-size: 16px; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      pointer-events: auto; user-select: none; -webkit-user-select: none;
+    }
+    .touch-btn:active { background: rgba(255,255,255,0.5); }
+    #btn-forward { bottom: 130px; left: 90px; width: 60px; height: 60px; }
+    #btn-left    { bottom: 70px;  left: 30px; width: 60px; height: 60px; }
+    #btn-right   { bottom: 70px;  left: 150px; width: 60px; height: 60px; }
+    #btn-back    { bottom: 10px;  left: 90px; width: 60px; height: 60px; }
+    #btn-jump { bottom: 70px; right: 30px; width: 65px; height: 65px; background: rgba(0,150,255,0.3); }
+    #btn-fire { bottom: 150px; right: 30px; width: 75px; height: 75px; background: rgba(255,50,50,0.4); }
+  </style>
+</head>
+<body>
+  <div id="crosshair"></div>
+  <div id="info">Weapon: AK-47 • Map Loaded</div>
+  <div id="hud">
+    <div>❤️ HP: <span id="hpVal">100</span></div>
+    <div>🎯 Score: <span id="scoreVal">0</span></div>
+    <div>📈 Level: <span id="levelVal">1</span></div>
+    <div>💀 Kills: <span id="killsVal">0</span></div>
+    <div>🧠 Headshots: <span id="hsVal">0</span></div>
+  </div>
+  <div id="factBox">Building ke andar jao aur cover lo! 🏢</div>
+  <div id="damageFlash"></div>
+  <div id="weapon-select">
+    <button class="gun-btn active" data-key="ak47">AK-47</button>
+    <button class="gun-btn" data-key="m4">M4</button>
+  </div>
+  <div class="controls-container">
+    <div class="touch-btn" id="btn-forward">▲</div>
+    <div class="touch-btn" id="btn-left">◀</div>
+    <div class="touch-btn" id="btn-right">▶</div>
+    <div class="touch-btn" id="btn-back">▼</div>
+    <div class="touch-btn" id="btn-jump">Jump</div>
+    <div class="touch-btn" id="btn-fire">FIRE</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x7ec0ee);
+
+    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+    const yawObject = new THREE.Object3D();
+    const pitchObject = new THREE.Object3D();
+    pitchObject.add(camera);
+    yawObject.add(pitchObject);
+    scene.add(yawObject);
+    camera.position.set(0, 1.8, 0);
+    yawObject.position.set(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.9));
+    const dirL = new THREE.DirectionalLight(0xffffff, 0.6);
+    dirL.position.set(20, 40, 20);
+    scene.add(dirL);
+
+    // Ground
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshStandardMaterial({ color: 0x3a5f0b }));
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    const obstacles = [];
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.8 });
+    const crateMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+
+    // Building Generator
+    function createBuilding(x, z, w, d, h) {
+      const g = new THREE.Group();
+      g.position.set(x, 0, z);
+
+      const wallThick = 0.4;
+      const doorWidth = 4;
+
+      // Back Wall
+      const back = new THREE.Mesh(new THREE.BoxGeometry(w, h, wallThick), wallMat);
+      back.position.set(0, h/2, -d/2);
+      g.add(back); obstacles.push(back);
+
+      // Left Wall
+      const left = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d), wallMat);
+      left.position.set(-w/2, h/2, 0);
+      g.add(left); obstacles.push(left);
+
+      // Right Wall
+      const right = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d), wallMat);
+      right.position.set(w/2, h/2, 0);
+      g.add(right); obstacles.push(right);
+
+      // Front Wall with Doorway
+      const fSideW = (w - doorWidth) / 2;
+      const frontL = new THREE.Mesh(new THREE.BoxGeometry(fSideW, h, wallThick), wallMat);
+      frontL.position.set(-w/2 + fSideW/2, h/2, d/2);
+      g.add(frontL); obstacles.push(frontL);
+
+      const frontR = new THREE.Mesh(new THREE.BoxGeometry(fSideW, h, wallThick), wallMat);
+      frontR.position.set(w/2 - fSideW/2, h/2, d/2);
+      g.add(frontR); obstacles.push(frontR);
+
+      scene.add(g);
+    }
+
+    // Build Tactical Map
+    for(let i=-60; i<=60; i+=40) {
+      for(let j=-60; j<=60; j+=40) {
+        if(Math.abs(i) < 15 && Math.abs(j) < 15) continue; // Safe Start Center
+        createBuilding(i, j, 12, 12, 6);
+        
+        // Add Crates around buildings
+        const crate = new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.5, 2.5), crateMat);
+        crate.position.set(i + 8, 1.25, j + 8);
+        scene.add(crate); obstacles.push(crate);
+      }
+    }
+
+    let playerHP = 100, score = 0, level = 1, kills = 0, headshots = 0;
+    const shootables = [], enemies = [], enemyBullets = [], enemyShootCooldown = new Map();
+
+    function spawnEnemy(x, z) {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 1.0), new THREE.MeshStandardMaterial({ color: 0xd9534f }));
+      body.position.y = 0.9; body.userData.part = 'body'; g.add(body);
+
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffe0bd }));
+      head.position.y = 2.1; head.userData.part = 'head'; g.add(head);
+
+      g.position.set(x, 0, z); g.userData.hp = 100; g.userData.alive = true;
+      scene.add(g); enemies.push(g); shootables.push(body, head);
+      enemyShootCooldown.set(g, (performance.now() / 1000) + 2 + Math.random() * 2);
+    }
+
+    function spawnWave(count) {
+      for (let i = 0; i < count; i++) {
+        let ex, ez;
+        do { ex = (Math.random() - 0.5) * 140; ez = (Math.random() - 0.5) * 140; } 
+        while (Math.abs(ex) < 20 && Math.abs(ez) < 20);
+        spawnEnemy(ex, ez);
+      }
+    }
+    spawnWave(10);
+
+    // Controls Logic
+    const keys = { w:false, a:false, s:false, d:false, space:false };
+    function bindTouch(id, k) {
+      const el = document.getElementById(id);
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, { passive:false });
+      el.addEventListener('touchend',   (e) => { e.preventDefault(); keys[k] = false; }, { passive:false });
+    }
+    bindTouch('btn-forward','w'); bindTouch('btn-left','a'); bindTouch('btn-right','d'); bindTouch('btn-back','s'); bindTouch('btn-jump','space');
+
+    let isFiring = false;
+    document.getElementById('btn-fire').addEventListener('touchstart', (e) => { e.preventDefault(); isFiring = true; shoot(); }, { passive:false });
+    document.getElementById('btn-fire').addEventListener('touchend', (e) => { e.preventDefault(); isFiring = false; }, { passive:false });
+
+    let isTouchingLook = false, prevTouchX = 0, prevTouchY = 0, yaw = 0, pitch = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.controls-container') || e.target.closest('#weapon-select')) return;
+      if (e.touches.length > 0) { isTouchingLook = true; prevTouchX = e.touches[0].clientX; prevTouchY = e.touches[0].clientY; }
+    }, { passive:false });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isTouchingLook) return;
+      const touch = e.touches[0];
+      yaw -= (touch.clientX - prevTouchX) * 0.003;
+      pitch -= (touch.clientY - prevTouchY) * 0.003;
+      pitch = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, pitch));
+      prevTouchX = touch.clientX; prevTouchY = touch.clientY;
+      yawObject.rotation.y = yaw; pitchObject.rotation.x = pitch;
+    }, { passive:false });
+    window.addEventListener('touchend', () => isTouchingLook = false);
+
+    const raycaster = new THREE.Raycaster();
+    function shoot() {
+      const shootDir = new THREE.Vector3();
+      camera.getWorldDirection(shootDir);
+      raycaster.set(camera.getWorldPosition(new THREE.Vector3()), shootDir);
+
+      const intersects = raycaster.intersectObjects(shootables, false);
+      if (intersects.length > 0) {
+        const hit = intersects[0];
+        const isHead = hit.object.userData.part === 'head';
+        const enemy = hit.object.parent;
+        if (!enemy || !enemy.userData.alive) return;
+
+        enemy.userData.hp -= isHead ? 100 : 45;
+        if (enemy.userData.hp <= 0) {
+          enemy.userData.alive = false;
+          kills++; if (isHead) headshots++; score += isHead ? 200 : 100;
+          scene.remove(enemy);
+          document.getElementById('hpVal').textContent = playerHP;
+          document.getElementById('scoreVal').textContent = score;
+          document.getElementById('killsVal').textContent = kills;
+          document.getElementById('hsVal').textContent = headshots;
+          if (enemies.filter(e => e.userData.alive).length === 0) spawnWave(12);
+        }
+      }
+    }
+
+    // Enemy Firing System (Buildings Block Bullets)
+    function enemyFireTick(dt) {
+      const now = performance.now() / 1000;
+      const pPos = yawObject.position.clone().add(new THREE.Vector3(0, 1.5, 0));
+
+      enemies.forEach(e => {
+        if (!e.userData.alive) return;
+        if (e.position.distanceTo(yawObject.position) > 50) return;
+
+        if (now - (enemyShootCooldown.get(e) || 0) > 2.0) {
+          enemyShootCooldown.set(e, now);
+          
+          // Line of Sight Raycast (Building Check)
+          const ePos = e.position.clone().add(new THREE.Vector3(0, 1.8, 0));
+          const dirToPlayer = new THREE.Vector3().subVectors(pPos, ePos).normalize();
+          raycaster.set(ePos, dirToPlayer);
+          
+          const hits = raycaster.intersectObjects(obstacles, false);
+          // Only fire if no wall is between Enemy and Player!
+          if (hits.length === 0 || hits[0].distance > ePos.distanceTo(pPos)) {
+            const b = new THREE.Mesh(new THREE.SphereGeometry(0.15), new THREE.MeshBasicMaterial({ color: 0xff3300 }));
+            b.position.copy(ePos);
+            b.userData.vel = dirToPlayer.multiplyScalar(16);
+            b.userData.life = 3;
+            scene.add(b); enemyBullets.push(b);
+          }
+        }
+      });
+
+      for (let i = enemyBullets.length - 1; i >= 0; i--) {
+        const b = enemyBullets[i];
+        b.position.addScaledVector(b.userData.vel, dt);
+        b.userData.life -= dt;
+
+        if (b.position.distanceTo(pPos) < 1.0) {
+          scene.remove(b); enemyBullets.splice(i, 1);
+          playerHP = Math.max(0, playerHP - 12);
+          document.getElementById('hpVal').textContent = playerHP;
+          if (playerHP <= 0) { alert("Khatam! Try Again."); location.reload(); }
+          continue;
+        }
+        if (b.userData.life <= 0) { scene.remove(b); enemyBullets.splice(i, 1); }
+      }
+    }
+
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(0.05, clock.getDelta());
+
+      const speed = 7.0;
+      const dir = new THREE.Vector3();
+      if (keys.w) dir.z -= 1; if (keys.s) dir.z += 1;
+      if (keys.a) dir.x -= 1; if (keys.d) dir.x += 1;
+      dir.normalize();
+
+      const moveDir = dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObject.rotation.y);
+      yawObject.position.addScaledVector(moveDir, speed * dt);
+
+      enemyFireTick(dt);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
