@@ -1,12 +1,4 @@
-# 🧪 Class 9 Chemistry & Interactive Science Hub 🚀
-
-Welcome to the Interactive Learning Repository! Yahan aapko Class 9 Chemistry ke saare interactive simulations, visual mindmaps, aur experiments ek hi jagah milenge.
-
----
-
-## 🎯 Interactive Practicals Hub
-
-Niche click karke full animated rotation card hub open karein:
+# 🧪 Class 9 Chemistry 
 
 <p align="center">
   <br>
