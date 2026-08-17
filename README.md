@@ -6,16 +6,21 @@ Welcome to the Interactive Learning Repository! Yahan aapko Class 9 Chemistry ke
 
 <details open>
   <summary><b>📁 Chemistry Practicals Database</b></summary>
+  
+<p align="center">
   <br>
-
-  | 🔬 Topic / Experiment | 🕹️ Interactive Action |
-  | :--- | :--- |
-  | **Distillation Setup Simulation** | [<img src="https://img.shields.io/badge/Launch-Distillation_Setup-2563eb?style=for-the-badge&logo=flask&logoColor=white" height="28" />](https://2025akshat-lang.github.io/Metro-Runner-India/Distillation%20setup.html) |
-  | **Mindmap Solution** | [<img src="https://img.shields.io/badge/Open-Mindmap_Solution-8b5cf6?style=for-the-badge&logo=mindnode&logoColor=white" height="28" />](https://2025akshat-lang.github.io/Metro-Runner-India/Mindmapsolution.html) |
-  | **Evaporation Vs Boiling** | [<img src="https://img.shields.io/badge/Compare-Evaporation_vs_Boiling-059669?style=for-the-badge&logo=sparkles&logoColor=white" height="28" />](https://2025akshat-lang.github.io/Metro-Runner-India/Evaporation%20Vs%20boiling.html) |
-  | **Crystallization Experiment** | [<img src="https://img.shields.io/badge/Start-Crystallization-d97706?style=for-the-badge&logo=atom&logoColor=white" height="28" />](https://2025akshat-lang.github.io/Metro-Runner-India/crystallization.html) |
-  | **Vacuum Evaporation** | [<img src="https://img.shields.io/badge/Run-Vacuum_Evaporation-dc2626?style=for-the-badge&logo=gauge&logoColor=white" height="28" />](https://2025akshat-lang.github.io/Metro-Runner-India/vaccum%20evaporation.html) |
-  | **Metro Runner 2D Game** | [<img src="https://img.shields.io/badge/Play-Metro_Runner_Game-ea580c?style=for-the-badge&logo=gamepad&logoColor=white" height="28" />](https://2025akshat-lang.github.io/Metro-Runner-India/index.html) |
+  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/Distillation%20setup.html"><img src="https://img.shields.io/badge/Distillation_Setup_Simulation-f0f4f9?style=for-the-badge&labelColor=f0f4f9&colorA=f0f4f9&colorB=f0f4f9&logoColor=333333" height="35" /></a>
+  <br><br>
+  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/Mindmapsolution.html"><img src="https://img.shields.io/badge/Mindmap_Solution-f0f4f9?style=for-the-badge&labelColor=f0f4f9&colorA=f0f4f9&colorB=f0f4f9&logoColor=333333" height="35" /></a>
+  <br><br>
+  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/Evaporation%20Vs%20boiling.html"><img src="https://img.shields.io/badge/Evaporation_Vs_Boiling-f0f4f9?style=for-the-badge&labelColor=f0f4f9&colorA=f0f4f9&colorB=f0f4f9&logoColor=333333" height="35" /></a>
+  <br><br>
+  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/crystallization.html"><img src="https://img.shields.io/badge/Crystallization_Experiment-f0f4f9?style=for-the-badge&labelColor=f0f4f9&colorA=f0f4f9&colorB=f0f4f9&logoColor=333333" height="35" /></a>
+  <br><br>
+  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/vaccum%20evaporation.html"><img src="https://img.shields.io/badge/Vacuum_Evaporation-f0f4f9?style=for-the-badge&labelColor=f0f4f9&colorA=f0f4f9&colorB=f0f4f9&logoColor=333333" height="35" /></a>
+  <br><br>
+  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/index.html"><img src="https://img.shields.io/badge/Metro_Runner_2D_Game-f0f4f9?style=for-the-badge&labelColor=f0f4f9&colorA=f0f4f9&colorB=f0f4f9&logoColor=333333" height="35" /></a>
+</p>
 
 </details>
 
