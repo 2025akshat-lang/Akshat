@@ -1,20 +1,44 @@
-# 🧪 Class 9 Chemistry
+<div align="center">
 
-[![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)
+### 🧪 Class 9 Chemistry Practicals
 
-### 📚List
-- [Distillation_setup.html](Distillation_setup.html)
-- [Evaporation_Vs_boiling.html](Evaporation_Vs_boiling.html)
-- [Fps.html](Fps.html)
-- [Ludo.html](Ludo.html)
-- [Mindmapsolution.html](Mindmapsolution.html)
-- [Mixture.html](Mixture.html)
-- [crystallization.html](crystallization.html)
-- [hub.html](hub.html)
-- [index.html](index.html)
-- [vaccum_evaporation.html](vaccum_evaporation.html)
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/hub.html">
+  <img src="https://img.shields.io/badge/Open_Animated_Practicals_Hub-007ACC?style=for-the-badge&logo=html5&logoColor=white" alt="Hub"/>
+</a>
 
----
-📱 **How to Use?**
-1. Upar bane **Blue Hub Button** par click karo.
-2. Ya fir list me se kisi bhi HTML file par click karke dekho!
+<br/><br/>
+
+<!-- Interactive Buttons Grid -->
+
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/Distillation_setup.html">
+  <img src="https://img.shields.io/badge/Distillation__setup.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/Evaporation_Vs_boiling.html">
+  <img src="https://img.shields.io/badge/Evaporation__Vs__boiling.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/Fps.html">
+  <img src="https://img.shields.io/badge/Fps.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/Ludo.html">
+  <img src="https://img.shields.io/badge/Ludo.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/Mindmapsolution.html">
+  <img src="https://img.shields.io/badge/Mindmapsolution.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/Mixture.html">
+  <img src="https://img.shields.io/badge/Mixture.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/crystallization.html">
+  <img src="https://img.shields.io/badge/crystallization.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/hub.html">
+  <img src="https://img.shields.io/badge/hub.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/index.html">
+  <img src="https://img.shields.io/badge/index.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+<a href="https://2025akshat-lang.github.io/Metro-Runner-India/vaccum_evaporation.html">
+  <img src="https://img.shields.io/badge/vaccum__evaporation.html-f4f4f5?style=for-the-badge&logo=html5&logoColor=2563eb" />
+</a>
+
+</div>
