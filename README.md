@@ -1,18 +1,19 @@
-# 🧪 Class 9 Chemistry 
+# 🧪 Class 9 Chemistry
 
-<p align="center">
-  <br>
-  <a href="https://2025akshat-lang.github.io/Metro-Runner-India/hub.html" target="_blank">
-    <img src="https://img.shields.io/badge/📁_OPEN_ANIMATED_PRACTICALS_HUB-00b7ff?style=for-the-badge&logo=githubpages&logoColor=white" height="45" />
-  </a>
-  <br><br>
-</p>
+[![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)
+
+### 📚 Experiments List
+- [Distillation setup.html](Distillation setup.html)
+- [Evaporation Vs boiling.html](Evaporation Vs boiling.html)
+- [Fps.html](Fps.html)
+- [Ludo.html](Ludo.html)
+- [Mindmapsolution.html](Mindmapsolution.html)
+- [crystallization.html](crystallization.html)
+- [hub.html](hub.html)
+- [index.html](index.html)
+- [vaccum evaporation.html](vaccum evaporation.html)
 
 ---
-
-### 📱 How to Use?
+📱 **How to Use?**
 1. Upar bane **Blue Hub Button** par click karo.
-2. Animated portal open hoga jahan saare practical experiments rounded buttons ke sath milenge.
-3. Kisi bhi experiment par tap karke interactive setup explore karo!
-
-> **Created with ❤️ for Students**
+2. Ya fir list me se kisi bhi HTML file par click karke dekho!
