@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CWSN Visual Light Scattering Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+    body { background: #030712; color: #f9fafb; display: flex; flex-direction: column; align-items: center; padding: 15px; min-height: 100vh; }
+    
+    .container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 850px; }
+    
+    canvas { 
+      background: #0f172a; 
+      border-radius: 16px; 
+      border: 3px solid #1e293b; 
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.15); 
+      width: 100%; 
+      height: auto; 
+    }
+    
+    /* Giant CWSN Friendly Buttons */
+    .controls { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; width: 100%; }
+    
+    .btn { 
+      padding: 14px 24px; 
+      font-size: 1.1rem; 
+      font-weight: 800; 
+      border: 3px solid transparent; 
+      border-radius: 14px; 
+      cursor: pointer; 
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.1s ease, box-shadow 0.2s ease; 
+      color: #ffffff;
+      user-select: none;
+    }
+    
+    .btn:active { transform: scale(0.95); }
+    
+    .btn-salt { background: #0284c7; }
+    .btn-milk { background: #d97706; }
+    .btn-laser { background: #dc2626; }
+    
+    .btn.active { border-color: #ffffff; box-shadow: 0 0 20px #ffffff; }
+
+    .status-badge {
+      background: #1e293b;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 2px solid #38bdf8;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="status-badge" id="badge">🧂 SALT WATER: Invisible Path</div>
+
+    <canvas id="canvas" width="800" height="450"></canvas>
+
+    <div class="controls">
+      <button id="btnSalt" class="btn btn-salt active" onclick="setMode('salt')">🧂 Salt Solution</button>
+      <button id="btnMilk" class="btn btn-milk" onclick="setMode('milk')">🥛 Milk Solution</button>
+      <button id="btnLaser" class="btn btn-laser" onclick="toggleLaser()">🔦 Laser ON/OFF</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let mode = 'salt';
+    let laserOn = true;
+    let particles = [];
+    let pulseTime = 0;
+
+    function initParticles() {
+      particles = [];
+      const count = mode === 'salt' ? 45 : 30;
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: 230 + Math.random() * 280,
+          y: 110 + Math.random() * 220,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          radius: mode === 'salt' ? 3 : 11,
+          glow: 0
+        });
+      }
+    }
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('btnSalt').classList.toggle('active', mode === 'salt');
+      document.getElementById('btnMilk').classList.toggle('active', mode === 'milk');
+      
+      const badge = document.getElementById('badge');
+      if(mode === 'salt') {
+        badge.innerText = "🧂 SALT WATER: Beam Path Invisible (No Scattering)";
+        badge.style.borderColor = "#38bdf8";
+        badge.style.color = "#38bdf8";
+      } else {
+        badge.innerText = "🥛 MILK WATER: Beam Path Glowing (Tyndall Effect!)";
+        badge.style.borderColor = "#fbbf24";
+        badge.style.color = "#fbbf24";
+      }
+      initParticles();
+    }
+
+    function toggleLaser() {
+      laserOn = !laserOn;
+      document.getElementById('btnLaser').style.opacity = laserOn ? '1' : '0.4';
+    }
+
+    function drawBeaker() {
+      // Liquid container
+      ctx.fillStyle = mode === 'salt' ? 'rgba(14, 165, 233, 0.12)' : 'rgba(254, 243, 199, 0.2)';
+      ctx.fillRect(220, 100, 300, 240);
+      
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(220, 100, 300, 240);
+    }
+
+    function drawLaser() {
+      // Laser Gun
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(40, 200, 80, 40);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(120, 210, 15, 20);
+
+      if (!laserOn) return;
+
+      // Laser Beam Before
+      ctx.strokeStyle = '#ff0000';
+      ctx.lineWidth = 5;
+      ctx.shadowColor = '#ff0000';
+      ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.moveTo(135, 220); ctx.lineTo(220, 220); ctx.stroke();
+
+      // Laser Beam Inside
+      if (mode === 'milk') {
+        // High glow scattering inside beaker
+        ctx.strokeStyle = 'rgba(255, 50, 50, 0.9)';
+        ctx.lineWidth = 16;
+        ctx.shadowBlur = 25;
+        ctx.beginPath(); ctx.moveTo(220, 220); ctx.lineTo(520, 220); ctx.stroke();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(220, 220); ctx.lineTo(520, 220); ctx.stroke();
+      } else {
+        // Barely visible line in Salt
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.15)';
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.moveTo(220, 220); ctx.lineTo(520, 220); ctx.stroke();
+      }
+
+      // Laser Beam After
+      ctx.strokeStyle = '#ff0000';
+      ctx.lineWidth = 5;
+      ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.moveTo(520, 220); ctx.lineTo(760, 220); ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function drawParticlesAndEffects() {
+      const laserY = 220;
+
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 228 || p.x > 512) p.vx *= -1;
+        if (p.y < 108 || p.y > 332) p.vy *= -1;
+
+        if (mode === 'salt') {
+          // Tiny Salt Ions
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+        } else {
+          // Milk Fat Droplets
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = '#fbbf24';
+          ctx.shadowBlur = 8;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+
+          // Hit by laser effect
+          if (laserOn && Math.abs(p.y - laserY) < 16) {
+            // Photon burst rays
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 2;
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p.x + Math.cos(a + pulseTime) * 22, p.y + Math.sin(a + pulseTime) * 22);
+              ctx.stroke();
+            }
+          }
+          ctx.shadowBlur = 0;
+        }
+      });
+    }
+
+    // Micro Zoom Lens Overlay (Top Right Corner)
+    function drawMicroZoomLens() {
+      const zX = 660, zY = 100, zR = 65;
+
+      ctx.save();
+      ctx.beginPath(); ctx.arc(zX, zY, zR, 0, Math.PI * 2); ctx.clip();
+      ctx.fillStyle = '#020617'; ctx.fillRect(zX - zR, zY - zR, zR * 2, zR * 2);
+
+      // Label inside Lens
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 10px Segoe UI';
+      ctx.fillText("MICRO ZOOM", zX - 32, zY - 45);
+
+      if (mode === 'salt') {
+        // Zoomed Salt View: Light passes smoothly between ions
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.beginPath(); ctx.arc(zX - 25, zY - 15, 12, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(zX + 25, zY + 20, 12, 0, Math.PI * 2); ctx.fill();
+
+        if (laserOn) {
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(zX - 60, zY); ctx.lineTo(zX + 60, zY); ctx.stroke();
+        }
+      } else {
+        // Zoomed Milk View: Photon collision & 360 scattering
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(zX, zY, 22, 0, Math.PI * 2); ctx.fill();
+
+        if (laserOn) {
+          ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 4;
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+            ctx.beginPath(); ctx.moveTo(zX, zY);
+            ctx.lineTo(zX + Math.cos(a + pulseTime) * 45, zY + Math.sin(a + pulseTime) * 45);
+            ctx.stroke();
+          }
+        }
+      }
+      ctx.restore();
+
+      // Lens Rim
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(zX, zY, zR, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pulseTime += 0.05;
+      drawBeaker();
+      drawLaser();
+      drawParticlesAndEffects();
+      drawMicroZoomLens();
+      requestAnimationFrame(animate);
+    }
+
+    initParticles();
+    animate();
+  </script>
+</body>
+</html>
