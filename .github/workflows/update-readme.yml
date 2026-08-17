@@ -1,0 +1,44 @@
+name: Auto Update README
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*.html'
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Generate Experiments List
+        run: |
+          echo "# 🧪 Class 9 Chemistry" > README.md
+          echo "" >> README.md
+          echo "[![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)" >> README.md
+          echo "" >> README.md
+          echo "### 📚 Experiments List" >> README.md
+          for file in *.html; do
+            if [ -f "$file" ]; then
+              echo "- [$file]($file)" >> README.md
+            fi
+          done
+          echo "" >> README.md
+          echo "---" >> README.md
+          echo "📱 **How to Use?**" >> README.md
+          echo "1. Upar bane **Blue Hub Button** par click karo." >> README.md
+          echo "2. Ya fir list me se kisi bhi HTML file par click karke dekho!" >> README.md
+
+      - name: Commit & Push Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "auto: update README with HTML file list" || exit 0
+          git push
