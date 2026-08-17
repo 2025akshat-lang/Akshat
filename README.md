@@ -1,11 +1,10 @@
 # 🧪 Class 9 Chemistry & Interactive Science Hub 🚀
 
-Welcome to the Interactive Learning Repository! Yahan aapko Class 9 Chemistry ke saare interactive simulations, visual mindmaps, aur experiments ek hi jagah milenge.
-
+Welcome to the Interactive Learning Repository! 
 ---
 
 <details open>
-  <summary><b>📁 Chemistry Practicals Database</b></summary>
+  <summary><b>📁 Database</b></summary>
   
 <p align="center">
   <br>
@@ -27,7 +26,7 @@ Welcome to the Interactive Learning Repository! Yahan aapko Class 9 Chemistry ke
 ---
 
 ### 📱 How to Use?
-1. Kisi bhi topic ke samne bane **Color Buttons** par click karo.
+1. Kisi bhi topic ke samne bane **Buttons** par click karo.
 2. Experiment mobile ya laptop browser me direct full screen me open ho jayega.
 3. Interactive drag-and-drop aur lab tools use karke apna concept clear karo!
 
