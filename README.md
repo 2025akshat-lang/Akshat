@@ -8,6 +8,7 @@
 - [Fps.html](Fps.html)
 - [Ludo.html](Ludo.html)
 - [Mindmapsolution.html](Mindmapsolution.html)
+- [Mixture.html](Mixture.html)
 - [crystallization.html](crystallization.html)
 - [hub.html](hub.html)
 - [index.html](index.html)
