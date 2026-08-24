@@ -10,5 +10,5 @@
 
 <a href="https://2025akshat-lang.github.io/Akshat/vaccum_evaporation.html"><img src="https://img.shields.io/badge/_Vacuum_Evaporation-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-<a href="https://2025akshat-lang.github.io/Akshat/Mindmapsolution.html"><img src="https://img.shields.io/badge/_Mind_Map_Solutions-0F172A?style=for-the-badge&logoColor=white" height="65"></a>
+<a href="https://2025akshat-lang.github.io/Akshat/Mindmapsolution.html"><img src="https://img.shields.io/badge/_Mind_Map_Solutions-0F172A?style=for-the-badge&logoColor=white" height="95"></a>
 
