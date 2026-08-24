@@ -3,108 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chemistry Practicals Database</title>
+    <title>Class 9 Study & Resource Hub</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         body {
+            background-color: #f4f7f6;
+            color: #2c3e50;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #0d1117;
-            font-family: Arial, sans-serif;
             padding: 20px;
         }
 
-        /* Outer Main Card with Rotating Border */
-        .card {
+        .main-card {
+            background: #ffffff;
             width: 100%;
-            max-width: 420px;
-            background: #07182E;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            place-content: center;
-            place-items: center;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8ed;
             overflow: hidden;
-            border-radius: 35px;
-            padding: 40px 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Outer Card Content Container */
-        .card-content {
-            z-index: 2;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .card h2 {
+        .header {
+            background: #1a365d;
             color: white;
-            font-size: 1.4em;
-            margin-bottom: 10px;
+            padding: 25px 20px;
             text-align: center;
-            letter-spacing: 1px;
         }
 
-        /* Card Rotating Gradient Strip */
-        .card::before {
-            content: '';
-            position: absolute;
-            width: 160%;
-            height: 160%;
-            background-image: linear-gradient(180deg, #00b7ff, #ff30ff);
-            animation: rotBGimg 4s linear infinite;
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
         }
 
-        /* Card Inner Overlay */
-        .card::after {
-            content: '';
-            position: absolute;
-            background: #07182E;
-            inset: 4px;
-            border-radius: 31px;
-            z-index: 1;
+        .header p {
+            font-size: 0.85rem;
+            color: #cbd5e0;
+            margin-top: 5px;
         }
 
-        /* Animated Rotating Buttons */
-        .glow-btn {
-            position: relative;
-            width: 90%;
-            height: 50px;
+        /* Section Title Styling */
+        .section-container {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4a5568;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Clean List Links */
+        .link-list {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .link-item {
+            display: flex;
             align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
             text-decoration: none;
-            overflow: hidden;
-            border-radius: 50px;
-            transition: transform 0.2s ease;
+            color: #2d3748;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
-        .glow-btn:hover {
-            transform: scale(1.03);
+        .link-item:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            color: #1a365d;
         }
 
-        /* Button Rotating Border Strip */
-        .glow-btn::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 300%;
-            background-image: linear-gradient(180deg, #00ffcc, #00b7ff);
-            animation: rotBGimg 3s linear infinite;
+        .link-item span.icon {
+            font-size: 1.1rem;
+            margin-right: 10px;
         }
 
-        /* Button Inner Text Area */
-        .glow-btn span {
+        .link-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .arrow {
+            color: #a0aec0;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #718096;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="header">
+        <h1>Class 9 Learning Portal</h1>
+        <p>Interactive Practicals & Educational Resources</p>
+    </div>
+
+    <div class="section-container">
+        
+        <!-- SECTION 1: STUDY & PRACTICALS -->
+        <div class="section-title">🧪 Chemistry Practicals</div>
+        <div class="link-list">
+            <a href="Distillation_setup.html" class="link-item">
+                <div class="link-content"><span class="icon">⚗️</span> Distillation Setup</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="Evaporation_Vs_boiling.html" class="link-item">
+                <div class="link-content"><span class="icon">🔥</span> Evaporation Vs Boiling</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="crystallization.html" class="link-item">
+                <div class="link-content"><span class="icon">💎</span> Crystallization</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="Mixture.html" class="link-item">
+                <div class="link-content"><span class="icon">🧪</span> Mixture Separation</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="vaccum_evaporation.html" class="link-item">
+                <div class="link-content"><span class="icon">🌡️</span> Vacuum Evaporation</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="Mindmapsolution.html" class="link-item">
+                <div class="link-content"><span class="icon">🧠</span> Mind Map Solution</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+        </div>
+
+        <!-- SECTION 2: PROGRAMMING (Future ke liye) -->
+        <div class="section-title">💻 Programming & Codes</div>
+        <div class="link-list">
+            <!-- Jab new programming file upload kare, bas niche wala line copy karke link badal dena -->
+            <a href="#" class="link-item">
+                <div class="link-content"><span class="icon">📁</span> Basic C++ / Python (Coming Soon)</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+        </div>
+
+        <!-- SECTION 3: EXTRA / GAMES -->
+        <div class="section-title">🎮 Fun & Extra Activities</div>
+        <div class="link-list">
+            <a href="Ludo.html" class="link-item">
+                <div class="link-content"><span class="icon">🎲</span> Ludo Game</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="Fps.html" class="link-item">
+                <div class="link-content"><span class="icon">🎯</span> FPS Game Test</div>
+                <span class="arrow">&rarr;</span>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Student Resource Portal • GitHub Hosted
+    </div>
+</div>
+
+</body>
+</html>
             position: relative;
             z-index: 2;
             width: calc(100% - 4px);
