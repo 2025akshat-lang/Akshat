@@ -1,65 +1,27 @@
-<div align="center">
+# 🔬 Science Practicals
 
-  <h2>🔬 Science Practicals</h2>
+<a href="https://2025akshat-lang.github.io/Akshat/Distillation_setup.html"><img src="https://img.shields.io/badge/⚗️_Distillation_Setup-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/Distillation_setup.html" target="_blank">
-    <button style="background-color: #0f172a; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      ⚗️ Distillation Setup &rarr;
-    </button>
-  </a><br>
+<a href="https://2025akshat-lang.github.io/Akshat/Evaporation_Vs_boiling.html"><img src="https://img.shields.io/badge/🔥_Evaporation_Vs_Boiling-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/Evaporation_Vs_boiling.html" target="_blank">
-    <button style="background-color: #0f172a; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      🔥 Evaporation Vs Boiling &rarr;
-    </button>
-  </a><br>
+<a href="https://2025akshat-lang.github.io/Akshat/crystallization.html"><img src="https://img.shields.io/badge/💎_Crystallization_Process-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/crystallization.html" target="_blank">
-    <button style="background-color: #0f172a; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      💎 Crystallization Process &rarr;
-    </button>
-  </a><br>
+<a href="https://2025akshat-lang.github.io/Akshat/Mixture.html"><img src="https://img.shields.io/badge/🧪_Mixture_Separation-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/Mixture.html" target="_blank">
-    <button style="background-color: #0f172a; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      🧪 Mixture Separation &rarr;
-    </button>
-  </a><br>
+<a href="https://2025akshat-lang.github.io/Akshat/vaccum_evaporation.html"><img src="https://img.shields.io/badge/🌡️_Vacuum_Evaporation-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/vaccum_evaporation.html" target="_blank">
-    <button style="background-color: #0f172a; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      🌡️ Vacuum Evaporation &rarr;
-    </button>
-  </a><br>
+<a href="https://2025akshat-lang.github.io/Akshat/Mindmapsolution.html"><img src="https://img.shields.io/badge/🧠_Mind_Map_Solutions-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/Mindmapsolution.html" target="_blank">
-    <button style="background-color: #0f172a; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      🧠 Mind Map Solutions &rarr;
-    </button>
-  </a><br>
+---
 
-  <br><hr><br>
+# 💻 Programming
 
-  <h2>💻 Programming</h2>
+<img src="https://img.shields.io/badge/📁_Basic_Codes_(Coming_Soon)-475569?style=for-the-badge&logoColor=white" height="40">
 
-  <button style="background-color: #475569; color: #ffffff; font-size: 16px; font-weight: bold; padding: 12px 24px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: not-allowed;">
-    📁 Basic Codes (Coming Soon)
-  </button><br>
+---
 
-  <br><hr><br>
+# 🎮 Extra Activities
 
-  <h2>🎮 Extra Activities</h2>
+<a href="https://2025akshat-lang.github.io/Akshat/Ludo.html"><img src="https://img.shields.io/badge/🎲_Ludo_Game-1E293B?style=for-the-badge&logoColor=white" height="45"></a>
 
-  <a href="https://2025akshat-lang.github.io/Akshat/Ludo.html" target="_blank">
-    <button style="background-color: #1e293b; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      🎲 Ludo Game &rarr;
-    </button>
-  </a><br>
-
-  <a href="https://2025akshat-lang.github.io/Akshat/Fps.html" target="_blank">
-    <button style="background-color: #1e293b; color: #ffffff; font-size: 18px; font-weight: bold; padding: 14px 28px; border: none; border-radius: 10px; width: 85%; margin: 6px 0; cursor: pointer;">
-      🎯 FPS Game Test &rarr;
-    </button>
-  </a><br>
-
-</div>
+<a href="https://2025akshat-lang.github.io/Akshat/Fps.html"><img src="https://img.shields.io/badge/🎯_FPS_Game_Test-1E293B?style=for-the-badge&logoColor=white" height="45"></a>
