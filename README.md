@@ -5,6 +5,7 @@
 ### 📚List
 - [Biochemistry.html](Biochemistry.html)
 - [Butterfly_debugged_preserve_all.html](Butterfly_debugged_preserve_all.html)
+- [Chemistry.html](Chemistry.html)
 - [Distillation_setup.html](Distillation_setup.html)
 - [Evaporation_Vs_boiling.html](Evaporation_Vs_boiling.html)
 - [Fps.html](Fps.html)
