@@ -1,14 +1,21 @@
-# Science
+# 🧪 Class 9 Chemistry
 
-<a href="https://2025akshat-lang.github.io/Akshat/Distillation_setup.html"><img src="https://img.shields.io/badge/_Distillation_Setup-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
+[![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)
 
-<a href="https://2025akshat-lang.github.io/Akshat/Evaporation_Vs_boiling.html"><img src="https://img.shields.io/badge/_Evaporation_Vs_Boiling-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
+### 📚List
+- [Butterfly_debugged_preserve_all.html](Butterfly_debugged_preserve_all.html)
+- [Distillation_setup.html](Distillation_setup.html)
+- [Evaporation_Vs_boiling.html](Evaporation_Vs_boiling.html)
+- [Fps.html](Fps.html)
+- [Ludo.html](Ludo.html)
+- [Mindmapsolution.html](Mindmapsolution.html)
+- [Mixture.html](Mixture.html)
+- [crystallization.html](crystallization.html)
+- [hub.html](hub.html)
+- [index.html](index.html)
+- [vaccum_evaporation.html](vaccum_evaporation.html)
 
-<a href="https://2025akshat-lang.github.io/Akshat/crystallization.html"><img src="https://img.shields.io/badge/_Crystallization_Process-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
-
-<a href="https://2025akshat-lang.github.io/Akshat/Mixture.html"><img src="https://img.shields.io/badge/_Mixture_Separation-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
-
-<a href="https://2025akshat-lang.github.io/Akshat/vaccum_evaporation.html"><img src="https://img.shields.io/badge/_Vacuum_Evaporation-0F172A?style=for-the-badge&logoColor=white" height="45"></a>
-
-<a href="https://2025akshat-lang.github.io/Akshat/Mindmapsolution.html"><img src="https://img.shields.io/badge/_Mind_Map_Solutions-0F172A?style=for-the-badge&logoColor=white" height="95"></a>
-
+---
+📱 **How to Use?**
+1. Upar bane **Blue Hub Button** par click karo.
+2. Ya fir list me se kisi bhi HTML file par click karke dekho!
