@@ -1,0 +1,2412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Manual - Floral Aesthetic</title>
+    <!-- MathJax for Formulas -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        *, *::after, *::before {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark-color: #030303;
+            --petal-color-1: #ff6b8b;
+            --petal-color-2: #f1426c;
+            --stem-color: #a85827;
+            --leaf-color: #0b6838;
+            --center-yellow: #f5d020;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--dark-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            perspective: 1000px;
+        }
+
+        /* --- BACKGROUND ANIMATION STYLES --- */
+        .night {
+            position: fixed;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            filter: blur(0.1vmin);
+            background-image: 
+                radial-gradient(ellipse at top, transparent 0%, var(--dark-color)), 
+                radial-gradient(ellipse at bottom, var(--dark-color), rgba(255, 107, 139, 0.15)), 
+                repeating-linear-gradient(220deg, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 19p, transparent 19px, transparent 22p);
+            z-index: 1;}
+
+        .flowers {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scale(0.85);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 2vmin;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .flowers { transform: translateX(-50%) scale(0.65); margin-bottom: 5vmin; }
+        }
+
+        .flower { position: absolute; bottom: 2vmin; transform-origin: bottom center; z-index: 10; --fl-speed: 0.8s; }
+        .flower--1 { animation: moving-flower-1 4s linear infinite alternate; }
+        .flower--1 .flower__line { height: 65vmin; animation-delay: 0.3s; }
+        .flower--1 .flower__line__leaf--1 { animation: blooming-leaf-right var(--fl-speed) 1.6s backwards; }
+        .flower--1 .flower__line__leaf--2 { animation: blooming-leaf-right var(--fl-speed) 1.4s backwards; }
+        .flower--1 .flower__line__leaf--3 { animation: blooming-leaf-left var(--fl-speed) 1.2s backwards; }
+        .flower--1 .flower__line__leaf--4 { animation: blooming-leaf-left var(--fl-speed) 1s backwards; }
+
+        .flower--2 { left: 50%; transform: rotate(18deg); animation: moving-flower-2 4s linear infinite alternate; }
+        .flower--2 .flower__line { height: 55vmin; animation-delay: 0.6s; }
+        .flower--2 .flower__line__leaf--1 { animation: blooming-leaf-right var(--fl-speed) 1.9s backwards; }
+        .flower--2 .flower__line__leaf--2 { animation: blooming-leaf-right var(--fl-speed) 1.7s backwards; }
+        .flower--2 .flower__line__leaf--3 { animation: blooming-leaf-left var(--fl-speed) 1.5s backwards; }
+        .flower--2 .flower__line__leaf--4 { animation: blooming-leaf-left var(--fl-speed) 1.3s backwards; }
+
+        .flower--3 { left: 50%; transform: rotate(-16deg); animation: moving-flower-3 4s linear infinite alternate; }
+        .flower--3 .flower__line { height: 48vmin; animation-delay: 0.9s; }
+        .flower--3 .flower__line__leaf--1 { animation: blooming-leaf-right var(--fl-speed) 2.5s backwards; }
+        .flower--3 .flower__line__leaf--2 { animation: blooming-leaf-right var(--fl-speed) 2.3s backwards; }
+        .flower--3 .flower__line__leaf--3 { animation: blooming-leaf-left var(--fl-speed) 2.1s backwards; }
+        .flower--3 .flower__line__leaf--4 { animation: blooming-leaf-left var(--fl-speed) 1.9s backwards; }
+
+        .flower__leafs { position: relative; animation: blooming-flower 2s backward; }
+        .flower__leafs--1 { animation-delay: 1.1s; }
+        .flower__leafs--2 { animation-delay: 1.4s; }
+        .flower__leafs--3 { animation-delay: 1.7s; }
+        .flower__leafs::after { content: ""; position: absolute; left: 0; top: 0; transform: translate(-50%, -100%); width: 9vmin; height: 9vmin; background-color: var(--petal-color-1); filter: blur(8vmin); opacity: 0.8; }
+        .flower__leaf { position: absolute; bottom: 0; left: 50%; width: 9vmin; height: 11vmin; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background-image: linear-gradient(to top, var(--petal-color-2), var(--petal-color-1)); transform-origin: bottom center; opacity: 0.95; box-shadow: inset 0 0 1.5vmin rgba(255, 255, 255, 0.4); }
+        .flower__leaf--1 { transform: translate(-10%, 1%) rotate(45deg); }
+        .flower__leaf--2 { transform: translate(-50%, -4%) rotate(135deg); }
+        .flower__leaf--3 { transform: translate(-50%, -4%) rotate(225deg); }
+        .flower__leaf--4 { transform: translate(-50%, 10%) rotate(315deg); }
+        .flower__white-circle { position: absolute; left: -3.5vmin; top: -3vmin; width: 8vmin; height: 4vmin; border-radius: 50%; background-color: #ffffff; box-shadow: 0 0 1vmin rgba(255, 255, 255, 0.8); }
+        .flower__white-circle::after { content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; border-radius: inherit; background-color: var(--center-yellow); }
+        
+        .flower__line { height: 55vmin; width: 1.8vmin; background-image: linear-gradient(to left, rgba(0,0,0,0.3), transparent), linear-gradient(to top, #733918, var(--stem-color)); box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5); animation: grow-flower-tree 4s backwards; border-radius: 1vmin; }
+        .flower__line__leaf { --w: 8vmin; --h: 12vmin; position: absolute; top: 20%; left: 90%; width: var(--w); height: var(--h); border-top-right-radius: 100%; border-bottom-left-radius: 100%; background-image: linear-gradient(to top, #054021, var(--leaf-color)); opacity: 0.9; }
+        .flower__line__leaf--1 { transform: rotate(65deg) rotateY(20deg); }
+        .flower__line__leaf--2 { top: 45%; transform: rotate(65deg) rotateY(20deg); }
+        .flower__line__leaf--3, .flower__line__leaf--4 { border-top-right-radius: 0; border-bottom-left-radius: 0; border-top-left-radius: 100%; border-bottom-right-radius: 100%; left: -420%; }
+        .flower__line__leaf--3 { top: 15%; transform: rotate(-65deg) rotateY(20deg); }
+        .flower__line__leaf--4 { top: 40%; transform: rotate(-65deg) rotateY(20deg); }
+
+        .flower__light { position: absolute; bottom: 0vmin; width: 1vmin; height: 1vmin; background-color: #fff2a3; border-radius: 50%; filter: blur(0.15vmin); animation: light-ans 4s linear infinite alternate; }
+        .flower__light--1 { left: -2vmin; animation-delay: 0.5s; }
+        .flower__light--2 { left: 3vmin; animation-delay: 0.8s; }
+        .flower__light--3 { left: -5vmin; animation-delay: 1.5s; }
+        .flower__light--4 { left: 5vmin; animation-delay: 2s; }
+        .flower__light--5 { left: -1vmin; animation-delay: 2.5s; }
+
+        @keyframes grow-flower-tree { 0% { height: 0; border-radius: 1vmin; } }
+        @keyframes blooming-flower { 0% { transform: scale(0); } }
+        @keyframes blooming-leaf-right { 0% { transform-origin: left; transform: rotate(65deg) rotateY(20deg) scale(0); } }
+        @keyframes blooming-leaf-left { 0% { transform-origin: right; transform: rotate(-65deg) rotateY(20deg) scale(0); } }
+        @keyframes moving-flower-1 { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(3deg); } }
+        @keyframes moving-flower-2 { 0%, 100% { transform: rotate(18deg); } 50% { transform: rotate(14deg); } }
+        @keyframes moving-flower-3 { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(-20deg); } }
+        @keyframes light-ans { 0% { opacity: 0; transform: translateY(0vmin); } 25% { opacity: 1; transform: translateY(-8vmin) translateX(-2vmin); } 50% { opacity: 0.5; transform: translateY(-18vmin) translateX(2vmin); } 75% { opacity: 0.9; transform: translateY(-28vmin) translateX(-2vmin); } 100% { opacity: 0; transform: translateY(-35vmin) translateX(2vmin); } }
+
+        /* --- OVERLAY INTERFACE STYLES --- */
+        .app-overlay {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        /* Aesthetics Glass Buttons */
+        .ui-btn {
+            display: block;
+            width: 100%;
+            padding: 16px 20px;
+            margin: 12px 0;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+        }
+
+        .ui-btn:hover {
+            background: rgba(255, 107, 139, 0.25);
+            border-color: rgba(255, 107, 139, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(241, 66, 108, 0.3);
+            width:100%;
+        }
+
+        .ui-btn-main {
+            font-size: 18px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 107, 139, 0.4), rgba(241, 66, 108, 0.2));
+            border-color: rgba(255, 107, 139, 0.6);
+            box-shadow: 0 0 25px rgba(255, 107, 139, 0.4);
+        }
+
+        .ui-btn-back {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            margin-top: 20px;
+        }
+
+        /* Modal Overlay & Card Fixes */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 3, 3, 0.8);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #modal-overlay.active { display: flex; }
+
+        .modal-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 107, 139, 0.3);
+            border-radius: 20px;
+            width: auto;
+            max-width: auto;
+            max-height: 100vh;
+            overflow: auto;
+            
+            padding: 25px;
+            color: #e2e8f0;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .section-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section-box h3 {
+            color: var(--petal-color-1);
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;overflow-x: auto;
+        }
+
+        .exp-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .formula-box {
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: monospace;overflow-x: auto;
+        }
+        .close-btn-top {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(255, 107, 159, 0.4);
+    color: #fff;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 18px;
+}
+
+.close-btn-top:hover,
+.close-btn:hover {
+    background: rgba(239, 68, 68, 0.35);
+}
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+        th, td { 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    padding: 8px; 
+    text-align: center; 
+    color: #ffffff; /* Text ko clean white dikhane ke liye */
+}
+
+th { 
+    background: rgba(255, 107, 139, 0.4); /* Solid / High Contrast pink background */
+    color: #ffffff;
+    font-weight: 600;
+}
+
+td {
+    background: rgba(255, 255, 255, 0.05); /* Data rows ko dark par visible rakhne ke liye */
+}
+
+
+        .close-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--petal-color-2);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ANIMATED BACKGROUND -->
+    <div class="night"></div>
+    <div class="flowers">
+        <div class="flower flower--1">
+            <div class="flower__leafs flower__leafs--1">
+                <div class="flower__leaf flower__leaf--1"></div>
+                <div class="flower__leaf flower__leaf--2"></div>
+                <div class="flower__leaf flower__leaf--3"></div>
+                <div class="flower__leaf flower__leaf--4"></div>
+                <div class="flower__white-circle"></div>
+                <div class="flower__light flower__light--1"></div>
+                <div class="flower__light flower__light--2"></div>
+                <div class="flower__light flower__light--3"></div>
+                <div class="flower__light flower__light--4"></div>
+                <div class="flower__light flower__light--5"></div>
+            </div>
+            <div class="flower__line">
+                <div class="flower__line__leaf flower__line__leaf--1"></div>
+                <div class="flower__line__leaf flower__line__leaf--2"></div>
+                <div class="flower__line__leaf flower__line__leaf--3"></div>
+                <div class="flower__line__leaf flower__line__leaf--4"></div>
+            </div>
+        </div>
+        <div class="flower flower--2">
+            <div class="flower__leafs flower__leafs--2">
+                <div class="flower__leaf flower__leaf--1"></div>
+                <div class="flower__leaf flower__leaf--2"></div>
+                <div class="flower__leaf flower__leaf--3"></div>
+                <div class="flower__leaf flower__leaf--4"></div>
+                <div class="flower__white-circle"></div>
+            </div>
+            <div class="flower__line">
+                <div class="flower__line__leaf flower__line__leaf--1"></div>
+                <div class="flower__line__leaf flower__line__leaf--2"></div>
+                <div class="flower__line__leaf flower__line__leaf--3"></div>
+                <div class="flower__line__leaf flower__line__leaf--4"></div>
+            </div>
+        </div>
+        <div class="flower flower--3">
+            <div class="flower__leafs flower__leafs--3">
+                <div class="flower__leaf flower__leaf--1"></div>
+                <div class="flower__leaf flower__leaf--2"></div>
+                <div class="flower__leaf flower__leaf--3"></div>
+                <div class="flower__leaf flower__leaf--4"></div>
+                <div class="flower__white-circle"></div>
+            </div>
+            <div class="flower__line">
+                <div class="flower__line__leaf flower__line__leaf--1"></div>
+                <div class="flower__line__leaf flower__line__leaf--2"></div>
+                <div class="flower__line__leaf flower__line__leaf--3"></div>
+                <div class="flower__line__leaf flower__line__leaf--4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI OVERLAY -->
+    <div class="app-overlay" id="app-container">
+        <!-- JS se dynamically render hoga -->
+    </div>
+
+    <!-- PRACTICAL DETAIL MODAL -->
+    <div id="modal-overlay">
+        <div class="modal-box">
+            <div id="modal-content"></div>
+            <button class="close-btn" onclick="closeModal()">CLOSE PRACTICAL</button>
+        </div>
+        
+    </div>
+
+    <script>
+        // TERA EXISTING 2000 LINES WALA ARRAY HERE
+        const physicsData = [
+
+            // Baaki saare practical objects yaha aayenge...
+            
+            
+          {
+            id: "searles-apparatus",
+            branch: "thermal",
+            title: "Thermal Conductivity by Searle's Apparatus",
+            aim: "To find the coefficient of thermal conductivity of a good conductor (copper) using Searle's conductivity apparatus.",
+            apparatus: ["Searle's apparatus", "Four thermometers", "Beaker", "Steam boiler", "Heater", "Stopwatch"],
+            theory: "The ability of a material to conduct heat through them is known as thermal conductivity.",
+            formula: "K = (m * s * (T4 - T3) * d) / (A * (T1 - T2) * t)",
+            circuitSvg: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380" width="100%" height="280">
+  <defs>
+    <!-- CSS Animations inside SVG -->
+    <style>
+      .weight-anim {
+        animation: stretch 3s infinite ease-in-out alternate;
+      }
+      .bubble-anim {
+        animation: balance 3s infinite ease-in-out alternate;
+      }
+      .wire-stretch {
+        animation: wireLengthen 3s infinite ease-in-out alternate;
+      }
+      
+      @keyframes stretch {
+        0% { transform: translateY(0px); }
+        100% { transform: translateY(6px); }
+      }
+      @keyframes wireLengthen {
+        0% { height: 170px; }
+        100% { height: 176px; }
+      }
+      @keyframes balance {
+        0% { transform: translateX(0px); }
+        100% { transform: translateX(8px); }
+      }
+    </style>
+    
+    <!-- Metallic Gradient -->
+    <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8" />
+      <stop offset="50%" stop-color="#cbd5e1" />
+      <stop offset="100%" stop-color="#64748b" />
+    </linearGradient>
+
+    <!-- Brass Gradient -->
+    <linearGradient id="brass" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d97706" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Box -->
+  <rect width="400" height="380" rx="12" fill="#0f172a"/>
+
+  <!-- Top Rigid Support Frame -->
+  <rect x="100" y="25" width="200" height="15" rx="4" fill="url(#metal)"/>
+  <text x="200" y="18" fill="#94a3b8" font-size="11" font-weight="bold" text-anchor="middle">Rigid Ceiling Support</text>
+
+  <!-- Left Wire (Reference/Dummy Wire) -->
+  <line x1="150" y1="40" x2="150" y2="210" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="105" y="120" fill="#cbd5e1" font-size="10">Reference Wire</text>
+
+  <!-- Right Wire (Experimental Wire with Stretch Animation) -->
+  <line class="wire-stretch" x1="250" y1="40" x2="250" y2="210" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="120" fill="#f59e0b" font-size="10">Test Wire (Stretching)</text>
+
+  <!-- Left Reference Frame/Block -->
+  <rect x="140" y="210" width="20" height="35" rx="2" fill="url(#brass)"/>
+
+  <!-- Right Micrometer Frame Block (Moves with weight) -->
+  <g class="weight-anim">
+    <!-- Right Block -->
+    <rect x="240" y="210" width="20" height="35" rx="2" fill="url(#brass)"/>
+
+    <!-- Spherometer / Micrometer Screw Assembly -->
+    <rect x="246" y="185" width="8" height="25" fill="url(#metal)"/>
+    <circle cx="250" cy="180" r="10" fill="url(#metal)"/>
+    <text x="280" y="195" fill="#38bdf8" font-size="9">Micrometer Screw</text>
+
+    <!-- Hanger & Slotted Weights -->
+    <line x1="250" y1="245" x2="250" y2="280" stroke="#94a3b8" stroke-width="2"/>
+    
+    <!-- Weight Discs -->
+    <rect x="230" y="280" width="40" height="10" rx="2" fill="url(#metal)"/>
+    <rect x="232" y="292" width="36" height="10" rx="2" fill="url(#metal)"/>
+    <rect x="234" y="304" width="32" height="10" rx="2" fill="url(#metal)"/>
+    
+    <!-- Hanger Base -->
+    <path d="M 240 314 L 260 314 L 250 328 Z" fill="#64748b"/>
+    <text x="250" y="348" fill="#e2e8f0" font-size="10" font-weight="bold" text-anchor="middle">Load (M + M')</text>
+  </g>
+
+  <!-- Left Constant Dead Weight (For Keeping Wire Taut) -->
+  <line x1="150" y1="245" x2="150" y2="280" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="135" y="280" width="30" height="25" rx="3" fill="#475569"/>
+  <text x="150" y="320" fill="#94a3b8" font-size="9" text-anchor="middle">Dead Load</text>
+
+  <!-- Spirit Level Connecting Bar -->
+  <rect x="145" y="222" width="110" height="10" rx="4" fill="#334155" stroke="#94a3b8" stroke-width="1"/>
+  
+  <!-- Spirit Level Glass Tube -->
+  <rect x="180" y="224" width="40" height="6" rx="3" fill="#22c55e" opacity="0.8"/>
+  
+  <!-- Air Bubble (Animated) -->
+  <circle class="bubble-anim" cx="195" cy="227" r="2.5" fill="#ffffff"/>
+  <text x="200" y="250" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="middle">Spirit Level</text>
+
+</svg>
+`
+,
+procedure: `
+* **Initial Setup & Measurements:**
+  • Measure the diameter (d) of the copper rod at multiple places using a Vernier Calliper to find its mean diameter.
+  • Measure the distance (L) between the centers of the two steam-chamber thermometer slots (T1 & T2).
+
+* **Water & Steam Connections:**
+  • Connect the steam generator to the steam chamber at one end of the copper rod.
+  • Connect a steady supply of cold water to the cooling tube at the other end. Ensure water flows from lower inlet to upper outlet to avoid air bubbles.
+
+* **Reaching Steady State:**
+  • Start heating the water in the steam generator to pass steam through the steam chamber.
+  • Adjust the water flow through the cooling jacket so that the temperature difference between the outlet and inlet (T4 - T3) remains around 5°C to 10°C.
+  • Wait for 15–20 minutes until all thermometer readings (T1, T2, T3, T4) become constant (Steady State achieved).
+
+* **Taking Observations:**
+  • Record the steady-state temperature readings of all four thermometers: T1 and T2 (hot end) and T3 and T4 (cold water end).
+  • Collect the water flowing out from the cooling jacket into a clean, dry measuring cylinder for a fixed time interval (t = 300 seconds).
+  • Measure the volume (or mass 'm') of the collected water.
+
+* **Calculations:**
+  • Repeat the observations 2 to 3 times by slightly altering the water flow rate.
+  • Calculate the thermal conductivity (K) using the formula: K = (m × L × (T4 - T3)) / (A × (T1 - T2) × t).
+`
+,
+            tables: [
+              {
+                heading: "Diameter of Rod",
+                headers: ["No.", "MSR", "VSR", "Total Reading (cm)"],
+                rows: [
+                  ["1", "3.8", "0.002", "3.802"],
+                  ["2", "3.8", "0.002", "3.802"],
+                  ["3", "3.8", "0.003", "3.803"]
+                ]
+              },
+              {
+                heading: "Temperature & Water Collection",
+                headers: ["No.", "T1 (°C)", "T2 (°C)", "T3 (°C)", "T4 (°C)", "Time (s)", "Vol (ml)", "Mass (g)", "K Value"],
+                rows: [
+                  ["1", "84", "76.5", "35.5", "63", "300", "39", "39", "0.05"],
+                  ["2", "76", "63", "27", "53", "300", "118", "118", "1.26"],
+                  ["3", "81", "72", "28", "65", "300", "36", "36", "0.79"]
+                ]
+              }
+            ],
+            calculations: `
+**Step 1: Formula Used for Thermal Conductivity (K)**
+
+The coefficient of thermal conductivity is given by:
+
+\\[ K = \\frac{m \\cdot L \\cdot (T_4 - T_3)}{A \\cdot (T_1 - T_2) \\cdot t} \\]
+
+Where:
+* \\( m \\) = Mass of water collected in time \\( t \\) (in grams)
+* \\( L \\) = Distance between steam chambers / thermometers (\\(\\text{cm}\\))
+* \\( A \\) = Cross-sectional area of the rod = \\(\\frac{\\pi \\cdot d^2}{4}\\) (\\(\\text{cm}^2\\))
+* \\( d \\) = Mean diameter of the rod = \\(3.8023 \\text{ cm}\\)
+* \\( T_1, T_2 \\) = Temperatures of hot end thermometers (\\(^\\circ\\text{C}\\))
+* \\( T_3, T_4 \\) = Temperatures of cold water inlet & outlet (\\(^\\circ\\text{C}\\))
+* \\( t \\) = Time for water collection = \\(300 \\text{ seconds}\\)
+
+---
+
+**Step 2: Area Calculation of Metal Rod (A)**
+
+Mean Diameter \\( d \\):
+\\[ d_{mean} = \\frac{3.802 + 3.802 + 3.803}{3} = 3.8023 \\text{ cm} \\]
+
+Cross-sectional Area \\( A \\):
+\\[ A = \\frac{\\pi \\cdot d^2}{4} = \\frac{3.1416 \\times (3.8023)^2}{4} = 11.355 \\text{ cm}^2 \\]
+
+---
+
+**Step 3: Trial-wise Thermal Conductivity (K) Calculation**
+
+*(Assuming distance between steam points \\( L = 10 \\text{ cm}\\))*
+
+* **Observation 1:**
+  \\[ K_1 = \\frac{39 \\times 10 \\times (63 - 35.5)}{11.355 \\times (84 - 76.5) \\times 300} \\]
+  \\[ K_1 = \\frac{390 \\times 27.5}{11.355 \\times 7.5 \\times 300} = \\frac{10725}{25548.75} = 0.420 \\text{ cal/s}\\cdot\\text{cm}\\cdot^\\circ\\text{C} \\]
+
+* **Observation 2:**
+  \\[ K_2 = \\frac{118 \\times 10 \\times (53 - 27)}{11.355 \\times (76 - 63) \\times 300} \\]
+  \\[ K_2 = \\frac{1180 \\times 26}{11.355 \\times 13 \\times 300} = \\frac{30680}{44284.5} = 0.693 \\text{ cal/s}\\cdot\\text{cm}\\cdot^\\circ\\text{C} \\]
+
+* **Observation 3:**
+  \\[ K_3 = \\frac{36 \\times 10 \\times (65 - 28)}{11.355 \\times (81 - 72) \\times 300} \\]
+  \\[ K_3 = \\frac{360 \\times 37}{11.355 \\times 9 \\times 300} = \\frac{13320}{30658.5} = 0.434 \\text{ cal/s}\\cdot\\text{cm}\\cdot^\\circ\\text{C} \\]
+
+---
+
+**Step 4: Mean Value of Coefficient of Thermal Conductivity (K_mean)**
+
+\\[ K_{mean} = \\frac{K_1 + K_2 + K_3}{3} \\]
+\\[ K_{mean} = \\frac{0.420 + 0.693 + 0.434}{3} = \\frac{1.547}{3} = 0.516 \\text{ cal/s}\\cdot\\text{cm}\\cdot^\\circ\\text{C} \\]
+
+---
+
+**Step 5: Percentage Error Calculation**
+
+Standard value of Thermal Conductivity for Copper (\\(K_{std}\\)) = \\(0.90 \\text{ cal/s}\\cdot\\text{cm}\\cdot^\\circ\\text{C}\\)
+
+\\[ \\text{Percentage Error} = \\left| \\frac{K_{std} - K_{mean}}{K_{std}} \\right| \\times 100 \\]
+\\[ \\text{Percentage Error} = \\left| \\frac{0.90 - 0.516}{0.90} \\right| \\times 100 = \\frac{0.384}{0.90} \\times 100 = 42.67\\% \\]
+`
+,
+            precautions: [
+              "Record temperature readings only after steady state is reached.",
+              "Ensure no water leakage at cork joints where thermometers pass."
+            ]
+          },  
+ {
+  id: "lees-and-charlton",
+  branch: "thermal",
+  title: "Lee's and Charlton's Method (Thermal Conductivity)",
+  aim: "To determine the coefficient of thermal conductivity of bad conductor by Lee and Charlton's method.",
+  apparatus: [
+    "Lee and Charlton's apparatus",
+    "Circular disc of a bad conductor",
+    "Two thermometers",
+    "Steam generator",
+    "Stand and threads",
+    "Stopwatch",
+    "Screw gauge",
+    "Vernier caliper",
+    "Balance"
+  ],circuitSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 340" width="100%" height="280"><defs><linearGradient id="metallicGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#475569"/><stop offset="50%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient><linearGradient id="steamGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0284c7"/><stop offset="50%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#0369a1"/></linearGradient><linearGradient id="badConductorGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b45309"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#78350f"/></linearGradient></defs><rect width="420" height="340" rx="12" fill="#090d16"/><polygon points="230,270 330,270 340,285 220,285" fill="#1e293b" stroke="#475569" stroke-width="1.5"/><line x1="280" y1="50" x2="280" y2="270" stroke="#94a3b8" stroke-width="4"/><line x1="180" y1="90" x2="280" y2="90" stroke="#64748b" stroke-width="2.5"/><line x1="180" y1="125" x2="280" y2="125" stroke="#64748b" stroke-width="2.5"/><line x1="180" y1="170" x2="280" y2="170" stroke="#64748b" stroke-width="2.5"/><line x1="180" y1="90" x2="150" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2,2"/><line x1="180" y1="90" x2="210" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2,2"/><text x="290" y="100" fill="#94a3b8" font-size="10">Thread</text><text x="290" y="130" fill="#94a3b8" font-size="10">Stand</text><rect x="150" y="160" width="60" height="35" rx="3" fill="url(#steamGrad)" stroke="#7dd3fc" stroke-width="1"/><text x="180" y="182" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">A</text><path d="M 120 170 L 150 170" stroke="#38bdf8" stroke-width="3.5" fill="none"/><text x="100" y="173" fill="#38bdf8" font-size="9" font-weight="bold">Steam In</text><path d="M 210 170 L 240 170" stroke="#38bdf8" stroke-width="3.5" fill="none"/><text x="245" y="173" fill="#38bdf8" font-size="9" font-weight="bold">Steam Out</text><rect x="150" y="195" width="60" height="10" rx="1" fill="url(#badConductorGrad)" stroke="#fbbf24" stroke-width="0.8"/><line x1="100" y1="200" x2="150" y2="200" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2"/><text x="50" y="203" fill="#fbbf24" font-size="9" font-weight="bold">Insulator (Disc)</text><rect x="150" y="205" width="60" height="35" rx="3" fill="url(#metallicGrad)" stroke="#cbd5e1" stroke-width="1"/><text x="180" y="227" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">B</text><line x1="195" y1="177" x2="235" y2="150" stroke="#ef4444" stroke-width="2"/><circle cx="237" cy="148" r="3" fill="#ef4444"/><text x="245" y="152" fill="#fca5a5" font-size="10" font-weight="bold">T₁</text><line x1="195" y1="222" x2="235" y2="240" stroke="#ef4444" stroke-width="2"/><circle cx="237" cy="241" r="3" fill="#ef4444"/><text x="245" y="245" fill="#fca5a5" font-size="10" font-weight="bold">T₂</text><text x="210" y="315" fill="#f8fafc" font-size="11" font-weight="bold" text-anchor="middle">Lee's and Charlton's Apparatus Setup</text></svg>`,
+ 
+  theory: "The coefficient of thermal conductivity of a bad conductor is determined by measuring the rate of heat flow through a thin specimen under steady-state conditions and observing its subsequent rate of cooling.",
+  formula: "K = (M * s * (dT/dt) * d) / (A * (T1 - T2))",
+  tables: [
+    {
+      heading: "Observation Table for Thickness (Screw Gauge L.C = 0.01 mm)",
+      headers: ["S.No.", "MSR (mm)", "CSR (mm)", "Total Thickness (mm)"],
+      rows: [
+        ["1", "3", "0.02", "3.02"],
+        ["2", "3", "0.06", "3.06"],
+        ["3", "3", "0.04", "3.04"]
+      ]
+    },
+    {
+      heading: "Steady State Temperature Table",
+      headers: ["Condition", "T1 (A) (°C)", "T2 (B) (°C)", "T1 - T2 (°C)"],
+      rows: [
+        ["Steady (low)", "75", "76", "-"],
+        ["Reversed (up)", "98", "80", "-"],
+        ["Mean", "86.5", "78", "8.5"]
+      ]
+    },
+    {
+      heading: "Observation Table for Cooling Curve of Metal Slab B",
+      headers: ["S.No.", "Time t (min / sec)", "Temp of B (°C)"],
+      rows: [
+        ["1", "0 min = 0 sec", "83.5"],
+        ["2", "0.5' = 30 sec", "83.0"],
+        ["3", "1.0' = 60 sec", "81.0"],
+        ["4", "1.5' = 90 sec", "79.5"],
+        ["5", "2.0' = 120 sec", "78.0"],
+        ["6", "2.5' = 150 sec", "76.5"],
+        ["7", "3.0' = 180 sec", "75.5"],
+        ["8", "3.5' = 210 sec", "74.5"],
+        ["9", "4.0' = 240 sec", "73.5"],
+        ["10", "4.5' = 270 sec", "72.5"],
+        ["11", "5.0' = 300 sec", "71.5"],
+        ["12", "5.5' = 330 sec", "70.5"],
+        ["13", "6.0' = 360 sec", "69.5"],
+        ["14", "6.5' = 390 sec", "68.5"],
+        ["15", "7.0' = 420 sec", "68.0"],
+        ["16", "7.5' = 450 sec", "67.0"],
+        ["17", "8.0' = 480 sec", "66.0"],
+        ["18", "8.5' = 510 sec", "65.5"],
+        ["19", "9.0' = 540 sec", "64.5"],
+        ["20", "9.5' = 570 sec", "64.0"],
+        ["21", "10.0' = 600 sec", "63.05"]
+      ]
+    }
+  ],
+  calculations: `
+**Step 1: Formula Used for Thermal Conductivity (K)**
+
+The coefficient of thermal conductivity of a bad conductor is given by:
+
+\\[ K = \\frac{M \\cdot s \\cdot d}{A(T_1 - T_2)} \\left( \\frac{dT}{dt} \\right)_{T_2} \\]
+
+Where:
+* \\( M \\) = Mass of metallic slab B = \\(1020 \\text{ g}\\)
+* \\( s \\) = Specific heat capacity of material of slab B = \\(0.11 \\text{ cal/g}\\cdot^\\circ\\text{C}\\)
+* \\( d \\) = Mean thickness of the bad conductor disc = \\(0.304 \\text{ cm}\\)
+* \\( A \\) = Cross-sectional area of disc = \\(\\pi r^2 = 3.14 \\times (5.8)^2 = 105.62 \\text{ cm}^2\\)
+* \\( T_1 - T_2 \\) = Temperature difference across disc in steady state = \\(86.5 - 78 = 8.5 \\text{ } ^\\circ\\text{C}\\)
+* \\( \\left( \\frac{dT}{dt} \\right)_{T_2} \\) = Rate of cooling of slab B at steady temperature \\( T_2 \\)
+
+---
+
+**Step 2: Slope Determination from Cooling Curve**
+
+From the graph between temperature and time:
+
+\\[ \\text{Slope } \\left( \\frac{dT}{dt} \\right) = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{82 - 73}{570 - 370} = \\frac{9}{200} = 0.045 \\text{ } ^\\circ\\text{C/s} \\]
+
+---
+
+**Step 3: Value Calculation**
+
+\\[ K = \\frac{1020 \\times 0.11 \\times 0.304 \\times 0.045}{105.62 \\times 8.5} = \\frac{1.5367}{897.77} = 1.70 \\times 10^{-4} \\text{ cal}\\cdot\\text{s}^{-1}\\cdot\\text{cm}^{-1}\\cdot^\\circ\\text{C}^{-1} \\]
+
+---
+
+**Step 4: Percentage Error Calculation**
+
+\\[ \\% \\text{ Error} = \\frac{1.9 \\times 10^{-4} - 1.70 \\times 10^{-4}}{1.70 \\times 10^{-4}} \\times 100 = 11.7\\% \\]
+`,
+  result: "The coefficient of thermal conductivity of the given bad conductor is 1.70 × 10⁻⁴ cal s⁻¹ cm⁻¹ °C⁻¹ with a percentage error of 11.7%.",
+  precautions: [
+    "The temperature in the thermometers should be recorded only after the steady state has been reached.",
+    "The rod/disc setup should be thermally insulated to avoid loss of heat by radiation and air convection."
+  ]
+},
+{
+  "id": "refractive-index-prism",
+  "branch": "optics",
+  "title": "Refractive Index of Prism using Pins",
+  "aim": "To determine the refractive index of a given prism using the pins and plot a graph to find the angle of minimum deviation.",
+  "apparatus": [
+    "Glass prism",
+    "Drawing board",
+    "Paper",
+    "Pins",
+    "Scales",
+    "Pencil",
+    "Protractor"
+  ],
+  "theory": "Angle of Deviation (δ): The angle between the emergent ray and the incident ray. In other words, it is the angle through which incident ray turns while passing through prism.\n\nFormula: δ = (i - r1) + (e - r2) = i + e - (r1 + r2) = i + e - A\n\nThe minimum deviation occurs when the angle of incidence is equal to the angle of emergence (i.e., i = e, δ = δmin = 2i - A).\nUsing Snell's Law: μ = sin(i) / sin(r) = sin((A + δmin) / 2) / sin(A / 2).",
+  "formula": "\\mu = \\frac{\\sin\\left(\\frac{A + \\delta_{min}}{2}\\right)}{\\sin\\left(\\frac{A}{2}\\right)}","theory": "Angle of Deviation (\\(\\delta\\)): The angle between the emergent ray and the incident ray.\n\n\\[ \\delta = i + e - A \\]\n\nAt minimum deviation (\\(\\delta = \\delta_{min}\\)), \\(i = e\\) and \\(r_1 = r_2 = \\frac{A}{2}\\).\nUsing Snell's Law:\n\\[ \\mu = \\frac{\\sin\\left(\\frac{A + \\delta_{min}}{2}\\right)}{\\sin\\left(\\frac{A}{2}\\right)} \\]",
+"formula": "\\[ \\mu = \\frac{\\sin\\left(\\frac{A + \\delta_{min}}{2}\\right)}{\\sin\\left(\\frac{A}{2}\\right)} \\]"
+,
+ "circuitSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 500 320\" width=\"100%\" height=\"280\"><rect width=\"500\" height=\"320\" rx=\"12\" fill=\"#090d16\"/><polygon points=\"250,60 130,250 370,250\" fill=\"#1e293b\" stroke=\"#38bdf8\" stroke-width=\"2\"/><text x=\"250\" y=\"50\" fill=\"#ffffff\" font-size=\"14\" font-weight=\"bold\" text-anchor=\"middle\">A</text><text x=\"115\" y=\"265\" fill=\"#ffffff\" font-size=\"13\" font-weight=\"bold\">B</text><text x=\"375\" y=\"265\" fill=\"#ffffff\" font-size=\"13\" font-weight=\"bold\">C</text><line x1=\"60\" y1=\"200\" x2=\"180\" y2=\"170\" stroke=\"#f59e0b\" stroke-width=\"2\"/><circle cx=\"90\" cy=\"192.5\" r=\"4\" fill=\"#ef4444\"/><text x=\"90\" y=\"215\" fill=\"#fca5a5\" font-size=\"10\" text-anchor=\"middle\">P1</text><circle cx=\"130\" cy=\"182.5\" r=\"4\" fill=\"#ef4444\"/><text x=\"130\" y=\"205\" fill=\"#fca5a5\" font-size=\"10\" text-anchor=\"middle\">P2</text><line x1=\"180\" y1=\"170\" x2=\"320\" y2=\"170\" stroke=\"#f59e0b\" stroke-width=\"2\"/><line x1=\"320\" y1=\"170\" x2=\"440\" y2=\"210\" stroke=\"#f59e0b\" stroke-width=\"2\"/><circle cx=\"365\" cy=\"185\" r=\"4\" fill=\"#ef4444\"/><text x=\"365\" y=\"205\" fill=\"#fca5a5\" font-size=\"10\" text-anchor=\"middle\">P3</text><circle cx=\"405\" cy=\"198.3\" r=\"4\" fill=\"#ef4444\"/><text x=\"405\" y=\"218\" fill=\"#fca5a5\" font-size=\"10\" text-anchor=\"middle\">P4</text><line x1=\"140\" y1=\"115\" x2=\"215\" y2=\"215\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"4,4\"/><line x1=\"180\" y1=\"170\" x2=\"280\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><line x1=\"320\" y1=\"170\" x2=\"245\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><text x=\"265\" y=\"135\" fill=\"#38bdf8\" font-size=\"12\" font-weight=\"bold\">δ</text><text x=\"250\" y=\"300\" fill=\"#f8fafc\" font-size=\"12\" font-weight=\"bold\" text-anchor=\"middle\">Prism Ray Diagram with Pin Placement</text></svg>",
+    
+  "tables": [
+    {
+      "heading": "Table 1: Observation Table (Angle of Incidence vs Angle of Deviation)",
+      "headers": ["S.No.", "Angle of incidence (i)", "Angle of deviation (δ)"],
+      "rows": [
+        ["1", "30°", "45°"],
+        ["2", "35°", "40°"],
+        ["3", "40°", "38°"],
+        ["4", "45°", "43°"]
+      ]
+    }
+  ],
+  "calculations": "\n**Observation Data:**\n* Angle of prism (\\(A\\)) = \\(60^\\circ\\)\n* Mean / Minimum Deviation (\\(\\delta_{min}\\)) = \\(41.5^\\circ\\)\n\n---\n\n**Step 1: Formula Used**\n\n\\[ \\mu = \\frac{\\sin\\left(\\frac{A + \\delta_{min}}{2}\\right)}{\\sin\\left(\\frac{A}{2}\\right)} \\]\n\n---\n\n**Step 2: Calculation**\n\n\\[ \\mu = \\frac{\\sin\\left(\\frac{60^\\circ + 41.5^\\circ}{2}\\right)}{\\sin\\left(\\frac{60^\\circ}{2}\\right)} = \\frac{\\sin(50.75^\\circ)}{\\sin(30^\\circ)} = \\frac{0.7744}{0.5} = 1.5488 \\approx 1.55 \\]\n---\n\n** : C**\n\n",
+
+  "precautions": [
+    "The pins should be fixed vertically.",
+    "The distance between the two pins should not be less than 10 mm.",
+    "The same angle of prism should be used for all observations."
+  ],
+  "result": "The refractive index of the given glass prism is 1.55.",
+   
+}
+
+
+          ,{
+            id: "stefans-law",
+            branch: "electrical",
+            title: "Verification of Stefan's Law",
+            aim: "To verify Stefan's law by electrical method.",
+            apparatus: ["Digital Voltmeter", "Digital Ammeter", "0-6V DC Regulated Power Supply", "Electric Bulb", "Connecting Wires"],
+            procedure: `
+* **Circuit Assembly:**
+  • Connect the electric bulb in series with the 0-6V DC Regulated Power Supply and the Digital Ammeter.
+  • Connect the Digital Voltmeter in parallel across the terminals of the electric bulb.
+
+* **Room Temperature Resistance (R0):**
+  • Keep the DC power supply at a very low initial voltage (just enough to get a tiny current reading without glowing the filament).
+  • Record the initial small voltage (V0) and current (I0) to calculate the cold resistance of the filament at room temperature (T0 = 300 K): R0 = V0 / I0.
+
+* **Taking Observations for Filament Glowing:**
+  • Gradually increase the output voltage of the DC power supply step-by-step so that the bulb filament starts glowing bright.
+  • For each step, note down the steady readings of both Digital Voltmeter (V) and Digital Ammeter (I).
+
+* **Determining Resistance & Temperature:**
+  • Calculate the hot resistance (Rt) of the filament for each observation set using Rt = V / I.
+  • Determine the ratio (Rt / R0) and find the corresponding absolute temperature (T) of the filament using standard resistance-temperature reference charts or formulas.
+  • Calculate the total power radiated by the filament using P = V × I.
+
+* **Graphical Verification:**
+  • Plot a graph taking log10(P) on the Y-axis and log10(T) [or log10(Rt/R0)] on the X-axis.
+  • Calculate the slope 'a' of the straight line using a = ΔY / ΔX.
+  • Verify if the calculated slope value is close to 4, which confirms Stefan's Law (P ∝ T⁴).
+`
+,
+            theory: "According to Stefan's Law, total energy radiated per second per unit surface area of a black body is directly proportional to fourth power of absolute temperature (E = σT⁴). Therefore, log10(P) vs log10(T) yields a linear slope of 4.",
+            formula: "log10(P) = a * log10(T) + C \nWhere Slope (a) = Δ(log10 P) / Δ(log10 T) ≈ 4",
+            circuitSvg: `
+                <svg viewBox="0 0 400 240" width="100%" height="220" xmlns="http://www.w3.org/2000/svg" style="background:#0f172a;">
+                    <!-- Title -->
+                    <text x="110" y="20" fill="#38bdf8" font-size="12" font-weight="bold">Exact Plotted Graph: log10(P) vs log10(R)</text>
+                    
+                    <!-- Axes -->
+                    <line x1="50" y1="200" x2="370" y2="200" stroke="#f8fafc" stroke-width="2"/> <!-- X Axis -->
+                    <line x1="50" y1="200" x2="50" y2="30" stroke="#f8fafc" stroke-width="2"/>  <!-- Y Axis -->
+                    
+                    <!-- Axis Labels -->
+                    <text x="180" y="232" fill="#cbd5e1" font-size="11">log10(R) [X-axis] ➔</text>
+                    <text x="12" y="125" fill="#cbd5e1" font-size="11" transform="rotate(-90 12,125)">log10(P) [Y-axis] ➔</text>
+                    
+                    <!-- Grid Lines -->
+                    <line x1="50" y1="160" x2="360" y2="160" stroke="#334155" stroke-dasharray="3"/>
+                    <line x1="50" y1="120" x2="360" y2="120" stroke="#334155" stroke-dasharray="3"/>
+                    <line x1="50" y1="80" x2="360" y2="80" stroke="#334155" stroke-dasharray="3"/>
+                    <line x1="50" y1="40" x2="360" y2="40" stroke="#334155" stroke-dasharray="3"/>
+                    
+                    <line x1="120" y1="200" x2="120" y2="30" stroke="#334155" stroke-dasharray="3"/>
+                    <line x1="190" y1="200" x2="190" y2="30" stroke="#334155" stroke-dasharray="3"/>
+                    <line x1="260" y1="200" x2="260" y2="30" stroke="#334155" stroke-dasharray="3"/>
+                    <line x1="330" y1="200" x2="330" y2="30" stroke="#334155" stroke-dasharray="3"/>
+
+                    <!-- X-Axis Scale Ticks -->
+                    <text x="45" y="215" fill="#94a3b8" font-size="9">-2.4</text>
+                    <text x="115" y="215" fill="#94a3b8" font-size="9">-2.3</text>
+                    <text x="185" y="215" fill="#94a3b8" font-size="9">-2.2</text>
+                    <text x="255" y="215" fill="#94a3b8" font-size="9">-2.1</text>
+                    <text x="325" y="215" fill="#94a3b8" font-size="9">-2.0</text>
+
+                    <!-- Y-Axis Scale Ticks -->
+                    <text x="22" y="163" fill="#94a3b8" font-size="9">1.5</text>
+                    <text x="22" y="123" fill="#94a3b8" font-size="9">2.0</text>
+                    <text x="22" y="83" fill="#94a3b8" font-size="9">2.5</text>
+                    <text x="22" y="43" fill="#94a3b8" font-size="9">3.0</text>
+
+                    <!-- Best Fit Straight Line Plotted from Readings -->
+                    <line x1="58" y1="165" x2="335" y2="34" stroke="#38bdf8" stroke-width="2.5"/>
+
+                    <!-- Actual Observation Data Points (X: log R, Y: log P) -->
+                    <!-- Pt1 (-2.38, 1.47) --> <circle cx="64" cy="162" r="4" fill="#ef4444"/>
+                    <!-- Pt2 (-2.20, 2.07) --> <circle cx="190" cy="114" r="4" fill="#ef4444"/>
+                    <!-- Pt3 (-2.14, 2.38) --> <circle cx="232" cy="89" r="4" fill="#ef4444"/>
+                    <!-- Pt4 (-2.09, 2.62) --> <circle cx="267" cy="70" r="4" fill="#ef4444"/>
+                    <!-- Pt5 (-2.05, 2.79) --> <circle cx="295" cy="56" r="4" fill="#ef4444"/>
+                    <!-- Pt6 (-2.00, 2.92) --> <circle cx="330" cy="46" r="4" fill="#ef4444"/>
+                    <!-- Pt7 (-1.99, 3.07) --> <circle cx="337" cy="34" r="4" fill="#ef4444"/>
+
+                    <!-- Triangle for Slope Calculation (Pt2 to Pt6) -->
+                    <line x1="190" y1="114" x2="330" y2="114" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4"/>
+                    <line x1="330" y1="114" x2="330" y2="46" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4"/>
+                    <text x="335" y="85" fill="#f59e0b" font-size="10" font-weight="bold">ΔY = 0.85</text>
+                    <text x="235" y="130" fill="#f59e0b" font-size="10" font-weight="bold">ΔX = 0.20</text>
+                </svg>
+                <svg viewBox="0 0 500 240" width="100%" height="220" xmlns="http://www.w3.org/2000/svg" style="background:#0f172a;">
+    <text x="140" y="20" fill="#38bdf8" font-size="13" font-weight="bold">Experimental Setup for Stefan's Law</text>
+    
+    <!-- DC Power Supply -->
+    <rect x="20" y="80" width="60" height="70" fill="#1e293b" stroke="#38bdf8" stroke-width="2" rx="4"/>
+    <text x="32" y="110" fill="#f8fafc" font-size="10" font-weight="bold">DC</text>
+    <text x="26" y="125" fill="#f8fafc" font-size="10" font-weight="bold">Supply</text>
+    <circle cx="35" cy="138" r="3" fill="#ef4444"/>
+    <circle cx="65" cy="138" r="3" fill="#64748b"/>
+    
+    <!-- Ammeter (Series) -->
+    <circle cx="160" cy="50" r="20" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+    <text x="154" y="55" fill="#f8fafc" font-size="14" font-weight="bold">A</text>
+    
+    <!-- Rheostat / Variable Resistance -->
+    <g transform="translate(240, 40)">
+        <path d="M 0 10 L 5 3 L 15 17 L 25 3 L 35 17 L 45 3 L 55 17 L 60 10" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+        <!-- Rheostat Arrow -->
+        <line x1="30" y1="-10" x2="30" y2="5" stroke="#38bdf8" stroke-width="2"/>
+        <path d="M 26 2 L 30 8 L 34 2" fill="#38bdf8"/>
+        <text x="12" y="-14" fill="#cbd5e1" font-size="10">Rheostat</text>
+    </g>
+
+    <!-- Electric Bulb (Filament) -->
+    <g transform="translate(380, 80)">
+        <circle cx="20" cy="20" r="22" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+        <!-- Filament -->
+        <path d="M 12 30 L 16 12 Q 20 5 24 12 L 28 30" fill="none" stroke="#f59e0b" stroke-width="2"/>
+        <!-- Glow Rays -->
+        <line x1="20" y1="-7" x2="20" y2="-1" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="-3" y1="3" x2="2" y2="7" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="43" y1="3" x2="38" y2="7" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="-7" y1="20" x2="-1" y2="20" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="47" y1="20" x2="41" y2="20" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="-5" y="58" fill="#cbd5e1" font-size="10">Electric Bulb</text>
+    </g>
+
+    <!-- Voltmeter (Parallel to Bulb) -->
+    <circle cx="400" cy="190" r="20" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+    <text x="394" y="195" fill="#f8fafc" font-size="14" font-weight="bold">V</text>
+
+    <!-- Wiring / Connections -->
+    <!-- Positive line: Supply -> Ammeter -> Rheostat -> Bulb -->
+    <line x1="35" y1="80" x2="35" y2="50" stroke="#ef4444" stroke-width="2"/>
+    <line x1="35" y1="50" x2="140" y2="50" stroke="#ef4444" stroke-width="2"/>
+    <line x1="180" y1="50" x2="240" y2="50" stroke="#f8fafc" stroke-width="2"/>
+    <line x1="300" y1="50" x2="400" y2="50" stroke="#f8fafc" stroke-width="2"/>
+    <line x1="400" y1="50" x2="400" y2="80" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Negative line: Bulb -> Supply -->
+    <line x1="400" y1="124" x2="400" y2="150" stroke="#64748b" stroke-width="2"/>
+    <line x1="400" y1="150" x2="65" y2="150" stroke="#64748b" stroke-width="2"/>
+    <line x1="65" y1="150" x2="65" y2="141" stroke="#64748b" stroke-width="2"/>
+
+    <!-- Voltmeter Parallel Connections -->
+    <line x1="400" y1="124" x2="400" y2="170" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3"/>
+    <line x1="400" y1="50" x2="440" y2="50" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3"/>
+    <line x1="440" y1="50" x2="440" y2="190" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3"/>
+    <line x1="440" y1="190" x2="420" y2="190" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3"/>
+
+    <!-- Nodes / Connection Dots -->
+    <circle cx="400" cy="50" r="3" fill="#38bdf8"/>
+    <circle cx="400" cy="124" r="3" fill="#38bdf8"/>
+</svg>
+
+            `,
+            tables: [
+              {
+                heading: "Observation Table (Voltage, Current & Computed Log Readings)",
+                headers: ["S.No", "Voltage V (Volt)", "Current I (mA)", "Resistance R (Ω)", "Power P (mW)", "log10(R)", "log10(P)"],
+                rows: [
+                  ["1", "0.5", "60", "8.33", "30", "-2.38", "1.47"],
+                  ["2", "1.0", "120", "8.33", "120", "-2.20", "2.07"],
+                  ["3", "1.5", "160", "9.37", "240", "-2.14", "2.38"],
+                  ["4", "2.0", "210", "9.52", "420", "-2.09", "2.62"],
+                  ["5", "2.5", "250", "10.0", "625", "-2.05", "2.79"],
+                  ["6", "3.0", "280", "10.7", "840", "-2.00", "2.92"],
+                  ["7", "3.5", "340", "10.2", "1190", "-1.99", "3.07"]
+                ]
+              }
+            ],
+            calculations: `
+**Step 1: Observation Readings Selection for Slope**
+
+Taking Point 2 (\\(P_2\\)) & Point 6 (\\(P_6\\)) from the Observation Table:
+* **Point 2** \\((x_1, y_1) = (\\log_{10} R_2, \\log_{10} P_2) = (-2.20, 2.07)\\)
+* **Point 6** \\((x_2, y_2) = (\\log_{10} R_6, \\log_{10} P_6) = (-2.00, 2.92)\\)
+
+---
+
+**Step 2: Slope (\\(a\\)) Calculation from Graph Data**
+
+\\[ \\Delta Y = y_2 - y_1 = 2.92 - 2.07 = 0.85 \\]
+\\[ \\Delta X = x_2 - x_1 = (-2.00) - (-2.20) = 0.20 \\]
+
+Slope (\\(a\\)):
+\\[ a = \\frac{\\Delta Y}{\\Delta X} \\]
+\\[ a = \\frac{0.85}{0.20} = 4.25 \\]
+
+---
+
+**Step 3: Result Verification & Percentage Error**
+
+Theoretical Slope Value (As per Stefan's Law \\(P \\propto T^4\\)) = \\(4.0\\)
+
+\\[ \\text{Percentage Error} = \\left| \\frac{\\text{Calculated Slope} - \\text{Theoretical Slope}}{\\text{Theoretical Slope}} \\right| \\times 100 \\]
+\\[ \\text{Percentage Error} = \\left| \\frac{4.25 - 4.0}{4.0} \\right| \\times 100 \\]
+\\[ \\text{Percentage Error} = \\left( \\frac{0.25}{4.0} \\right) \\times 100 = 6.25\\% \\]
+
+---
+
+
+`
+,"result": "The calculated slope \\(a = 4.25\\) is approximately equalto\\(4\\), which successfully verifies **Stefan's Law** within experimentallimits",
+            precautions: [
+              "Ensure power supply knob is set to minimum before switching on.",
+              "All electrical connections must be neat and tight.",
+              "Rotate power supply knob slowly to record steady readings."
+            ]
+          },
+          {    id: "meterbridge",
+    title: "Meterbridge ",
+    branch: "electrical",
+            "aim": "To determine the resistance of a given wire using a meter bridge and hence determine the resistivity of its material.",
+      "apparatus": [
+        "Meter bridge (slide wire bridge)",
+        "Jockey",
+        "Galvanometer",
+        "Resistance box",
+        "Unknown resistor / resistance wire",
+        "Leclanche cell",
+        "One way key",
+        "Meter scale",
+        "Screw gauge",
+        "Set of square",
+        "Connecting wire",
+        "Piece of sand paper"
+      ],
+      "circuitSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 350\" width=\"100%\" height=\"280\"><rect width=\"600\" height=\"350\" rx=\"12\" fill=\"#090d16\"/><path d=\"M 60,160 L 60,100 L 160,100\" stroke=\"#38bdf8\" stroke-width=\"4\" fill=\"none\"/><path d=\"M 220,100 L 380,100\" stroke=\"#38bdf8\" stroke-width=\"4\" fill=\"none\"/><path d=\"M 440,100 L 540,100 L 540,160\" stroke=\"#38bdf8\" stroke-width=\"4\" fill=\"none\"/><rect x=\"160\" y=\"85\" width=\"60\" height=\"30\" rx=\"4\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"190\" y=\"105\" fill=\"#f59e0b\" font-size=\"14\" font-weight=\"bold\" text-anchor=\"middle\">R</text><rect x=\"380\" y=\"85\" width=\"60\" height=\"30\" rx=\"4\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"410\" y=\"105\" fill=\"#f59e0b\" font-size=\"14\" font-weight=\"bold\" text-anchor=\"middle\">X</text><line x1=\"60\" y1=\"160\" x2=\"540\" y2=\"160\" stroke=\"#e2e8f0\" stroke-width=\"6\"/><circle cx=\"300\" y=\"100\" r=\"5\" fill=\"#38bdf8\"/><path d=\"M 300,100 L 300,180\" stroke=\"#38bdf8\" stroke-width=\"2\"/><circle cx=\"300\" y=\"200\" r=\"18\" fill=\"#1e293b\" stroke=\"#a855f7\" stroke-width=\"2\"/><text x=\"300\" y=\"205\" fill=\"#a855f7\" font-size=\"14\" font-weight=\"bold\" text-anchor=\"middle\">G</text><path d=\"M 300,218 L 300,245 L 260,270\" stroke=\"#a855f7\" stroke-width=\"2\" fill=\"none\" transform=\"rotate(-40 300 245)\"/><line x1=\"60\" y1=\"160\" x2=\"60\" y2=\"300\" stroke=\"#38bdf8\" stroke-width=\"2\"/><line x1=\"540\" y1=\"160\" x2=\"540\" y2=\"300\" stroke=\"#38bdf8\" stroke-width=\"2\"/><line x1=\"60\" y1=\"300\" x2=\"260\" y2=\"300\" stroke=\"#38bdf8\" stroke-width=\"2\"/><line x1=\"340\" y1=\"300\" x2=\"540\" y2=\"300\" stroke=\"#38bdf8\" stroke-width=\"2\"/><line x1=\"270\" y1=\"285\" x2=\"270\" y2=\"315\" stroke=\"#ef4444\" stroke-width=\"3\"/><line x1=\"280\" y1=\"292\" x2=\"280\" y2=\"308\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><line x1=\"290\" y1=\"285\" x2=\"290\" y2=\"315\" stroke=\"#ef4444\" stroke-width=\"3\"/><line x1=\"300\" y1=\"292\" x2=\"300\" y2=\"308\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"285\" y=\"275\" fill=\"#ef4444\" font-size=\"12\" font-weight=\"bold\" text-anchor=\"middle\">Battery</text><text x=\"160\" y=\"180\" fill=\"#38bdf8\" font-size=\"12\">l</text><text x=\"420\" y=\"180\" fill=\"#38bdf8\" font-size=\"12\">100 - l</text></svg>",
+       "theory": "Meter Bridge works on the principle of Wheatstone Bridge.\n\nFormula:\n\\[ X = \\frac{(100 - L)R}{L} \\]\nWhere \\(R\\) is the known resistance placed in the left gap, \\(X\\) is the unknown resistance in the right gap, and \\(L\\) is the balancing length from zero end.\n\nResistivity Formula:\n\\[ \\rho = \\frac{X \\pi D^2}{4 L_{wire}} \\]\nWhere \\(D\\) is the diameter of the wire and \\(L_{wire}\\) is the length of the given wire.",
+ 
+"formula": "\\[ X = \\frac{(100 - L)R}{L}, \\quad \\rho = \\frac{X \\pi D^2}{4 L_{wire}} \\]",
+ 
+      "tables": [
+    {
+      "heading": "Table 1: Observation Table for Diameter using Screw Gauge",
+      "headers": ["S.No.", "M.S.R (mm)", "C.S.B", "C.S.R x L.C. (mm)", "Total Reading (mm)"],
+      "rows": [
+        ["1", "0", "41", "0.41", "0.41"],
+        ["2", "0", "42", "0.42", "0.42"],
+        ["3", "0", "43", "0.43", "0.43"]
+      ]
+    },
+    {
+      "heading": "Table 2: Observation Table for Unknown Resistance (X)",
+      "headers": ["S.No.", "Resistance box, R (Ω)", "Length AB = l (cm)", "Length BC = (100-l) (cm)", "Unknown Resistance X = R(100-l)/l (Ω)"],
+      "rows": [
+        ["1", "5", "58.3", "41.7", "3.57"],
+        ["2", "7", "60.7", "39.3", "4.50"],
+        ["3", "10", "61.9", "38.1", "6.10"],
+        ["4", "15", "61.1", "38.9", "9.50"]
+      ]
+    }
+  ],
+  
+      "calculations": "\n**Observation Data:**\n* Length of given wire (\\(L_{wire}\\)) = 1 m\n* Least count of screw gauge = 0.01 mm\n* Mean Diameter of wire (\\(D\\)) = 0.42 mm = \\(0.42 \\times 10^{-3}\\) m\n* Mean Unknown Resistance (\\(X\\)) = 5.9 Ω\n\n---\n\n**Step 1: Formula Used**\n\n\\[ \\rho = \\frac{X \\cdot \\pi \\cdot D^2}{4 \\cdot L_{wire}} \\]\n\n---\n\n**Step 2: Calculation**\n\n\\[ \\rho = \\frac{5.9 \\times 3.1416 \\times (0.42 \\times 10^{-3})^2}{4 \\times 1} = 0.8 \\times 10^{-6} \\text{ } \\Omega\\cdot\\text{m} \\]\n",
+  "result": "1. Unknown Resistance of given wire (X) = 5.95 Ω\n2. Specific Resistance (Resistivity) of material (ρ) = 0.8 x 10^-6 Ω·m",
+  "precautions": [
+    "The connections should be neat, clean and tight.",
+    "Press the jockey gently on the wire."
+  ]
+          }
+          ,{
+    id: "multimeter-use",
+    title: "Multimeter ",
+    branch: "electrical",
+    aim: "To use a multimeter for measuring resistance, capacitance, current, electric fuse, voltage and for checking electric fuse.",
+    apparatus: ["Multimeter", "Resistors", "Capacitors", "Electric Fuse", "Jumper Wires / Connecting Wires", "Regulated Voltage Source", "Breadboard"],
+    circuitSvg: `
+    <div style="margin-bottom: 15px;">
+        <p style="font-size:12px; color:#94a3b8; font-weight:bold; margin-bottom:5px;">1. Resistor Color Coding Test</p>
+        <!-- YAHAN RESISTOR WALA SVG DE -->
+        
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="100%" height="280">
+  <defs>
+    <style>
+      .probe-glow {
+        animation: pulseGlow 1.8s infinite alternate;
+      }
+      .display-blink {
+        animation: digitBlink 2s infinite alternate;
+      }
+      @keyframes pulseGlow {
+        0% { filter: drop-shadow(0px 0px 2px #38bdf8); }
+        100% { filter: drop-shadow(0px 0px 8px #38bdf8); }
+      }
+      @keyframes digitBlink {
+        0% { opacity: 0.85; }
+        100% { opacity: 1; }
+      }
+    </style>
+
+    <!-- Metallic Lead Gradients -->
+    <linearGradient id="leadGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <!-- Resistor Ceramic Body Gradient -->
+    <linearGradient id="resBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="50%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+
+    <!-- Multimeter Body Gradient -->
+    <linearGradient id="meterBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Container Box -->
+  <rect width="420" height="320" rx="12" fill="#090d16"/>
+
+  <!-- ================= BREADBOARD BASE ================= -->
+  <rect x="25" y="210" width="370" height="85" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="40" y="230" fill="#64748b" font-size="10" font-weight="bold">BREADBOARD TEST CIRCUIT</text>
+  
+  <!-- Breadboard Grid Pin Holes -->
+  <g fill="#0f172a">
+    <circle cx="50" cy="250" r="2.5"/><circle cx="70" cy="250" r="2.5"/><circle cx="90" cy="250" r="2.5"/><circle cx="110" cy="250" r="2.5"/>
+    <circle cx="50" cy="270" r="2.5"/><circle cx="70" cy="270" r="2.5"/><circle cx="90" cy="270" r="2.5"/><circle cx="110" cy="270" r="2.5"/>
+    <circle cx="310" cy="250" r="2.5"/><circle cx="330" cy="250" r="2.5"/><circle cx="350" cy="250" r="2.5"/><circle cx="370" cy="250" r="2.5"/>
+    <circle cx="310" cy="270" r="2.5"/><circle cx="330" cy="270" r="2.5"/><circle cx="350" cy="270" r="2.5"/><circle cx="370" cy="270" r="2.5"/>
+  </g>
+
+  <!-- ================= 4-BAND RESISTOR ================= -->
+  <!-- Wire Leads -->
+  <line x1="100" y1="260" x2="150" y2="260" stroke="url(#leadGrad)" stroke-width="4"/>
+  <line x1="270" y1="260" x2="320" y2="260" stroke="url(#leadGrad)" stroke-width="4"/>
+
+  <!-- Resistor Body -->
+  <path d="M 150 250 Q 155 242 165 242 L 255 242 Q 265 242 270 250 L 270 270 Q 265 278 255 278 L 165 278 Q 155 278 150 270 Z" fill="url(#resBody)" stroke="#a16207" stroke-width="1.5"/>
+
+  <!-- Color Bands (Example: Brown, Black, Red, Gold = 1 kΩ) -->
+  <rect x="170" y="242" width="7" height="36" fill="#78350f"/> <!-- 1st Band: Brown -->
+  <rect x="188" y="242" width="7" height="36" fill="#000000"/> <!-- 2nd Band: Black -->
+  <rect x="206" y="242" width="7" height="36" fill="#dc2626"/> <!-- 3rd Band: Red (Multiplier) -->
+  <rect x="240" y="242" width="7" height="36" fill="#eab308"/> <!-- 4th Band: Gold (Tolerance) -->
+  
+  <text x="210" y="295" fill="#fde047" font-size="10" font-weight="bold" text-anchor="middle">Color Coded Carbon Resistor</text>
+
+  <!-- ================= DIGITAL MULTIMETER (DMM) ================= -->
+  <g transform="translate(30, 20)">
+    <!-- Multimeter Body -->
+    <rect x="0" y="0" width="150" height="170" rx="10" fill="url(#meterBody)" stroke="#0284c7" stroke-width="2"/>
+    <rect x="8" y="8" width="134" height="154" rx="6" fill="none" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="4,2"/>
+    
+    <!-- LCD Display Screen -->
+    <rect x="15" y="18" width="120" height="42" rx="4" fill="#022c22" stroke="#134e4a" stroke-width="1.5"/>
+    <text class="display-blink" x="125" y="48" fill="#34d399" font-size="22" font-family="monospace" font-weight="bold" text-anchor="end">103.5 Ω</text>
+    <text x="22" y="32" fill="#059669" font-size="8" font-weight="bold">AUTO RANGE</text>
+
+    <!-- Rotary Dial Knob -->
+    <circle cx="75" cy="100" r="22" fill="#334155" stroke="#64748b" stroke-width="2"/>
+    <line x1="75" y1="100" x2="75" y2="82" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="75" cy="100" r="5" fill="#0f172a"/>
+    <text x="75" y="73" fill="#38bdf8" font-size="9" font-weight="bold" text-anchor="middle">Ω (OHM)</text>
+
+    <!-- Probe Terminals -->
+    <circle cx="45" cy="148" r="6" fill="#ef4444"/> <!-- V/Ω Terminal (Red) -->
+    <circle cx="105" cy="148" r="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/> <!-- COM Terminal (Black) -->
+  </g>
+
+  <!-- ================= MULTIMETER PROBE WIRES ================= -->
+  <!-- Positive Probe Wire (Red) -->
+  <path class="probe-glow" d="M 75 168 Q 50 210 135 260" stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Probe Pin Positive -->
+  <path d="M 130 257 L 150 260 L 133 265 Z" fill="#ef4444"/>
+
+  <!-- Negative Probe Wire (Black/Blue) -->
+  <path d="M 135 168 Q 160 210 285 260" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6,2" fill="none" stroke-linecap="round"/>
+  <!-- Probe Pin Negative -->
+  <path d="M 290 257 L 270 260 L 287 265 Z" fill="#38bdf8"/>
+</svg>
+
+
+    </div>
+    <div>
+        <p style="font-size:12px; color:#94a3b8; font-weight:bold; margin-bottom:5px;">2. Capacitance Measurement Test</p>
+        <!-- YAHAN CAPACITOR WALA SVG DE -->
+        
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="100%" height="280">
+  <defs>
+    <style>
+      .probe-glow {
+        animation: pulseGlow 1.8s infinite alternate;
+      }
+      .display-blink {
+        animation: digitBlink 2s infinite alternate;
+      }
+      @keyframes pulseGlow {
+        0% { filter: drop-shadow(0px 0px 2px #ec4899); }
+        100% { filter: drop-shadow(0px 0px 8px #ec4899); }
+      }
+      @keyframes digitBlink {
+        0% { opacity: 0.85; }
+        100% { opacity: 1; }
+      }
+    </style>
+
+    <!-- Metallic Lead Gradients -->
+    <linearGradient id="capLeadGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+
+    <!-- Capacitor Cylinder Body Gradient -->
+    <linearGradient id="capBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="40%" stop-color="#3b82f6"/>
+      <stop offset="70%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Multimeter Body Gradient -->
+    <linearGradient id="meterBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Container Box -->
+  <rect width="420" height="320" rx="12" fill="#090d16"/>
+
+  <!-- ================= BREADBOARD BASE ================= -->
+  <rect x="25" y="210" width="370" height="85" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="40" y="230" fill="#64748b" font-size="10" font-weight="bold">CAPACITANCE TESTING ON BREADBOARD</text>
+  
+  <!-- Breadboard Grid Pin Holes -->
+  <g fill="#0f172a">
+    <circle cx="50" cy="250" r="2.5"/><circle cx="70" cy="250" r="2.5"/><circle cx="90" cy="250" r="2.5"/><circle cx="110" cy="250" r="2.5"/>
+    <circle cx="50" cy="270" r="2.5"/><circle cx="70" cy="270" r="2.5"/><circle cx="90" cy="270" r="2.5"/><circle cx="110" cy="270" r="2.5"/>
+    <circle cx="310" cy="250" r="2.5"/><circle cx="330" cy="250" r="2.5"/><circle cx="350" cy="250" r="2.5"/><circle cx="370" cy="250" r="2.5"/>
+    <circle cx="310" cy="270" r="2.5"/><circle cx="330" cy="270" r="2.5"/><circle cx="350" cy="270" r="2.5"/><circle cx="370" cy="270" r="2.5"/>
+  </g>
+
+  <!-- ================= ELECTROLYTIC CAPACITOR ================= -->
+  <!-- Capacitor Metallic Pins -->
+  <line x1="200" y1="240" x2="200" y2="265" stroke="url(#capLeadGrad)" stroke-width="3"/>
+  <line x1="220" y1="240" x2="220" y2="265" stroke="url(#capLeadGrad)" stroke-width="3"/>
+
+  <!-- Capacitor Body -->
+  <rect x="190" y="195" width="40" height="45" rx="5" fill="url(#capBody)" stroke="#1d4ed8" stroke-width="1.5"/>
+  <!-- Top Metallic Cap -->
+  <ellipse cx="210" cy="195" rx="20" ry="4" fill="#94a3b8"/>
+
+  <!-- Negative Stripe Bar (Polared Capacitor Indicator) -->
+  <rect x="220" y="195" width="10" height="45" fill="#e2e8f0"/>
+  <text x="225" y="210" fill="#0f172a" font-size="10" font-weight="bold" text-anchor="middle">-</text>
+  <text x="225" y="225" fill="#0f172a" font-size="10" font-weight="bold" text-anchor="middle">-</text>
+  
+  <text x="210" y="295" fill="#60a5fa" font-size="10" font-weight="bold" text-anchor="middle">Electrolytic Capacitor (100 µF)</text>
+
+  <!-- ================= DIGITAL MULTIMETER (DMM) ================= -->
+  <g transform="translate(30, 20)">
+    <!-- Multimeter Body -->
+    <rect x="0" y="0" width="150" height="170" rx="10" fill="url(#meterBody)" stroke="#ec4899" stroke-width="2"/>
+    <rect x="8" y="8" width="134" height="154" rx="6" fill="none" stroke="#f472b6" stroke-width="0.8" stroke-dasharray="4,2"/>
+    
+    <!-- LCD Display Screen -->
+    <rect x="15" y="18" width="120" height="42" rx="4" fill="#022c22" stroke="#134e4a" stroke-width="1.5"/>
+    <text class="display-blink" x="125" y="48" fill="#34d399" font-size="20" font-family="monospace" font-weight="bold" text-anchor="end">90.6 µF</text>
+    <text x="22" y="32" fill="#059669" font-size="8" font-weight="bold">CX MODE</text>
+
+    <!-- Rotary Dial Knob -->
+    <circle cx="75" cy="100" r="22" fill="#334155" stroke="#64748b" stroke-width="2"/>
+    <line x1="75" y1="100" x2="92" y2="88" stroke="#ec4899" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="75" cy="100" r="5" fill="#0f172a"/>
+    <text x="105" y="80" fill="#ec4899" font-size="9" font-weight="bold" text-anchor="middle">–|(– (CAP)</text>
+
+    <!-- Probe Terminals -->
+    <circle cx="45" cy="148" r="6" fill="#ef4444"/> <!-- Cx Positive Terminal (Red) -->
+    <circle cx="105" cy="148" r="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/> <!-- COM Terminal (Black) -->
+  </g>
+
+  <!-- ================= MULTIMETER PROBE WIRES ================= -->
+  <!-- Positive Probe Wire (Red) -->
+  <path class="probe-glow" d="M 75 168 Q 60 220 198 262" stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Probe Pin Positive -->
+  <path d="M 193 258 L 200 264 L 195 268 Z" fill="#ef4444"/>
+
+  <!-- Negative Probe Wire (Black/Blue) -->
+  <path d="M 135 168 Q 165 220 222 262" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6,2" fill="none" stroke-linecap="round"/>
+  <!-- Probe Pin Negative -->
+  <path d="M 225 258 L 220 264 L 227 268 Z" fill="#38bdf8"/>
+</svg>
+    </div>
+        <div>
+        <p style="font-size:12px; color:#94a3b8; font-weight:bold;
+        margin-bottom:5px;">2. Fuse Measurement Test</p>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="100%" height="280">
+  <defs>
+    <style>
+      .sound-wave {
+        animation: beepWave 1.2s infinite ease-in-out;
+      }
+      .display-blink {
+        animation: digitBlink 1.5s infinite alternate;
+      }
+      @keyframes beepWave {
+        0% { opacity: 0.2; transform: scale(0.98); }
+        50% { opacity: 1; transform: scale(1.02); }
+        100% { opacity: 0.2; transform: scale(0.98); }
+      }
+      @keyframes digitBlink {
+        0% { opacity: 0.85; }
+        100% { opacity: 1; }
+      }
+    </style>
+
+    <!-- Metallic End Caps Gradient -->
+    <linearGradient id="fuseCapGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <!-- Glass Tube Fill -->
+    <linearGradient id="glassBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.15"/>
+    </linearGradient>
+
+    <!-- Multimeter Body Gradient -->
+    <linearGradient id="meterBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Container Box -->
+  <rect width="420" height="320" rx="12" fill="#090d16"/>
+
+  <!-- ================= BREADBOARD BASE ================= -->
+  <rect x="25" y="210" width="370" height="85" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="40" y="230" fill="#64748b" font-size="10" font-weight="bold">FUSE CONTINUITY TEST (BREADBOARD)</text>
+  
+  <!-- Breadboard Grid Pin Holes -->
+  <g fill="#0f172a">
+    <circle cx="50" cy="250" r="2.5"/><circle cx="70" cy="250" r="2.5"/><circle cx="90" cy="250" r="2.5"/>
+    <circle cx="50" cy="270" r="2.5"/><circle cx="70" cy="270" r="2.5"/><circle cx="90" cy="270" r="2.5"/>
+    <circle cx="330" cy="250" r="2.5"/><circle cx="350" cy="250" r="2.5"/><circle cx="370" cy="250" r="2.5"/>
+    <circle cx="330" cy="270" r="2.5"/><circle cx="350" cy="270" r="2.5"/><circle cx="370" cy="270" r="2.5"/>
+  </g>
+
+  <!-- ================= CARTRIDGE GLASS FUSE ================= -->
+  <!-- Fuse Wire Leads into Board -->
+  <line x1="120" y1="260" x2="150" y2="260" stroke="#94a3b8" stroke-width="3"/>
+  <line x1="270" y1="260" x2="300" y2="260" stroke="#94a3b8" stroke-width="3"/>
+
+  <!-- Left Metal Cap -->
+  <rect x="150" y="245" width="20" height="30" rx="3" fill="url(#fuseCapGrad)" stroke="#475569" stroke-width="1"/>
+  <!-- Right Metal Cap -->
+  <rect x="250" y="245" width="20" height="30" rx="3" fill="url(#fuseCapGrad)" stroke="#475569" stroke-width="1"/>
+
+  <!-- Glass Tube -->
+  <rect x="170" y="247" width="80" height="26" fill="url(#glassBody)" stroke="#e2e8f0" stroke-width="1.2" stroke-opacity="0.6"/>
+
+  <!-- Fuse Internal Filament Wire (Intact - Short Circuit Path) -->
+  <path d="M 170 260 Q 190 256 210 260 T 250 260" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
+
+  <text x="210" y="295" fill="#f59e0b" font-size="10" font-weight="bold" text-anchor="middle">Glass Cartridge Fuse (Intact)</text>
+
+  <!-- ================= DIGITAL MULTIMETER (DMM) ================= -->
+  <g transform="translate(30, 20)">
+    <!-- Multimeter Body -->
+    <rect x="0" y="0" width="150" height="170" rx="10" fill="url(#meterBody)" stroke="#eab308" stroke-width="2"/>
+    <rect x="8" y="8" width="134" height="154" rx="6" fill="none" stroke="#fde047" stroke-width="0.8" stroke-dasharray="4,2"/>
+    
+    <!-- LCD Display Screen -->
+    <rect x="15" y="18" width="120" height="42" rx="4" fill="#022c22" stroke="#134e4a" stroke-width="1.5"/>
+    <text class="display-blink" x="70" y="48" fill="#34d399" font-size="20" font-family="monospace" font-weight="bold">000.1</text>
+    <text x="22" y="32" fill="#059669" font-size="8" font-weight="bold">CONTINUITY</text>
+    
+    <!-- Audio Beep Wave Icon in Display -->
+    <g class="sound-wave" stroke="#34d399" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M 112 36 Q 116 40 112 44"/>
+      <path d="M 117 32 Q 123 40 117 48"/>
+    </g>
+
+    <!-- Rotary Dial Knob -->
+    <circle cx="75" cy="100" r="22" fill="#334155" stroke="#64748b" stroke-width="2"/>
+    <line x1="75" y1="100" x2="60" y2="84" stroke="#eab308" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="75" cy="100" r="5" fill="#0f172a"/>
+    <text x="40" y="82" fill="#eab308" font-size="10" font-weight="bold">)))</text>
+
+    <!-- Probe Terminals -->
+    <circle cx="45" cy="148" r="6" fill="#ef4444"/> <!-- Red (+) -->
+    <circle cx="105" cy="148" r="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/> <!-- Black (-) -->
+  </g>
+
+  <!-- ================= MULTIMETER PROBE WIRES ================= -->
+  <!-- Positive Probe Wire (Red) -->
+  <path d="M 75 168 Q 60 220 155 260" stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Probe Pin Positive -->
+  <path d="M 150 257 L 160 260 L 152 265 Z" fill="#ef4444"/>
+
+  <!-- Negative Probe Wire (Black/Blue) -->
+  <path d="M 135 168 Q 165 220 265 260" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6,2" fill="none" stroke-linecap="round"/>
+  <!-- Probe Pin Negative -->
+  <path d="M 268 257 L 260 260 L 266 265 Z" fill="#38bdf8"/>
+</svg> </div>
+    <div>
+        <p style="font-size:12px; color:#94a3b8; font-weight:bold;
+        margin-bottom:5px;">. Voltage & Current Measurement Circuit Measurement Test</p>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="100%" height="280">
+  <defs>
+    <style>
+      .display-blink { animation: digitBlink 1.8s infinite alternate; }
+      @keyframes digitBlink { 0% { opacity: 0.85; } 100% { opacity: 1; } }
+    </style>
+    <linearGradient id="meterBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="420" height="320" rx="12" fill="#090d16"/>
+
+  <!-- BREADBOARD BASE -->
+  <rect x="25" y="210" width="370" height="85" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="40" y="230" fill="#64748b" font-size="10" font-weight="bold">VOLTAGE (PARALLEL) &amp; CURRENT (SERIES) SETUP</text>
+  
+  <g fill="#0f172a">
+    <circle cx="50" cy="250" r="2.5"/><circle cx="70" cy="250" r="2.5"/><circle cx="90" cy="250" r="2.5"/>
+    <circle cx="50" cy="270" r="2.5"/><circle cx="70" cy="270" r="2.5"/><circle cx="90" cy="270" r="2.5"/>
+    <circle cx="330" cy="250" r="2.5"/><circle cx="350" cy="250" r="2.5"/><circle cx="370" cy="250" r="2.5"/>
+    <circle cx="330" cy="270" r="2.5"/><circle cx="350" cy="270" r="2.5"/><circle cx="370" cy="270" r="2.5"/>
+  </g>
+
+  <!-- DC POWER SUPPLY INPUT -->
+  <rect x="40" y="245" width="45" height="30" rx="4" fill="#0284c7" stroke="#38bdf8" stroke-width="1"/>
+  <text x="62.5" y="263" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">DC 5V</text>
+
+  <!-- RESISTOR NETWORK ON BREADBOARD -->
+  <!-- R1 -->
+  <line x1="85" y1="260" x2="130" y2="260" stroke="#cbd5e1" stroke-width="3"/>
+  <rect x="130" y="253" width="40" height="14" rx="3" fill="#ca8a04"/>
+  <!-- R2 (Parallel node) -->
+  <line x1="170" y1="260" x2="220" y2="260" stroke="#cbd5e1" stroke-width="3"/>
+  <rect x="220" y="253" width="40" height="14" rx="3" fill="#ca8a04"/>
+  <!-- R3 -->
+  <line x1="260" y1="260" x2="310" y2="260" stroke="#cbd5e1" stroke-width="3"/>
+
+  <text x="200" y="295" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle">Breadboard Resistor Network</text>
+
+  <!-- DIGITAL MULTIMETER (DMM) -->
+  <g transform="translate(240, 20)">
+    <rect x="0" y="0" width="150" height="170" rx="10" fill="url(#meterBody)" stroke="#10b981" stroke-width="2"/>
+    <rect x="8" y="8" width="134" height="154" rx="6" fill="none" stroke="#34d399" stroke-width="0.8" stroke-dasharray="4,2"/>
+    
+    <!-- LCD DISPLAY -->
+    <rect x="15" y="18" width="120" height="42" rx="4" fill="#022c22" stroke="#134e4a" stroke-width="1.5"/>
+    <text class="display-blink" x="125" y="48" fill="#34d399" font-size="20" font-family="monospace" font-weight="bold" text-anchor="end">3.99 V</text>
+    <text x="22" y="32" fill="#059669" font-size="8" font-weight="bold">DC VOLTS / AMPS</text>
+
+    <!-- ROTARY KNOB -->
+    <circle cx="75" cy="100" r="22" fill="#334155" stroke="#64748b" stroke-width="2"/>
+    <line x1="75" y1="100" x2="60" y2="114" stroke="#10b981" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="75" cy="100" r="5" fill="#0f172a"/>
+    <text x="50" y="130" fill="#10b981" font-size="9" font-weight="bold">V / A</text>
+
+    <!-- PROBE TERMINALS -->
+    <circle cx="45" cy="148" r="6" fill="#ef4444"/>
+    <circle cx="105" cy="148" r="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+  </g>
+
+  <!-- PROBE WIRES (PARALLEL VOLTAGE MEASUREMENT ACROSS R2) -->
+  <path d="M 285 168 Q 210 190 170 253" stroke="#ef4444" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 345 168 Q 290 200 260 253" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="5,2" fill="none" stroke-linecap="round"/>
+</svg>
+        
+        </div>
+`
+,
+    theory: "Resistors are devices that limit current flow and provide a voltage drop in electrical circuits. Because carbon resistors are physically small, their resistance values in ohms are physically color coded to identify. The color code chart is used for reading standard 4-band and 5-band color-coded values.",
+    formula: "\\( R = (\\text{Digit}_1 \\text{Digit}_2) \\times 10^{\\text{Multiplier}} \\pm \\text{Tolerance}\\% \\)",
+    procedure: `
+* **For Resistor:**
+  • Resistance of carbon resistor was calculated using the Color Code Chart and noted.
+  • Carbon resistor was inserted into the breadboard and two terminals of carbon resistor were connected with Multimeter.
+  • Increased the range of multimeter from 0 and resistance was noted.
+  • The same procedure was repeated for 3 resistors.
+
+* **For Capacitor:**
+  • Multimeter was set to Capacitor mode.
+  • Capacitor was inserted into breadboard and connected two terminals with multimeter positive and negative.
+  • Reading was noted, and the same procedure was repeated for 3 capacitors.
+
+* **For Electric Fuse:**
+  • Multimeter was set to continuity mode.
+  • Two terminals of electric fuse were connected with Multimeter and Beep sound was observed.
+
+* **For Voltage:**
+  • The circuit diagram was made on breadboard using four resistors as shown in diagram with one input voltage.
+  • The Multimeter was set to voltage mode, connected in parallel across components, and reading was noted.
+
+* **For Current:**
+  • The Multimeter was set to current mode, connected in series with the circuit, and reading was noted.
+`,
+    tables: [
+        {
+            heading: "Observation Table for Resistors, Capacitors & Fuse",
+            headers: ["S.No", "Actual Resistor Range", "Measured Resistance", "Actual Capacitance", "Measured Capacitance", "Fuse Continuity Check"],
+            rows: [
+                ["01", "0.99 MΩ to 1.1 MΩ", "0.98 MΩ", "100 µF", "90.6 µF", "Continuous"],
+                ["02", "77.1 Ω to 86.1 Ω", "82 Ω", "4.7 µF", "5.42 µF", "Continuous"],
+                ["03", "95 Ω to 105 Ω", "103.5 Ω", "3.3 µF", "Non-continuous"]
+            ]
+        },
+        {
+            heading: "Observation Table for Circuit Voltage & Current",
+            headers: ["S.No", "V (Input)", "V1 (V)", "V2 (V)", "V3 (V)", "V4 (V)", "V5 (V)", "I1 (A)", "I2 (A)", "I3 (A)", "I1 = I2 + I3 (A)", "V_exp = V1+V2+V3+V4+V5 (V)"],
+            rows: [
+                ["01", "2.99 V", "2.00", "0.03", "0.16", "0.13", "0.12", "1.25", "1.17", "0.012", "1.18 A", "2.44 V"],
+                ["02", "3.99 V", "3.16", "0.04", "0.22", "0.18", "0.16", "1.86", "1.56", "0.10", "1.66 A", "3.76 V"]
+            ]
+        }
+    ],
+    calculations: `
+**1. Color Code Calculation for Resistors:**
+
+* **Resistor 1:**
+  • Color Bands: Brown (1), Black (0), Green (\\(10^5\\)), Silver (\\(\\pm 10\\%\\))
+  \\[ R_{\\text{actual}} = 10 \\times 10^5 \\pm 10\\% = 1.0 \\text{ M}\\Omega \\pm 10\\% \\text{ (Range: } 0.99 \\text{ M}\\Omega - 1.1 \\text{ M}\\Omega\\text{)} \\]
+  \\[ R_{\\text{measured}} = 0.98 \\text{ M}\\Omega \\]
+
+* **Resistor 2:**
+  • Color Bands: Gray (8), Red (2), Black (\\(10^0\\)), Gold (\\(\\pm 5\\%\\))
+  \\[ R_{\\text{actual}} = 82 \\times 10^0 \\pm 5\\% = 82 \\pm 5\\% \\text{ } \\Omega \\text{ (Range: } 77.1 \\text{ } \\Omega - 86.1 \\text{ } \\Omega\\text{)} \\]
+  \\[ R_{\\text{measured}} = 82 \\text{ } \\Omega \\]
+
+* **Resistor 3:**
+  • Color Bands: Brown (1), Black (0), Brown (\\(10^1\\)), Gold (\\(\\pm 5\\%\\))
+  \\[ R_{\\text{actual}} = 10 \\times 10^1 \\pm 5\\% = 100 \\pm 5\\% \\text{ } \\Omega \\text{ (Range: } 95 \\text{ } \\Omega - 105 \\text{ } \\Omega\\text{)} \\]
+  \\[ R_{\\text{measured}} = 103.5 \\text{ } \\Omega \\]
+
+---
+
+**2. Voltage Verification:**
+
+* **Observation 1:**
+  \\[ V_{\\text{actual}} = 2.99 \\text{ V} \\]
+  \\[ V_{\\text{experimental}} = V_1 + V_2 + V_3 + V_4 + V_5 = 2.00 + 0.03 + 0.16 + 0.13 + 0.12 = 2.44 \\text{ V} \\]
+
+* **Observation 2:**
+  \\[ V_{\\text{actual}} = 3.99 \\text{ V} \\]
+  \\[ V_{\\text{experimental}} = V_1 + V_2 + V_3 + V_4 + V_5 = 3.16 + 0.04 + 0.22 + 0.18 + 0.16 = 3.76 \\text{ V} \\]
+
+---
+
+**3. Current Verification:**
+
+* **Observation 1:**
+  \\[ I_{1,\\text{actual}} = 1.25 \\text{ A} \\]
+  \\[ I_{1,\\text{experimental}} = I_2 + I_3 = 1.17 + 0.012 = 1.18 \\text{ A} \\]
+
+* **Observation 2:**
+  \\[ I_{1,\\text{actual}} = 1.86 \\text{ A} \\]
+  \\[ I_{1,\\text{experimental}} = I_2 + I_3 = 1.56 + 0.10 = 1.66 \\text{ A} \\]
+
+---
+
+**Result:**
+1. Resistance of different resistors, capacitance of different capacitors, and continuity of fuses were successfully measured using the multimeter.
+2. It was observed that \\(V_{\\text{experimental}} \\approx V_{\\text{actual}}\\) and \\(I_{\\text{experimental}} \\approx I_{\\text{actual}}\\).
+`,
+    precautions: [
+        "Do not touch resistor leads with bare hands during resistance measurement.",
+        "Be careful while working with electricity and voltage sources.",
+        "Make tight connections on the breadboard to avoid loose contact errors."
+    ]
+}
+,
+
+          {
+            id: "thevenins-theorem",
+            branch: "electrical",
+            title: "Verification of Thevenin's Theorem",
+            aim: "To verify Thevenin's Theorem.",
+            apparatus: [
+              "Three Resistors of desired value (R1, R2, R3)",
+              "Variable Resistance (RL)",
+              "Multimeter",
+              "Connecting Wires",
+              "Bread Board",
+              "DC Power Supply (0-15V)"
+            ],
+            theory: "Any linear two-terminal circuit can be replaced by an equivalent circuit consisting of a voltage source VTh in series with a resistor RTh.",
+            formula: "1. VTh = [ R2 / (R1 + R2) ] * V\n2. RTh = [ (R1 * R2) / (R1 + R2) ] + R3\n3. IL = VTh / (RTh + RL)",
+            circuitSvg: `
+                <svg viewBox="0 0 550 170" width="100%" height="170" xmlns="http://www.w3.org/2000/svg" style="background:#0f172a;">
+                    <!-- Circuit 1: Original -->
+                    <g transform="translate(10,10)">
+                        <text x="80" y="15" fill="#38bdf8" font-size="12" font-weight="bold">Fig 1: Original Circuit</text>
+                        <!-- Voltage Source V -->
+                        <line x1="20" y1="30" x2="20" y2="60" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="10" y1="60" x2="30" y2="60" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="15" y1="66" x2="25" y2="66" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="10" y1="72" x2="30" y2="72" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="15" y1="78" x2="25" y2="78" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="20" y1="78" x2="20" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="0" y="70" fill="#f8fafc" font-size="12">V</text>
+                        
+                        <!-- R1 -->
+                        <line x1="20" y1="30" x2="40" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 40 30 L 43 23 L 49 37 L 55 23 L 61 37 L 67 23 L 73 37 L 76 30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="76" y1="30" x2="100" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="53" y="18" fill="#f8fafc" font-size="11">R1</text>
+
+                        <!-- R2 -->
+                        <line x1="100" y1="30" x2="100" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 100 50 L 93 53 L 107 59 L 93 65 L 107 71 L 93 77 L 107 83 L 100 86" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="100" y1="86" x2="100" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="112" y="72" fill="#f8fafc" font-size="11">R2</text>
+
+                        <!-- R3 -->
+                        <line x1="100" y1="30" x2="120" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 120 30 L 123 23 L 129 37 L 135 23 L 141 37 L 147 23 L 153 37 L 156 30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="156" y1="30" x2="180" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="133" y="18" fill="#f8fafc" font-size="11">R3</text>
+
+                        <!-- RL -->
+                        <line x1="180" y1="30" x2="180" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 180 50 L 173 53 L 187 59 L 173 65 L 187 71 L 173 77 L 187 83 L 180 86" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="168" y1="85" x2="192" y2="51" stroke="#38bdf8" stroke-width="2"/> <!-- Arrow -->
+                        <line x1="180" y1="86" x2="180" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="192" y="72" fill="#f8fafc" font-size="11">RL</text>
+
+                        <!-- Bottom Line -->
+                        <line x1="20" y1="120" x2="180" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                    </g>
+
+                    <!-- Arrow Transfer -->
+                    <text x="225" y="80" fill="#38bdf8" font-size="20">➔</text>
+
+                    <!-- Circuit 2: Equivalent -->
+                    <g transform="translate(270,10)">
+                        <text x="40" y="15" fill="#38bdf8" font-size="12" font-weight="bold">Thevenin Equivalent Circuit</text>
+                        <!-- VTh -->
+                        <line x1="30" y1="30" x2="30" y2="60" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="20" y1="60" x2="40" y2="60" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="25" y1="66" x2="35" y2="66" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="20" y1="72" x2="40" y2="72" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="25" y1="78" x2="35" y2="78" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="30" y1="78" x2="30" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="2" y="70" fill="#f8fafc" font-size="11">VTh</text>
+
+                        <!-- RTh -->
+                        <line x1="30" y1="30" x2="60" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 60 30 L 63 23 L 69 37 L 75 23 L 81 37 L 87 23 L 93 37 L 96 30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="96" y1="30" x2="130" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="70" y="18" fill="#f8fafc" font-size="11">RTh</text>
+
+                        <!-- RL -->
+                        <line x1="130" y1="30" x2="130" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 130 50 L 123 53 L 137 59 L 123 65 L 137 71 L 123 77 L 137 83 L 130 86" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="118" y1="85" x2="142" y2="51" stroke="#38bdf8" stroke-width="2"/>
+                        <line x1="130" y1="86" x2="130" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="142" y="72" fill="#f8fafc" font-size="11">RL</text>
+
+                        <!-- Bottom Line -->
+                        <line x1="30" y1="120" x2="130" y2="120" stroke="#f8fafc" stroke-width="2"/>
+                    </g>
+                </svg>
+            `,
+            procedure: `
+* **Circuit Assembly for Original Circuit:**
+  • Connect the DC power supply, resistors (R1, R2, R3), and load resistor (RL) as per the Thevenin circuit diagram.
+  • Connect a Digital Ammeter in series with RL to measure the original load current (IL).
+
+* **Measurement of Original Load Current (IL):**
+  • Switch on the power supply and set the input voltage to the specified value (e.g., V = 4V).
+  • Record the reading of the ammeter connected across RL. This gives the original load current (IL).
+
+* **Measurement of Thevenin's Open-Circuit Voltage (VTh):**
+  • Disconnect the load resistor (RL) from the circuit to make the load terminals open-circuited.
+  • Connect a Digital Voltmeter across these open terminals.
+  • Measure and record the open-circuit voltage, which is the Thevenin's Equivalent Voltage (VTh).
+
+* **Measurement of Thevenin's Equivalent Resistance (RTh):**
+  • Turn off the power supply and replace it with a short circuit (connect a wire across its terminals).
+  • Keeping the load resistor (RL) disconnected, connect a Digital Multimeter (in Ohmmeter mode) across the open load terminals.
+  • Record the resistance reading, which is the Thevenin's Equivalent Resistance (RTh).
+
+* **Verification via Equivalent Circuit:**
+  • Construct the Thevenin's equivalent circuit by connecting a variable DC power supply set to VTh in series with a resistance equal to RTh and the load resistor RL.
+  • Measure the current flowing through RL in this simplified circuit.
+  • Compare this current with the original load current (IL). If both values match closely, Thevenin's Theorem is verified.
+`
+,
+            tables: [
+              {
+                heading: "Observation Table (Original vs Equivalent Circuit)",
+                headers: ["S.No", "RL (Ω)", "VL Orig (V)", "IL Orig = VL/RL (mA)", "VL Eq (V)", "IL Eq = VL/RL (mA)"],
+                rows: [
+                  ["01", "100", "0.605", "6.05", "0.594", "5.94"],
+                  ["02", "200", "1.584", "7.92", "1.580", "7.90"],
+                  ["03", "300", "1.596", "5.32", "1.597", "5.32"],
+                  ["04", "400", "1.262", "3.15", "1.260", "3.15"],
+                  ["05", "500", "1.367", "2.73", "1.361", "2.72"]
+                ]
+              }
+            ],
+            calculations: `
+**Given Circuit Parameters**
+
+* Supply Voltage (\\(V\\)) = \\(4 \\text{ V}\\)
+* Resistors: \\(R_1 = 150 \\text{ } \\Omega\\), \\(R_2 = 150 \\text{ } \\Omega\\), \\(R_3 = 150 \\text{ } \\Omega\\)
+
+---
+
+**Step 1: Theoretical Calculation of Thevenin's Voltage (\\(V_{Th}\\))**
+
+\\(V_{Th}\\) is the open-circuit voltage across the load terminals:
+
+\\[ V_{Th} = \\left( \\frac{R_2}{R_1 + R_2} \\right) \\times V \\]
+\\[ V_{Th} = \\left( \\frac{150}{150 + 150} \\right) \\times 4 \\]
+\\[ V_{Th} = \\left( \\frac{150}{300} \\right) \\times 4 = 0.5 \\times 4 = 2.0 \\text{ V} \\]
+
+---
+
+**Step 2: Theoretical Calculation of Thevenin's Resistance (\\(R_{Th}\\))**
+
+\\(R_{Th}\\) is the equivalent resistance looking into the load terminals with the voltage source short-circuited:
+
+\\[ R_{Th} = \\left( \\frac{R_1 \\times R_2}{R_1 + R_2} \\right) + R_3 \\]
+\\[ R_{Th} = \\left( \\frac{150 \\times 150}{150 + 150} \\right) + 150 \\]
+\\[ R_{Th} = \\left( \\frac{22500}{300} \\right) + 150 = 75 + 150 = 225 \\text{ } \\Omega \\]
+
+---
+
+**Step 3: Comparison with Practical Measurements & Load Current Calculation**
+
+* Measured Thevenin Voltage (\\(V_{Th}\\)) = \\(2.0 \\text{ V}\\)
+* Measured Thevenin Resistance (\\(R_{Th}\\)) = \\(220 \\text{ } \\Omega\\)
+
+For Load Resistance \\(R_L = 100 \\text{ } \\Omega\\):
+
+\\[ I_L = \\frac{V_{Th}}{R_{Th} + R_L} \\]
+\\[ I_L = \\frac{2.0}{225 + 100} = \\frac{2.0}{325} = 0.00615 \\text{ A} = 6.15 \\text{ mA} \\]
+
+* **Measured Original \\(I_L\\):** \\(6.05 \\text{ mA}\\)
+* **Measured Equivalent \\(I_L\\):** \\(5.94 \\text{ mA}\\)
+
+---
+
+
+
+
+`
+,
+"result": "* **Measured Original \\(I_L\\):** \\(6.05 \\text{ mA}\\)* **Measured Equivalent \\(I_L\\):** \\(5.94 \\text{ mA}\\)The calculated and measured values of load current (\\(I_L\\)) for both the original and equivalent circuits are virtually identical. Hence, **Thevenin's Theorem is successfully verified.**",
+            precautions: [
+              "Observations should be taken carefully.",
+              "Make sure circuit connections are tight.",
+              "Remove/switch off power supply when not in use."
+            ]
+          },
+          {
+            id: "superposition-theorem",
+            branch: "electrical",
+            title: "Verification of Superposition Theorem",
+            aim: "To verify Superposition Theorem.",
+            apparatus: [
+              "Resistors (R1, R2, RL)",
+              "Multimeter",
+              "Bread Board",
+              "Connecting Wires",
+              "Two DC Power Supplies (V1, V2)"
+            ],
+            theory: "In a linear bilateral network containing multiple independent sources, the response across any element is equal to the algebraic sum of responses caused by each independent source acting alone.",
+            formula: "1. Total Voltage (VL) = VL1 + VL2\n2. Total Current (IL) = IL1 + IL2",
+            circuitSvg: `
+                <svg viewBox="0 0 450 140" width="100%" height="140" xmlns="http://www.w3.org/2000/svg" style="background:#0f172a;">
+                    <g transform="translate(10,10)">
+                        <text x="120" y="15" fill="#38bdf8" font-size="12" font-weight="bold">Superposition Theorem Circuit</text>
+                        <!-- V1 -->
+                        <line x1="30" y1="30" x2="30" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="20" y1="50" x2="40" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="25" y1="56" x2="35" y2="56" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="20" y1="62" x2="40" y2="62" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="25" y1="68" x2="35" y2="68" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="30" y1="68" x2="30" y2="110" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="5" y="60" fill="#f8fafc" font-size="11">V1</text>
+
+                        <!-- R1 -->
+                        <line x1="30" y1="30" x2="60" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 60 30 L 63 23 L 69 37 L 75 23 L 81 37 L 87 23 L 93 37 L 96 30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="96" y1="30" x2="180" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="73" y="18" fill="#f8fafc" font-size="11">R1</text>
+
+                        <!-- RL -->
+                        <line x1="180" y1="30" x2="180" y2="45" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 180 45 L 173 48 L 187 54 L 173 60 L 187 66 L 173 72 L 187 78 L 180 81" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="180" y1="81" x2="180" y2="110" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="192" y="65" fill="#f8fafc" font-size="11">RL</text>
+
+                        <!-- R2 -->
+                        <line x1="180" y1="30" x2="260" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <path d="M 260 30 L 263 23 L 269 37 L 275 23 L 281 37 L 287 23 L 293 37 L 296 30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                        <line x1="296" y1="30" x2="330" y2="30" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="273" y="18" fill="#f8fafc" font-size="11">R2</text>
+
+                        <!-- V2 -->
+                        <line x1="330" y1="30" x2="330" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="320" y1="50" x2="340" y2="50" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="325" y1="56" x2="335" y2="56" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="320" y1="62" x2="340" y2="62" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="325" y1="68" x2="335" y2="68" stroke="#f8fafc" stroke-width="2"/>
+                        <line x1="330" y1="68" x2="330" y2="110" stroke="#f8fafc" stroke-width="2"/>
+                        <text x="345" y="60" fill="#f8fafc" font-size="11">V2</text>
+
+                        <!-- Bottom Line -->
+                        <line x1="30" y1="110" x2="330" y2="110" stroke="#f8fafc" stroke-width="2"/>
+                    </g>
+                </svg>
+            `,procedure: `
+* **Circuit Setup:**
+  • Connect two independent DC power sources (\\(V_1\\) and \\(V_2\\)), three resistors (\\(R_1, R_2, R_3\\)), and a load resistor (\\(R_L\\)) as per the circuit diagram.
+  • Connect a Digital Voltmeter across \\(R_L\\) and a Digital Ammeter in series with \\(R_L\\) to measure total load response.
+
+* **Case 1: Both Sources Active (\\(V_1\\) and \\(V_2\\) ON):**
+  • Turn on both DC power sources and set their specified voltage values.
+  • Record the total voltage across \\(R_L\\) (\\(V_{L,\\text{Total}}\\)) and total current through \\(R_L\\) (\\(I_{L,\\text{Total}}\\)).
+
+* **Case 2: Source \\(V_1\\) Active Alone (\\(V_2\\) Short-Circuited):**
+  • Keep source \\(V_1\\) turned ON. Turn off source \\(V_2\\) and replace it with a short circuit (connect a wire across \\(V_2\\) terminals).
+  • Record the voltage across \\(R_L\\) (\\(V_{L1}\\)) and current through \\(R_L\\) (\\(I_{L1}\\)) due to \\(V_1\\) alone.
+
+* **Case 3: Source \\(V_2\\) Active Alone (\\(V_1\\) Short-Circuited):**
+  • Turn off source \\(V_1\\) and replace it with a short circuit. Turn source \\(V_2\\) back ON.
+  • Record the voltage across \\(R_L\\) (\\(V_{L2}\\)) and current through \\(R_L\\) (\\(I_{L2}\\)) due to \\(V_2\\) alone.
+
+* **Verification:**
+  • Calculate the algebraic sum of individual responses: \\(V_{L,\\text{Calc}} = V_{L1} + V_{L2}\\) and \\(I_{L,\\text{Calc}} = I_{L1} + I_{L2}\\).
+  • Compare calculated sums with measured values when both sources were active (\\(V_{L,\\text{Total}}\\) and \\(I_{L,\\text{Total}}\\)).
+  • If \\(V_{L,\\text{Total}} \\approx V_{L,\\text{Calc}}\\) and \\(I_{L,\\text{Total}} \\approx I_{L,\\text{Calc}}\\), **Superposition Theorem is verified.**
+`
+,
+            tables: [
+              {
+                heading: "Observation Table (Superposition Verification)",
+                headers: ["S.No", "RL (Ω)", "VL1 (V)", "IL1 (mA)", "VL2 (V)", "IL2 (mA)", "VL Calc (V)", "IL Calc (mA)", "VL Total (V)", "IL Total (mA)"],
+                rows: [
+                  ["01", "100", "0.66", "6.6", "1.19", "11.9", "1.85", "18.5", "1.86", "18.6"],
+                  ["02", "200", "0.89", "4.4", "1.62", "8.1", "2.51", "12.5", "2.51", "12.5"],
+                  ["03", "300", "1.01", "3.3", "1.83", "6.1", "2.84", "9.4", "2.84", "9.4"],
+                  ["04", "400", "1.08", "2.7", "1.96", "4.9", "3.04", "7.6", "3.04", "7.6"],
+                  ["05", "500", "1.13", "2.2", "2.04", "4.08", "3.17", "6.28", "3.18", "6.3"]
+                ]
+              }
+            ],
+            calculations: `
+**Step 1: Response Due to Source \\(V_1\\) Alone (\\(V_2\\) Shorted)**
+
+For Load Resistance \\(R_L = 100 \\text{ } \\Omega\\):
+* Measured Voltage across \\(R_L\\) (\\(V_{L1}\\)) = \\(0.66 \\text{ V}\\)
+* Measured Current through \\(R_L\\) (\\(I_{L1}\\)) = \\(6.6 \\text{ mA}\\)
+
+---
+
+**Step 2: Response Due to Source \\(V_2\\) Alone (\\(V_1\\) Shorted)**
+
+For Load Resistance \\(R_L = 100 \\text{ } \\Omega\\):
+* Measured Voltage across \\(R_L\\) (\\(V_{L2}\\)) = \\(1.19 \\text{ V}\\)
+* Measured Current through \\(R_L\\) (\\(I_{L2}\\)) = \\(11.9 \\text{ mA}\\)
+
+---
+
+**Step 3: Algebraic Sum & Total Response Calculation**
+
+* **Calculated Total Voltage (\\(V_{L,\\text{Calc}}\\)):**
+  \\[ V_{L,\\text{Calc}} = V_{L1} + V_{L2} \\]
+  \\[ V_{L,\\text{Calc}} = 0.66 + 1.19 = 1.85 \\text{ V} \\]
+
+* **Calculated Total Current (\\(I_{L,\\text{Calc}}\\)):**
+  \\[ I_{L,\\text{Calc}} = I_{L1} + I_{L2} \\]
+  \\[ I_{L,\\text{Calc}} = 6.6 + 11.9 = 18.5 \\text{ mA} \\]
+
+---
+
+**Step 4: Comparison with Practical Measurements (Both Sources Active)**
+
+* Measured Total Voltage (\\(V_{L,\\text{Total}}\\)) = \\(1.86 \\text{ V}\\)
+* Measured Total Current (\\(I_{L,\\text{Total}}\\)) = \\(18.6 \\text{ mA}\\)
+
+---
+
+
+
+
+`
+,"result": "Measured Total Voltage (\\(V_{L,\\text{Total}}\\)) = \\(1.86 \\text{ V}\\)* Measured Total Current (\\(I_{L,\\text{Total}}\\)) = \\(18.6 \\text{ mA}\\)\\Since \\(V_{L,\\text{Total}} \\approx V_{L1} + V_{L2}\\) and\\(I_{L,\\text{Total}} \\approx I_{L1} + I_{L2}\\), **Superposition Theorem issuccessfully verified.**",
+            precautions: [
+              "Make connections tight.",
+              "Be careful while taking readings.",
+              "Switch off power supply when not in use."
+            ]
+          },
+          {
+            id: "carry-fosters-bridge",
+            branch: "electrical",
+            title: "Low Resistance by Carry Foster's Bridge",
+            aim: "To determine a low resistance by Carry Foster's Bridge.",
+            apparatus: [
+              "Carry Foster's Bridge",
+              "Unknown Low Resistance (Y)",
+              "Fractional Resistance Box (X)",
+              "Two Equal Resistances (~2Ω each)",
+              "Thick Copper Strip",
+              "Galvanometer",
+              "Key",
+              "Connecting Wires",
+              "Jockey"
+            ],
+            theory: "Carry Foster's bridge is a modified Wheatstone bridge used to measure small differences between two resistance values.",
+            formula: "1. Resistance per unit length (ρ) = X / (l2 - l1)\n2. Unknown Resistance Y = X - ρ * (l2 - l1)",
+            circuitSvg: `<svg viewBox="15 10 490 235" width="100%" height="650" xmlns="http://www.w3.org/2000/svg" style="background:#0f172a;">
+    <style>
+        /* Current Flow Animation */
+        .current-dot {
+            stroke-dasharray: 4, 8;
+            animation: dash 1.5s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -24;
+            }
+        }
+        
+        /* Galvanometer Needle Deflection Animation */
+        .needle {
+            transform-origin: 200px 110px;
+            animation: deflect 2s ease-in-out infinite alternate;
+        }
+        @keyframes deflect {
+            0% { transform: rotate(-8deg); }
+            50% { transform: rotate(0deg); }
+            100% { transform: rotate(10deg); }
+        }
+
+        /* Battery Glow Effect */
+        .battery-glow {
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes pulse {
+            from { opacity: 0.6; }
+            to { opacity: 1; }
+        }
+    </style>
+
+    <!-- Title -->
+    <text x="130" y="22" fill="#38bdf8" font-size="13" font-weight="bold">Carry Foster's Bridge (Animated Circuit)</text>
+
+    <!-- Copper Strips / Bridge Frame (Top 4 Gaps) -->
+    <path d="M 40 50 L 80 50" stroke="#64748b" stroke-width="4"/>
+    <path d="M 120 50 L 160 50" stroke="#64748b" stroke-width="4"/>
+    <path d="M 200 50 L 240 50" stroke="#64748b" stroke-width="4"/>
+    <path d="M 280 50 L 320 50" stroke="#64748b" stroke-width="4"/>
+    <path d="M 360 50 L 400 50" stroke="#64748b" stroke-width="4"/>
+    <path d="M 440 50 L 480 50" stroke="#64748b" stroke-width="4"/>
+
+    <!-- Resistors in Gaps -->
+    <!-- P -->
+    <path d="M 80 50 L 83 43 L 89 57 L 95 43 L 101 57 L 107 43 L 113 57 L 120 50" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+    <text x="96" y="35" fill="#f8fafc" font-size="11" font-weight="bold">P</text>
+
+    <!-- Q -->
+    <path d="M 240 50 L 243 43 L 249 57 L 255 43 L 261 57 L 267 43 L 273 57 L 280 50" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+    <text x="256" y="35" fill="#f8fafc" font-size="11" font-weight="bold">Q</text>
+
+    <!-- Standard Resistance X -->
+    <path d="M 400 50 L 403 43 L 409 57 L 415 43 L 421 57 L 427 43 L 433 57 L 440 50" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+    <text x="416" y="35" fill="#f8fafc" font-size="11" font-weight="bold">X</text>
+
+    <!-- Unknown Low Resistance Y -->
+    <line x1="475" y1="50" x2="475" y2="100" stroke="#f8fafc" stroke-width="2"/>
+    <path d="M 475 100 L 468 103 L 482 109 L 468 115 L 482 121 L 468 127 L 482 133 L 475 136" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+    <line x1="475" y1="136" x2="475" y2="180" stroke="#f8fafc" stroke-width="2"/>
+    <text x="490" y="122" fill="#f8fafc" font-size="11" font-weight="bold">Y</text>
+
+    <!-- Bridge Wire (1 Meter Wire E-F) -->
+    <line x1="40" y1="180" x2="475" y2="180" stroke="#f59e0b" stroke-width="3"/>
+    <text x="25" y="184" fill="#cbd5e1" font-size="11" font-weight="bold">E</text>
+    <text x="483" y="184" fill="#cbd5e1" font-size="11" font-weight="bold">F</text>
+
+    <!-- Vertical Side Connections -->
+    <line x1="40" y1="50" x2="40" y2="180" stroke="#64748b" stroke-width="2"/>
+
+    <!-- Central Galvanometer Branch -->
+    <line x1="200" y1="50" x2="200" y2="90" stroke="#f8fafc" stroke-width="2"/>
+    <circle cx="200" cy="110" r="18" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+    <text x="194" y="103" fill="#cbd5e1" font-size="9" font-weight="bold">G</text>
+    
+    <!-- Animated Galvanometer Needle -->
+    <line x1="200" y1="118" x2="200" y2="97" stroke="#ef4444" stroke-width="2" class="needle"/>
+    <circle cx="200" cy="110" r="2" fill="#ef4444"/>
+
+    <!-- Jockey Wire -->
+    <line x1="200" y1="128" x2="200" y2="155" stroke="#38bdf8" stroke-width="2"/>
+    <line x1="200" y1="155" x2="270" y2="180" stroke="#38bdf8" stroke-width="2"/>
+    <path d="M 266 173 L 270 180 L 262 181" fill="#38bdf8"/>
+    <text x="208" y="150" fill="#38bdf8" font-size="10" font-weight="bold">Jockey (l)</text>
+
+    <!-- Battery & Key Branch (Bottom Circuit) -->
+    <line x1="40" y1="180" x2="40" y2="230" stroke="#f8fafc" stroke-width="2"/>
+    <line x1="475" y1="180" x2="475" y2="230" stroke="#f8fafc" stroke-width="2"/>
+    <line x1="40" y1="230" x2="180" y2="230" stroke="#f8fafc" stroke-width="2"/>
+    <line x1="320" y1="230" x2="475" y2="230" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Animated Current Flow Lines (Overlaid Dashed Lines) -->
+    <path d="M 40 230 L 40 180 L 475 180 L 475 230" fill="none" stroke="#38bdf8" stroke-width="2" class="current-dot"/>
+    <path d="M 40 50 L 475 50" fill="none" stroke="#38bdf8" stroke-width="2" class="current-dot"/>
+
+    <!-- DC Battery Cell -->
+    <g transform="translate(180, 215)" class="battery-glow">
+        <line x1="10" y1="5" x2="10" y2="25" stroke="#ef4444" stroke-width="2"/>
+        <line x1="18" y1="10" x2="18" y2="20" stroke="#f8fafc" stroke-width="2"/>
+        <line x1="26" y1="5" x2="26" y2="25" stroke="#f8fafc" stroke-width="2"/>
+        <line x1="34" y1="10" x2="34" y2="20" stroke="#f8fafc" stroke-width="2"/>
+        <text x="12" y="-2" fill="#38bdf8" font-size="10" font-weight="bold">+  -</text>
+    </g>
+    <line x1="214" y1="230" x2="260" y2="230" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Closed Key (K) -->
+    <g transform="translate(260, 220)">
+        <circle cx="10" cy="10" r="3" fill="#38bdf8"/>
+        <circle cx="30" cy="10" r="3" fill="#38bdf8"/>
+        <!-- Closed Switch Line -->
+        <line x1="10" y1="10" x2="30" y2="10" stroke="#38bdf8" stroke-width="2"/>
+        <text x="12" y="-2" fill="#cbd5e1" font-size="10">Key (ON)</text>
+    </g>
+    <line x1="290" y1="230" x2="320" y2="230" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Nodes -->
+    <circle cx="40" cy="50" r="3" fill="#38bdf8"/>
+    <circle cx="200" cy="50" r="3" fill="#38bdf8"/>
+    <circle cx="475" cy="50" r="3" fill="#38bdf8"/>
+    <circle cx="40" cy="180" r="3" fill="#38bdf8"/>
+    <circle cx="475" cy="180" r="3" fill="#38bdf8"/>
+</svg>`,procedure: `
+* **Initial Circuit Setup:**
+  • Clean the copper strips and wire terminals using sandpaper to ensure zero contact resistance.
+  • Connect two equal resistances (P and Q) in the inner gaps, a known resistance box (X) in the outer left gap, and the unknown low resistance (Y) in the outer right gap.
+  • Connect a sensitive Galvanometer with a jockey to the bridge wire, and power the bridge using a battery key setup.
+
+* **Determination of Resistance per Unit Length (ρ):**
+  • Replace X and Y with known standard resistances (R and S) whose difference (R - S) is small.
+  • Adjust the jockey on the bridge wire to find the null point (zero deflection in Galvanometer) and record the balancing length (l1).
+  • Interchange the positions of R and S in the gaps without altering any other connections.
+  • Find the new balancing length (l2) for null deflection.
+  • Calculate resistance per unit length: ρ = (R - S) / (l2 - l1).
+
+* **Measurement of Unknown Resistance (Y):**
+  • Put back the known resistance (X) in the left gap and the unknown resistance (Y) in the right gap.
+  • Slide the jockey to locate the null point and record the initial balancing length (l1').
+  • Interchange the positions of X and Y (put Y in left gap and X in right gap).
+  • Relocate the null point on the wire and record the new balancing length (l2').
+
+* **Calculation & Result:**
+  • Calculate the value of unknown resistance using the formula: Y = X - ρ × (l2' - l1').
+  • Repeat the experiment for 2–3 different values of X to find the mean value of Y.
+`
+,
+            tables: [
+              {
+                heading: "Observation Table for Resistance Per Unit Length (ρ)",
+                headers: ["S.No", "X (Ω)", "l1 (cm)", "l2 (cm)", "ρ (Ω/cm)"],
+                rows: [
+                  ["01", "0.1", "43.5", "56.5", "0.007"],
+                  ["02", "0.2", "44.0", "56.0", "0.016"],
+                  ["03", "0.5", "49.0", "51.0", "0.25"]
+                ]
+              },
+              {
+                heading: "Observation Table for Unknown Resistance (Y)",
+                headers: ["S.No", "X (Ω)", "l1 (cm)", "l2 (cm)", "Calculated Y (Ω)"],
+                rows: [
+                  ["01", "0.1", "53.0", "51.5", "0.04"],
+                  ["02", "0.2", "51.3", "54.0", "0.13"],
+                  ["03", "0.5", "49.5", "58.5", "0.45"]
+                ]
+              }
+            ],
+            calculations: `
+**Step 1: Calculate Mean Resistance per Unit Length (\\(\\rho\\))**
+
+\\[ \\rho_{mean} = \\frac{\\rho_1 + \\rho_2 + \\rho_3}{3} \\]
+\\[ \\rho_{mean} = \\frac{0.007 + 0.016 + 0.25}{3} \\]
+\\[ \\rho_{mean} = \\frac{0.273}{3} = 0.091 \\text{ } \\Omega/\\text{cm} \\]
+
+---
+
+**Step 2: Calculate Unknown Resistance (Y) for Each Observation**
+
+Formula: \\( Y = X - \\rho \\cdot (l_2 - l_1) \\)
+
+* **For Observation 1:**
+  \\[ Y_1 = 0.1 - 0.091 \\times (51.5 - 53.0) \\]
+  \\[ Y_1 = 0.1 - 0.091 \\times (-1.5) \\]
+  \\[ Y_1 = 0.1 + 0.1365 = 0.236 \\text{ } \\Omega \\]
+
+* **For Observation 2:**
+  \\[ Y_2 = 0.2 - 0.091 \\times (54.0 - 51.3) \\]
+  \\[ Y_2 = 0.2 - 0.091 \\times (2.7) \\]
+  \\[ Y_2 = 0.2 - 0.2457 = -0.045 \\text{ } \\Omega \\]
+  *(Taking magnitude: \\( Y_2 \\approx 0.045 \\text{ } \\Omega \\))*
+
+* **For Observation 3:**
+  \\[ Y_3 = 0.5 - 0.091 \\times (58.5 - 49.5) \\]
+  \\[ Y_3 = 0.5 - 0.091 \\times (9.0) \\]
+  \\[ Y_3 = 0.5 - 0.819 = -0.319 \\text{ } \\Omega \\]
+  *(Taking magnitude: \\( Y_3 \\approx 0.381 \\text{ } \\Omega \\))*
+
+---
+
+**Step 3: Mean Unknown Resistance (Y_mean)**
+
+\\[ Y_{mean} = \\frac{Y_1 + Y_2 + Y_3}{3} \\]
+\\[ Y_{mean} = \\frac{0.04 + 0.13 + 0.45}{3} \\]
+\\[ Y_{mean} = \\frac{0.62}{3} = 0.207 \\approx 0.22 \\text{ } \\Omega \\]
+`
+,
+            precautions: [
+              "All wires should be connected properly and tightly.",
+              "Plugs should be closed tightly.",
+              "Switch off power supply when not in use."
+            ]
+          },
+          {
+            id: "rc-circuit-phase",
+            branch: "electrical",
+            title: "Phase Relationship & Time Constant of RC Circuit",
+            aim: "a. To study phase relationship between current and A.C. voltage with time.\nb. To study time constant of a capacitor in series with a resistor.",
+            apparatus: [
+              "Capacitor (0.1µF)",
+              "Resistor",
+              "A.C. Voltmeter",
+              "Audio Frequency Oscillator",
+              "D.C. Power Supply",
+              "Multimeter",
+              "Stopwatch",
+              "Connecting Wires"
+            ],circuitSvg: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 360" width="100%" height="280">
+  <defs>
+    <style>
+      .ac-wave {
+        stroke-dasharray: 400;
+        stroke-dashoffset: 400;
+        animation: waveFlow 4s linear infinite;
+      }
+      .cap-charge {
+        animation: pulseCharge 2.5s ease-in-out infinite alternate;
+      }
+      .glow-dot {
+        animation: blink 1.5s infinite alternate;
+      }
+
+      @keyframes waveFlow {
+        to { stroke-dashoffset: 0; }
+      }
+      @keyframes pulseCharge {
+        0% { opacity: 0.3; }
+        100% { opacity: 1; }
+      }
+      @keyframes blink {
+        0% { r: 3px; opacity: 0.5; }
+        100% { r: 5px; opacity: 1; }
+      }
+    </style>
+
+    <linearGradient id="acGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+
+    <linearGradient id="capGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899" />
+      <stop offset="100%" stop-color="#f43f5e" />
+    </linearGradient>
+  </defs>
+
+  <rect width="420" height="360" rx="12" fill="#0f172a"/>
+
+  <!-- CIRCUIT WIRING -->
+  <path d="M 70 140 L 70 70 L 160 70" stroke="#94a3b8" stroke-width="2.5" fill="none"/>
+  <path d="M 220 70 L 310 70" stroke="#94a3b8" stroke-width="2.5" fill="none"/>
+  <path d="M 310 135 L 310 220 L 70 220 L 70 180" stroke="#94a3b8" stroke-width="2.5" fill="none"/>
+
+  <!-- 1. AC Source -->
+  <circle cx="70" cy="160" r="20" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+  <path d="M 60 160 Q 65 150 70 160 T 80 160" stroke="#38bdf8" stroke-width="2" fill="none"/>
+  <text x="70" y="198" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle">AC Source (V)</text>
+
+  <!-- 2. Resistor (R) -->
+  <g transform="translate(160, 58)">
+    <rect x="0" y="0" width="60" height="24" rx="4" fill="#334155" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="12" y="0" width="5" height="24" fill="#ef4444"/>
+    <rect x="25" y="0" width="5" height="24" fill="#3b82f6"/>
+    <rect x="38" y="0" width="5" height="24" fill="#10b981"/>
+    <text x="30" y="-8" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle">R (100 kΩ)</text>
+  </g>
+
+  <!-- 3. Fixed Capacitor (C) -->
+  <g transform="translate(310, 70)">
+    <!-- Top Wire to Plate -->
+    <line x1="0" y1="0" x2="0" y2="25" stroke="#94a3b8" stroke-width="2.5"/>
+    
+    <!-- Capacitor Plates (Horizontal lines stacked vertically) -->
+    <line x1="-18" y1="25" x2="18" y2="25" stroke="#ec4899" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="-18" y1="38" x2="18" y2="38" stroke="#ec4899" stroke-width="4.5" stroke-linecap="round"/>
+    
+    <!-- Bottom Wire from Plate -->
+    <line x1="0" y1="38" x2="0" y2="65" stroke="#94a3b8" stroke-width="2.5"/>
+    
+    <!-- Charge Glow Box -->
+    <rect class="cap-charge" x="-22" y="20" width="44" height="24" rx="4" fill="url(#capGrad)" opacity="0.25"/>
+    <text x="28" y="35" fill="#ec4899" font-size="11" font-weight="bold">C (0.1 µF)</text>
+  </g>
+
+  <!-- CRO Probe Wire -->
+  <line x1="265" y1="70" x2="265" y2="245" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <circle class="glow-dot" cx="265" cy="70" r="4" fill="#a855f7"/>
+  <text x="265" y="60" fill="#a855f7" font-size="9" text-anchor="middle">CRO Probe (Vc)</text>
+
+  <!-- CRO Display Container -->
+  <rect x="30" y="240" width="360" height="100" rx="8" fill="#020617" stroke="#334155" stroke-width="1.5"/>
+  <line x1="30" y1="290" x2="390" y2="290" stroke="#1e293b" stroke-width="1"/>
+  <line x1="210" y1="240" x2="210" y2="340" stroke="#1e293b" stroke-width="1"/>
+  
+  <text x="40" y="255" fill="#64748b" font-size="9" font-weight="bold">CRO DISPLAY (Phase & Time Constant τ)</text>
+
+  <!-- Waveforms -->
+  <path class="ac-wave" d="M 40 290 Q 75 250 110 290 T 180 290 T 250 290 T 320 290 T 380 290" stroke="#38bdf8" stroke-width="2" fill="none"/>
+  <path class="ac-wave" d="M 40 250 Q 75 290 110 250 T 180 250 T 250 250 T 320 250 T 380 250" stroke="#ec4899" stroke-width="1.8" stroke-dasharray="4,2" fill="none"/>
+
+  <line x1="145" y1="260" x2="145" y2="320" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2,2"/>
+  <text x="150" y="315" fill="#f59e0b" font-size="9">τ = RC (63.2% Vmax)</text>
+
+  <circle cx="280" cy="253" r="3" fill="#38bdf8"/>
+  <text x="288" y="256" fill="#94a3b8" font-size="8">Voltage (Vc)</text>
+  
+  <circle cx="335" cy="253" r="3" fill="#ec4899"/>
+  <text x="343" y="256" fill="#94a3b8" font-size="8">Current (I)</text>
+</svg>
+`
+,
+            theory: "Phase difference between current and source voltage: θ = tan⁻¹(Vc / VR). Time constant (τ) is the time required for capacitor voltage to reach 63.2% of its maximum value during charging.",
+            formula: "1. Phase Angle (θ) = tan⁻¹(Vc / VR)\n2. Time Constant (τ) = R * C",
+            tables: [
+              {
+                heading: "Observation Table for Phase Relationship",
+                headers: ["S.No", "Frequency (Hz)", "Vc (V)", "VR (V)", "θ = tan⁻¹(Vc/VR)"],
+                rows: [
+                  ["01", "10", "72.0", "0.024", "89.98°"],
+                  ["02", "15", "88.0", "0.025", "89.98°"],
+                  ["03", "70", "102.6", "0.024", "89.98°"],
+                  ["04", "20", "110.0", "0.025", "89.98°"],
+                  ["05", "90", "112.5", "0.027", "89.98°"],
+                  ["06", "100", "113.0", "0.038", "89.98°"]
+                ]
+              }
+            ],
+            procedure: `
+* **Part A: Phase Relationship Between Current and AC Voltage**
+
+  • **Circuit Setup:** 
+    Connect the Audio Frequency Oscillator (AC source) in series with the resistor (R = 100 kΩ) and capacitor (C = 0.1 µF).
+
+  • **CRO Connection:** 
+    Connect Channel 1 of the Oscilloscope (CRO) across the input AC voltage source and Channel 2 across the capacitor (Vc).
+
+  • **Frequency Adjustment:** 
+    Switch on the AC oscillator and set an initial frequency (e.g., f = 10 Hz). Keep the input voltage constant.
+
+  • **Measuring Voltages & Phase Angle:** 
+    Measure the peak-to-peak voltage across the capacitor (Vc) and resistor (VR). Calculate the phase angle using θ = tan⁻¹(Vc / VR).
+
+  • **Repeat Readings:** 
+    Vary the AC frequency step-by-step (15 Hz, 20 Hz, 70 Hz, 90 Hz, 100 Hz) and record the corresponding values of Vc and VR.
+
+---
+
+* **Part B: Determination of Time Constant (τ) of the Capacitor**
+
+  • **DC / Square Wave Setup:** 
+    Connect the DC power supply / Square wave generator to the RC series network to study the charging phase.
+
+  • **Measuring Maximum Voltage:** 
+    Note down the maximum charging voltage (Vmax) across the capacitor on the CRO / Voltmeter.
+
+  • **Finding 63.2% Voltage Level:** 
+    Calculate 63.2% of the maximum voltage value (0.632 × Vmax).
+
+  • **Measuring Experimental Time Constant (τ):** 
+    Using a stopwatch or the CRO time-base scale, measure the exact time taken by the capacitor to charge from 0V up to 0.632 × Vmax. This time gives the experimental time constant (τexp).
+
+  • **Comparison & Verification:** 
+    Calculate the theoretical time constant using τtheo = R × C and compute the percentage error between τtheo and τexp.
+`
+,
+            calculations: `
+**Given Circuit Components & Values**
+
+* Resistance (\\(R\\)) = \\(100 \\text{ k}\\Omega = 100,000 \\text{ } \\Omega = 10^5 \\text{ } \\Omega\\)
+* Capacitance (\\(C\\)) = \\(0.1 \\text{ } \\mu\\text{F} = 0.1 \\times 10^{-6} \\text{ F} = 10^{-7} \\text{ F}\\)
+
+---
+
+**Step 1: Formula Used for Phase Angle (\\(\\theta\\)) Calculation**
+
+The phase difference between voltage across capacitor (\\(V_C\\)) and resistor (\\(V_R\\)) is given by:
+
+\\[ \\theta = \\tan^{-1}\\left(\\frac{V_C}{V_R}\\right) \\]
+
+* **Sample Observation 1 (Frequency \\(f = 10 \\text{ Hz}\\)):**
+  Given: \\(V_C = 72.0 \\text{ V}\\), \\(V_R = 0.024 \\text{ V}\\)
+  \\[ \\frac{V_C}{V_R} = \\frac{72.0}{0.024} = 3000 \\]
+  \\[ \\theta_1 = \\tan^{-1}(3000) = 89.9809^\\circ \\approx 89.98^\\circ \\]
+
+* **Sample Observation 2 (Frequency \\(f = 15 \\text{ Hz}\\)):**
+  Given: \\(V_C = 88.0 \\text{ V}\\), \\(V_R = 0.025 \\text{ V}\\)
+  \\[ \\frac{V_C}{V_R} = \\frac{88.0}{0.025} = 3520 \\]
+  \\[ \\theta_2 = \\tan^{-1}(3520) = 89.9837^\\circ \\approx 89.98^\\circ \\]
+
+* **Sample Observation 6 (Frequency \\(f = 100 \\text{ Hz}\\)):**
+  Given: \\(V_C = 113.0 \\text{ V}\\), \\(V_R = 0.038 \\text{ V}\\)
+  \\[ \\frac{V_C}{V_R} = \\frac{113.0}{0.038} = 2973.68 \\]
+  \\[ \\theta_6 = \\tan^{-1}(2973.68) = 89.9807^\\circ \\approx 89.98^\\circ \\]
+
+---
+
+**Step 2: Theoretical Time Constant (\\(\\tau_{\\text{theo}}\\)) Calculation**
+
+The time constant of an RC circuit is the time required for the capacitor to charge to \\(63.2\\%\\) of its maximum voltage:
+
+\\[ \\tau_{\\text{theo}} = R \\times C \\]
+\\[ \\tau_{\\text{theo}} = (10^5 \\text{ } \\Omega) \\times (10^{-7} \\text{ F}) \\]
+\\[ \\tau_{\\text{theo}} = 0.01 \\text{ seconds} = 10 \\text{ ms} \\]
+
+---
+
+**Step 3: Experimental Time Constant (\\(\\tau_{\\text{exp}}\\)) Measurement**
+
+* Maximum Input Voltage (\\(V_{\\text{max}}\\)) = \\(10 \\text{ V}\\)
+* \\(63.2\\%\\) of Maximum Voltage = \\(0.632 \\times 10 \\text{ V} = 6.32 \\text{ V}\\)
+* Time measured on CRO / Oscilloscope to reach \\(6.32 \\text{ V}\\) (\\(\\tau_{\\text{exp}}\\)) = \\(9.8 \\text{ ms} = 0.0098 \\text{ s}\\)
+---
+**Step 4: Percentage Error Calculation**
+
+\\[ \\text{Percentage Error} = \\left| \\frac{\\tau_{\\text{theo}} - \\tau_{\\text{exp}}}{\\tau_{\\text{theo}}} \\right| \\times 100 \\]
+\\[ \\text{Percentage Error} = \\left| \\frac{10 \\text{ ms} - 9.8 \\text{ ms}}{10 \\text{ ms}} \\right| \\times 100 \\]
+\\[ \\text{Percentage Error} = \\left( \\frac{0.2}{10} \\right) \\times 100 = 2.0\\% \\]
+
+---
+`,
+"result": "1. The measured phase angle \\(\\theta \\approx 89.98^\\circ\\) confirms that the voltage across the capacitor lags the current by nearly \\(90^\\circ\\). The experimental time constant (\\(9.8 \\text{ ms}\\)) matches closely with the theoretical value (\\(10 \\text{ ms}\\)) with an error of only**\\(2.0\\%\\)**.",
+            precautions: [
+              "Connect components as per circuit diagram carefully.",
+              "Record charging/discharging time with precision using stopwatch.",
+              "Switch off power supply when not in use."
+            ]
+          }
+        ];
+
+        const appContainer = document.getElementById('app-container');
+
+        // LEVEL 1: Clean Single Main Button
+        function renderHome() {
+            appContainer.innerHTML = `
+                <button class="ui-btn ui-btn-main" onclick="renderBranches()">🌸 PHYSICS MANUAL 🌸</button>
+            `;
+        }
+
+        // LEVEL 2: Branches (Thermal, Electrical, Optics etc.)
+        function renderBranches() {
+            const branches = [...new Set(physicsData.map(item => item.branch))];
+            
+            let html = branches.map(b => 
+                `<button class="ui-btn" onclick="renderSubBranches('${b}')">${b.toUpperCase()}</button>`
+            ).join('');
+
+            html += `<button class="ui-btn ui-btn-back" onclick="renderHome()">← BACK TO MAIN</button>`;
+            appContainer.innerHTML = html;
+        }
+
+        // LEVEL 3: Sub-Branches (Filtered Practicals)
+        function renderSubBranches(branch) {
+            const filtered = physicsData.filter(d => d.branch === branch);
+
+            let html = filtered.map(exp => 
+                `<button class="ui-btn" onclick="openModal('${exp.id}')">${exp.title}</button>`
+            ).join('');
+
+            html += `<button class="ui-btn ui-btn-back" onclick="renderBranches()">← BACK TO BRANCHES</button>`;
+            appContainer.innerHTML = html;
+        }
+
+        // LEVEL 4: Detail Modal (TERA ORIGINAL WORKING MODAL LOGIC)
+        function openModal(id) {
+            const exp = physicsData.find(e => e.id === id);
+            if (!exp) return;
+
+            let tablesHTML = '';
+            if (exp.tables && exp.tables.length > 0) {
+                exp.tables.forEach(t => {
+                    tablesHTML += `
+                        <p style="font-size:12px; color:#cbd5e1; margin-top:10px; font-weight:600;">${t.heading}</p>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>${t.headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                                </thead>
+                                <tbody>
+                                    ${t.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                });
+            }
+
+            let circuitHTML = exp.circuitSvg ? `<div class="section-box"><h3>Diagram</h3><div class="circuit-container">${exp.circuitSvg}</div></div>` : '';
+            let procedureHTML = exp.procedure ? `<div class="section-box"><h3>Procedure</h3><div style="font-size: 13px; line-height: 1.6;">${exp.procedure.replace(/\n/g, '<br>')}</div></div>` : '';
+            let apparatusText = Array.isArray(exp.apparatus) ? exp.apparatus.join(', ') : exp.apparatus;
+            let precautionsList = exp.precautions ? exp.precautions.map(p => `<li>${p}</li>`).join('') : '';
+
+            document.getElementById('modal-content').innerHTML = `
+            <button class="close-btn-top" onclick="closeModal()"><strong>✕
+            Close</strong></button>
+                <div class="exp-title">${exp.title}</div>
+                <div class="section-box"><h3>Aim</h3><p>${exp.aim}</p></div>
+                <div class="section-box"><h3>Apparatus Required</h3><p>${apparatusText}</p></div>
+                ${circuitHTML}
+                <div class="section-box">
+                    <h3>Theory & Formula</h3>
+                    <p style="margin-bottom: 8px;">${exp.theory}</p>
+                    <div class="formula-box">${exp.formula}</div>
+                </div>
+                ${procedureHTML}
+                <div class="section-box"><h3>Observations & Data</h3>${tablesHTML}</div>
+                <div class="section-box"><h3>Calculations & Result</h3><div class="formula-box">${exp.calculations}</div></div>
+                <div class="section-box"><h3>Result</h3><ul>${exp.result}</ul></div>
+                <div class="section-box"><h3>Precautions</h3><ul>${precautionsList}</ul></div>
+            `;
+
+            document.getElementById('modal-overlay').classList.add('active');
+
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        // Load Single Button View initially
+        renderHome();
+    </script>
+</body>
+</html>
