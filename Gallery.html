@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Science Animations Hub</title>
+<title>Interactive Science Models</title>
 <style>
   * {
     box-sizing: border-box;
@@ -13,318 +13,326 @@
   body {
     margin: 0;
     padding: 20px;
-    background-color: #0d0d0d;
+    background-color: #0b0f19;
     color: #fff;
   }
 
   .albums-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
     max-width: 1200px;
     margin: 0 auto;
   }
 
-  .behance-card {
-    background: #181818;
-    border-radius: 12px;
+  /* CARD STYLING MATCHING REFERENCE IMAGE */
+  .card {
+    background: #0d1117;
+    border-radius: 18px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .behance-card:hover { 
+  .card:hover {
     transform: translateY(-6px);
-    border-color: #00ffcc;
-  }
-  
-  .img-wrapper { 
-    width: 100%; 
-    height: 160px; 
-    background: #222; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3.5rem;
+    box-shadow: 0 16px 40px rgba(0, 229, 255, 0.2);
   }
 
-  .card-info { padding: 16px; }
-  .card-title { font-size: 15px; font-weight: 600; margin: 0 0 8px 0; color: #fff; }
-  .card-meta { font-size: 12px; color: #aaa; display: flex; justify-content: space-between; }
-  .badge { background: rgba(0, 255, 204, 0.15); color: #00ffcc; padding: 3px 8px; border-radius: 4px; font-weight: 500; }
-
-  /* EXPANDED GALLERY / INTERACTIVE VIEW */
-  .gallery-view {
-    display: none;
+  .card-thumbnail {
+    width: 100%;
+    height: 190px;
     position: relative;
-    max-width: 1000px;
-    margin: 0 auto;
-    background: #111;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
-    animation: fadeIn 0.4s ease-in-out;
-    color: white;
     overflow: hidden;
+    background: #eef7ff;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .card-thumbnail svg {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
-  .gallery-header {
-    position: relative;
-    z-index: 3;
+  .card-content {
+    padding: 16px;
+    background: #0d1117;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: 10px;
   }
 
-  .back-btn {
-    background: #000;
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 9px 18px;
-    border-radius: 20px;
-    font-weight: 600;
+  .card-author {
     font-size: 13px;
-    cursor: pointer;
-    transition: 0.2s ease;
+    color: #94a3b8;
   }
 
-  .back-btn:hover {
-    background: #00ffcc;
-    color: #000;
+  .badge {
+    background: #0284c7;
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.3px;
   }
 
-  .gallery-title { font-size: 18px; font-weight: 700; color: #fff; margin: 0; }
+  /* MODAL POPUP (PREVENTS INFINITE RELOAD BUG) */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+  }
 
-  .simulation-frame {
+  .modal-container {
+    background: #111827;
     width: 100%;
-    height: 600px;
+    max-width: 1000px;
+    height: 90vh;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-header {
+    padding: 14px 20px;
+    background: #1f2937;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .close-btn {
+    background: #ef4444;
+    color: white;
     border: none;
-    border-radius: 12px;
-    background: #fff;
-    z-index: 3;
-    position: relative;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
   }
 
-  /* FIRE THEME */
-  .modal-fire-bg {
-    display: none;
-    position: absolute;
-    top: 0; right: 0; width: 100%; height: 200px;
-    pointer-events: none; z-index: 1;
-  }
-  .gallery-view.fire-active .modal-fire-bg { display: block; }
-  .modal-glow-fire {
-    position: absolute; top: -20px; right: 10px; width: 180px; height: 180px;
-    border-radius: 50%; background: rgba(255, 69, 0, 0.35); filter: blur(40px);
-  }
-  .modal-flame-wrapper { position: absolute; top: 15px; right: 30px; width: 60px; height: 100px; }
-  .flame-layer { position: absolute; bottom: 0; left: 50%; border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%; transform-origin: center bottom; }
-  .flame-main { width: 50px; height: 75px; margin-left: -25px; background: linear-gradient(to top, #ff2200, #ff6600, #ffae00, transparent); filter: blur(1px); animation: real-flicker 0.15s infinite alternate; }
-  .flame-mid { width: 32px; height: 50px; margin-left: -16px; bottom: 3px; background: linear-gradient(to top, #ff7700, #ffcc00, #ffffaa); filter: blur(0.5px); animation: real-flicker 0.10s infinite alternate; }
-  .flame-core { width: 16px; height: 30px; margin-left: -8px; bottom: 5px; background: linear-gradient(to top, #ffddaa, #ffffff); }
-
-  @keyframes real-flicker {
-    0% { opacity: 0.85; transform: scaleY(0.98); }
-    100% { opacity: 1; transform: scaleY(1.04); }
+  .close-btn:hover {
+    background: #dc2626;
   }
 
-  /* SCIENCE KIT THEME */
-  .modal-science-bg {
-    display: none;
-    position: absolute;
-    top: 0; right: 0; width: 100%; height: 200px;
-    pointer-events: none; z-index: 1;
-  }
-  .gallery-view.science-active .modal-science-bg { display: block; }
-
-  .modal-glow-science {
-    position: absolute; top: -20px; right: 10px; width: 220px; height: 200px;
-    border-radius: 50%; background: rgba(0, 255, 200, 0.25); filter: blur(50px);
-    animation: pulse-lab 3s infinite alternate ease-in-out;
+  .modal-body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    background: #000;
   }
 
-  .lab-items-wrapper { position: absolute; top: 10px; right: 25px; width: 120px; height: 140px; }
-  .lab-icon { position: absolute; bottom: -10px; filter: drop-shadow(0 0 12px rgba(0, 255, 200, 0.8)); opacity: 0; animation: float-up 3.5s infinite linear; }
-  .icon-flask { left: 10px; width: 32px; animation-duration: 3.2s; animation-delay: 0s; }
-  .icon-testtube { left: 55px; width: 24px; animation-duration: 4s; animation-delay: 1.2s; }
-  .icon-beaker { left: 85px; width: 28px; animation-duration: 3.6s; animation-delay: 0.6s; }
-  .icon-drop { left: 40px; width: 14px; animation-duration: 2.5s; animation-delay: 1.8s; }
-
-  @keyframes float-up {
-    0% { transform: translateY(0) rotate(-10deg) scale(0.7); opacity: 0; }
-    20% { opacity: 0.9; }
-    80% { opacity: 0.9; }
-    100% { transform: translateY(-120px) rotate(15deg) scale(1.1); opacity: 0; }
-  }
-
-  @keyframes pulse-lab {
-    0% { transform: scale(0.9); opacity: 0.5; }
-    100% { transform: scale(1.25); opacity: 0.8; }
+  .modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
   }
 </style>
 </head>
 <body>
 
-  <div id="albumsGrid" class="albums-grid"></div>
+  <!-- CARDS GRID -->
+  <div class="albums-grid" id="cardsGrid"></div>
 
-  <div id="galleryView" class="gallery-view">
-    
-    <!-- FIRE THEME LAYER -->
-    <div class="modal-fire-bg">
-      <div class="modal-glow-fire"></div>
-      <div class="modal-flame-wrapper">
-        <div class="flame-layer flame-main"></div>
-        <div class="flame-layer flame-mid"></div>
-        <div class="flame-layer flame-core"></div>
+  <!-- POPUP MODAL FRAME (NO BUG) -->
+  <div class="modal-overlay" id="simModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <span class="modal-title" id="modalTitle">Simulation</span>
+        <button class="close-btn" onclick="closeModal()">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="modalFrame" src=""></iframe>
       </div>
     </div>
-
-    <!-- SCIENCE KIT THEME LAYER -->
-    <div class="modal-science-bg">
-      <div class="modal-glow-science"></div>
-      <div class="lab-items-wrapper">
-        <svg class="lab-icon icon-flask" viewBox="0 0 24 24" fill="none" stroke="#00ffcc" stroke-width="2"><path d="M10 2v5.5L4.1 17.3A2 2 0 0 0 5.8 20h12.4a2 2 0 0 0 1.7-2.7L14 7.5V2"/><line x1="8" y1="2" x2="16" y2="2"/></svg>
-        <svg class="lab-icon icon-testtube" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2"><path d="M14.5 2v17.5a2.5 2.5 0 0 1-5 0V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>
-        <svg class="lab-icon icon-beaker" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><path d="M4.5 3h15v15a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3V3z"/><line x1="4.5" y1="3" x2="19.5" y2="3"/></svg>
-        <svg class="lab-icon icon-drop" viewBox="0 0 24 24" fill="#00ffcc" stroke="#00ffcc"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-      </div>
-    </div>
-
-    <div class="gallery-header">
-      <button class="back-btn" onclick="closeGallery()">← Back to Overview</button>
-      <div id="galleryTitle" class="gallery-title">Simulation View</div>
-    </div>
-
-    <!-- SIMULATION IFRAME PLAYER -->
-    <iframe id="simFrame" class="simulation-frame" src=""></iframe>
   </div>
 
 <script>
-  // Sabhi HTML files ki List aur detail yahan daal de
-  const albumsData = [
-    {
-      id: 1,
-      title: "Biochemistry Simulation",
-      author: "Akshat Raj",
-      theme: "science",
-      icon: "🧬",
-      fileUrl: "Biochemistry.html"
-    },
-    {
-      id: 2,
-      title: "Chemistry Interactive Setup",
-      author: "Akshat Raj",
-      theme: "science",
-      icon: "🧪",
-      fileUrl: "Chemistry.html"
-    },
-    {
-      id: 3,
-      title: "Distillation Setup Model",
-      author: "Akshat Raj",
-      theme: "fire",
-      icon: "⚗️",
-      fileUrl: "Distillation_setup.html"
-    },
-    {
-      id: 4,
-      title: "Evaporation Vs Boiling",
-      author: "Akshat Raj",
-      theme: "fire",
-      icon: "💨",
-      fileUrl: "Evaporation_Vs_boiling.html"
-    },
-    {
-      id: 5,
-      title: "Fullwa Animation",
-      author: "Akshat Raj",
-      theme: "science",
-      icon: "🌸",
-      fileUrl: "Fullwa.html"
-    },
-    {
-      id: 6,
-      title: "Crystallization Process",
-      author: "Akshat Raj",
-      theme: "science",
-      icon: "💎",
-      fileUrl: "crystallization.html"
-    },
-    {
-      id: 7,
-      title: "Vacuum Evaporation",
-      author: "Akshat Raj",
-      theme: "science",
-      icon: "🌀",
-      fileUrl: "vaccum_evaporation.html"
-    }
+  // DETAILED GRAPHICAL SVG THUMBNAILS (MATCHING IMAGE STYLE)
+  const svgThumbnails = {
+    // 1. Water Cycle / Evaporation Graphic
+    waterCycle: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="url(#skyGradient)"/>
+        <defs>
+          <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e0f2fe"/>
+            <stop offset="100%" stop-color="#bae6fd"/>
+          </linearGradient>
+        </defs>
+        <!-- Sun -->
+        <circle cx="250" cy="45" r="24" fill="#facc15" opacity="0.9"/>
+        <circle cx="250" cy="45" r="30" fill="#fde047" opacity="0.3"/>
+        <!-- Clouds -->
+        <path d="M70 50 C70 40 85 30 100 35 C110 25 130 25 140 35 C150 30 165 40 160 50 C170 60 155 75 140 70 L80 70 C70 70 60 60 70 50 Z" fill="#94a3b8"/>
+        <!-- Rain -->
+        <line x1="85" y1="75" x2="80" y2="90" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="2 2"/>
+        <line x1="100" y1="75" x2="95" y2="90" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="2 2"/>
+        <line x1="115" y1="75" x2="110" y2="90" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="2 2"/>
+        <!-- Vapor Arrows -->
+        <path d="M 180 130 Q 185 105 175 85" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="4 3" fill="none"/>
+        <polygon points="175,82 170,90 180,90" fill="#ea580c"/>
+        <path d="M 210 130 Q 215 105 205 85" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="4 3" fill="none"/>
+        <polygon points="205,82 200,90 210,90" fill="#ea580c"/>
+        <!-- Water Body -->
+        <path d="M0 140 Q 75 135 150 140 T 300 140 V 190 H 0 Z" fill="#0284c7"/>
+        <path d="M0 150 Q 75 146 150 150 T 300 150 V 190 H 0 Z" fill="#0369a1"/>
+        <!-- Text Labels -->
+        <text x="75" y="24" fill="#1e293b" font-size="10" font-weight="bold">Condensation</text>
+        <text x="40" y="85" fill="#0369a1" font-size="9" font-weight="bold">Precipitation</text>
+        <text x="170" y="70" fill="#c2410c" font-size="10" font-weight="bold">Evaporation</text>
+        <text x="120" y="170" fill="#ffffff" font-size="11" font-weight="bold">Collection</text>
+      </svg>
+    `,
+
+    // 2. Biochemistry / DNA Graphic
+    bio: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#0f172a"/>
+        <circle cx="150" cy="95" r="70" fill="#1e1b4b" opacity="0.6"/>
+        <!-- DNA Strand Graphic -->
+        <path d="M 60 50 Q 150 95 240 50" stroke="#818cf8" stroke-width="4" fill="none"/>
+        <path d="M 60 140 Q 150 95 240 140" stroke="#38bdf8" stroke-width="4" fill="none"/>
+        <line x1="90" y1="65" x2="90" y2="125" stroke="#a7f3d0" stroke-width="3"/>
+        <line x1="120" y1="80" x2="120" y2="110" stroke="#fef08a" stroke-width="3"/>
+        <line x1="150" y1="90" x2="150" y2="100" stroke="#f472b6" stroke-width="3"/>
+        <line x1="180" y1="80" x2="180" y2="110" stroke="#a7f3d0" stroke-width="3"/>
+        <line x1="210" y1="65" x2="210" y2="125" stroke="#fef08a" stroke-width="3"/>
+        <text x="80" y="30" fill="#38bdf8" font-size="12" font-weight="bold">Molecular Structure</text>
+      </svg>
+    `,
+
+    // 3. Chemistry Setup Graphic
+    chem: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#111827"/>
+        <path d="M 120 140 L 140 70 L 140 40 L 160 40 L 160 70 L 180 140 Z" stroke="#38bdf8" stroke-width="3" fill="#1e293b"/>
+        <path d="M 125 125 L 175 125 L 180 140 L 120 140 Z" fill="#10b981"/>
+        <circle cx="145" cy="110" r="3" fill="#a7f3d0"/>
+        <circle cx="155" cy="95" r="4" fill="#a7f3d0"/>
+        <path d="M 100 150 H 200" stroke="#64748b" stroke-width="4"/>
+        <text x="95" y="30" fill="#10b981" font-size="12" font-weight="bold">Chemical Reaction</text>
+      </svg>
+    `,
+
+    // 4. Distillation Graphic
+    distil: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#18181b"/>
+        <circle cx="90" cy="120" r="30" stroke="#f97316" stroke-width="3" fill="#27272a"/>
+        <path d="M 90 90 V 60 H 160 L 210 110" stroke="#f97316" stroke-width="3" fill="none"/>
+        <rect x="150" y="65" width="50" height="30" stroke="#06b6d4" stroke-width="2" fill="none" transform="rotate(35 150 65)"/>
+        <path d="M 75 160 L 90 145 L 105 160" stroke="#ef4444" stroke-width="3"/>
+        <text x="70" y="30" fill="#f97316" font-size="12" font-weight="bold">Distillation Column</text>
+      </svg>
+    `,
+
+    // 5. Crystallization Graphic
+    crystal: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#090d16"/>
+        <polygon points="150,30 200,80 170,150 130,150 100,80" stroke="#818cf8" stroke-width="3" fill="#1e1b4b"/>
+        <polygon points="150,30 170,80 130,150" stroke="#c7d2fe" stroke-width="1.5" fill="none"/>
+        <line x1="100" y1="80" x2="200" y2="80" stroke="#818cf8" stroke-width="2"/>
+        <text x="90" y="175" fill="#818cf8" font-size="11" font-weight="bold">Crystal Lattice Grid</text>
+      </svg>
+    `,
+
+    // 6. Flower / Biology Graphic
+    flower: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#140d1e"/>
+        <circle cx="150" cy="90" r="16" fill="#f43f5e"/>
+        <circle cx="150" cy="55" r="18" fill="#fb7185" opacity="0.8"/>
+        <circle cx="150" cy="125" r="18" fill="#fb7185" opacity="0.8"/>
+        <circle cx="115" cy="90" r="18" fill="#fb7185" opacity="0.8"/>
+        <circle cx="185" cy="90" r="18" fill="#fb7185" opacity="0.8"/>
+        <path d="M 150 125 Q 140 160 150 180" stroke="#22c55e" stroke-width="4" fill="none"/>
+        <text x="100" y="30" fill="#f43f5e" font-size="12" font-weight="bold">Plant Cell & Anatomy</text>
+      </svg>
+    `
+  };
+
+  // ITEMS LIST
+  const data = [
+    { id: 1, title: "Biochemistry Simulation", author: "Class 9th Science Model", svg: "bio", file: "Biochemistry.html" },
+    { id: 2, title: "Chemistry Interactive Setup", author: "Class 9th Science Model", svg: "chem", file: "Chemistry.html" },
+    { id: 3, title: "Distillation Setup Model", author: "Class 9th Science Model", svg: "distil", file: "Distillation_setup.html" },
+    { id: 4, title: "Ultra 3D Water Cycle Visualizer", author: "Class 9th Science Model", svg: "waterCycle", file: "Evaporation_Vs_boiling.html" },
+    { id: 5, title: "Fullwa Flower Animation", author: "Class 9th Science Model", svg: "flower", file: "Fullwa.html" },
+    { id: 6, title: "Crystallization Process", author: "Class 9th Science Model", svg: "crystal", file: "crystallization.html" },
+    { id: 7, title: "Vacuum Evaporation", author: "Class 9th Science Model", svg: "waterCycle", file: "vaccum_evaporation.html" },
+    { id: 8, title: "Mixture Analysis", author: "Class 9th Science Model", svg: "chem", file: "Mixture.html" }
   ];
 
-  function renderAlbums() {
-    const grid = document.getElementById('albumsGrid');
-    grid.innerHTML = '';
-
-    albumsData.forEach(album => {
-      const cardHtml = `
-        <div class="behance-card" onclick="openGallery(${album.id})">
-          <div class="img-wrapper">
-            <span>${album.icon}</span>
-          </div>
-          <div class="card-info">
-            <div class="card-title">${album.title}</div>
-            <div class="card-meta">
-              <span>${album.author}</span>
-              <span class="badge">Interactive</span>
-            </div>
+  // RENDER CARDS
+  function render() {
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = data.map(item => `
+      <div class="card" onclick="openModal('${item.title}', '${item.file}')">
+        <div class="card-thumbnail">
+          ${svgThumbnails[item.svg] || svgThumbnails.chem}
+        </div>
+        <div class="card-content">
+          <div class="card-title">${item.title}</div>
+          <div class="card-footer">
+            <span class="card-author">${item.author}</span>
+            <span class="badge">3D Simulation</span>
           </div>
         </div>
-      `;
-      grid.innerHTML += cardHtml;
-    });
+      </div>
+    `).join('');
   }
 
-  function openGallery(albumId) {
-    const album = albumsData.find(a => a.id === albumId);
-    if (!album) return;
-
-    const galleryModal = document.getElementById('galleryView');
-    document.getElementById('galleryTitle').innerText = album.title;
-    
-    // Set HTML File to iFrame dynamically
-    document.getElementById('simFrame').src = album.fileUrl;
-
-    galleryModal.classList.remove('fire-active', 'science-active');
-
-    if (album.theme === 'fire') {
-      galleryModal.classList.add('fire-active');
-    } else if (album.theme === 'science') {
-      galleryModal.classList.add('science-active');
-    }
-
-    document.getElementById('albumsGrid').style.display = 'none';
-    galleryModal.style.display = 'block';
+  // OPEN MODAL (PREVENTS LOOPS)
+  function openModal(title, file) {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalFrame').src = file;
+    document.getElementById('simModal').style.display = 'flex';
   }
 
-  function closeGallery() {
-    const galleryModal = document.getElementById('galleryView');
-    document.getElementById('simFrame').src = ''; // Clear iframe on close
-    galleryModal.style.display = 'none';
-    galleryModal.classList.remove('fire-active', 'science-active');
-    document.getElementById('albumsGrid').style.display = 'grid';
+  // CLOSE MODAL
+  function closeModal() {
+    document.getElementById('modalFrame').src = '';
+    document.getElementById('simModal').style.display = 'none';
   }
 
-  renderAlbums();
+  render();
 </script>
-
 </body>
 </html>
