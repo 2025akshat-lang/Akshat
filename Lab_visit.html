@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biochemistry Research & Instrumentation Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0090e;
+    --card-bg: rgba(18, 24, 38, 0.7);
+    --card-hover: rgba(28, 37, 57, 0.85);
+    --accent-cyan: #06b6d4;
+    --accent-glow: rgba(6, 182, 212, 0.25);
+    --accent-blue: #3b82f6;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(6, 182, 212, 0.5);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 20px 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      padding: 40px 20px;
+    }
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* HEADER WITH RESPONSIVE FLEX */
+  .portfolio-header {
+    margin-bottom: 40px;
+    background: rgba(15, 21, 33, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .portfolio-header {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 36px 32px;
+      margin-bottom: 50px;
+    }
+  }
+
+  .portfolio-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  }
+
+  .header-content {
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (min-width: 768px) {
+    .header-content {
+      max-width: 650px;
+    }
+  }
+
+  .header-content h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    word-break: break-word;
+  }
+
+  @media (min-width: 768px) {
+    .header-content h1 {
+      font-size: 2.2rem;
+    }
+  }
+
+  .header-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--accent-cyan);
+    padding: 6px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    letter-spacing: 0.03em;
+  }
+
+  /* CHAPLIN WRAPPER BOX */
+  .chaplin-box {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 220px;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* CHAPLIN CSS ART */
+  .header-chaplin {
+    position: relative;
+    width: 260px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: scale(0.5);
+    transform-origin: center center;
+  }
+
+  .gears-container {
+    position: absolute;
+    top: 0px;
+    width: 250px;
+    height: 160px;
+    z-index: 1;
+  }
+
+  .gear {
+    position: absolute;
+    border-radius: 50%;
+    background: #e5e5e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .gear::before, .gear::after {
+    content: "";
+    position: absolute;
+    background: #e5e5e0;
+    border-radius: 4px;
+  }
+
+  .gear.main {
+    width: 90px;
+    height: 90px;
+    top: 30px;
+    left: 80px;
+    animation: spinRight 6s linear infinite;
+  }
+  .gear.main::before { width: 105px; height: 30px; }
+  .gear.main::after { width: 30px; height: 105px; }
+
+  .gear.left {
+    width: 70px;
+    height: 70px;
+    top: 50px;
+    left: 15px;
+    animation: spinLeft 5s linear infinite;
+  }
+  .gear.left::before { width: 85px; height: 22px; }
+  .gear.left::after { width: 22px; height: 85px; }
+
+  .gear.right {
+    width: 75px;
+    height: 75px;
+    top: 25px;
+    right: 15px;
+    animation: spinLeft 5.5s linear infinite;
+  }
+  .gear.right::before { width: 90px; height: 24px; }
+  .gear.right::after { width: 24px; height: 90px; }
+
+  .gear.small-top {
+    width: 45px;
+    height: 45px;
+    top: 0px;
+    right: 65px;
+    animation: spinRight 4s linear infinite;
+  }
+  .gear.small-top::before { width: 55px; height: 14px; }
+  .gear.small-top::after { width: 14px; height: 55px; }
+
+  .gear-hole {
+    width: 35%;
+    height: 35%;
+    background-color: #0b0e17;
+    border-radius: 50%;
+    z-index: 2;
+  }
+
+  @keyframes spinRight { 100% { transform: rotate(360deg); } }
+  @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
+
+  .hat-brim {
+    position: absolute;
+    top: 100px;
+    width: 240px;
+    height: 36px;
+    background: #3a3935;
+    border-radius: 50% / 100% 100% 0 0;
+    z-index: 3;
+  }
+
+  .hair {
+    position: absolute;
+    top: 120px;
+    width: 200px;
+    height: 80px;
+    background: #252422;
+    border-radius: 40px 40px 20px 20px;
+    z-index: 2;
+  }
+
+  .face {
+    position: absolute;
+    top: 130px;
+    width: 150px;
+    height: 190px;
+    background: #f2efe9;
+    clip-path: polygon(0% 0%, 100% 0%, 85% 75%, 50% 100%, 15% 75%);
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .eyebrows {
+    position: absolute;
+    top: 40px;
+    width: 110px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .eyebrow {
+    width: 40px;
+    height: 30px;
+    border-top: 7px solid #252422;
+    border-radius: 50% 50% 0 0;
+  }
+
+  .eyes {
+    position: absolute;
+    top: 68px;
+    width: 100px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .eye {
+    position: relative;
+    width: 34px;
+    height: 26px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pupil {
+    width: 14px;
+    height: 14px;
+    background: #252422;
+    border-radius: 50%;
+  }
+
+  .eyelid {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #f2efe9;
+    transform: translateY(-100%);
+    animation: blink 4s infinite;
+  }
+
+  @keyframes blink {
+    0%, 90%, 100% { transform: translateY(-100%); }
+    95% { transform: translateY(0%); }
+  }
+
+  .nose {
+    position: absolute;
+    top: 102px;
+    width: 8px;
+    height: 16px;
+    border-right: 3px solid #d0cbc0;
+    border-bottom: 3px solid #d0cbc0;
+    border-radius: 0 0 5px 0;
+  }
+
+  .mustache {
+    position: absolute;
+    top: 128px;
+    width: 30px;
+    height: 18px;
+    background: #252422;
+    border-radius: 4px 4px 10px 10px;
+  }
+
+  .lip {
+    position: absolute;
+    top: 152px;
+    width: 26px;
+    height: 2px;
+    background: #252422;
+  }
+
+  /* GRID */
+  .instrument-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  /* CARD STYLING */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px -10px var(--accent-glow);
+  }
+
+  .card-img-wrapper {
+    width: 100%;
+    height: 220px;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+  }
+
+  .card:hover .card-img-wrapper img {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  .card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(12, 17, 29, 0.9) 100%);
+  }
+
+  .category-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(9, 14, 23, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--accent-cyan);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    z-index: 2;
+  }
+
+  .card-info {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    transition: color 0.2s ease;
+  }
+
+  .card:hover .card-title {
+    color: var(--accent-cyan);
+  }
+
+  .card-sub {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .view-btn {
+    margin-top: 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* MODAL LIGHTBOX */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backgrond: rgba(4, 6, 10, 0.85);
+    backdrop-filter: blur(16px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .modal-content {
+    background: #0f1522;
+    border: 1px solid var(--border-hover);
+    border-radius: 20px;
+    max-width: 850px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    padding: 24px;
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: scale(1);
+  }
+
+  /* MODAL HEADER & BACK BUTTON */
+  .modal-header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 16px;
+  }
+
+  .back-overview-btn {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .back-overview-btn:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    transform: translateX(-2px);
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: var(--accent-cyan);
+    color: #000;
+  }
+
+  .modal-img-container {
+    width: 100%;
+    max-height: 480px;
+    background: #04070a;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-img-container img {
+    max-width: 100%;
+    max-height: 480px;
+    object-fit: contain;
+  }
+
+  .modal-body {
+    padding: 24px 8px 8px 8px;
+  }
+
+  .modal-category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .modal-desc {
+    font-size: 0.98rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="portfolio-header">
+      <div class="header-content">
+        <h1>Biochemistry Lab Instrumentation</h1>
+
+        <div class="meta-badge">🔬 11 Research Instruments</div>
+      </div>
+
+      <!-- CHAPLIN INSIDE A CLEAN DEDICATED SUB-BOX -->
+      <div class="chaplin-box">
+        <div class="header-chaplin">
+          <div class="gears-container">
+            <div class="gear main"><div class="gear-hole"></div></div>
+            <div class="gear left"><div class="gear-hole"></div></div>
+            <div class="gear right"><div class="gear-hole"></div></div>
+            <div class="gear small-top"><div class="gear-hole"></div></div>
+          </div>
+          <div class="hat-brim"></div>
+          <div class="hair"></div>
+          <div class="face">
+            <div class="eyebrows">
+              <div class="eyebrow"></div>
+              <div class="eyebrow"></div>
+            </div>
+            <div class="eyes">
+              <div class="eye"><div class="pupil"></div><div class="eyelid"></div></div>
+              <div class="eye"><div class="pupil"></div><div class="eyelid"></div></div>
+            </div>
+            <div class="nose"></div>
+            <div class="mustache"></div>
+            <div class="lip"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="grid" class="instrument-grid"></div>
+  </div>
+
+  <!-- LIGHTBOX MODAL -->
+  <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      
+      <!-- NAV HEADER WITH BACK TO OVERVIEW BUTTON -->
+      <div class="modal-header-nav">
+        <button class="back-overview-btn" onclick="closeModalDirect()">
+          &larr; Back to<br>Overview
+        </button>
+        <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+      </div>
+
+      <div class="modal-img-container">
+        <img id="modalImg" src="" alt="Instrument Detailed View">
+      </div>
+      <div class="modal-body">
+        <div id="modalCategory" class="modal-category">Category</div>
+        <h2 id="modalTitle" class="modal-title">Instrument Name</h2>
+        <p id="modalDesc" class="modal-desc">Detailed scientific description...</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const instrumentsData = [
+    {
+      id: 1,
+      title: "Humidity Chamber",
+      category: "Environmental Control",
+      image: "https://i.postimg.cc/Hxr45CDM/Screenshot-20260806-161355-Drive.jpg",
+      description: "Provides precise control over atmospheric temperature and humidity conditions. Essential for environmental stability testing, shelf-life studies, and sensitive cell culture maintenance."
+    },
+    {
+      id: 2,
+      title: "Autoclave",
+      category: "Sterilization",
+      image: "https://i.postimg.cc/XJrcF0SY/Screenshot-20260806-161414-Drive.jpg",
+      description: "Utilizes high-pressure saturated steam to achieve thermal bio-decontamination. Guarantees complete sterilization of media, surgical tools, and laboratory bio-waste."
+    },
+    {
+      id: 3,
+      title: "B.O.D Incubator",
+      category: "Microbiology",
+      image: "https://i.postimg.cc/XJrcF0Sd/Screenshot-20260806-161424-Drive.jpg",
+      description: "Biochemical Oxygen Demand incubator engineered to maintain controlled low-temperature environments (typically 20°C) critical for microbial culture growth and biological oxygen analysis."
+    },
+    {
+      id: 4,
+      title: "Ultra-Low Freezer (-80°C)",
+      category: "Cryopreservation",
+      image: "https://i.postimg.cc/XJrcF0SC/Screenshot-20260806-161438-Drive.jpg",
+      description: "Provides ultra-low temperature preservation required for preserving biological samples like enzymes, nucleic acids (RNA/DNA), cell lysates, and tissue cultures long-term."
+    },
+    {
+      id: 5,
+      title: "Orbital Shaking Incubator",
+      category: "Cell Culture",
+      image: "https://i.postimg.cc/fyXc2jb0/Screenshot-20260806-161451-Drive.jpg",
+      description: "Combines thermal incubation with continuous circular orbital motion. Ensures optimal aeration, oxygen transfer, and nutrient mixing in liquid cultures."
+    },
+    {
+      id: 6,
+      title: "Laminar Flow Hood",
+      category: "Biosafety Workstation",
+      image: "https://i.postimg.cc/NGrkjYkN/Screenshot-20260806-161501-Drive.jpg",
+      description: "Creates a sterile workspace by drawing air through HEPA filters and blowing it in a unidirectional laminar stream. Prevents airborne sample contamination."
+    },
+    {
+      id: 7,
+      title: "Fluorescence Photomicroscope",
+      category: "Imaging System",
+      image: "https://i.postimg.cc/fW0fRZfp/Screenshot-20260806-161509-Drive.jpg",
+      description: "Advanced optical microscope featuring fluorescence excitation wavelengths and camera integration for high-contrast cellular visualization and protein localization."
+    },
+    {
+      id: 8,
+      title: "Digital pH Meter",
+      category: "Analytical Instruments",
+      image: "https://i.postimg.cc/sfZ4gyJy/Screenshot-20260806-161547-Drive.jpg",
+      description: "High-precision electro-analytical device for measuring hydrogen-ion activity (pH) in liquid media, reagent prep, and biochemical buffer solutions."
+    },
+    {
+      id: 9,
+      title: "Thermal Cycler (PCR)",
+      category: "Molecular Biology",
+      image: "https://i.postimg.cc/SQzfxqGQ/Screenshot-20260806-161610-Drive.jpg",
+      description: "Automated benchtop unit that executes rapid thermal cycling steps (denaturation, annealing, extension) to amplify targeted DNA fragments via PCR."
+    },
+    {
+      id: 10,
+      title: "Microplate Reader",
+      category: "Assay Quantification",
+      image: "https://i.postimg.cc/L4Z38RV9/Screenshot-20260806-161621-Drive.jpg",
+      description: "High-throughput microplate reader designed to quantify enzymatic, biological, or chemical reactions across 96-well formats using absorbance/fluorescence."
+    },
+    {
+      id: 11,
+      title: "Refrigerated Centrifuge",
+      category: "Sample Preparation",
+      image: "https://i.postimg.cc/fTnj3FHs/Screenshot-20260806-161711-Drive.jpg",
+      description: "High-speed centrifugal separator featuring integrated active cooling to protect heat-sensitive biological samples during density separation."
+    }
+  ];
+
+  function renderGrid() {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = instrumentsData.map(item => `
+      <div class="card" onclick="openModal(${item.id})">
+        <div class="card-img-wrapper">
+          <span class="category-badge">${item.category}</span>
+          <img src="${item.image}" alt="${item.title}" loading="lazy">
+          <div class="card-img-overlay"></div>
+        </div>
+        <div class="card-info">
+          <div>
+            <div class="card-title">${item.title}</div>
+            <div class="card-sub">${item.description.substring(0, 80)}...</div>
+          </div>
+          <div class="view-btn">View Details ↗</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openModal(id) {
+    const item = instrumentsData.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('modalImg').src = item.image;
+    document.getElementById('modalTitle').innerText = item.title;
+    document.getElementById('modalCategory').innerText = item.category;
+    document.getElementById('modalDesc').innerText = item.description;
+
+    const modal = document.getElementById('modal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(event) {
+    if (event.target.id === 'modal') {
+      closeModalDirect();
+    }
+  }
+
+  function closeModalDirect() {
+    const modal = document.getElementById('modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+
+  renderGrid();
+</script>
+
+</body>
+</html>
