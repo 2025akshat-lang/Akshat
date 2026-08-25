@@ -7,6 +7,7 @@
 - [Distillation_setup.html](Distillation_setup.html)
 - [Evaporation_Vs_boiling.html](Evaporation_Vs_boiling.html)
 - [Fps.html](Fps.html)
+- [Fullwa.html](Fullwa.html)
 - [Ludo.html](Ludo.html)
 - [Mindmapsolution.html](Mindmapsolution.html)
 - [Mixture.html](Mixture.html)
