@@ -3,6 +3,7 @@
 [![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)
 
 ### 📚List
+- [Butter1.html](Butter1.html)
 - [Butterfly_debugged_preserve_all.html](Butterfly_debugged_preserve_all.html)
 - [Distillation_setup.html](Distillation_setup.html)
 - [Evaporation_Vs_boiling.html](Evaporation_Vs_boiling.html)
