@@ -21,6 +21,7 @@
 - [crystallization.html](crystallization.html)
 - [hub.html](hub.html)
 - [index.html](index.html)
+- [instrumental.html](instrumental.html)
 - [vaccum_evaporation.html](vaccum_evaporation.html)
 
 ---
