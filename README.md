@@ -3,6 +3,7 @@
 [![](https://img.shields.io/badge/OPEN_ANIMATED_PRACTICALS_HUB-blue?style=for-the-badge)](https://2025akshat-lang.github.io/Metro-Runner-India/hub.html)
 
 ### 📚List
+- [About_section.html](About_section.html)
 - [Art and craft.html](Art and craft.html)
 - [Biochemistry.html](Biochemistry.html)
 - [Butterfly_debugged_preserve_all.html](Butterfly_debugged_preserve_all.html)
