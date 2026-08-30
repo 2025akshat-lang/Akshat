@@ -25,6 +25,21 @@
     </script>
     
 <style>
+/* Math block container ko clean aur normal format mein lane ke liye */
+.math-block, 
+.math-block * {
+    color: #333333 !important; /* Normal dark text color */
+    font-weight: normal !important; /* Bold blue effect hatane ke liye */
+    font-family: inherit !important; /* Main page ka font match karne ke liye */
+    font-style: normal !important;
+}
+
+/* Agar headers/titles bold rakhne hain toh specifically allow kar sakte ho */
+.math-block strong,
+.math-block b {
+    font-weight: 600 !important;
+}
+
 /* Direct fix for grid-card styling issue */
 .interactive-grid {
   display: block !important;
@@ -75,6 +90,7 @@ ul li::after {
   align-items: center;
   padding: 15px 10px;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Base button design */
@@ -1374,16 +1390,7 @@ ol li::after {
             font-family: monospace;
             font-weight: 700;
         }
-    </style>
-</head>
-<body>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta charset="UTF-8">
-<title>Chemistry Practical Database</title>
-<style>
+
   * { box-sizing: border-box; }
   body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; background-color: #f4f7f6; color: #3c4043; }
   
@@ -1411,7 +1418,9 @@ ol li::after {
   .exp-btn:hover, .exp-btn.active-btn { background-color: #1a73e8; color: white; }
 
   /* Data Display Box */
-  .data-box { margin-top: 10px; padding: 15px; border: 1px solid #cee1f8; border-radius: 6px; display: none; background-color: white; }
+  .data-box { margin-top: 10px; padding: 5px; border: 1px solid #cee1f8; border-radius: 6px; display: none; background-color: white;
+  width: 100%;             /* 👈 YEH ADD KAR */
+  box-sizing: border-box; }
   .result-box { background-color: #d4edda; color: #155724; padding: 10px 14px; border-radius: 4px; font-weight: bold; display: inline-block; margin: 8px 0; font-size: 14px; border: 1px solid #c3e6cb; }
   
   /* CLEAN TABLE STYLING */
@@ -1496,6 +1505,8 @@ ol li::after {
   'pharmachem-sec')">Pharmaceutical Chemistry</button>
   <button class="cat-btn" onclick="switchCategory(event,
   'catchem-sec')">Catalytic Chemistry</button>
+    <button class="cat-btn" onclick="switchCategory(event,
+  'foodchem-sec')">Food Chemistry</button>
     <button class="cat-btn" onclick="switchCategory(event,
   'thoerychem-sec')">Theory of analysis</button>
   
@@ -3105,9 +3116,960 @@ rgba(0,0,0,0.1);"
     <button class="exp-btn active-btn" onclick="openExp(event, 'exp1')">🧪 Exp 1: Iodometric back Titration (Formaldehyde)</button>
     <button class="exp-btn" onclick="openExp(event, 'exp2')">🧪 Exp 2: Complexometric Titration (Ca & Mg)</button>
     <button class="exp-btn" onclick="openExp(event, 'exp3')">🧪 Exp 3: Acid-Base Double Titration (H₃PO₄)</button>
-    <button class="exp-btn" onclick="openExp(event, 'exp9')">🧪 Exp 4: Argentometric Titration</button>
-    <button class="exp-btn" onclick="openExp(event, 'exp10')">🧪 Exp 4: Redox Titration</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp9')">🧪 Exp 4:
+    Argentometric Titration(AgNo3 Vs K2cr2o7)</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp10')">🧪 Exp 4: Redox
+    Titration(strength of mohrs salt and water of crystallization)</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp31')">🧪 Exp 5:
+    Preparation of standard solution of Na2co3</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp32')">🧪 Exp 6: Amount
+    of phosphoric acid</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp33')">🧪 Exp 7: Free
+    chlorine in bleaching powder sample</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp34')">🧪 Exp 8: Acid
+    value of oil sample</button>
+    <button class="exp-btn" onclick="openExp(event, 'exp35')">🧪 Exp 9: acid
+    value of given pesticide sample</button>
+  
+  
   </div>
+   <div id="exp31" class="data-box" style="display:block;">
+    <h3 style="margin:0; color:#1a73e8;">
+      •<article class="lab-practical">
+  <section class="lab-page" id="page-5">
+    <header class="page-header">
+      <div class="experiment-no">Experiment: 01</div>
+      <div class="meta-info">
+        <span class="date">Date: 29-03-2023</span>
+        <span class="page-num">Page No. 05</span>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <section class="experiment-section aim-section">
+        <h2 class="section-title">Aim:</h2>
+        <p class="section-body">
+          Preparation of standard solution and estimate the amount of sodium carbonate by titrating with <span class="math">N/20</span> HCl solution.
+        </p>
+      </section>
+
+      <section class="experiment-section apparatus-section">
+        <h2 class="section-title">APPARATUS REQUIRED:</h2>
+        <p class="section-body">
+          Conical flask, Burette, Measuring cylinder, Pipette, Beaker, Funnel, Iron stand, etc.
+        </p>
+      </section>
+
+      <section class="experiment-section chemical-section">
+        <h2 class="section-title">CHEMICAL REQUIRED:</h2>
+        <p class="section-body">
+          Sodium carbonate (<span class="math">Na<sub>2</sub>CO<sub>3</sub></span>), Hydrochloric acid (<span class="math">HCl</span>), Methyl orange indicator.
+        </p>
+      </section>
+
+      <section class="experiment-section theory-section">
+        <h2 class="section-title">THEORY:</h2>
+        <p class="section-body">
+          Hydrochloric acid is standardized against previously standardized sodium carbonate using methyl orange indicator.
+        </p>
+        <p class="section-body">
+          The decomposition of carbonate takes place in two step:
+        </p>
+        <ol class="equation-list">
+          <li><span class="math">CO<sub>3</sub><sup>2-</sup> + H<sup>+</sup> &rarr; HCO<sub>3</sub><sup>-</sup></span></li>
+          <li><span class="math">HCO<sub>3</sub><sup>-</sup> + H<sup>+</sup> &rarr; H<sub>2</sub>O + CO<sub>2</sub></span></li>
+        </ol>
+        <p class="section-body">
+          At the end of step (i), the pH will be near about 8 or 9. After the complete neutralization, the next drop of HCl will bring down the pH to near about 3 or 4.
+        </p>
+      </section>
+    </main>
+  </section>
+
+  <section class="lab-page page-spread" id="page-6">
+    <div class="page-left">
+      <section class="experiment-section prep-calc-section">
+        <h3 class="sub-section-title">&lt;i&gt; Preparation of standard <span class="math">N/20</span> sodium carbonate sol<sup>n</sup>.</h3>
+        
+        <div class="formula-block">
+          <span class="math">weight (w) = </span>
+          <div class="fraction">
+            <span class="numerator"><span class="math">N E V</span></span>
+            <span class="denominator">1000</span>
+          </div>
+        </div>
+
+        <div class="variable-legend">
+          <p>Where</p>
+          <ul>
+            <li><span class="math">N &rarr; Normality</span></li>
+            <li><span class="math">E &rarr; Equivalent weight</span></li>
+            <li><span class="math">V &rarr; Volume</span></li>
+          </ul>
+        </div>
+
+        <div class="calculation-steps">
+          <div class="step-row">
+            <span class="math">E = </span>
+            <div class="fraction">
+              <span class="numerator">Molecular weight</span>
+              <span class="denominator"><span class="math">n</span></span>
+            </div>
+          </div>
+          <div class="step-row">
+            <span class="math">= </span>
+            <div class="fraction">
+              <span class="numerator">106</span>
+              <span class="denominator">2</span>
+            </div>
+            <span class="math"> = 53</span>
+          </div>
+          <div class="step-row">
+            <span class="math">w = </span>
+            <div class="fraction">
+              <span class="numerator">1</span>
+              <span class="denominator">20</span>
+            </div>
+            <span class="math"> &times; 53 &times; </span>
+            <div class="fraction">
+              <span class="numerator">100</span>
+              <span class="denominator">1000</span>
+            </div>
+            <span class="math"> = </span>
+            <div class="fraction">
+              <span class="numerator">53</span>
+              <span class="denominator">200</span>
+            </div>
+            <span class="math"> = 0.265 gm.</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="page-right">
+
+      <main class="page-content">
+        <section class="experiment-section procedure-section">
+          <h2 class="section-title">PROCEDURE -</h2>
+          <ol class="procedure-list">
+            <li>
+              <strong>Preparation of standard <span class="math">N/20</span> sodium carbonate solution:</strong><br>
+              0.265 gm was taken in flask and diluted with 100 ml distilled water to make solution. Solution mixed up and down.
+            </li>
+            <li>
+              <strong>Standardization of hydrochloric acid:</strong><br>
+              Burette was filled with given HCl solution. 10 ml of standard solution was sucked by pipette into 250 ml of conical flask. Few drops of methyl orange was added to it. Then solution was titrated with given HCl solution till color changes from yellow to orange red that was considered end point. Titration was repeated to take C.R. value.
+            </li>
+            <li>
+              <strong>Titration of unknown solution against <span class="math"><sup>N</sup>/<sub>20</sub></span> HCl solution:</strong><br>
+              10 ml of unknown solution was taken in 250 ml of conical flask and 2-3 drops of methyl orange was added to it. Then titrated it with HCl solution till yellow color changes to orange red that was considered as endpoint. Titration was repeated to take C.R. value.
+            </li>
+          </ol>
+        </section>
+      </main>
+    </div>
+  </section>
+
+  <section class="lab-page page-spread" id="page-7">
+    <div class="page-left">
+      <section class="experiment-section observation-section">
+        <h3 class="table-title">Table 1. Standardization of HCl using standard <span class="math">Na<sub>2</sub>CO<sub>3</sub></span></h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>S.NO.</th>
+              <th>Vol. of <span class="math">Na<sub>2</sub>CO<sub>3</sub></span> (ml)</th>
+              <th>Volume of HCl Initial (<span class="math">V<sub>1</sub></span>)</th>
+              <th>Volume of HCl Final (<span class="math">V<sub>2</sub></span>)</th>
+              <th>Net Amount (ml) (<span class="math">V<sub>2</sub> - V<sub>1</sub></span>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>10</td>
+              <td>1</td>
+              <td>11</td>
+              <td>10</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>10</td>
+              <td>11.2</td>
+              <td>19.5</td>
+              <td>8.3</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>10</td>
+              <td>20.3</td>
+              <td>28.6</td>
+              <td>8.3</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>10</td>
+              <td>29</td>
+              <td>37.3</td>
+              <td>8.3</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-annotation">
+          <span>Solution (10 ml standard <span class="math">Na<sub>2</sub>CO<sub>3</sub></span>) + Indicator (methyl orange)</span>
+          <span class="concordant-value">C.R = 8.3</span>
+        </div>
+
+        <h3 class="table-title">Table 2. Unknown solution against HCl solution</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>S.NO.</th>
+              <th>Vol. of unknown sol<sup>n</sup></th>
+              <th>Volume of HCl Initial (<span class="math">V<sub>1</sub></span>)</th>
+              <th>Volume of HCl Final (<span class="math">V<sub>2</sub></span>)</th>
+              <th>Net Amount (ml) (<span class="math">V<sub>2</sub> - V<sub>1</sub></span>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01.</td>
+              <td>10</td>
+              <td>0.3</td>
+              <td>3</td>
+              <td>2.7</td>
+            </tr>
+            <tr>
+              <td>02.</td>
+              <td>10</td>
+              <td>3.5</td>
+              <td>6</td>
+              <td>2.5</td>
+            </tr>
+            <tr>
+              <td>03.</td>
+              <td>10</td>
+              <td>6.5</td>
+              <td>9</td>
+              <td>2.5</td>
+            </tr>
+            <tr>
+              <td>04.</td>
+              <td>10</td>
+              <td>9</td>
+              <td>1.5</td>
+              <td>2.5</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-annotation">
+          <span class="concordant-value">C.R = 2.5</span>
+        </div>
+      </section>
+    </div>
+
+    <div class="page-right">
+
+
+      <main class="page-content">
+        <section class="experiment-section calculation-section">
+          <h2 class="section-title">Calculation -</h2>
+
+          <div class="calc-group">
+            <h3 class="calc-heading">1. Standardization of HCl using Standard <span class="math">Na<sub>2</sub>CO<sub>3</sub></span> sol<sup>n</sup></h3>
+            <div class="formula-line">
+              <span class="math">N<sub>HCl</sub> &times; V<sub>HCl</sub> = N<sub>Na<sub>2</sub>CO<sub>3</sub></sub> &times; V<sub>Na<sub>2</sub>CO<sub>3</sub></sub></span>
+            </div>
+            <div class="formula-line">
+              <span class="math">N<sub>HCl</sub> = </span>
+              <div class="fraction">
+                <span class="numerator"><span class="math">N<sub>Na<sub>2</sub>CO<sub>3</sub></sub> &times; V<sub>Na<sub>2</sub>CO<sub>3</sub></sub></span></span>
+                <span class="denominator"><span class="math">V<sub>HCl</sub></span></span>
+              </div>
+            </div>
+            <div class="formula-line">
+              <span class="math">= </span>
+              <div class="fraction">
+                <span class="numerator">1 &times; 10</span>
+                <span class="denominator">20 &times; 8.3</span>
+              </div>
+            </div>
+            <div class="formula-line">
+              <span class="math">= </span>
+              <div class="fraction">
+                <span class="numerator">1</span>
+                <span class="denominator">2</span>
+              </div>
+              <span class="math"> &times; </span>
+              <div class="fraction">
+                <span class="numerator">1</span>
+                <span class="denominator">8.3</span>
+              </div>
+              <span class="math"> = </span>
+              <div class="fraction">
+                <span class="numerator">1</span>
+                <span class="denominator">16.6</span>
+              </div>
+            </div>
+            <div class="formula-line final-substep">
+              <span class="math">= 0.06 N</span>
+            </div>
+          </div>
+
+          <div class="calc-group">
+            <h3 class="calc-heading">2. determine the Amount of <span class="math">Na<sub>2</sub>CO<sub>3</sub></span></h3>
+            <div class="formula-line">
+              <span class="math">N<sub>Na<sub>2</sub>CO<sub>3</sub></sub> &times; V<sub>Na<sub>2</sub>CO<sub>3</sub></sub> = N<sub>HCl</sub> &times; V<sub>HCl</sub></span>
+            </div>
+            <div class="formula-line">
+              <span class="math">N<sub>Na<sub>2</sub>CO<sub>3</sub></sub> = </span>
+              <div class="fraction">
+                <span class="numerator"><span class="math">N<sub>HCl</sub> &times; V<sub>HCl</sub></span></span>
+                <span class="denominator"><span class="math">V<sub>Na<sub>2</sub>CO<sub>3</sub></sub></span></span>
+              </div>
+            </div>
+            <div class="formula-line">
+              <span class="math">= </span>
+              <div class="fraction">
+                <span class="numerator">0.06 &times; 2.5</span>
+                <span class="denominator">10</span>
+              </div>
+              <span class="math"> = </span>
+              <div class="fraction">
+                <span class="numerator">0.15</span>
+                <span class="denominator">10</span>
+              </div>
+            </div>
+            <div class="formula-line">
+              <span class="math">N<sub>Na<sub>2</sub>CO<sub>3</sub></sub> = 0.015 N</span>
+            </div>
+
+            <div class="formula-line main-weight-formula">
+              <span class="math">weight w = </span>
+              <div class="fraction">
+                <span class="numerator"><span class="math">N E V</span></span>
+                <span class="denominator">1000</span>
+              </div>
+              <div class="variable-box">
+                <span>N &rarr; Normality</span>
+                <span>E &rarr; Equivalent weight</span>
+                <span>V &rarr; volume.</span>
+              </div>
+            </div>
+
+            <div class="formula-line">
+              <span class="math">= </span>
+              <div class="fraction">
+                <span class="numerator">0.015 &times; 53 &times; 1000</span>
+                <span class="denominator">1000</span>
+              </div>
+            </div>
+            <div class="formula-line final-result">
+              <span class="math">= 0.795 gm.</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </section>
+
+    <main class="page-content">
+      <section class="experiment-section result-section">
+        <h2 class="section-title">Result:-</h2>
+        <div class="result-details">
+          <p class="result-lead">Standard Solution prepared</p>
+          <p><span class="math">N<sub>HCl</sub> = 0.06 N</span></p>
+          <p><span class="math">N<sub>Na<sub>2</sub>CO<sub>3</sub></sub> = 0.795 N</span></p>
+          <p><span class="math">w<sub>Na<sub>2</sub>CO<sub>3</sub></sub> = 0.795 gm.</span></p>
+        </div>
+      </section>
+
+      <section class="experiment-section precaution-section">
+        <h2 class="section-title">Precaution:-</h2>
+        <ol class="precaution-list">
+          <li>Be carefull while using HCl</li>
+          <li>Fill the burette till your eye point to remove any error in.</li>
+          <li>Clean all the apparatus before using id.</li>
+        </ol>
+      </section>
+    </main>
+  </section>
+</article>
+
+    </div> 
+    <div id="exp32" class="data-box" style="display:block;">
+    <h3 style="margin:0; color:#1a73e8;">
+      •Aim32 
+      •appratus 
+      •instrument
+    </div> 
+    <div id="exp33" class="data-box" style="display:block;">
+    <h3 style="margin:0;color:#1a73e8;">
+      •Aim33 
+      •appratus 
+      •instrument
+      <!-- AIM -->
+        <div class="section">
+            <h2 class="section-title">Aim</h2>
+            <p style="text-align: left;">To estimate the available chlorine in the given sample of bleaching powder iodometrically and calculate the percentage of available chlorine present in it.</p>
+        </div>
+
+        <!-- APPARATUS REQUIRED -->
+        <div class="section">
+            <h2 class="section-title">Apparatus Required</h2>
+            <ul style="text-align: left;">
+                <li>Volumetric Flask (250 mL)</li>
+                <li>Conical Flask</li>
+                <li>Beaker</li>
+                <li>Funnel</li>
+                <li>Burette & Pipette</li>
+                <li>Stirrer / Glass Rod</li>
+                <li>Measuring Cylinder</li>
+                <li>Ring Stand</li>
+                <li>Pipette Sucker</li>
+            </ul>
+        </div>
+
+        <!-- CHEMICALS REQUIRED -->
+        <div class="section">
+            <h2 class="section-title">Chemicals & Reagents Required</h2>
+            <ul style="text-align: left;">
+                <li>Bleaching powder sample [<span class="math-inline">CaO(ClO)<sub>2</sub></span>]</li>
+                <li>Sodium thiosulfate [<span class="math-inline">Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></span>]</li>
+                <li>Copper(II) sulfate [<span class="math-inline">CuSO<sub>4</sub>·5H<sub>2</sub>O</span>]</li>
+                <li>Potassium Iodide [<span class="math-inline">KI</span>] (10% solution)</li>
+                <li>Dilute Acetic Acid [<span class="math-inline">CH<sub>3</sub>COOH</span>] / Dilute Hydrochloric Acid [<span class="math-inline">HCl</span>, ~2N]</li>
+                <li>Ammonium Thiocyanate [<span class="math-inline">NH<sub>4</sub>SCN</span>]</li>
+                <li>Freshly prepared Starch indicator solution</li>
+            </ul>
+        </div>
+
+        <!-- STRUCTURE & CHEMICAL REACTIONS -->
+        <div class="section">
+            <h2 class="section-title">Chemical Reactions & Theory</h2>
+            <p style="text-align: left;">Bleaching powder is a yellowish-white powder consisting primarily of Calcium Hypochlorite [<span class="math-inline">Ca(ClO)<sub>2</sub></span>], basic chloride [<span class="math-inline">CaCl<sub>2</sub>·Ca(OH)<sub>2</sub>·H<sub>2</sub>O</span>], and slaked lime. In acidic medium, chlorine is liberated:</p>
+            
+            <div class="math-block" style="text-align: left;">
+                <strong>1. Liberation of Chlorine:</strong><br>
+                CaOCl<sub>2</sub> + 2CH<sub>3</sub>COOH &rarr; (CH<sub>3</sub>COO)<sub>2</sub>Ca + H<sub>2</sub>O + Cl<sub>2</sub>&uparrow;
+            </div>
+
+            <div class="math-block" style="text-align: left;">
+                <strong>2. Reaction with Potassium Iodide (Liberation of Iodine):</strong><br>
+                Cl<sub>2</sub> + 2KI &rarr; 2KCl + I<sub>2</sub>
+            </div>
+
+            <div class="math-block" style="text-align: left;">
+                <strong>3. Titration against Sodium Thiosulfate:</strong><br>
+                I<sub>2</sub> + 2Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub> &rarr; 2NaI + Na<sub>2</sub>S<sub>4</sub>O<sub>6</sub>
+            </div>
+            <p style="text-align: left;"><em>End Point:</em> Disappearance of blue color (formed by starch-iodine complex) turning colorless.</p>
+        </div>
+
+        <!-- PROCEDURE -->
+        <div class="section">
+            <h2 class="section-title">Procedure</h2>
+            
+            <h3 style="text-align: left;">Step 1: Standardization of Sodium Thiosulfate (Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>) with Copper Sulfate Solution</h3>
+            <ol style="text-align: left;">
+                <li>Pipette out 10 mL of standard <span class="math-inline">CuSO<sub>4</sub>·5H<sub>2</sub>O</span> solution into a clean conical flask.</li>
+                <li>Add a pinch of <span class="math-inline">Na<sub>2</sub>CO<sub>3</sub></span> into it until slight turbidity is obtained.</li>
+                <li>Add 2 drops of dilute acetic acid dropwise just to dissolve the precipitate.</li>
+                <li>Add 5 mL of 10% <span class="math-inline">KI</span> solution and 3-4 drops of starch indicator.</li>
+                <li>Titrate the solution against <span class="math-inline">Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></span> until the intense brown/blue color fades.</li>
+                <li>Add 2 mL of <span class="math-inline">NH<sub>4</sub>SCN</span> (Ammonium Thiocyanate) solution and continue titration until the solution becomes completely colorless. Record the concordant reading.</li>
+            </ol>
+
+            <h3 style="text-align: left;">Step 2: Titration of Bleaching Powder Solution against Standardized Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></h3>
+            <ol style="text-align: left;">
+                <li>Take 10 mL of the prepared bleaching powder solution in a conical flask using a pipette.</li>
+                <li>Add 5 mL of 10% <span class="math-inline">KI</span> solution using a measuring cylinder.</li>
+                <li>Add 10 mL of 2N <span class="math-inline">HCl</span> (or dilute acetic acid) solution.</li>
+                <li>Fix the stopper on the conical flask immediately and keep it in the dark for 2-3 minutes to complete the reaction.</li>
+                <li>Titrate the liberated Iodine (<span class="math-inline">I<sub>2</sub></span>) with standard <span class="math-inline">Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></span> solution using starch indicator near the end-point.</li>
+                <li>End Point: Disappearance of blue color. Repeat titration 2-3 times to obtain a concordant reading.</li>
+            </ol>
+        </div>
+
+        <!-- OBSERVATION TABLES -->
+        <div class="section">
+            <h2 class="section-title">Observation Tables</h2>
+
+            <h3 style="text-align: left; color: var(--accent);">Table 1: Standardization of Sodium Thiosulfate (Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>) Solution</h3>
+            <p style="text-align: left;"><strong>Volume of CuSO<sub>4</sub> solution taken in Conical Flask (V<sub>1</sub>):</strong> 10.0 mL</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Volume of Titrand (CuSO<sub>4</sub>) (mL)</th>
+                        <th>Initial Burette Reading (mL)</th>
+                        <th>Final Burette Reading (mL)</th>
+                        <th>Volume of Titrant (Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>) Used (mL)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1.</td>
+                        <td>10.0</td>
+                        <td>0.0</td>
+                        <td>9.6</td>
+                        <td>9.6</td>
+                    </tr>
+                    <tr>
+                        <td>2.</td>
+                        <td>10.0</td>
+                        <td>9.6</td>
+                        <td>19.1</td>
+                        <td>9.5</td>
+                    </tr>
+                    <tr>
+                        <td>3.</td>
+                        <td>10.0</td>
+                        <td>19.1</td>
+                        <td>28.6</td>
+                        <td>9.5</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: left;">
+                <div class="concordant-box">Concordant Reading (V<sub>Na2S2O3</sub>): 9.5 mL</div>
+            </div>
+
+            <br><br>
+
+            <h3 style="text-align: left; color: var(--accent);">Table 2: Titration of Bleaching Powder Solution against Standard Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></h3>
+            <p style="text-align: left;"><strong>Volume of Bleaching Powder Solution taken (V<sub>2</sub>):</strong> 10.0 mL</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Volume of Titrand (Bleaching Powder Sol.) (mL)</th>
+                        <th>Initial Burette Reading (mL)</th>
+                        <th>Final Burette Reading (mL)</th>
+                        <th>Volume of Titrant (Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>) Used (mL)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1.</td>
+                        <td>10.0</td>
+                        <td>0.0</td>
+                        <td>16.2</td>
+                        <td>16.2</td>
+                    </tr>
+                    <tr>
+                        <td>2.</td>
+                        <td>10.0</td>
+                        <td>16.2</td>
+                        <td>32.2</td>
+                        <td>16.0</td>
+                    </tr>
+                    <tr>
+                        <td>3.</td>
+                        <td>10.0</td>
+                        <td>0.0</td>
+                        <td>16.0</td>
+                        <td>16.0</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: left;">
+                <div class="concordant-box">Concordant Reading (V<sub>Na2S2O3</sub>): 16.0 mL</div>
+            </div>
+        </div>
+
+        <!-- CALCULATION -->
+        <div class="section-title">
+            <h2 class="section-title" style="font-size:14px;">Calculations</h2>
+            
+            <div class="math-block" style="text-align: left;font-size:14px">
+                <strong>1. Normality of Sodium Thiosulfate (N<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub>):</strong><br>
+                N<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub> &times; V<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub> = N<sub>CuSO<sub>4</sub></sub> &times; V<sub>CuSO<sub>4</sub></sub><br>
+                N<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub> = (N<sub>CuSO<sub>4</sub></sub> &times; V<sub>CuSO<sub>4</sub></sub>) / V<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub><br>
+                N<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub> = ( (1/20) &times; 10 ) / 9.5 &approx; <strong>0.052 N</strong> (or 2/38 N)
+            </div>
+
+            <div class="math-block" style="text-align: left;font-size:14px;>
+                <strong>2. Normality of Liberated Iodine (N<sub>I<sub>2</sub></sub> = N<sub>Cl<sub>2</sub></sub>):</strong><br>
+                N<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub> &times; V<sub>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub></sub> = N<sub>I<sub>2</sub></sub> &times; V<sub>I<sub>2</sub></sub><br>
+                N<sub>I<sub>2</sub></sub> = ( (1/20) &times; 16 ) / 10 = <strong>16/200 = 2/25 N = 0.08 N</strong>
+            </div>
+
+            <div class="math-block" style="text-align: left;">
+                <strong>3. Strength of Available Chlorine in Bleaching Powder:</strong><br>
+                Strength = N<sub>Chlorine</sub> &times; Equivalent Weight of Chlorine (35.5)<br>
+                Strength = (2 / 25) &times; 35.5 = <strong>2.84 g/L</strong>
+            </div>
+
+            <div class="math-block" style="text-align:
+            left;">
+                <strong>4. Percentage of Available Chlorine:</strong><div
+                style="font-size:14px;">
+                  6 g of Bleaching Powder contains = 2.84 g/L of available chlorine
+                100 g of Bleaching Powder contains = (2.84 / 6) &times; 100 =
+                <strong>47.33%</strong>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="section-title">
+            <h2 class="section-title">Result</h2>
+            <div class="result-box" style="text-align: left;">
+                <div class="result-title">Final Findings:</div>
+                <p>&bull; The strength of available chlorine present in the given sample of bleaching powder is found to be <strong>2.84 g/L</strong>.</p>
+                <p>&bull; The percentage of available chlorine in the given bleaching powder sample is <strong>47.33%</strong>.</p>
+            </div>
+        </div>
+        <!-- PRECAUTIONS -->
+        <div class="section-title">
+            <h2 class="section-title">Precautions</h2>
+            <ul  style="text-align: left;">
+                <li>The bleaching powder solution should be prepared smoothly without leaving large lumps.</li>
+                <li>After adding acid and KI to the bleaching powder solution, the conical flask must be stoppered immediately and kept in the dark to prevent loss of liberated chlorine and atmospheric oxidation of KI.</li>
+                <li>Starch indicator should be added only near the end-point when the solution turns light straw-yellow.</li>
+                <li>The titration should be carried out quickly to prevent loss of iodine vapor.</li>
+                <li>Use freshly prepared starch solution for accurate end-point determination.</li>
+            </ul>
+        </div>
+    </div>
+   <div id="exp34" class="data-box" style="display:block;">
+    <h3 style="margin:0; color:#1a73e8;">
+      •<article class="lab-experiment">
+  
+  <!-- Page 1: Experiment 02 Main Details & Theory -->
+  <section class="experiment-page" id="page-1">
+    <header class="experiment-header">
+      <div class="exp-number">Experiment: 02</div>
+      <div class="exp-meta">
+        <span class="exp-date">Date: 18-04-23</span>
+        <span class="exp-page-no">Page No. ________</span>
+      </div>
+    </header>
+
+    <div class="experiment-body">
+      <section class="experiment-section aim-section">
+        <h2>Aim:</h2>
+        <p>To determine acid value of given oil sample. You are provided with 0.1N KOH solution. Prepare your own standard 0.1N oxalic acid.</p>
+      </section>
+
+      <section class="experiment-section apparatus-section">
+        <h2>Apparatus Required:</h2>
+        <p>Standard volumetric flask, Conical flask, Beaker, Pipette, Measuring cylinder, Burette, Funnel</p>
+      </section>
+
+      <section class="experiment-section theory-section">
+        <h2>Theory:</h2>
+        <p>Different fat sample may contain varying amount of fatty acids. In addition, the fats often become rancid during storage and this rancidity is caused by chemical or enzymatic hydrolysis of fats into free acids and glycerol.</p>
+        <p>The amount of free fatty acids can be determined volumetrically by titrating the sample with potassium hydroxide. The acidity of fats and oils is expressed as its acid value or number which is defined as mg KOH required to neutralize the free fatty acids present in 1g of fat or oil. The amount of free acids present or acid value of fat is a useful parameter which gives an indication about the age and extent of its deterioration.</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- Page 2: Procedure Steps 1 & 2 -->
+  <section class="experiment-page" id="page-2">
+    <header class="experiment-header">
+      <div class="exp-number">Experiment: ________</div>
+      <div class="exp-meta">
+        <span class="exp-date">Date: ________</span>
+        <span class="exp-page-no">Page No. ________</span>
+      </div>
+    </header>
+
+    <div class="experiment-body">
+      <section class="experiment-section procedure-section">
+        <h2>Procedure:</h2>
+
+        <div class="procedure-step">
+          <h3>Step 1: Standardize given 0.1N KOH solution using 0.1N Oxalic acid:</h3>
+          <p>Burette rinsed and a solution of KOH was filled into it. 10 ml of 0.1N oxalic acid was taken in a Conical flask using pipette. And a few drops of phenolphthalein indicator was added to it. Then solution was titrated against KOH solution till a light permanent pink colour did obtain. Titration repeated to take concordant reading.</p>
+        </div>
+
+        <div class="procedure-step">
+          <h3>Step 2: Titration of oil sample Against Standard KOH sol<sup>n</sup></h3>
+          <p>5 gm of oil sample was taken in a conical flask and 25 ml of ethanol was taken in it and shaked well to make oil sample solution.</p>
+          <p>Then 10 ml of oil sample solution was taken in a conical flask and 1-2 drops of phenolphthalein indicator was added to it. Then titrated it with standard KOH sol<sup>n</sup> taken in burette till a pink colour did not appeared. Titration repeated to take concordant reading.</p>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- Page 3: Procedure Step 3 & Initial Result -->
+  <section class="experiment-page" id="page-3">
+    <header class="experiment-header">
+      <div class="exp-number">Experiment: ________</div>
+      <div class="exp-meta">
+        <span class="exp-date">Date: ________</span>
+        <span class="exp-page-no">Page No. ________</span>
+      </div>
+    </header>
+
+    <div class="experiment-body">
+      <section class="experiment-section procedure-section">
+        <div class="procedure-step">
+          <h3>Step 3: Titration of Blank Sample Against Standard KOH Solution:</h3>
+          <p>10 ml of Blank sample was taken into 250ml conical flask using pipette. 1-2 drop of phenolphthalein indicator was added to it. And then titrated it standard KOH solution. Till a pink did not appeared. Titration repeated to get concordant reading.</p>
+        </div>
+      </section>
+
+      <section class="experiment-section result-section">
+        <h2>Result:</h2>
+        <p>The Acid value of given oil sample was found 1.3464 mg KOH / g fat.</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- Page 4: Calculations & Observation Table 1 -->
+  <section class="experiment-page" id="page-4">
+    <div class="experiment-body">
+      <section class="experiment-section calculations-section">
+        <h3>Calculation of weight of oxalic acid to make 0.1N oxalic acid solution:</h3>
+        
+        <div class="formula-block">
+          <p>Weight (W) = <span class="fraction"><span class="numerator">N &times; E &times; V (in ml)</span><span class="denominator">1000</span></span></p>
+          <div class="variable-defs">
+            <p>Where</p>
+            <ul>
+              <li>N &rarr; Normality</li>
+              <li>E &rarr; Equivalent wt.</li>
+              <li>V &rarr; Volume</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="formula-block">
+          <p>Equivalent weight (E) of oxalic acid = <span class="fraction"><span class="numerator">mol. wt.</span><span class="denominator">2</span></span> = <span class="fraction"><span class="numerator">126.02</span><span class="denominator">2</span></span> = 63</p>
+        </div>
+
+        <div class="formula-block">
+          <p>&therefore; Weight (W) = <span class="fraction"><span class="numerator">0.1 &times; 63 &times; 100</span><span class="denominator">1000</span></span> = 0.63 gm</p>
+        </div>
+      </section>
+
+      <section class="experiment-section table-section">
+        <h3>Observation Table:</h3>
+        <p class="table-subtitle">Standardize KOH sol<sup>n</sup> using standard oxalic acid solution.</p>
+
+        <table class="obs-table">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Vol. of standard oxalic acid sol<sup>n</sup> (ml)</th>
+              <th>Vol. of KOH Initial (V<sub>1</sub>)</th>
+              <th>Solution Final (V<sub>2</sub>)</th>
+              <th>Net Amount (V<sub>2</sub> - V<sub>1</sub>) (ml)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01.</td>
+              <td>10 ml</td>
+              <td>2.0</td>
+              <td>14.3</td>
+              <td>12.3</td>
+            </tr>
+            <tr>
+              <td>02.</td>
+              <td>10 ml</td>
+              <td>14.5</td>
+              <td>26.5</td>
+              <td>12.0</td>
+            </tr>
+            <tr>
+              <td>03.</td>
+              <td>10 ml</td>
+              <td>27.0</td>
+              <td>39.5</td>
+              <td>12.5</td>
+            </tr>
+            <tr>
+              <td>04.</td>
+              <td>10 ml</td>
+              <td>1.0</td>
+              <td>13.5</td>
+              <td>12.5</td>
+            </tr>
+            <tr>
+              <td>05.</td>
+              <td>10 ml</td>
+              <td>13.5</td>
+              <td>26.0</td>
+              <td>12.5</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="concordant-reading">Concordant Reading = 12.5</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- Page 5: Observation Tables 2 & 3 -->
+  <section class="experiment-page" id="page-5">
+    <div class="experiment-body">
+      <section class="experiment-section table-section">
+        <h3>2. Titrating Titration of oil sample solution Against Standard KOH solution.</h3>
+
+        <table class="obs-table">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Vol. of oil sample solution (ml)</th>
+              <th colspan="2">Volume of KOH sol<sup>n</sup></th>
+              <th>Net Amount (V<sub>2</sub> - V<sub>1</sub>) (ml)</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Initial (V<sub>1</sub>)</th>
+              <th>Final (V<sub>2</sub>)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01.</td>
+              <td>10.0 ml</td>
+              <td>26.0</td>
+              <td>35.5</td>
+              <td>9.5</td>
+            </tr>
+            <tr>
+              <td>02.</td>
+              <td>10.0 ml</td>
+              <td>9.0</td>
+              <td>19.0</td>
+              <td>10.0</td>
+            </tr>
+            <tr>
+              <td>03.</td>
+              <td>10.0 ml</td>
+              <td>19.0</td>
+              <td>29.0</td>
+              <td>10.0</td>
+            </tr>
+            <tr>
+              <td>04.</td>
+              <td>10.0 ml</td>
+              <td>29.0</td>
+              <td>39.0</td>
+              <td>10.0</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="concordant-reading">Concordant Reading = 10.0</p>
+      </section>
+
+      <section class="experiment-section table-section">
+        <h3>3. Titration of Blank Against standard KOH solution.</h3>
+
+        <table class="obs-table">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Vol. of Blank Sample (ml)</th>
+              <th colspan="2">Vol. of KOH solution</th>
+              <th>Net Amount (V<sub>2</sub> - V<sub>1</sub>) (ml)</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Initial (V<sub>1</sub>)</th>
+              <th>Final (V<sub>2</sub>)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01.</td>
+              <td>10 ml</td>
+              <td>5.0</td>
+              <td>14.0</td>
+              <td>9.0</td>
+            </tr>
+            <tr>
+              <td>02.</td>
+              <td>10</td>
+              <td>14.0</td>
+              <td>23.0</td>
+              <td>9.0</td>
+            </tr>
+            <tr>
+              <td>03.</td>
+              <td>10</td>
+              <td>23.0</td>
+              <td>31.5</td>
+              <td>8.5</td>
+            </tr>
+            <tr>
+              <td>04.</td>
+              <td>10</td>
+              <td>31.5</td>
+              <td>40.0</td>
+              <td>8.5</td>
+            </tr>
+            <tr>
+              <td>05.</td>
+              <td>10</td>
+              <td>2.2</td>
+              <td>10.7</td>
+              <td>8.5</td>
+            </tr>
+            <tr>
+              <td>06.</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </section>
+
+  <!-- Page 6: Final Calculations -->
+  <section class="experiment-page" id="page-6">
+    <div class="experiment-body">
+      <section class="experiment-section calculations-section">
+        <h2>Calculation:</h2>
+
+        <div class="calc-block">
+          <h4>Normality Standardization of KOH sol<sup>n</sup>:</h4>
+          <p>N<sub>KOH</sub> &times; V<sub>KOH</sub> = N<sub>oxalic</sub> &times; V<sub>oxalic acid</sub></p>
+          <p>N<sub>KOH</sub> = <span class="fraction"><span class="numerator">N<sub>oxalic</sub> &times; V<sub>oxalic acid</sub></span><span class="denominator">V<sub>KOH</sub></span></span></p>
+          <p>= <span class="fraction"><span class="numerator">0.1 N &times; 10 ml</span><span class="denominator">12.5 ml</span></span></p>
+          <p>= 0.08 N</p>
+        </div>
+
+        <div class="calc-block">
+          <h4>Acid value:</h4>
+          <p>0.1N KOH solution used for blank = 8.5 ml</p>
+          <p>0.1N KOH solution used for sample = 10.0 ml</p>
+          <p>Titre value for sample = (10.0 - 8.5) ml = 1.5 ml</p>
+        </div>
+
+        <div class="calc-block">
+          <p>Acid value (mg KOH/g fat) = <span class="fraction"><span class="numerator">Titre value &times; Normality of KOH &times; 56.1</span><span class="denominator">Weight of sample (g)</span></span></p>
+          <p>= <span class="fraction"><span class="numerator">1.5 ml &times; 0.08 N &times; 56.1</span><span class="denominator">5 g</span></span></p>
+          <p>= <span class="fraction"><span class="numerator">6.732</span><span class="denominator">5</span></span> = 1.3464 (mg KOH / g)</p>
+        </div>
+      </section>
+    </div>
+  </section>
+
+</article>
+
+    </div>
+   <div id="exp35" class="data-box" style="display:block;">
+    <h3 style="margin:0; color:#1a73e8;">
+      •Aim35 
+      •appratus 
+      •instrument
+    </div> 
+  
   <!-- DATA FOR EXP 1 -->
   <div id="exp1" class="data-box" style="display:block;">
     <h3 style="margin-top:0; color:#1a73e8;">Experiment 01: Estimation of Formaldehyde</h3>
@@ -8163,8 +9125,2126 @@ rgba(0,0,0,0.1);"
   
 </div>
   </div>
+  <!-- SECTION 4: SPECTROSCOPY -->
+  <div id="foodchem-sec" class="category-section" style="display: none;">
+    <div class="btn-grid">
+      <button class="exp-btn active-btn" onclick="openExp(event, 'exp36')">
+      Exp1:Detection of adulterants </button>
+      <button class="exp-btn active-btn" onclick="openExp(event, 'exp37')">
+      Exp2:Reducing sugar Vs Non-reducing sugar </button>
+      <button class="exp-btn active-btn" onclick="openExp(event,
+      'exp38')">Exp3:Detection of glucose in given sugar solution</button>
+      <button class="exp-btn active-btn" onclick="openExp(event, 'exp39')">
+      Exp4:Absorbance of food color </button>
+      <button class="exp-btn active-btn" onclick="openExp(event, 'exp40')">
+      Exp5:Threshold of taste </button>
+      <button class="exp-btn active-btn" onclick="openExp(event, 'exp41')">
+      Exp6:Extraction of limonene from orange peel </button>
+            <button class="exp-btn active-btn" onclick="openExp(event, 'exp42')">
+      Exp7:separation of pigments in spinach </button>
+      
+    </div>
+    <div id="exp42" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+     <!-- START: SPINACH PIGMENT SEPARATION VIA CHROMATOGRAPHY EXPERIMENT -->
+<article class="lab-report chromatography-experiment" id="exp-paper-tlc-spinach">
+
+  <!-- Header Section -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Expt. No.:</strong> —</span>
+      <span class="experiment-date"><strong>Date:</strong> 20/01/24</span>
+      <span class="page-number"><strong>Page No.:</strong> 19–21</span>
+    </div>
+
+    <section class="report-section aim-section">
+      <h2>AIM:</h2>
+      <p>To distinguish &amp; study the various pigments present in spinach through the process of paper/thin layer chromatography.</p>
+    </section>
+  </header>
+
+  <main class="report-body">
+    
+    <!-- Theory Section -->
+    <section class="report-section theory-section">
+      <h2>THEORY:</h2>
+      <p>
+        Plants carry out the process of photosynthesis using pigments which light energy from the Sun can be converted into chemical energy (food).
+      </p>
+      <p>
+        The capturing of light energy is carried out by molecules known as pigments which are present within the plant cell. Pigments are chemical compounds which are able to reflect only a particular range of wavelength of visible light. Leaves of plant primarily contain different types of pigments within their tissues.
+      </p>
+
+      <h3>The Four Different Types of Plant Pigments:</h3>
+      <ul>
+        <li><strong>Chlorophyll-a:</strong> Blue-green pigment</li>
+        <li><strong>Chlorophyll-b:</strong> Yellow-green pigment</li>
+        <li><strong>Xanthophyll:</strong> Yellow pigment</li>
+        <li><strong>Carotenoids:</strong> Yellow-orange pigment</li>
+      </ul>
+
+      <p>In order to view &amp; distinguish the primary four plant pigments, a simple technique known as paper/thin layer chromatography can be used.</p>
+
+      <h3>Solvent &amp; TLC Principle (Page 20):</h3>
+      <p><strong>Role of Solvent:</strong> Solvents are essential components of the mobile phase in liquid chromatography systems. They help to dissolve the sample and transport it through the stationary phase.</p>
+
+      <p><strong>Thin Layer Chromatography (TLC):</strong> TLC is a technique used to isolate non-volatile mixtures. The experiment is conducted on a sheet of plastic, glass, aluminum foil etc., with a thin layer of adsorbent material (usually aluminum oxide, cellulose, or silica gel).</p>
+
+      <p><strong>Principle:</strong> Like other chromatographic techniques, thin-layer chromatography (TLC) depends on the separation principle. The separation relies on the relative affinity of compounds towards both phases. The compounds in the mobile phase move over the surface of the stationary phase. The movement occurs in such a way that the compounds which have a higher affinity to the stationary phase move slowly, while the other compounds travel fast. Therefore, the separation of the mixture is attained.</p>
+    </section>
+
+    <!-- Procedure Section (Page 21) -->
+    <section class="report-section procedure-section">
+      <h2>PROCEDURE:</h2>
+      <ol class="procedure-list">
+        <li>Spinach leaves were washed and chopped into small pieces.</li>
+        <li>The chopped spinach leaves were taken in a clean mortar and were mashed using pestle till a fine easy-flowing (watery) liquid-like paste (of mixture) was obtained.</li>
+        <li>Added around 5 mL of Acetone to the mixture and again mixed it thoroughly.</li>
+        <li>After that, with the help of a capillary tube, spinach liquid is collected and spotted on the chromatography paper / TLC sheet.</li>
+        <li>After drying of the spinach spot, took around 10 mL of developing solvent (9:1 ratio of Petroleum Ether &amp; Acetone) and fitted the TLC sheet into the beaker and covered it with a watch glass.</li>
+        <li>After around 30 minutes, the solvent had risen to almost 90% of the TLC sheet, and then took the TLC sheet out of the beaker.</li>
+      </ol>
+    </section>
+
+    <!-- Observations Section -->
+    <section class="report-section observation-section">
+      <h2>OBSERVATIONS:</h2>
+      <p>As the solvent front moved upwards on the TLC strip, four distinct colored bands appeared corresponding to the spinach pigments:</p>
+
+      <table class="observation-table">
+        <thead>
+          <tr>
+            <th>Band No.</th>
+            <th>Observed Color</th>
+            <th>Identified Pigment</th>
+            <th>Distance Traveled by Pigment (cm)</th>
+            <th>R<sub>f</sub> Value Calculated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1 (Top-most)</td>
+            <td>Yellow-Orange</td>
+            <td>Carotenoids</td>
+            <td>~8.5</td>
+            <td>~0.94</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Yellow</td>
+            <td>Xanthophyll</td>
+            <td>~6.2</td>
+            <td>~0.68</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Blue-Green</td>
+            <td>Chlorophyll-a</td>
+            <td>~4.1</td>
+            <td>~0.45</td>
+          </tr>
+          <tr>
+            <td>4 (Bottom-most)</td>
+            <td>Yellow-Green</td>
+            <td>Chlorophyll-b</td>
+            <td>~2.5</td>
+            <td>~0.27</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><em>(Note: Distance traveled by solvent front = 9.0 cm)</em></p>
+    </section>
+
+    <!-- Calculations Section -->
+    <section class="report-section calculation-section">
+      <h2>CALCULATION:</h2>
+      <p>Retention Factor (R<sub>f</sub>) is calculated using the formula:</p>
+      <div class="formula-container" style="text-align: center; margin: 15px 0;">
+        <strong>R<sub>f</sub> = (Distance traveled by the solute / pigment) / (Distance traveled by the solvent front)</strong>
+      </div>
+    </section>
+<!-- START: EXPERIMENT PHOTO GALLERY (DIRECT IMAGE LINKS) -->
+<section class="report-section photo-gallery-section" style="margin: 30px 0;">
+  <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 5px; font-family: sans-serif;">
+    EXPERIMENT PHOTOS &amp; VISUAL PROOF:
+  </h2>
+
+  <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px;">
+    
+    <!-- Photo 1 -->
+    <div class="gallery-card" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center;">
+      <img src="https://i.postimg.cc/hjzcQDpY/Screenshot-20260830-161832-Drive.jpg" 
+           alt="Lab Photo 1" 
+           loading="lazy" 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+      <p style="margin: 8px 0 0 0; font-size: 13px; color: #475569; font-weight: 500; font-family: sans-serif;">Photo 1: </p>
+    </div>
+
+    <!-- Photo 2 -->
+    <div class="gallery-card" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center;">
+      <img src="https://i.postimg.cc/LXY2g9NG/Screenshot-20260830-161837-Drive.jpg" 
+           alt="Lab Photo 2" 
+           loading="lazy" 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+      <p style="margin: 8px 0 0 0; font-size: 13px; color: #475569; font-weight: 500; font-family: sans-serif;">Photo 2: </p>
+    </div>
+
+    <!-- Photo 3 -->
+    <div class="gallery-card" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center;">
+      <img src="https://i.postimg.cc/NM9B2spS/Screenshot-20260830-161842-Drive.jpg" 
+           alt="Lab Photo 3" 
+           loading="lazy" 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+      <p style="margin: 8px 0 0 0; font-size: 13px; color: #475569; font-weight: 500; font-family: sans-serif;">Photo 3: </p>
+    </div>
+
+    <!-- Photo 4 -->
+    <div class="gallery-card" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center;">
+      <img src="https://i.postimg.cc/MTMqf6d4/Screenshot-20260830-161846-Drive.jpg" 
+           alt="Lab Photo 4" 
+           loading="lazy" 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+      <p style="margin: 8px 0 0 0; font-size: 13px; color: #475569; font-weight: 500; font-family: sans-serif;">Photo 4: </p>
+    </div>
+
+    <!-- Photo 5 -->
+    <div class="gallery-card" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center;">
+      <img src="https://i.postimg.cc/XJG4Bjsb/Screenshot-20260830-161851-Drive.jpg" 
+           alt="Lab Photo 5" 
+           loading="lazy" 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+      <p style="margin: 8px 0 0 0; font-size: 13px; color: #475569; font-weight: 500; font-family: sans-serif;">Photo 5:</p>
+    </div>
+
+  </div>
+</section>
+<!-- END: EXPERIMENT PHOTO GALLERY -->
 
 
+
+    <!-- Result Section -->
+    <section class="report-section result-section">
+      <h2>RESULT:</h2>
+      <p>Four distinct photosynthetic pigments (Carotenoids, Xanthophyll, Chlorophyll-a, and Chlorophyll-b) were successfully separated and identified from spinach leaves using TLC/Paper Chromatography based on their differential affinity towards mobile phase (Petroleum Ether:Acetone 9:1) and stationary phase.</p>
+    </section>
+
+    <!-- Precautions Section -->
+    <section class="report-section precaution-section">
+      <h2>PRECAUTIONS:</h2>
+      <ul>
+        <li>Use a fine capillary tube to apply sample spots so that the spot diameter remains small and concentrated.</li>
+        <li>Ensure the sample spot remains above the solvent level in the developing chamber when inserting the strip.</li>
+        <li>Keep the chromatography jar sealed with a watch glass during development to maintain solvent vapor equilibrium.</li>
+        <li>Mark the solvent front immediately after removing the TLC strip from the beaker before it evaporates.</li>
+      </ul>
+    </section>
+
+  </main>
+</article>
+<!-- END: SPINACH CHROMATOGRAPHY EXPERIMENT -->
+
+      
+      </div>
+
+    <!-- EXPERIMENT 36 DATA -->
+    <div id="exp36" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+      <article class="lab-report">
+
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Experiment:</strong> 05</span>
+      <span class="experiment-date"><strong>Date:</strong> 03-02-25</span>
+      <span class="page-number"><strong>Page No.:</strong> _____</span>
+    </div>
+    
+    <section class="report-section aim-section">
+      <h2>Aim:</h2>
+      <p>To find the adulterant present in the given sample of milk, Turmeric powder and mustard oil.</p>
+    </section>
+
+    <section class="report-section materials-section">
+      <h2>Material Required:</h2>
+      <p>dropper, boiling tube, testtube, beaker, holder, tongs, waterbath, watch glass</p>
+    </section>
+
+    <section class="report-section chemicals-section">
+      <h2>Chemical Required:</h2>
+      <p>sample of milk, turmeric, mustard oil, Iodine solution, conc. H<sub>2</sub>SO<sub>4</sub>, conc. HCl.</p>
+    </section>
+
+    <section class="report-section theory-section">
+      <h2>Theory:</h2>
+      <p>
+        Adulteration is the act of adding a substance to a product that is not listed as an ingredient. 
+        This substance is called an adulterant. Adulterant can be found in food, drug, and other product. 
+        Adulteration refers to the product practices of intentionally or unintentionally mixing a foreign 
+        substance known as an adulterant with a pure substance thereby altering its composition and 
+        potentially reducing its quality or safety often done to increases profit by adding cheaper 
+        substitutes or to mask defects in a product.
+      </p>
+      <p>
+        Common example of food adulteration include adding water to milk, mixing cheaper species with high 
+        quality ones, adding artificial coloring to food, incorporation fillers like starch in meals product etc.
+      </p>
+    </section>
+  </header>
+<article class="procedure-document">
+
+  <!-- Section 1: Milk Procedures -->
+  <section class="procedure-block" id="milk-procedure">
+    <h2>Milk Tests Procedure</h2>
+    <ol class="procedure-list">
+      <li id="milk-starch">
+        <h3>1. Test for Starch</h3>
+        <p>Take the milk sample and test for the presence of starch. (Inference: Absent)</p>
+      </li>
+      <li id="milk-formalin">
+        <h3>2. Test for Formalin</h3>
+        <p>Take the milk sample and test for the presence of formalin. (Inference: Absent)</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Section 2: Mustard Oil Procedures -->
+  <section class="procedure-block" id="mustard-oil-procedure">
+    <h2>Mustard Oil Tests Procedure</h2>
+    <ol class="procedure-list">
+      <li id="mustard-starch">
+        <h3>1. Test for Starch</h3>
+        <p class="step-instruction">
+          Boil 1–2 ml of mustard oil with equal amount of water, then add 1–2 drops of iodine solution.
+        </p>
+        <p class="step-observation">
+          <strong>Observation / Inference:</strong> No blue colour observed (Starch is Absent).
+        </p>
+      </li>
+      <li id="mustard-argemone">
+        <h3>2. Test for Argemone Oil</h3>
+        <p class="step-instruction">
+          Take 1 ml of sample + add 2–3 ml of conc. HNO<sub>3</sub>.
+        </p>
+        <p class="step-observation">
+          <strong>Observation / Inference:</strong> No colour change observed (Argemone is Absent).
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Section 3: Turmeric Procedures -->
+  <section class="procedure-block" id="turmeric-procedure">
+    <h2>Turmeric Tests Procedure</h2>
+    <ol class="procedure-list">
+      <li id="turmeric-colour">
+        <h3>1. Colour Detection</h3>
+        <p class="step-instruction">
+          Add a teaspoon of powder in a beaker containing water.
+        </p>
+      </li>
+      <li id="turmeric-sawdust">
+        <h3>2. Saw Dust Test</h3>
+        <p class="step-instruction">
+          Keep the above sample undisturbed and observe the surface.
+        </p>
+      </li>
+      <li id="turmeric-chalk">
+        <h3>3. Chalk Powder Test</h3>
+        <p class="step-instruction">
+          Take sample + water + conc. HCl in a tube.
+        </p>
+      </li>
+      <li id="turmeric-metanil">
+        <h3>4. Metanil Yellow Test</h3>
+        <p class="step-instruction">
+          Check if the above sample turned pink after leaving it undisturbed.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+</article>
+
+  <main class="report-body">
+
+    <section class="experiment-block" id="milk-analysis">
+      <h3>Detection of Adulterants in Milk</h3>
+      
+      <article class="sample-group">
+        <h4>Sample (C) paras</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>Water</td>
+              <td>Trailing of milk was observed.</td>
+              <td>Sample (C) was adulterated with water</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>Detergent</td>
+              <td>White thick layer was observed.</td>
+              <td>Detergent was not present.</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>Starch</td>
+              <td>Yellow colouration was observed.</td>
+              <td>Starch was not present.</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>Formalin</td>
+              <td>White dense colour was observed.</td>
+              <td>Formalin was not present.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="sample-group">
+        <h4>Sample (D) D.M.S.</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>Water</td>
+              <td>Trailing of milk observed.</td>
+              <td>Water was present as Adulterant.</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>Detergent</td>
+              <td>White dense foam was observed.</td>
+              <td>Detergent was present.</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>Starch</td>
+              <td>Yellow colouration was observed.</td>
+              <td>Starch was not present.</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>Formalin</td>
+              <td>White dense colour was observed.</td>
+              <td>Formalin was not present.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <section class="experiment-block" id="turmeric-analysis">
+      <h3>Test for Adulterant in Turmeric powder</h3>
+
+      <article class="sample-group">
+        <h4>Sample (A) Everest</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>
+                <strong>Detection of artificial colour:</strong><br>
+                Add a teaspoon of powder in a beaker containing water.
+              </td>
+              <td>Light yellow colouration was observed.</td>
+              <td>No artificial colour was present.</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>
+                <strong>Saw dust:</strong><br>
+                Keep the above sample undisturbed.
+              </td>
+              <td>Upper water surface was clean.</td>
+              <td>No saw dust was present.</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>
+                <strong>Chalk powder:</strong><br>
+                Sample of powder in boiling tube + water + conc. HCl
+              </td>
+              <td>No brisk effervescence was observed.</td>
+              <td>No chalk powder was present.</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>
+                <strong>Metanil yellow test:</strong><br>
+                Above sample turned pink after leaving undisturbed.
+              </td>
+              <td>No pink color was observed.</td>
+              <td>Metanil yellow test was negative.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="sample-group">
+        <h4>Sample (B / C) Hometown / Homegrown</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>Artificial Colour</td>
+              <td>Light yellow colour was observed.</td>
+              <td>No artificial colour was present.</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>Saw dust</td>
+              <td>Slightly particle were present on surface / Clean surface.</td>
+              <td>Might be adulterant / No saw dust.</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>Chalk powder</td>
+              <td>No brisk effervescence was observed.</td>
+              <td>No chalk powder was present.</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>Metanil yellow Test</td>
+              <td>No pink colouration was observed.</td>
+              <td>Metanil yellow test was negative.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="sample-group">
+        <h4>Sample (D) Ashok</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>Artificial Colour</td>
+              <td>Light yellow color</td>
+              <td>No artificial color</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>Saw dust</td>
+              <td>Clean surface</td>
+              <td>No saw dust</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>Chalk powder</td>
+              <td>No brisk effervescence</td>
+              <td>No chalk powder</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>Metanil yellow Test</td>
+              <td>No pink colouration was observed.</td>
+              <td>Metanil yellow test was negative</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <section class="experiment-block" id="mustard-oil-analysis">
+      <h3>Test for adulterant in mustard oil</h3>
+
+      <article class="sample-group">
+        <h4>Sample (A)</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>
+                <strong>Starch:</strong><br>
+                Boil 1–2 ml of mustard oil with equal amount of water + 1–2 drop Iodine.
+              </td>
+              <td>No blue colour was observed.</td>
+              <td>Starch was not present.</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>
+                <strong>Argemone:</strong><br>
+                1 ml oil + 2–3 ml of conc. HNO<sub>3</sub>
+              </td>
+              <td>No colouration was observed.</td>
+              <td>Argemone was absent.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="sample-group">
+        <h4>Sample (B)</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>Starch</td>
+              <td>No Blue colour was observed.</td>
+              <td>Starch was absent.</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>Argemone</td>
+              <td>Orange colour was observed.</td>
+              <td>Sample was adulterated with Argemone.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="sample-group">
+        <h4>Experiment 02: Detection of adulterants of given sample Mustard Oil (Test for vegetable oil adulteration)</h4>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Experiment</th>
+              <th scope="col">Observation</th>
+              <th scope="col">Inference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>
+                <strong>Test for starch:</strong><br>
+                Sample A: 2 ml sample + 2 ml H<sub>2</sub>O + 2 drops of Iodine sol<sup>n</sup>
+              </td>
+              <td>Red colour was observed.</td>
+              <td>Starch was absent</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>
+                Sample B: 2 ml sample + 2 ml H<sub>2</sub>O + 2 drops of Iodine sol<sup>n</sup>
+              </td>
+              <td>Red colour was observed</td>
+              <td>Starch was absent</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>
+                Sample C: 2 ml sample + 2 ml H<sub>2</sub>O + 2 drops of Iodine sol<sup>n</sup>
+              </td>
+              <td>Red colour was observed</td>
+              <td>Starch was absent</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+  </main>
+
+  <footer class="report-footer">
+    <section class="report-section result-section">
+      <h2>Result:</h2>
+      <p>From the various test identification, it was concluded that:</p>
+      <ul>
+        <li>Sample (C) of turmeric powder was adulterated with Saw dust.</li>
+        <li>All sample of milk was adulterated with water and Sample (A) contain detergent as adulterant.</li>
+        <li>Sample (B) of mustard oil containing Argemone as adulterant.</li>
+      </ul>
+    </section>
+  </footer>
+
+</article>
+
+      </div>
+      
+      <div id="exp37" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+      <article class="lab-report chemistry-experiment">
+
+  <!-- Header Section with Metadata -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Experiment:</strong> 06</span>
+      <span class="experiment-date"><strong>Date:</strong> 27/01/25</span>
+      <span class="page-number"><strong>Page No.:</strong> _____</span>
+    </div>
+
+    <!-- Aim -->
+    <section class="report-section aim-section">
+      <h2>Aim:</h2>
+      <p>To distinguish between reducing and non-reducing sugars using Fehling's Test and Benedict's Test.</p>
+    </section>
+
+    <!-- Visual SVG Diagram / Card -->
+    <div class="svg-card-container">
+      <svg class="experiment-card-svg" viewBox="0 0 600 220" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="220" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+        
+        <!-- Step 1: Test Tube -->
+        <g transform="translate(60, 30)">
+          <rect x="35" y="20" width="30" height="110" rx="15" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+          <path d="M 36 80 Q 50 90 64 80 L 64 115 Q 64 128 50 128 Q 36 128 36 115 Z" fill="#3b82f6" opacity="0.7"/>
+          <text x="50" y="160" text-anchor="middle" font-size="12" fill="#1e293b" font-weight="bold">Sugar Sample</text>
+          <text x="50" y="175" text-anchor="middle" font-size="11" fill="#64748b">+ Reagent</text>
+        </g>
+
+        <!-- Arrow 1 -->
+        <path d="M 150 90 L 210 90" stroke="#0ea5e9" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+
+        <!-- Step 2: Water Bath Heating -->
+        <g transform="translate(230, 20)">
+          <path d="M 20 60 L 20 120 C 20 140 100 140 100 120 L 100 60 Z" fill="#94a3b8" opacity="0.3" stroke="#475569" stroke-width="2"/>
+          <!-- Water -->
+          <path d="M 21 80 Q 60 85 99 80 L 99 120 C 99 138 21 138 21 120 Z" fill="#38bdf8" opacity="0.5"/>
+          <!-- Test Tube inside bath -->
+          <rect x="45" y="30" width="30" height="80" rx="15" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+          <path d="M 46 70 Q 60 75 74 70 L 74 95 Q 74 108 60 108 Q 46 108 46 95 Z" fill="#0ea5e9" opacity="0.7"/>
+          <!-- Flames -->
+          <path d="M 50 150 Q 55 135 60 150 Q 65 135 70 150 Z" fill="#f97316"/>
+          <text x="60" y="170" text-anchor="middle" font-size="12" fill="#1e293b" font-weight="bold">Heat in Water Bath</text>
+        </g>
+
+        <!-- Arrow 2 -->
+        <path d="M 370 90 L 430 90" stroke="#0ea5e9" stroke-width="3" stroke-dasharray="6,4"/>
+
+        <!-- Step 3: Result -->
+        <g transform="translate(450, 30)">
+          <rect x="35" y="20" width="30" height="110" rx="15" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+          <!-- Red Ppt -->
+          <path d="M 36 75 Q 50 85 64 75 L 64 115 Q 64 128 50 128 Q 36 128 36 115 Z" fill="#ef4444"/>
+          <text x="50" y="160" text-anchor="middle" font-size="12" fill="#1e293b" font-weight="bold">Red Precipitate</text>
+          <text x="50" y="175" text-anchor="middle" font-size="11" fill="#16a34a" font-weight="bold">(Reducing Sugar)</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Theory Section -->
+    <section class="report-section theory-section">
+      <h2>Theory:</h2>
+      <p>
+        Fehling's test and Benedict's test are used to distinguish between reducing and non-reducing sugars. Reducing sugars have free aldehyde or ketone groups capable of reducing cupric ions (<span class="chem-formula">Cu<sup>2+</sup></span>) to cuprous oxide (<span class="chem-formula">Cu<sub>2</sub>O</span>), which forms a brick-red precipitate in alkaline solution.
+      </p>
+      <p>
+        Aldoses and ketoses are reduced to cuprous oxide (<span class="chem-formula">Cu<sub>2</sub>O</span>) red precipitate in the process. The rate of reaction is slow because of low solubility of cupric hydroxide (<span class="chem-formula">Cu(OH)<sub>2</sub></span>) in alkaline solution. Aldoses reduce Fehling's solution to form red precipitate of <span class="chem-formula">Cu<sub>2</sub>O</span>.
+      </p>
+      
+      <div class="reagent-details">
+        <p><strong>Fehling's Solution:</strong> It is a combination of Fehling A and Fehling B. Fehling A is an aqueous solution of hydrated <span class="chem-formula">CuSO<sub>4</sub></span>. Fehling B is a solution of Sodium potassium tartrate (<span class="chem-formula">KNaC<sub>4</sub>H<sub>4</sub>O<sub>6</sub>·4H<sub>2</sub>O</span> - Rochelle Salt) + <span class="chem-formula">NaOH</span>.</p>
+        <p><strong>Benedict's Solution:</strong> It is a solution of sodium citrate, anhydrous sodium carbonate (<span class="chem-formula">Na<sub>2</sub>CO<sub>3</sub></span>), and hydrated copper sulphate (<span class="chem-formula">CuSO<sub>4</sub>·5H<sub>2</sub>O</span>) solution.</p>
+      </div>
+    </section>
+
+    <!-- Procedure Section -->
+    <section class="report-section procedure-section">
+      <h2>Procedure:</h2>
+      <ol class="procedure-list">
+        <li>
+          <h3>Fehling's Test Procedure:</h3>
+          <p>Heat the aqueous solution of compound (1–2 ml) with equal amounts of Fehling A and Fehling B (heat on water bath). The presence of a red ppt. indicates the presence of reducing sugar.</p>
+        </li>
+        <li>
+          <h3>Benedict's Test Procedure:</h3>
+          <p>To 1–2 ml of sugar in water, add 1–2 ml of Benedict's solution. Heat on a water bath. The presence of a red ppt. indicates the presence of reducing sugar.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Observation Table Section -->
+    <section class="report-section observation-section">
+      <h2>Observation Table:</h2>
+      <table class="observation-table">
+        <thead>
+          <tr>
+            <th scope="col">S.No / Compound</th>
+            <th scope="col">Experiment</th>
+            <th scope="col">Observation</th>
+            <th scope="col">Inference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Compound A -->
+          <tr>
+            <td rowspan="2"><strong>Compound A</strong></td>
+            <td>Fehling's Test</td>
+            <td rowspan="2">Red ppt. observed</td>
+            <td rowspan="2">Reducing Sugar</td>
+          </tr>
+          <tr>
+            <td>Benedict's Test</td>
+          </tr>
+
+          <!-- Compound B -->
+          <tr>
+            <td rowspan="2"><strong>Compound B</strong></td>
+            <td>Fehling's Test</td>
+            <td rowspan="2">No red ppt. observed</td>
+            <td rowspan="2">Non-reducing Sugar</td>
+          </tr>
+          <tr>
+            <td>Benedict's Test</td>
+          </tr>
+
+          <!-- Compound C -->
+          <tr>
+            <td rowspan="2"><strong>Compound C</strong></td>
+            <td>Fehling's Test</td>
+            <td rowspan="2">Red ppt. observed</td>
+            <td rowspan="2">Reducing Sugar</td>
+          </tr>
+          <tr>
+            <td>Benedict's Test</td>
+          </tr>
+
+          <!-- Compound D -->
+          <tr>
+            <td rowspan="2"><strong>Compound D</strong></td>
+            <td>Fehling's Test</td>
+            <td rowspan="2">Red ppt. observed</td>
+            <td rowspan="2">Reducing Sugar</td>
+          </tr>
+          <tr>
+            <td>Benedict's Test</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+
+
+  <!-- Final Conclusion / Result -->
+  <footer class="report-footer">
+    <section class="report-section result-section">
+      <h2>Result:</h2>
+      <p>
+        Among the given carbohydrate samples, <strong>Compound A</strong>, <strong>Compound C</strong>, and <strong>Compound D</strong> gave a positive result (red precipitate) for both Fehling's and Benedict's tests, confirming them to be <strong>Reducing Sugars</strong>. 
+        <strong>Compound B</strong> showed no red precipitate, confirming it as a <strong>Non-reducing Sugar</strong>.
+      </p>
+    </section>
+  </footer>
+    <!-- Precautions Section -->
+    <section class="report-section precautions-section">
+      <h2>Precautions:</h2>
+      <ul class="precautions-list">
+        <li>Always heat the test tubes using a boiling water bath rather than heating directly over an open flame to avoid bumping.</li>
+        <li>Mix equal volumes of Fehling's A and Fehling's B solutions immediately prior to performing the test.</li>
+        <li>Handle concentrated solutions and alkaline reagents carefully with proper safety gear.</li>
+        <li>Maintain accurate boiling times for proper precipitate development.</li>
+      </ul>
+    </section>
+
+  </main>
+</article>
+
+      </div>
+      <div id="exp38" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+      <article class="lab-report chemistry-experiment" id="experiment-07">
+
+  <!-- Header Section with Metadata -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Expt. No.:</strong> 7</span>
+      <span class="experiment-date"><strong>Date:</strong> 27/02/2025</span>
+      <span class="page-number"><strong>Page No.:</strong> 27</span>
+    </div>
+
+    <!-- Aim -->
+    <section class="report-section aim-section">
+      <h2>AIM:</h2>
+      <p>To determine the sugar (glucose) in the given sugar solution.</p>
+    </section>
+
+    <!-- Apparatus Required -->
+    <section class="report-section apparatus-section">
+      <h2>APPARATUS REQUIRED:</h2>
+      <p>Burette, white tile, burette stand, pipette, conical flask, beaker, measuring cylinder, sucker.</p>
+    </section>
+
+    <!-- Chemical Required -->
+    <section class="report-section chemicals-section">
+      <h2>CHEMICAL REQUIRED:</h2>
+      <p>Fehling A, Fehling B, sugar solution, methylene blue indicator.</p>
+    </section>
+
+    <!-- SVG Diagram Card -->
+    <div class="svg-card-container">
+      <svg class="experiment-card-svg" viewBox="0 0 600 240" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="240" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+        
+        <!-- Stand & Burette -->
+        <g transform="translate(180, 20)">
+          <!-- Stand Base & Rod -->
+          <rect x="20" y="190" width="120" height="10" fill="#475569" rx="3"/>
+          <rect x="75" y="10" width="8" height="180" fill="#64748b"/>
+          <!-- Clamp -->
+          <rect x="60" y="60" width="35" height="10" fill="#334155" rx="2"/>
+          <!-- Burette Tube -->
+          <rect x="48" y="20" width="14" height="120" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/>
+          <!-- Liquid in Burette -->
+          <rect x="50" y="40" width="10" height="98" fill="#38bdf8" opacity="0.6"/>
+          <!-- Nozzle -->
+          <polygon points="53,140 57,140 55,152" fill="#334155"/>
+          <text x="35" y="15" font-size="11" fill="#1e293b" font-weight="bold">Burette (Sugar Sol.)</text>
+        </g>
+
+        <!-- Conical Flask with Heat -->
+        <g transform="translate(205, 145)">
+          <!-- Conical Flask -->
+          <path d="M 20 15 L 10 45 L -10 70 C -15 78 15 80 30 80 C 45 80 75 78 70 70 L 50 45 L 40 15 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/>
+          <!-- Boiling Liquid -->
+          <path d="M 0 63 C 10 60 50 60 60 63 C 68 73 -8 73 0 63 Z" fill="#ef4444" opacity="0.8"/>
+          <!-- Indicator Drop / Reaction -->
+          <circle cx="30" cy="40" r="3" fill="#2563eb"/>
+          <text x="90" y="55" font-size="11" fill="#1e293b" font-weight="bold">Boiling Fehling A+B</text>
+          <text x="90" y="70" font-size="10" fill="#64748b">+ Methylene Blue</text>
+        </g>
+
+        <!-- Annotations / Arrows -->
+        <path d="M 380 70 L 440 70" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="4,4"/>
+        <g transform="translate(450, 45)">
+          <rect width="130" height="50" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+          <text x="65" y="20" text-anchor="middle" font-size="11" fill="#0f172a" font-weight="bold">End Point</text>
+          <text x="65" y="38" text-anchor="middle" font-size="10" fill="#dc2626">Brick Red Ppt.</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Theory Section -->
+    <section class="report-section theory-section">
+      <h2>THEORY:</h2>
+      <p>
+        Glucose a simple sugar with the formula <span class="chem-formula">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></span>, a key component of sugar solution existing primarily in cyclic ring form when dissolved in water. It's considered a monosaccharide and act as the body primary source of energy readily absorbed by cells for metabolic processes.
+      </p>
+      <p>
+        Glucose molecules can be exist in both open chain and cyclic (ring) form with the ring form being more prevalent in solution due its solubility. It is a primary source of energy for cells, utilized in cellular respiration to produce ATP.
+      </p>
+      <p>
+        Glucose is present in solid form as a monohydrate with closed pyran ring (<span class="chem-formula">&alpha;-D-glucopyranose</span> monohydrate, sometimes known as less precisely by dextrose hydrate).
+      </p>
+    </section>
+
+    <!-- Procedure Section -->
+    <section class="report-section procedure-section">
+      <h2>PROCEDURE:</h2>
+      <p>Same as Experiment No. 06 (Titration of Fehling's solution A &amp; B against standard and unknown glucose solution using Methylene Blue indicator till brick-red endpoint).</p>
+    </section>
+  </header>
+
+  <!-- Main Body: Observations & Calculations -->
+  <main class="report-body">
+
+    <!-- Observation Section -->
+    <section class="report-section observation-section">
+      <h2>OBSERVATION TABLE:</h2>
+
+      <!-- Table 1 -->
+      <article class="table-block">
+        <h3>Observation Table 1: Titration of Standard Glucose Solution</h3>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Volume of Fehling A &amp; B solution mixture (ml)</th>
+              <th scope="col" colspan="2">Volume of sugar solution (ml)</th>
+              <th scope="col">Net volume (ml)</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Initial</th>
+              <th>Final</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>20.0</td>
+              <td>0.0</td>
+              <td>9.0</td>
+              <td>9.0</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>20.0</td>
+              <td>9.0</td>
+              <td>18.0</td>
+              <td>9.0</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>20.0</td>
+              <td>18.0</td>
+              <td>27.0</td>
+              <td>9.0</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>20.0</td>
+              <td>27.0</td>
+              <td>36.0</td>
+              <td>9.0</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="concordant-value"><strong>Concordant Volume (V<sub>1</sub>):</strong> 9.0 ml</p>
+      </article>
+
+      <!-- Table 2 -->
+      <article class="table-block">
+        <h3>Observation Table 2: Titration of Unknown Sugar Solution</h3>
+        <table class="observation-table">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Volume of Fehling solution A &amp; B mixture (ml)</th>
+              <th scope="col" colspan="2">Volume of sugar solution (ml)</th>
+              <th scope="col">Net volume (ml)</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Initial</th>
+              <th>Final</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.</td>
+              <td>20.0</td>
+              <td>0.0</td>
+              <td>6.0</td>
+              <td>6.0</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>20.0</td>
+              <td>6.0</td>
+              <td>12.0</td>
+              <td>6.0</td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>20.0</td>
+              <td>12.0</td>
+              <td>18.0</td>
+              <td>6.0</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="concordant-value"><strong>Concordant Volume (V<sub>2</sub>):</strong> 6.0 ml</p>
+      </article>
+    </section>
+
+    <!-- Calculations Section -->
+    <section class="report-section calculation-section">
+      <h2>CALCULATIONS:</h2>
+      
+      <div class="calculation-step">
+        <p><strong>Weight of glucose in 250 ml Standard Flask:</strong> 1.25 g</p>
+        <p><strong>Volume of Fehling in each titration:</strong> 10 ml</p>
+        <p><strong>Volume of standard glucose solution (V<sub>1</sub>):</strong> 9.0 ml</p>
+        <p><strong>Volume of unknown glucose solution (V<sub>2</sub>):</strong> 6.0 ml</p>
+      </div>
+
+      <div class="calculation-step formula-block">
+        <p>10 ml of Fehling solution = </p>
+        <div class="fraction inline-fraction">
+          <span class="numerator">1.25 &times; V<sub>1</sub></span>
+          <span class="denominator">250</span>
+        </div>
+        <p> = </p>
+        <div class="fraction inline-fraction">
+          <span class="numerator">1.25 &times; 9.0</span>
+          <span class="denominator">250</span>
+        </div>
+        <p> = <strong>0.045 g</strong></p>
+      </div>
+
+      <div class="calculation-step formula-block">
+        <p>Strength of unknown glucose solution (g/L) = </p>
+        <div class="fraction display-fraction">
+          <span class="numerator">1.25 &times; V<sub>1</sub> &times; 1000</span>
+          <span class="denominator">250 &times; V<sub>2</sub></span>
+        </div>
+      </div>
+
+      <div class="calculation-step formula-block">
+        <p>= </p>
+        <div class="fraction inline-fraction">
+          <span class="numerator">W<sub>1</sub> &times; V<sub>1</sub> &times; 4</span>
+          <span class="denominator">V<sub>2</sub></span>
+        </div>
+        <p> = </p>
+        <div class="fraction inline-fraction">
+          <span class="numerator">1.25 &times; 9.0 &times; 4</span>
+          <span class="denominator">6.0</span>
+        </div>
+      </div>
+
+      <div class="calculation-step final-calc-result">
+        <p><strong>Result Strength = 7.5 g/L</strong></p>
+      </div>
+    </section>
+      <!-- Final Footer / Result Section -->
+  <footer class="report-footer">
+    <section class="report-section result-section">
+      <h2>RESULT:</h2>
+      <p>The amount of glucose present in given sugar solution is <strong>7.5 g/L</strong>.</p>
+    </section>
+  </footer>
+
+    <!-- Precautions Section -->
+    <section class="report-section precautions-section">
+      <h2>PRECAUTIONS:</h2>
+      <ul class="precautions-list">
+        <li>Boil the solution properly during titration.</li>
+        <li>Use the personal protective equipment.</li>
+        <li>Be focused while doing the titration.</li>
+      </ul>
+    </section>
+
+  </main>
+
+
+
+</article>
+
+      </div>
+      <div id="exp39" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+      <!-- START: BEER-LAMBERT LAW & COLORIMETRY EXPERIMENT LAB REPORT -->
+<article class="lab-report chemistry-experiment" id="exp-beer-lambert">
+
+  <!-- Header & Title Section -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Expt. No.:</strong> —</span>
+      <span class="experiment-date"><strong>Date:</strong> —</span>
+      <span class="page-number"><strong>Page No.:</strong> 16–18</span>
+    </div>
+
+    <section class="report-section aim-section">
+      <h2>AIM:</h2>
+      <p>Verification of Beer-Lambert Law and determination of concentration of an unknown food color sample using Colorimetry.</p>
+    </section>
+  </header>
+
+  <main class="report-body">
+    
+    <!-- Theory Section: Page 16 -->
+    <section class="report-section theory-section">
+      <h2>BEER-LAMBERT LAW:</h2>
+      <p>
+        States that: for a given material sample, path length and concentration of the sample are directly proportional to the absorbance of the light.
+      </p>
+      
+      <div class="formula-container">
+        <strong>A = &epsilon; L C</strong>
+      </div>
+
+      <p><strong>Where:</strong></p>
+      <ul>
+        <li><strong>A:</strong> Amount of light absorbed for a particular wavelength by the sample.</li>
+        <li><strong>&epsilon;:</strong> Molar extinction coefficient.</li>
+        <li><strong>L:</strong> Distance covered by the light through the solution (path length).</li>
+        <li><strong>C:</strong> Concentration of the absorbing species.</li>
+      </ul>
+    </section>
+
+    <!-- Procedure Section: Pages 16 & 17 -->
+    <section class="report-section procedure-section">
+      <h2>PROCEDURE:</h2>
+      
+      <h3>(i) Preparation of Stock Sample</h3>
+      <p>
+        Prepared stock sample of powdered food color of 1000 mL in water of <strong>2.2 &times; 10<sup>-1</sup> mM</strong> by taking 100 mg of powdered food color, when the molecular weight of food color was <strong>452 g/mol</strong>.
+      </p>
+
+      <h3>(ii) Preparation of Different Concentrations of Stock Sample</h3>
+      <p>
+        Prepared 11 different samples of different concentrations of food powder drink by stock solution by taking 0%, 10%, 20% till 100% of the food color sample and distilled water solution.
+      </p>
+
+      <h3>(iii) Finding of &lambda;<sub>max</sub> for 100% of Food Colour Stock Sample</h3>
+      <ul>
+        <li>In a cuvette, took the stock solution and in another cuvette took distilled water.</li>
+        <li>The filter no. of Colorimeter was set at 40 and the cuvette containing distilled water was fitted in.</li>
+        <li>The reading of zero was achieved by using the Knob.</li>
+        <li>Then the cuvette containing distilled water was removed and the cuvette containing Stock solution was inserted and the reading was noted.</li>
+        <li>The same process was repeated for all the filter nos. of the Colorimeter and the readings were recorded.</li>
+        <li>&lambda;<sub>max</sub> was determined (found at Filter 42 / 420 nm).</li>
+      </ul>
+
+      <h3>(iv) Absorbance of All Samples at &lambda;<sub>max</sub></h3>
+      <ul>
+        <li>The filter no. of the Colorimeter was set at &lambda;<sub>max</sub> i.e., 42 filter no. (420 nm).</li>
+        <li>The reading of the Colorimeter was adjusted to Zero while cuvette containing distilled water was fitted in it.</li>
+        <li>Then one-by-one all the samples from 10% to 90% were taken in cuvette and their readings of (Absorbance) Colorimeter were noted and then plotted.</li>
+      </ul>
+
+      <h3>(v) Testing for Unknown Sample</h3>
+      <ul>
+        <li>At the same &lambda;<sub>max</sub> i.e., 420 nm, using distilled water, adjusted the reading to 0.</li>
+        <li>Then inserted the cuvette containing unknown food color sample and noted the reading.</li>
+        <li>Matched it with the already plotted graph of reading from previous step and then got the concentration of the unknown sample.</li>
+      </ul>
+    </section>
+
+    <!-- Observation Tables: Page 17 -->
+    <section class="report-section observation-section">
+      <h2>OBSERVATIONS &amp; DATA:</h2>
+
+      <h3>Table 1: Wavelength vs Absorbance for Stock Solution (Finding &lambda;<sub>max</sub>)</h3>
+      <table class="observation-table">
+        <thead>
+          <tr>
+            <th>Filter No.</th>
+            <th>Wavelength (&lambda; / nm)</th>
+            <th>Absorbance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>40</td><td>400</td><td>1.52</td></tr>
+          <tr class="highlight-row"><td><strong>42</strong></td><td><strong>420</strong></td><td><strong>1.58 (&lambda;<sub>max</sub>)</strong></td></tr>
+          <tr><td>48</td><td>480</td><td>0.95</td></tr>
+          <tr><td>50</td><td>500</td><td>0.95</td></tr>
+          <tr><td>52</td><td>520</td><td>0.84</td></tr>
+          <tr><td>54</td><td>540</td><td>0.80</td></tr>
+          <tr><td>62</td><td>620</td><td>0.23</td></tr>
+          <tr><td>68</td><td>680</td><td>0.08</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table 2: Concentration vs Absorbance at &lambda;<sub>max</sub> (420 nm)</h3>
+      <table class="observation-table">
+        <thead>
+          <tr>
+            <th>S.No.</th>
+            <th>Stock Sol. (mL)</th>
+            <th>Distilled Water (mL)</th>
+            <th>Conc. (mM)</th>
+            <th>Absorbance at &lambda;<sub>max</sub></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1.</td><td>0</td><td>10</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td>2.</td><td>1</td><td>9</td><td>0.022</td><td>0.63</td></tr>
+          <tr><td>3.</td><td>2</td><td>8</td><td>0.044</td><td>1.03</td></tr>
+          <tr><td>4.</td><td>3</td><td>7</td><td>0.066</td><td>1.31</td></tr>
+          <tr><td>5.</td><td>4</td><td>6</td><td>0.088</td><td>1.38</td></tr>
+          <tr><td>6.</td><td>5</td><td>5</td><td>0.110</td><td>1.46</td></tr>
+          <tr><td>7.</td><td>6</td><td>4</td><td>0.132</td><td>1.49</td></tr>
+          <tr><td>8.</td><td>7</td><td>3</td><td>0.154</td><td>1.53</td></tr>
+          <tr><td>9.</td><td>8</td><td>2</td><td>0.176</td><td>1.58</td></tr>
+          <tr><td>10.</td><td>9</td><td>1</td><td>0.198</td><td>1.58</td></tr>
+          <tr><td>11.</td><td>10</td><td>0</td><td>0.220</td><td>1.58</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Calibration Graph & Unknown Sample Readings: Pages 17 & 18 -->
+    <section class="report-section calibration-section">
+      <h2>CALIBRATION GRAPH &amp; UNKNOWN SAMPLE READINGS:</h2>
+      
+      <div class="graph-details-card">
+        <h3>Graph Scale &amp; Plot Details:</h3>
+        <ul>
+          <li><strong>X-axis:</strong> 1 big unit = 0.02 mM (Concentration)</li>
+          <li><strong>Y-axis:</strong> 1 big unit = 0.1 unit (Absorbance)</li>
+        </ul>
+      </div>
+
+      <div class="unknown-sample-box">
+        <p><strong>For Unknown Sample:</strong></p>
+        <p>Absorbance at Filter 42 (420 nm) was recorded as <strong>1.04</strong>.</p>
+        <p>By matching Y = 1.04 on the standard calibration curve, the corresponding X-axis value was extrapolated.</p>
+      </div>
+    </section>
+<!-- Chart.js CDN for Rendering standard Calibration Curve -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="graph-card-container" style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #cbd5e1; margin: 20px 0; font-family: sans-serif;">
+  <h3 style="margin-top: 0; color: #1e293b; text-align: center;">Calibration Curve: Absorbance vs Concentration (at &lambda;<sub>max</sub> = 420 nm)</h3>
+  
+  <div style="position: relative; height: 400px; width: 100%;">
+    <canvas id="beerLambertChart"></canvas>
+  </div>
+
+  <div style="margin-top: 15px; padding: 12px; background: #f8fafc; border-left: 4px solid #ef4444; border-radius: 4px; font-size: 14px; color: #334155;">
+    <strong>Unknown Sample Extrapolation:</strong><br>
+    Y-axis (Absorbance) = <strong>1.04</strong> &rarr; X-axis (Concentration) = <strong>0.052 mM</strong>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('beerLambertChart').getContext('2d');
+
+    // Observation Table 2 Data Points
+    const standardData = [
+      { x: 0.000, y: 0.00 },
+      { x: 0.022, y: 0.63 },
+      { x: 0.044, y: 1.03 },
+      { x: 0.066, y: 1.31 },
+      { x: 0.088, y: 1.38 },
+      { x: 0.110, y: 1.46 },
+      { x: 0.132, y: 1.49 },
+      { x: 0.154, y: 1.53 },
+      { x: 0.176, y: 1.58 },
+      { x: 0.198, y: 1.58 },
+      { x: 0.220, y: 1.58 }
+    ];
+
+    // Unknown Sample Point
+    const unknownPoint = [{ x: 0.052, y: 1.04 }];
+
+    new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: [
+          {
+            label: 'Standard Calibration Curve',
+            data: standardData,
+            showLine: true,
+            borderColor: '#2563eb',
+            backgroundColor: '#2563eb',
+            borderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            tension: 0.2
+          },
+          {
+            label: 'Unknown Sample (A = 1.04, C = 0.052 mM)',
+            data: unknownPoint,
+            borderColor: '#ef4444',
+            backgroundColor: '#ef4444',
+            pointRadius: 8,
+            pointStyle: 'rectRot',
+            showLine: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: {
+              display: true,
+              text: 'Concentration (mM)',
+              color: '#0f172a',
+              font: { weight: 'bold', size: 14 }
+            },
+            min: 0,
+            max: 0.24,
+            ticks: { stepSize: 0.02 }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Absorbance (A)',
+              color: '#0f172a',
+              font: { weight: 'bold', size: 14 }
+            },
+            min: 0,
+            max: 1.8,
+            ticks: { stepSize: 0.2 }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `Conc: ${context.parsed.x} mM, Abs: ${context.parsed.y}`;
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+    <!-- Result Section: Page 18 -->
+    <section class="report-section result-section">
+      <h2>RESULT:</h2>
+      <p class="result-highlight">
+        The concentration of the Unknown Sample was found to be <strong>0.052 mM</strong>.
+      </p>
+    </section>
+
+    <!-- Precautions Section: Page 18 -->
+    <section class="report-section precaution-section">
+      <h2>PRECAUTIONS:</h2>
+      <ul>
+        <li>Do the preparation of samples with accurate quantities of stock solution and water.</li>
+        <li>Make sure to adjust the colorimeter to zero with distilled water.</li>
+        <li>Make sure that no impurities are there in the cuvette or solution.</li>
+      </ul>
+    </section>
+
+  </main>
+</article>
+<!-- END: BEER-LAMBERT EXPERIMENT -->
+
+      </div>
+      <div id="exp40" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+      <article class="lab-report biology-experiment" id="experiment-01">
+
+  <!-- Header Section with Metadata -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Exp. No.:</strong> 01</span>
+      <span class="experiment-date"><strong>Date:</strong> 27/11/2024</span>
+      <span class="page-number"><strong>Page No.:</strong> —</span>
+    </div>
+
+    <!-- Aim -->
+    <section class="report-section aim-section">
+      <h2>AIM:</h2>
+      <p>To determine the threshold of taste for sweetness, sourness, and saltiness.</p>
+    </section>
+<!-- START: TASTE SENSITIVITY EXPERIMENT - PROCEDURE -->
+<article class="lab-report physiology-experiment" id="exp-taste-sensitivity">
+
+  <!-- Header Section -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Expt. No.:</strong> —</span>
+      <span class="experiment-date"><strong>Date:</strong> —</span>
+      <span class="page-number"><strong>Page No.:</strong> —</span>
+    </div>
+
+    <section class="report-section aim-section">
+      <h2>AIM:</h2>
+      <p>Determination of taste threshold sensitivity for Sweetness, Saltiness, and Sourness using serial dilution method.</p>
+    </section>
+  </header>
+
+  <main class="report-body">
+    
+    <!-- Procedure Section -->
+    <section class="report-section procedure-section">
+      <h2>PROCEDURE:</h2>
+      
+      <ol class="procedure-list" style="line-height: 1.8;">
+        <li>
+          Measured <strong>90 mL</strong> of distilled water and poured into a paper or plastic cup. <strong>10 grams</strong> of granulated sugar added. Stirred until dissolved. That was <strong>10% sucrose / sugar solution</strong>.
+        </li>
+        <li>
+          Rinsed the mouth with plain tap water and wiped the tongue dry with a clean tissue paper.
+        </li>
+        <li>
+          Dipped a clean cotton swab into the <strong>10% sugar solution</strong> and smeared it all around the tongue. If tasted sweetness, wrote <strong>'+'</strong> in data table.
+        </li>
+        <li>
+          Now measured <strong>10 mL</strong> of the 10% sucrose solution and poured into a clean paper cup. <strong>90 mL</strong> of distilled water added and stirred (1% solution).
+        </li>
+        <li>
+          Then rinsed your mouth again with plain tap water and wiped the tongue dry with a clean tissue paper. Dipped a clean cotton swab into <strong>1% sugar solution</strong> and smeared all around the tongue. If it felt sweet, wrote <strong>'+'</strong> in table.
+        </li>
+        <li>
+          Repeated this step until we got non-taste of sweetness till <strong>0.001% sugar solution</strong>.
+        </li>
+        <li>
+          For salt solution, again <strong>10% solution</strong> was taken, and step (ii) and step (iii) were used to observe the saltiness.
+        </li>
+        <li>
+          Using step (iv), continuous dilution was made and taste for saltiness was taken.
+        </li>
+        <li>
+          Same procedure was repeated for sourness test of sour (acidic solution).
+        </li>
+      </ol>
+    </section>
+
+  </main>
+</article>
+<!-- END: TASTE SENSITIVITY EXPERIMENT -->
+
+    <!-- Theory Section -->
+    <section class="report-section theory-section">
+      <h2>THEORY:</h2>
+      <p>
+        For taste sensing system or our own taste perception, this amazing type of sensitivity is possible by taste buds.
+      </p>
+      <p>
+        Taste Buds are located in small bumps of tongue rank called papillae. Each taste bud is made up of 50–150 taste receptor cells. On the surface of these cells are receptors that bind to small molecules related to flavour. The receptors then relay/transfer the taste sensation to the brain.
+      </p>
+      <p>
+        This entire process allows us to distinguish 5 basic tastes: <strong>sweet, sour, salty, bitter, and savory (umami)</strong>.
+      </p>
+
+      <!-- Sweet Taste Mechanism -->
+      <div class="taste-category-block">
+        <h3>1. Sweet Taste</h3>
+        <p>
+          Sweet taste is evolved by sugars like glucose (which is principal source for most animals). Fructose is even sweeter than glucose. Sucrose is common sugar compound (mix of glucose &amp; fructose).
+        </p>
+        <ul>
+          <li>Single receptor is responsible for all sweet perception.</li>
+          <li>Different sweeteners simulate different parts of receptor.</li>
+          <li>Artificial sweeteners also simulate this part of receptor.</li>
+          <li>This receptor is responsible: <strong>T1R2 &amp; T1R3</strong> heterodimer.</li>
+        </ul>
+        <div class="receptor-detail">
+          <p><strong>T1R2 &amp; T1R3 Heterodimer:</strong> Sweet receptor having binding site for non-protein molecules as well as small sweet molecules.</p>
+        </div>
+      </div>
+
+      <!-- Salty Taste Mechanism -->
+      <div class="taste-category-block">
+        <h3>2. Salty Taste</h3>
+        <p>
+          The classic and clean salty taste is provided by NaCl or LiCl. Cations provide the basic salty taste. Potassium and other alkaline earth cations produce a combination of both salty and bitter taste.
+        </p>
+        <p>
+          Chloride ion is least inhibitory to the salty taste and does not contribute a taste. Citrate anion is more inhibitory than orthophosphate anion and contributes less taste.
+        </p>
+        <p>
+          <strong>Salt Receptor:</strong> They are epithelial type sodium channels on the apical membrane of taste cells. If the NaCl concentration is larger, the depolarization of taste cells is uniform.
+        </p>
+        <p>
+          These sodium (Na<sup>+</sup>) channels are regulated by hormones involved in water &amp; electrolyte balance, which mediates Na<sup>+</sup>-specific appetite and intake.
+        </p>
+        <p>
+          Protons (H<sup>+</sup>) also diffuse through this channel; that is why the addition of acid like lemon juice to salty food reduces their salty taste.
+        </p>
+      </div>
+
+      <!-- Sour Taste Mechanism -->
+      <div class="taste-category-block">
+        <h3>3. Sour Taste</h3>
+        <p>
+          Substances are acidic in nature. Protons (H<sup>+</sup>) are primarily responsible for sour taste, which also interact with distinct channels on the apical membrane of taste cells. They activate proton-gated cation and chloride channels leading to cell depolarization.
+        </p>
+      </div>
+
+      <!-- Bitter Taste Mechanism -->
+      <div class="taste-category-block">
+        <h3>4. Bitter Taste</h3>
+        <p>
+          Bitterness resembles sweetness; both are triggered by similar features in molecules. Some molecules can yield both bitter and sweet sensations.
+        </p>
+        <p>
+          A sweet molecule must contain 2 polar/electronegative groups &amp; 1 polar-hydrophobic group, whereas a bitter molecule has a requirement of 1 polar group and 1 hydrophobic group (non-polar group).
+        </p>
+        <p>
+          Bitter substances have lower taste threshold than other substances. They are less soluble in water than other taste-active molecules.
+        </p>
+        <ul>
+          <li><strong>Quinine:</strong> Generally accepted standard for bitter taste detection threshold (~10 ppm).</li>
+          <li><strong>Caffeine:</strong> Moderately bitter at 150–200 ppm in water (occurs in coffee, tea, and kola nuts).</li>
+          <li><strong>Theobromine:</strong> Very similar to caffeine, present in cocoa.</li>
+          <li><strong>Naringin:</strong> Extracted from grapefruit peel, used instead of caffeine for bitterness in some food applications.</li>
+        </ul>
+      </div>
+
+      <!-- Visual Flowchart SVG / ASCII Diagram -->
+      <div class="svg-card-container">
+        <svg class="experiment-card-svg" viewBox="0 0 600 220" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="220" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+          
+          <!-- Tongue Outer Line -->
+          <path d="M 230 110 C 230 40, 370 40, 370 110 L 370 130 L 230 130 Z" fill="#fecdd3" stroke="#e11d48" stroke-width="2"/>
+          
+          <!-- Sensory Labels -->
+          <text x="300" y="30" font-size="11" fill="#0f172a" font-weight="bold" text-anchor="middle">Taste</text>
+          <line x1="300" y1="35" x2="300" y2="55" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+          <text x="180" y="65" font-size="11" fill="#0f172a" font-weight="bold">Warm</text>
+          <line x1="215" y1="65" x2="250" y2="75" stroke="#475569" stroke-width="1.5"/>
+
+          <text x="400" y="65" font-size="11" fill="#0f172a" font-weight="bold">Cold</text>
+          <line x1="395" y1="65" x2="350" y2="75" stroke="#475569" stroke-width="1.5"/>
+
+          <text x="150" y="105" font-size="11" fill="#0f172a" font-weight="bold">Tactile</text>
+          <line x1="190" y1="105" x2="230" y2="105" stroke="#475569" stroke-width="1.5"/>
+
+          <text x="410" y="115" font-size="11" fill="#0f172a" font-weight="bold">Pain</text>
+          <line x1="405" y1="112" x2="370" y2="112" stroke="#475569" stroke-width="1.5"/>
+
+          <!-- Pathway Flow -->
+          <text x="300" y="155" font-size="11" fill="#334155" text-anchor="middle">Neural pattern of activity</text>
+          <line x1="300" y1="160" x2="300" y2="175" stroke="#334155" stroke-width="1.5"/>
+          <text x="300" y="188" font-size="12" fill="#1e293b" font-weight="bold" text-anchor="middle">Brain</text>
+          <line x1="300" y1="192" x2="300" y2="202" stroke="#334155" stroke-width="1.5"/>
+          <text x="300" y="213" font-size="11" fill="#2563eb" font-weight="bold" text-anchor="middle">Taste Sensation</text>
+        </svg>
+      </div>
+
+      <!-- Additional Concepts on Flavour & Receptors -->
+      <div class="theory-details">
+        <h3>Flavour Definition &amp; Physiology</h3>
+        <p>
+          Flavour has been defined as the sensation produced by a material taken in the mouth, perceived principally by the senses of taste and smell, and also by general pain, tactile, and temperature receptors in the mouth.
+        </p>
+        <p>
+          Flavour is a property of the material (food) as well as the receptor mechanism of the person ingesting the food. The study of flavour includes composition of food compounds having taste or smell, as well as interactions of these compounds with receptors in sensory organs.
+        </p>
+
+        <h3>Receptor Distribution on Tongue:</h3>
+        <ul>
+          <li><strong>Sweet Taste:</strong> Tip of tongue</li>
+          <li><strong>Bitter Taste:</strong> Base of tongue</li>
+          <li><strong>Sour Taste:</strong> Edges of tongue</li>
+          <li><strong>Salty Taste:</strong> Both edges &amp; tip of tongue</li>
+        </ul>
+
+        <h3>Signal Transduction &amp; Kinetics:</h3>
+        <p>
+          Perception of basic taste qualities results from a pattern of nerve activity coming from many taste cells. The time required for taste responses to take place is in the order of <strong>20 milliseconds</strong>.
+        </p>
+        <p>
+          The taste molecule is weakly adsorbed, creating molecular geometry of surface alignment and interchange of ions across the surface. This is followed by electrical polarization that triggers a nerve impulse.
+        </p>
+        <p>
+          Depolarization spreads to the synaptic area, activating voltage-dependent calcium channels. Influx of Ca<sup>2+</sup> triggers the release of neurotransmitters (noradrenaline).
+        </p>
+      </div>
+
+      <!-- Mathematical Model Section -->
+      <div class="equation-block">
+        <h3>Taste Response Equation:</h3>
+        <p>The equation relating magnitude of response &amp; stimulus concentration is given by:</p>
+        
+        <div class="formula-container">
+          <div class="fraction inline-fraction">
+            <span class="numerator">C</span>
+            <span class="denominator">R</span>
+          </div>
+          <span class="equals">=</span>
+          <div class="fraction inline-fraction">
+            <span class="numerator">C</span>
+            <span class="denominator">R<sub>s</sub></span>
+          </div>
+          <span class="plus">+</span>
+          <div class="fraction inline-fraction">
+            <span class="numerator">1</span>
+            <span class="denominator">K &middot; R<sub>s</sub></span>
+          </div>
+        </div>
+
+        <ul class="equation-legend">
+          <li><strong>C:</strong> Stimulus concentration</li>
+          <li><strong>R:</strong> Response magnitude</li>
+          <li><strong>R<sub>s</sub>:</strong> Maximum response magnitude</li>
+          <li><strong>K:</strong> Equilibrium constant</li>
+        </ul>
+        <p><small>* Note: n values reported for many substances are in the range of 5–15.</small></p>
+      </div>
+    </section>
+  </header>
+<!-- START: Transcribed Theory Section from Handwritten Notes -->
+<section class="report-section detailed-anatomy-theory">
+
+  <!-- Structure and Physiology of Taste Organ -->
+  <div class="theory-block">
+    <h2>Structure and Physiology of Taste Organ</h2>
+    
+    <h3>1. Tongue</h3>
+    <ul>
+      <li>It is one of the strongest muscles in the human body.</li>
+      <li>It is covered with moist, pink tissue called <strong>mucosa</strong>.</li>
+      <li><strong>Papillae:</strong> Tiny bumps present on the surface, responsible for the rough texture of the tongue.</li>
+      <li>Thousands of <strong>taste buds</strong> cover these papillae.</li>
+    </ul>
+
+    <p>
+      The tongue helps us chew and swallow food. It produces different sounds so we can speak words clearly. It also assists in breathing.
+    </p>
+    <p>
+      On the tongue, several nerves help in transmitting taste signals to the brain, thus enabling taste sensation.
+    </p>
+
+    <!-- Structural Demographics & Parts -->
+    <h4>Anatomy &amp; Dimensions</h4>
+    <ul>
+      <li>
+        <strong>Size:</strong>
+        <ul>
+          <li>Male: ~3.3 inches (varies by range)</li>
+          <li>Female: ~3.0 inches</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Parts:</strong> Tip, Body, Base.
+      </li>
+    </ul>
+
+    <p>
+      Embryologically, the tongue is divided into <strong>Anterior</strong> and <strong>Posterior</strong> parts:
+    </p>
+    <ul>
+      <li>
+        <strong>Anterior Part:</strong> Known as the oral or presulcal part. Includes the root attached to the floor of the oral cavity.
+      </li>
+      <li>
+        <strong>Posterior Part:</strong> Known as the pharyngeal or post-presulcal part. Includes the base forming the vertical wall of the oropharynx.
+      </li>
+    </ul>
+
+    <p><strong>Histological Elements:</strong> The tongue is made up of three main elements:</p>
+    <ol>
+      <li>
+        <strong>Epithelium:</strong> Comprises taste buds (~10,000 in average count, varies with age) and papillae.
+      </li>
+      <li><strong>Muscles:</strong> Voluntarily controlled, containing cross-striated muscle fibers embedded in saliva for proper sensation.</li>
+      <li><strong>Glands:</strong> Secretory units assisting in tongue hydration and taste molecule solvation.</li>
+    </ol>
+  </div>
+
+  <hr>
+
+  <!-- Chemical Dimensions of Taste -->
+  <div class="theory-block">
+    <h2>Chemical Dimensions of Taste</h2>
+    <p>
+      <strong>Basic Requirement:</strong> To elicit a taste response, a substance must be <strong>water-soluble</strong>.
+    </p>
+
+    <h3>1. Salty &amp; Sweet Taste</h3>
+    <p>
+      Salty and sweet taste responses are governed by molecular configuration. For instance, certain inorganic salts like <strong>Barium salts [CH<sub>3</sub>-COO]<sub>2</sub>Ba</strong> elicit a sweet taste.
+    </p>
+
+    <h3>2. Bitterness Inhibition</h3>
+    <p>
+      Bitterness can be inhibited or exhibited by alkaloids such as <strong>Quinine</strong>, <strong>Picric Acid</strong>, and heavy metals.
+    </p>
+
+    <!-- AH-B Theory Card -->
+    <div class="concept-card ah-b-theory">
+      <h3>Shallenberger's AH-B Theory of Sweetness</h3>
+      <p>
+        According to this theory, a sweet response possesses an electronegative atom <strong>A</strong> (oxygen, nitrogen) attached to a proton (<strong>H<sup>+</sup></strong>) by a single covalent bond (acting as the <strong>AH group</strong>, e.g., imine or amine group).
+      </p>
+      <p>
+        Within a critical distance of about <strong>0.3 nm (3 Å)</strong> from the AH proton, there must be a second electronegative element <strong>B</strong> (such as oxygen or nitrogen).
+      </p>
+    </div>
+
+    <!-- Structural Variations & Taste Mapping -->
+    <h3>Structure-Activity Relationship (SAR) of Saccharin &amp; Substituted Derivatives</h3>
+    <p>
+      Modifications to functional groups, steric hindrance, and conjugation alter taste perception dramatically:
+    </p>
+
+    <div class="sar-grid">
+      <div class="sar-card">
+        <h4>Saccharin Core &amp; Substitutions</h4>
+        <ul>
+          <li><strong>Standard Saccharin:</strong> Sweet</li>
+          <li><strong>Nitro-substituted Saccharin (NO<sub>2</sub> derivative):</strong> Bitter</li>
+          <li><strong>Amino-substituted Saccharin (NH<sub>2</sub> derivative):</strong> Sweet</li>
+          <li><strong>N-Methylated (N-CH<sub>3</sub>):</strong> Tasteless</li>
+          <li><strong>N-Ethyl / Alkyl Substitutions:</strong> Tasteless</li>
+          <li><strong>Haloalkyl-substituted (-CH<sub>2</sub>-CH<sub>2</sub>-Br):</strong> Taste Bud Inhibitor / Tasteless</li>
+        </ul>
+      </div>
+
+      <div class="sar-card">
+        <h4>Steric &amp; Conjugative Variations</h4>
+        <ul>
+          <li><strong>Steric Crowding (Polynitro/Polyamino Aromatics):</strong> High steric crowding leads to Loss of Taste (Tasteless).</li>
+          <li><strong>2-Methyl / Alkoxy Variations:</strong> Shifts taste between Sweet and Bitter based on position.</li>
+          <li><strong>Conjugated Para-Substituted Derivatives:</strong>
+            <ul>
+              <li>Electronegative NH-CO Linkage: Sweet</li>
+              <li>Thioamide/Thiourea Linkage (-CS-): Bitter</li>
+              <li>Sterically Blocked Amides: Tasteless</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+  <!-- Supplementary Theory Section: Stereochemistry & Taste Perception -->
+  <section class="report-section extended-stereochem-theory">
+    <h2>STEREOCHEMISTRY & TASTE PERCEPTION OF ISOMERS</h2>
+    
+    <!-- Table: D vs L Amino Acids Taste Comparison -->
+    <h3>1. Taste Differences Between L- and D-Form of Amino Acids</h3>
+    <table class="observation-table amino-acid-table">
+      <thead>
+        <tr>
+          <th scope="col">S.No.</th>
+          <th scope="col">Amino Acid</th>
+          <th scope="col">Taste of L-Isomer</th>
+          <th scope="col">Taste of D-Isomer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1.</td>
+          <td>Asparagine</td>
+          <td>Insipid (Tasteless)</td>
+          <td>Sweet</td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td>Glutamic Acid</td>
+          <td>Unique (Umami/Savory)</td>
+          <td>Almost tasteless</td>
+        </tr>
+        <tr>
+          <td>3.</td>
+          <td>Phenylalanine</td>
+          <td>Faintly bitter</td>
+          <td>Sweet (with bitter afterthought)</td>
+        </tr>
+        <tr>
+          <td>4.</td>
+          <td>Leucine</td>
+          <td>Flat, Bitter</td>
+          <td>Strikingly sweet</td>
+        </tr>
+        <tr>
+          <td>5.</td>
+          <td>Valine</td>
+          <td>Slightly sweet or bitter (at high conc.)</td>
+          <td>Strikingly sweet</td>
+        </tr>
+        <tr>
+          <td>6.</td>
+          <td>Serine</td>
+          <td>Faintly sweet</td>
+          <td>Strikingly sweet</td>
+        </tr>
+        <tr>
+          <td>7.</td>
+          <td>Histidine</td>
+          <td>Tasteless to Bitter (varies with conc.)</td>
+          <td>Sweet</td>
+        </tr>
+        <tr>
+          <td>8.</td>
+          <td>Isoleucine</td>
+          <td>Bitter</td>
+          <td>Sweet</td>
+        </tr>
+        <tr>
+          <td>9.</td>
+          <td>Methionine</td>
+          <td>Flat</td>
+          <td>Sweet</td>
+        </tr>
+        <tr>
+          <td>10.</td>
+          <td>Tryptophan</td>
+          <td>Bitter</td>
+          <td>Very sweet</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Stereochemistry of Carbohydrates & Menthol/Spearmint -->
+    <div class="theory-block">
+      <h3>2. Sugars &amp; Optical Isomers</h3>
+      <ul>
+        <li><strong>D-Glucose:</strong> Salty / Sweet profile</li>
+        <li><strong>L-Glucose:</strong> Sweet taste</li>
+        <li>
+          <strong>Anomers of D-Mannose:</strong>
+          <ul>
+            <li><strong>&alpha;-Anomer:</strong> Sweet as sugar</li>
+            <li><strong>&beta;-Anomer:</strong> Bitter as Quinine</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Carvone / Spearmint Isomers:</strong>
+          <ul>
+            <li><strong>D-form (Carvone):</strong> Caraway scent/taste</li>
+            <li><strong>L-form (Carvone):</strong> Spearmint / Pudina flavor</li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- Genetics of Taste: PTC -->
+      <h3>3. Genetic Variation in Taste Threshold (PTC &amp; Phenylthiourea)</h3>
+      <p>
+        The ability to taste certain chemical substances like <strong>Phenylthiocarbamide (PTC)</strong> or <strong>Phenylthiourea</strong> is genetically determined.
+      </p>
+      <p>
+        The inability to taste phenylthiourea is inherited as a <strong>recessive gene trait</strong>.
+      </p>
+
+      <!-- Shallenberger AH-B Theory Refinement -->
+      <div class="concept-card ah-b-refinement">
+        <h4>Refinement of Shallenberger's AH-B Sweetness Model</h4>
+        <p>
+          Sweet taste receptors require a specific geometrical distance between an electronegative atom (<strong>A</strong>), an acidic proton (<strong>H</strong>), and a second electronegative site (<strong>B</strong>) positioned approximately <strong>3 Å (0.3 nm)</strong> apart:
+        </p>
+        <div class="formula-container">
+          <code>[ Receptor Site A ] &mdash;&mdash;&mdash; H (3 Å) &mdash;&mdash;&mdash; [ Site B ]</code>
+        </div>
+        <p>
+          This structural arrangement allows optimum hydrogen bonding interaction with the complementary receptor sites in taste buds.
+        </p>
+      </div>
+    </div>
+  </section>
+<!-- END: Transcribed Theory Section -->
+
+  <!-- Main Body: Observations -->
+  <main class="report-body">
+    <section class="report-section observation-section">
+      <h2>OBSERVATION TABLE:</h2>
+      <p>Stock Solutions Prepared: 10% solution of Salt, Sugar, and Sour (Acid) solution.</p>
+      
+      <table class="observation-table">
+        <thead>
+          <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">Substance</th>
+            <th scope="col">10%</th>
+            <th scope="col">1%</th>
+            <th scope="col">0.1%</th>
+            <th scope="col">0.01%</th>
+            <th scope="col">0.001%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.</td>
+            <td>Sugar</td>
+            <td>+ve</td>
+            <td>-ve</td>
+            <td>-ve</td>
+            <td>-ve</td>
+            <td>-ve</td>
+          </tr>
+          <tr>
+            <td>2.</td>
+            <td>Salt</td>
+            <td>+ve</td>
+            <td>+ve</td>
+            <td>-ve</td>
+            <td>-ve</td>
+            <td>-ve</td>
+          </tr>
+          <tr>
+            <td>3.</td>
+            <td>Sour</td>
+            <td>+ve</td>
+            <td>+ve</td>
+            <td>+ve</td>
+            <td>-ve</td>
+            <td>-ve</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Final Footer / Result Section -->
+  <footer class="report-footer">
+    <section class="report-section result-section">
+      <h2>RESULT:</h2>
+      <p>My taste threshold values for all the basic taste sensations were found to be:</p>
+      <ul>
+        <li><strong>Sugar:</strong> 10%</li>
+        <li><strong>Salt:</strong> 1%</li>
+        <li><strong>Sour:</strong> 0.1%</li>
+      </ul>
+    </section>
+  </footer>
+
+</article>
+
+      </div>
+      <div id="exp41" class="data-box" style="display: block;">
+      <h3 style="margin-top:0; color:#1a73e8;">.
+      <!-- START: EXPERIMENT 08 & EXTENDED THEORY SECTION -->
+<article class="lab-report biology-experiment" id="experiment-08">
+
+  <!-- Header Section: Experiment 08 -->
+  <header class="report-header">
+    <div class="meta-row">
+      <span class="experiment-number"><strong>Exp. No.:</strong> .</span>
+      <span class="experiment-date"><strong>Date:</strong> —</span>
+      <span class="page-number"><strong>Page No.:</strong> —</span>
+    </div>
+
+    <!-- Aim -->
+    <section class="report-section aim-section">
+      <h2>AIM:</h2>
+      <p>To extract limonene from orange peels by using supercritical CO<sub>2</sub>.</p>
+    </section>
+
+    <!-- Requirements -->
+    <section class="report-section requirements-section">
+      <h2>REQUIREMENTS:</h2>
+      <ul>
+        <li>Orange peel</li>
+        <li>Solid CO<sub>2</sub> (Dry Ice)</li>
+        <li>Cylindrical plastic beaker / Glass cylinder</li>
+        <li>Copper wire</li>
+        <li>Filter paper</li>
+        <li>Plastic centrifuge tube</li>
+        <li>Heating apparatus / Warm water bath (40–50°C)</li>
+      </ul>
+    </section>
+  </header>
+
+  <!-- Procedure Section -->
+  <main class="report-body">
+    <section class="report-section procedure-section">
+      <h2>PROCEDURE:</h2>
+      <ol>
+        <li>A copper wire made with a loop at one end is inserted into a plastic centrifuge tube.</li>
+        <li>A filter paper is placed on the loop of the wire.</li>
+        <li>Grated orange peels (about 5 grams) are transferred onto the filter paper / upper loop.</li>
+        <li>The plastic centrifuge tube is filled with solid CO<sub>2</sub> (dry ice) and the tube is closed tightly.</li>
+        <li>The tube is finally immersed in warm water having a temperature of 40–50°C inside a plastic/glass cylinder.</li>
+        <li>The solid CO<sub>2</sub>/dry ice melts and extracts limonene, which is collected at the bottom of the tube. Finally, CO<sub>2</sub> is converted into gas and escapes from the reaction medium.</li>
+        <li>The extraction process is repeated once more by adding solid CO<sub>2</sub>.</li>
+      </ol>
+    </section>
+
+    <!-- Setup Diagram Container (SVG Representation of Experimental Setup) -->
+    <div class="svg-card-container">
+      <svg class="setup-diagram-svg" viewBox="0 0 500 280" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="280" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+        
+        <!-- Outer Water Beaker -->
+        <rect x="150" y="80" width="200" height="170" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5" rx="5"/>
+        <text x="250" y="270" font-size="12" fill="#0369a1" font-weight="bold" text-anchor="middle">Warm Water Bath (40-50°C)</text>
+
+        <!-- Centrifuge Tube inside Beaker -->
+        <rect x="220" y="40" width="60" height="190" fill="#ffffff" stroke="#334155" stroke-width="2" rx="10"/>
+        
+        <!-- Filter Paper & Wire Loop -->
+        <line x1="250" y1="30" x2="250" y2="190" stroke="#b45309" stroke-width="2"/> <!-- Copper Wire -->
+        <ellipse cx="250" cy="190" rx="22" ry="6" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/> <!-- Filter Paper -->
+        
+        <!-- Orange Peel & Solid CO2 -->
+        <circle cx="240" cy="175" r="4" fill="#f97316"/>
+        <circle cx="255" cy="178" r="5" fill="#f97316"/>
+        <circle cx="248" cy="170" r="4" fill="#f97316"/>
+        
+        <!-- CO2 Bubbles / Gas -->
+        <circle cx="240" cy="120" r="3" fill="#94a3b8"/>
+        <circle cx="260" cy="100" r="4" fill="#94a3b8"/>
+        <circle cx="245" cy="70" r="3" fill="#94a3b8"/>
+
+        <!-- Labels & Arrows -->
+        <line x1="280" y1="50" x2="380" y2="50" stroke="#475569" stroke-width="1.5"/>
+        <text x="385" y="54" font-size="11" fill="#1e293b" font-weight="bold">Centrifuge Tube</text>
+
+        <line x1="280" y1="100" x2="380" y2="100" stroke="#475569" stroke-width="1.5"/>
+        <text x="385" y="104" font-size="11" fill="#1e293b" font-weight="bold">Solid CO₂ / sCO₂</text>
+
+        <line x1="280" y1="170" x2="380" y2="170" stroke="#475569" stroke-width="1.5"/>
+        <text x="385" y="174" font-size="11" fill="#1e293b" font-weight="bold">Orange Peel</text>
+
+        <line x1="280" y1="190" x2="380" y2="210" stroke="#475569" stroke-width="1.5"/>
+        <text x="385" y="214" font-size="11" fill="#1e293b" font-weight="bold">Filter Paper Loop</text>
+      </svg>
+    </div>
+
+
+
+    <!-- Theory Section for Exp 08 -->
+    <section class="report-section theory-section">
+      <h2>THEORY (Limonene Extraction &amp; Supercritical Fluid):</h2>
+      <ul>
+        <li><strong>Limonene Occurrence:</strong> d-Limonene occurs naturally in citrus fruits like lemon and orange.</li>
+        <li><strong>Application:</strong> It is widely used as a natural flavouring agent and fragrance component.</li>
+        <li>
+          <strong>Supercritical CO<sub>2</sub> (sCO<sub>2</sub>):</strong> CO<sub>2</sub> is normally a gas, but above its critical temperature and critical pressure, it becomes a liquid-like fluid (supercritical fluid), which can be efficiently used for extracting natural products without toxic organic solvents.
+        </li>
+        <li>
+          <strong>Critical Temperature:</strong> The highest temperature value at which a substance can exist as a liquid state under pressure.
+        </li>
+        <li>
+          <strong>Stereochemistry of Limonene:</strong>
+          <ul>
+            <li><strong>l-Limonene:</strong> Smells like pine / turpentine-like.</li>
+            <li><strong>d-Limonene:</strong> Smells like citrus/orange; naturally occurring with a pleasing organic aroma.</li>
+            <li><strong>Isoprene Units:</strong> Limonene is a monoterpene made up of <strong>2 Isoprene units</strong>.</li>
+          </ul>
+        </li>
+        <li><strong>Toxicity/Biological Note:</strong> High systemic injection (e.g., 20 g) in animal models causes severe diarrhea and temporary elevated protein levels in urine.</li>
+      </ul>
+    </section>
+  </main>
+
+  <hr>
+    <!-- Result -->
+    <section class="report-section result-section">
+      <h2>RESULT:</h2>
+      <p>About <strong>1–2 mL</strong> of D-limonene was extracted from 5 grams of orange peels.</p>
+    </section>
+
+
+</article>
+<!-- END: EXPERIMENT 08 -->
+
+      </div>
+</div>
 
   <!-- SECTION 4: SPECTROSCOPY -->
   <div id="spectro-sec" class="category-section" style="display: none;">
@@ -11218,11 +14298,147 @@ rgba(0,0,0,0.1);"
   </div>
 <div id="pharmachem-sec" class="category-section" style="display: none;">
   <div class="btn-grid">
-      <button class="exp-btn" onclick="openExp(event, 'pharmachem1')">cosmetic exp1
+      <button class="exp-btn" onclick="openExp(event, 'pharmachem1')">Antacid
       </button></div>
   <div id="pharmachem1" class="data-box" style="display: none; margin-top: 15px;">
     
-    this will be updated soon
+    <!-- START: ANTACID BACK TITRATION EXPERIMENT (NO-OVERFLOW READY) -->
+<article class="lab-report chemistry-experiment" id="exp-antacid-titration" style="max-width: 100%; box-sizing: border-box; overflow-x: hidden; padding: 10px; font-family: sans-serif; line-height: 1.5;">
+
+  <!-- Header Section -->
+  <header class="report-header" style="max-width: 100%; box-sizing: border-box;">
+    <div class="meta-row" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+      <span class="experiment-number"><strong>Expt. No.:</strong> —</span>
+      <span class="experiment-date"><strong>Date:</strong> —</span>
+      <span class="page-number"><strong>Page No.:</strong> —</span>
+    </div>
+
+    <section class="report-section aim-section" style="max-width: 100%; box-sizing: border-box;">
+      <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 4px; word-break: break-word;">AIM:</h2>
+      <p style="word-break: break-word;">To determine the neutralizing capacity of different commercial antacid tablets (Pink &amp; Yellow) by back titration method using standard HCl and NaOH solutions.</p>
+    </section>
+  </header>
+
+  <main class="report-body" style="max-width: 100%; box-sizing: border-box;">
+
+    <!-- Theory Section -->
+    <section class="report-section theory-section" style="max-width: 100%; box-sizing: border-box;">
+      <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 4px; word-break: break-word;">THEORY &amp; PRINCIPLE:</h2>
+      <p style="word-break: break-word;">
+        Antacids are basic substances (like magnesium hydroxide, aluminum hydroxide, or sodium bicarbonate) used to neutralize excess stomach acid (HCl). Since antacid tablets are insoluble in water and react slowly, a direct titration with acid is difficult.
+      </p>
+      <p style="word-break: break-word;">
+        Therefore, a <strong>Back Titration</strong> technique is used:
+      </p>
+      <ul style="padding-left: 20px; word-break: break-word;">
+        <li>A known excess volume of standardized $\text{HCl}$ solution is added to dissolve and neutralize the antacid sample completely.</li>
+        <li>The remaining unreacted excess $\text{HCl}$ is then back-titrated against a standardized $\text{NaOH}$ solution using phenolphthalein indicator.</li>
+      </ul>
+      
+      <p style="word-break: break-word;"><strong>Chemical Reaction Equations:</strong></p>
+      <div style="max-width: 100%; overflow-x: auto; background: #f8fafc; padding: 8px; border-radius: 6px; font-size: 14px; margin-bottom: 15px;">
+        <p style="margin: 4px 0; word-break: break-word;">$\text{Antacid (Base)} + \text{HCl (Excess)} \rightarrow \text{Salt} + \text{H}_2\text{O} + \text{Unreacted HCl}$</p>
+        <p style="margin: 4px 0; word-break: break-word;">$\text{Unreacted HCl} + \text{NaOH} \rightarrow \text{NaCl} + \text{H}_2\text{O}$</p>
+      </div>
+    </section>
+
+    <!-- Standardization & Observation Section -->
+    <section class="report-section observation-section" style="max-width: 100%; box-sizing: border-box;">
+      <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 4px; word-break: break-word;">OBSERVATIONS &amp; TITRATION DATA:</h2>
+
+      <h3 style="word-break: break-word;">1. Standardization of HCl ($\text{NaOH}$ vs $\text{HCl}$):</h3>
+      <p style="word-break: break-word;">Normality of $\text{NaOH}$ ($N_1$) = <strong>0.1 N</strong></p>
+      <p style="word-break: break-word;">Volume of $\text{NaOH}$ taken ($V_1$) = <strong>9.6 mL</strong></p>
+      <p style="word-break: break-word;">Volume of $\text{HCl}$ used ($V_3$) = <strong>10.0 mL</strong></p>
+      
+      <div style="max-width: 100%; overflow-x: auto; background: #f1f5f9; padding: 8px; border-radius: 6px; margin-bottom: 15px;">
+        <p style="margin: 0 0 5px 0;">Using Normality Equation ($N_1 V_1 = N_3 V_3$):</p>
+        <p style="margin: 2px 0;">$0.1 \times 9.6 = N_{\text{HCl}} \times 10$</p>
+        <p style="margin: 2px 0;">$N_{\text{HCl}} = \mathbf{0.096\text{ N}}$</p>
+      </div>
+
+      <h3 style="word-break: break-word;">2. Titration Table (Back Titration with $\text{NaOH}$):</h3>
+      
+      <!-- Responsive Scroll Container for Table -->
+      <div style="width: 100%; overflow-x: auto; margin: 15px 0; border: 1px solid #cbd5e1; border-radius: 6px;">
+        <table class="observation-table" style="width: 100%; min-width: 500px; border-collapse: collapse; text-align: left; font-size: 14px;">
+          <thead>
+            <tr style="background-color: #f1f5f9;">
+              <th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Sample Details</th>
+              <th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Initial Burette (mL)</th>
+              <th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Final Burette (mL)</th>
+              <th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Vol of $\text{NaOH}$ Used (mL)</th>
+              <th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Net $\text{HCl}$ Neutralized (mL)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;"><strong>Blank Titration</strong> (Only Excess $\text{HCl}$)</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">19.0</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">18.6</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">9.6</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">—</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;"><strong>1<sup>st</sup> Antacid</strong> (Pink Tablet)</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">10.0</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">18.3</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">8.3</td>
+              <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;"><strong>8.9 mL</strong></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;"><strong>2<sup>nd</sup> Antacid</strong> (Yellow Tablet)</td>
+              <td style="padding: 8px;">—</td>
+              <td style="padding: 8px;">—</td>
+              <td style="padding: 8px;">—</td>
+              <td style="padding: 8px;"><strong>1.3 mL</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Calculations Section -->
+    <section class="report-section calculation-section" style="max-width: 100%; box-sizing: border-box;">
+      <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 4px; word-break: break-word;">CALCULATIONS:</h2>
+      <p style="word-break: break-word;"><strong>Formula:</strong> Gram equivalents of $\text{HCl}$ neutralized = $\text{Normality of HCl} \times \text{Volume of HCl neutralized (in L)}$</p>
+
+      <div class="calculation-box" style="background: #f8fafc; padding: 12px; border-left: 4px solid #3b82f6; margin: 15px 0; max-width: 100%; box-sizing: border-box; overflow-x: auto;">
+        <h3 style="margin-top: 0;">(i) For 1<sup>st</sup> Antacid (Pink):</h3>
+        <p>$\text{Volume of HCl neutralized} = 8.9\text{ mL}$</p>
+        <p>$\text{Gram Equivalents neutralized} = 0.096 \times 8.9 = \mathbf{0.8544\text{ gEq}}$</p>
+
+        <h3 style="margin-top: 15px;">(ii) For 2<sup>nd</sup> Antacid (Yellow):</h3>
+        <p>$\text{Volume of HCl neutralized} = 1.3\text{ mL}$</p>
+        <p>$\text{Gram Equivalents neutralized} = 0.096 \times 1.3 = \mathbf{0.1248\text{ gEq}}$</p>
+      </div>
+    </section>
+
+    <!-- Result Section -->
+    <section class="report-section result-section" style="max-width: 100%; box-sizing: border-box;">
+      <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 4px; word-break: break-word;">RESULT:</h2>
+      <ul style="padding-left: 20px; word-break: break-word;">
+        <li>Normality of the given $\text{HCl}$ solution was determined to be <strong>0.096 N</strong>.</li>
+        <li>Acid neutralizing capacity of 1<sup>st</sup> Antacid (Pink) = <strong>0.85 gEq</strong>.</li>
+        <li>Acid neutralizing capacity of 2<sup>nd</sup> Antacid (Yellow) = <strong>0.12 gEq</strong>.</li>
+        <li><strong>Conclusion:</strong> The 1<sup>st</sup> Antacid (Pink tablet) has a significantly higher neutralizing capacity compared to the 2<sup>nd</sup> Antacid (Yellow tablet).</li>
+      </ul>
+    </section>
+
+    <!-- Precautions Section -->
+    <section class="report-section precaution-section" style="max-width: 100%; box-sizing: border-box;">
+      <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 4px; word-break: break-word;">PRECAUTIONS:</h2>
+      <ul style="padding-left: 20px; word-break: break-word;">
+        <li>Crush the antacid tablet into a very fine powder to ensure complete reaction with excess $\text{HCl}$.</li>
+        <li>Warm the mixture gently if needed to drive off any dissolved $\text{CO}_2$ gas produced during the reaction.</li>
+        <li>Ensure accurate reading of the lower meniscus in the burette while taking $\text{NaOH}$ readings.</li>
+      </ul>
+    </section>
+
+  </main>
+</article>
+<!-- END: ANTACID EXPERIMENT -->
+
     
   </div>
   
