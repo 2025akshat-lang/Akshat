@@ -280,7 +280,7 @@
         <div class="score-row">
           <div>
             <div style="font-size:0.75rem; color:var(--text-muted);">YOUR SCORE</div>
-            <div class="big-score"><span id="res-score">0</span> / 5.0</div>
+            <div class="big-score"><span id="res-score">0</span> / <span id="res-max-score">0</span></div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:0.75rem; color:var(--text-muted);">STATUS</div>
@@ -341,15 +341,51 @@
     }
   };
 
+  // ============================================================
+  // 📚 HOW TO ADD A NEW TEST OR QUESTION (read this before editing!)
+  // ============================================================
+  // 1. To add a NEW TEST: copy one of the `{ id: ..., questions: [...] }`
+  //    blocks below and paste it into the mockSeriesData array (don't
+  //    forget a comma between blocks). You only need:
+  //      id          -> unique string, e.g. "jmi-3"
+  //      subCatId    -> which sub-category it belongs to (must match
+  //                     an id used in mainMenuData/subCategoryData)
+  //      title       -> shown on the test card
+  //      timeMins    -> exam duration in minutes
+  //      badgeText / badgeClass -> "FREE"/badge-free, "NEW"/badge-new,
+  //                     or "MEMORY BASED"/badge-memory
+  //      questions   -> array of question objects (see below)
+  //    ⚠️ You do NOT need to set questionsCount or marks/total-marks
+  //    anywhere — both the "Qs" count and "Marks" shown on the card,
+  //    and the scorecard's max score, are calculated automatically
+  //    from however many questions/marks are actually in the array.
+  //    This is what used to cause wrong scorecards: those numbers were
+  //    hand-typed and drifted out of sync with the real questions.
+  //
+  // 2. To add a NEW QUESTION inside a test's `questions` array, only
+  //    these fields are required:
+  //      id       -> a number, unique within that test (1, 2, 3, ...)
+  //      section  -> section/subject name (used for tabs & sectional score)
+  //      question -> the question text
+  //      options  -> { A: "...", B: "...", C: "...", D: "..." }
+  //      correct  -> the key of the correct option, e.g. "B"
+  //    Everything else is OPTIONAL and will default automatically:
+  //      marks       -> defaults to { pos: 1.0, neg: 0 } if omitted
+  //      timeAvg     -> defaults to "00:30"
+  //      rightPct    -> defaults to "--"
+  //      explanation -> defaults to a generic message
+  //    Example minimal question:
+  //      { id: 5, section: "Reasoning", question: "2+2=?",
+  //        options: { A: "3", B: "4", C: "5", D: "6" }, correct: "B" }
+  // ============================================================
+
   // EXPANDABLE MASTER MOCK DATA ARRAY
   const mockSeriesData = [
     {
       id: "jmi-1",
       subCatId: "jmi",
-      title: "JMI Entrance Full Mock Test 1",
-      questionsCount: 85,
+      title: "JMI Entrance B23 Test 1",
       timeMins: 60,
-      marks: 85,
       badgeText: "FREE",
       badgeClass: "badge-free",
       questions: [
@@ -1776,14 +1812,4292 @@
 
 
 ]
+    },{
+      id: "jmi-2",
+      subCatId: "jmi",
+      title: "JMI Entrance B22 Mock Test",
+      timeMins: 60,
+      badgeText: "FREE",
+      badgeClass: "badge-free",
+      questions: [
+  {
+    "id": 1,
+    "section": "Reasoning",
+    "question": "Select the number that completes the series: 4, 7, 9, 10, 16, __, 25, 16.",
+    "options": {
+      "A": "13",
+      "B": "14",
+      "C": "15",
+      "D": "21"
     },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "65%",
+    "explanation": "The pattern involves two alternating additions: (4+3=7, 7+2=9, 9+1=10) and (10+6=16, 16+5=21, 21+4=25). Thus the missing number is 21."
+  },
+  {
+    "id": 2,
+    "section": "Reasoning",
+    "question": "Select the option that completes the letter series: PAQ, QBR, RCS, __, TEU.",
+    "options": {
+      "A": "SCT",
+      "B": "SDT",
+      "C": "TAU",
+      "D": "UBT"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "The series follows a simple alphabetical increment for each position: P->Q->R->S, A->B->C->D, and Q->R->S->T. This results in 'SDT'."
+  },
+  {
+    "id": 3,
+    "section": "Reasoning",
+    "question": "Which of the following words comes last in a dictionary?",
+    "options": {
+      "A": "Obliterate",
+      "B": "Omnivorous",
+      "C": "Orange",
+      "D": "Orangutan"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "85%",
+    "explanation": "Alphabetically, 'Orangutan' follows 'Orange' because 't' comes after the end of the word 'Orange', making it the last entry among the choices."
+  },
+  {
+    "id": 4,
+    "section": "Reasoning",
+    "question": "How many even numbers are preceded by an even number and followed by an odd number in this sequence (reading left to right only)? 7, 4, 2, 8, 1, 3, 15, 20, 6, 11, 13, 14, 18, 9",
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "4"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "60%",
+    "explanation": "The relevant triplets are (2, 8, 1), (20, 6, 11), and (14, 18, 9). In each case, the middle even number is preceded by an even and followed by an odd number."
+  },
+  {
+    "id": 5,
+    "section": "Reasoning",
+    "question": "In a code language: 1 2 3 = deep blue eyes; 2 7 8 = large deep well; 7 1 9 = blue large river. Which numbers represent \"deep river\"?",
+    "options": {
+      "A": "1 9",
+      "B": "2 7",
+      "C": "2 9",
+      "D": "3 8"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "'2' is common to the first two phrases ('deep'). In the third phrase, '1' is 'blue' and '7' is 'large', leaving '9' for 'river'. Thus, 'deep river' is '2 9'."
+  },
+  {
+    "id": 6,
+    "section": "Mathematics",
+    "question": "A train departs New Delhi on 24 May 2025 at 21:05 hrs and arrives in Chennai on 26 May 2025 at 06:15 hrs. What is the total duration of the journey?",
+    "options": {
+      "A": "27 hours 20 minutes",
+      "B": "33 hours 10 minutes",
+      "C": "38 hours 50 minutes",
+      "D": "45 hours 10 minutes"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "70%",
+    "explanation": "From 24th 21:05 to 25th 21:05 is 24 hours. From 25th 21:05 to 26th 06:15 is 9 hours and 10 minutes. Total: 33 hours 10 minutes."
+  },
+  {
+    "id": 7,
+    "section": "Reasoning",
+    "question": "Arun says, \"Rishabh's mother is the wife of my father's only brother.\" How is Arun related to Rishabh?",
+    "options": {
+      "A": "Cousin",
+      "B": "Nephew",
+      "C": "Son",
+      "D": "Uncle"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "65%",
+    "explanation": "Arun's father's only brother is Arun's uncle. The wife of Arun's uncle is Arun's aunt. If she is Rishabh's mother, Arun is Rishabh's uncle."
+  },
+  {
+    "id": 8,
+    "section": "Reasoning",
+    "question": "'Yarn' is to 'fabric' as 'page' is to:",
+    "options": {
+      "A": "Author",
+      "B": "Book",
+      "C": "Paragraph",
+      "D": "Student"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "95%",
+    "explanation": "This is a part-to-whole analogy. Yarn is a component used to create fabric, just as a page is a component used to create a book."
+  },
+  {
+    "id": 9,
+    "section": "Reasoning",
+    "question": "Identify the number that does NOT belong in the group: 130, 176, 187, 209",
+    "options": {
+      "A": "130",
+      "B": "176",
+      "C": "187",
+      "D": "209"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "55%",
+    "explanation": "176, 187, and 209 are all multiples of 11 (11x16, 11x17, 11x19). 130 is not divisible by 11."
+  },
+  {
+    "id": 10,
+    "section": "General Science",
+    "question": "Pick the odd one out: Aorta, Arteries, Heart, Lungs",
+    "options": {
+      "A": "Aorta",
+      "B": "Arteries",
+      "C": "Heart",
+      "D": "Lungs"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Aorta, Arteries, and Heart are part of the circulatory system, whereas the Lungs are the primary organ of the respiratory system."
+  },
+  {
+    "id": 11,
+    "section": "Reasoning",
+    "question": "Which of these words has a mirror image that reads the same as the word?",
+    "options": {
+      "A": "MADAM",
+      "B": "NOON",
+      "C": "TOOT",
+      "D": "WOW"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "85%",
+    "explanation": "A word reads the same in a mirror if all its individual letters (like W, O, T) are laterally symmetric. While both TOOT and WOW fit this, WOW is the intended answer in this set."
+  },
+  {
+    "id": 12,
+    "section": "Reasoning",
+    "question": "If the English alphabet is reversed, which letter lies midway between the 11th and 15th letters from the left?",
+    "options": {
+      "A": "K",
+      "B": "L",
+      "C": "M",
+      "D": "N"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "In a reversed alphabet, the 11th letter from the left is P (16th from normal) and the 15th is L (12th from normal). The letter midway between 12 and 16 is 14, which is N."
+  },
+  {
+    "id": 13,
+    "section": "Reasoning",
+    "question": "If 'book' is called 'pen', 'pen' is called 'eraser', 'eraser' is 'sharpener', and 'sharpener' is 'powder', what is used for writing?",
+    "options": {
+      "A": "Book",
+      "B": "Eraser",
+      "C": "Pen",
+      "D": "Sharpener"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "A 'pen' is traditionally used for writing. In this code language, 'pen' is called 'eraser', so the answer is Eraser."
+  },
+  {
+    "id": 14,
+    "section": "Reasoning",
+    "question": "Five friends meet for lunch. Soham arrives last. Farhan comes after Disha but before Jaskaran. Manisha comes after Farhan but before Jaskaran. Who arrives first?",
+    "options": {
+      "A": "Disha",
+      "B": "Farhan",
+      "C": "Jaskaran",
+      "D": "Manisha"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "80%",
+    "explanation": "The order of arrival is Disha > Farhan > Manisha > Jaskaran > Soham. Thus, Disha is the first one to arrive."
+  },
+  {
+    "id": 15,
+    "section": "Reasoning",
+    "question": "Five friends meet for lunch. Soham arrives last. Farhan comes after Disha but before Jaskaran. Manisha comes after Farhan but before Jaskaran. Who is the second last to arrive?",
+    "options": {
+      "A": "Disha",
+      "B": "Farhan",
+      "C": "Jaskaran",
+      "D": "Manisha"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "Following the sequence Disha > Farhan > Manisha > Jaskaran > Soham, Jaskaran is the fourth person to arrive, making him the second last."
+  },
+  {
+    "id": 16,
+    "section": "Mathematics",
+    "question": "A car travels 60 km at 30 km/h and the next 60 km at 60 km/h. What is the average speed?",
+    "options": {
+      "A": "40 km/h",
+      "B": "45 km/h",
+      "C": "50 km/h",
+      "D": "60 km/h"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "70%",
+    "explanation": "Total distance is 120 km. Total time = (60/30) + (60/60) = 2 + 1 = 3 hours. Average speed = 120 / 3 = 40 km/h."
+  },
+  {
+    "id": 17,
+    "section": "Reasoning",
+    "question": "Statements: 1. All employees of X are honest. 2. Prateek is NOT an employee of X. Conclusion I: Prateek is honest. Conclusion II: Prateek is NOT honest. Which conclusion(s) follow?",
+    "options": {
+      "A": "Only I",
+      "B": "Only II",
+      "C": "Neither I nor II",
+      "D": "Both I and II"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "60%",
+    "explanation": "The premises only define the honesty of employees in X. Since Prateek is not in X, we have no information to conclude whether he is honest or not."
+  },
+  {
+    "id": 18,
+    "section": "Reasoning",
+    "question": "In a row, Naman is 7th from the left and Rajan is 18th from the right. After switching places, Naman is 21st from the left. How many students are in the row?",
+    "options": {
+      "A": "38",
+      "B": "39",
+      "C": "40",
+      "D": "42"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "55%",
+    "explanation": "Naman's new position (21st from left) is the same as Rajan's original position (18th from right). Total students = (21 + 18) - 1 = 38."
+  },
+  {
+    "id": 19,
+    "section": "Reasoning",
+    "question": "In a class of 50 students, 30 chose gardening, 25 chose interior decoration, and 11 chose both. How many chose neither?",
+    "options": {
+      "A": "6",
+      "B": "9",
+      "C": "14",
+      "D": "16"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "65%",
+    "explanation": "Students choosing at least one = 30 + 25 - 11 = 44. Students choosing neither = 50 - 44 = 6."
+  },
+  {
+    "id": 20,
+    "section": "Reasoning",
+    "question": "White is to peace as red is to:",
+    "options": {
+      "A": "Danger",
+      "B": "Happiness",
+      "C": "Hunger",
+      "D": "Love"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "This is a symbolism analogy. Just as white is a universal symbol for peace, red is the standard symbol for danger."
+  },
+  {
+    "id": 21,
+    "section": "Reasoning",
+    "question": "Shivangi was born before Ruhi. Sanya was born before Siddharth. Siddharth was born after Ruhi. Which conclusion definitely follows?",
+    "options": {
+      "A": "Ruhi is the youngest",
+      "B": "Sanya is the eldest",
+      "C": "Shivangi is the eldest",
+      "D": "Siddharth is the youngest"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "75%",
+    "explanation": "Chronological order: Shivangi > Ruhi > Siddharth. Also Sanya > Siddharth. Since Siddharth is born after everyone else mentioned, he is definitely the youngest."
+  },
+  {
+    "id": 22,
+    "section": "Reasoning",
+    "question": "Which is the correct sequence of election events?",
+    "options": {
+      "A": "Announcement -> Nomination -> Polling -> Counting -> Constitution of House",
+      "B": "Nomination -> Announcement -> Polling -> Constitution of House -> Counting",
+      "C": "Polling -> Counting -> Nomination -> Constitution of House -> Announcement",
+      "D": "Announcement -> Polling -> Nomination -> Counting -> Constitution of House"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "The logical timeline is the announcement of election dates, filing nominations, voting (polling), counting the results, and finally forming the House."
+  },
+  {
+    "id": 23,
+    "section": "Reasoning",
+    "question": "If Q at (0,0), P is 16 m north of Q, R is 5 m west of Q, T is 25 m north of R, V is 10 m east of T, and J is 9 m south of V, then J is located ________ relative to P.",
+    "options": {
+      "A": "5 m East",
+      "B": "5 m West",
+      "C": "10 m Northeast",
+      "D": "10 m Northwest"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "60%",
+    "explanation": "P is at (0,16). R is at (-5,0), T at (-5,25), V at (5,25), and J at (5,16). J is exactly 5 meters to the east of P."
+  },
+  {
+    "id": 24,
+    "section": "General Science",
+    "question": "Which unit does NOT measure time?",
+    "options": {
+      "A": "Light year",
+      "B": "Month",
+      "C": "Second",
+      "D": "Year"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Despite the word 'year', a light year is a unit of astronomical distance (the distance light travels in a year), not a unit of time."
+  },
+  {
+    "id": 25,
+    "section": "Mathematics",
+    "question": "A ₹200 note is changed into ₹10 and ₹20 notes; total notes = 14. How many ₹20 notes?",
+    "options": {
+      "A": "6",
+      "B": "8",
+      "C": "10",
+      "D": "12"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "70%",
+    "explanation": "Solving 10x + 20y = 200 and x + y = 14. If y=6, then x=8. 10(8) + 20(6) = 80 + 120 = 200. Thus, there are 6 twenty-rupee notes."
+  },
+  {
+    "id": 26,
+    "section": "Teaching Aptitude",
+    "question": "Which view of children is correct?",
+    "options": {
+      "A": "Children bring experiences and language useful for teaching",
+      "B": "Children enter as blank slates",
+      "C": "Children are inherently rowdy and need control",
+      "D": "All children must learn a 'decent' language first"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Modern pedagogy views children as active learners who bring valuable prior knowledge and linguistic backgrounds to the classroom environment."
+  },
+  {
+    "id": 27,
+    "section": "Teaching Aptitude",
+    "question": "Which statements are correct about children and society?\n(i) The children belonging to good families and backgrounds are naturally good.\n(ii) The children who come from substandard families are rowdy and undisciplined.\n(iii) All children have potential to learn.\n(iv) Different children have different set of experiences, and they can learn from each other.",
+    "options": {
+      "A": "Statements i & ii",
+      "B": "Statements i & iv",
+      "C": "Statements iii & iv",
+      "D": "All statements (i-iv)"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "82%",
+    "explanation": "Pedagogical principles state that every child has the potential to learn regardless of their socio-economic background. Valuing diverse student experiences fosters a collaborative learning environment where students learn from one another."
+  },
+  {
+    "id": 28,
+    "section": "Teaching Aptitude",
+    "question": "Which statements about group learning are true?\n(i) The Children of similar abilities should be put together in one group.\n(ii) There should be mixed grouping of children with different abilities so that they learn from one another.\n(iii) The Children do not learn in groups, they should be taught individually.\n(iv) Children learn to cooperate and collaborate in group learning.",
+    "options": {
+      "A": "ii & iv",
+      "B": "All statements",
+      "C": "Only iii",
+      "D": "i & iii"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "78%",
+    "explanation": "Mixed-ability grouping encourages peer tutoring and allows students to benefit from diverse perspectives. Group learning is essential for developing social skills like cooperation and shared responsibility."
+  },
+  {
+    "id": 29,
+    "section": "Teaching Aptitude",
+    "question": "Which describes an ideal teacher's role?",
+    "options": {
+      "A": "Partner with students to explore knowledge and ideas",
+      "B": "Deliver content but keep distance",
+      "C": "Maintain distance to ensure students listen",
+      "D": "Transfer knowledge as all-knowing expert"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "The modern role of a teacher is that of a facilitator who guides and partners with students in their discovery of knowledge. This approach shifts from a teacher-centered model to a student-centered learning experience."
+  },
+  {
+    "id": 30,
+    "section": "Teaching Aptitude",
+    "question": "Which statement about school-parent relations is correct?",
+    "options": {
+      "A": "All parents should have a voice in working of the school",
+      "B": "Parents of children with criminal records should be banned",
+      "C": "Parents sometimes are a nuisance and shouldn't interfere",
+      "D": "Only parents from \"good\" families may be requested to participate in school activities"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Effective school management requires the active participation of all parents as primary stakeholders. Inclusive engagement ensures that the school environment reflects the needs and values of the entire community."
+  },
+  {
+    "id": 31,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following classroom arrangements best supports the holistic development of children?",
+    "options": {
+      "A": "Girls and boys should study together and learn to interact respectfully",
+      "B": "Girls and boys should sit in separate rows to maintain discipline",
+      "C": "Girls and boys should be placed in different sections to focus better on studies",
+      "D": "Separate seating for girls and boys promotes moral behavior"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Co-educational interaction is vital for developing mutual respect and understanding between genders. Holistic development includes social and emotional growth, which is enhanced through mixed-gender peer interaction."
+  },
+  {
+    "id": 32,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following statements about agencies of education is correct?\n(i) Schools are agencies of education.\n(ii) Peer group and media are agencies of education.\n(iii) Family is an agency of education.\n(iv) State through its policies is also an agency of education.",
+    "options": {
+      "A": "All statements are correct",
+      "B": "Only statements (i) and (iv) are correct",
+      "C": "Only (i) is correct",
+      "D": "Only (ii) and (iii) are correct"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Education is a comprehensive process influenced by formal (schools), informal (family, peers), and non-formal (media, state) agencies. Each agency plays a unique role in shaping an individual's knowledge, values, and social behaviors."
+  },
+  {
+    "id": 33,
+    "section": "Teaching Aptitude",
+    "question": "What is the most desirable practice while eating the mid-day meal in schools?",
+    "options": {
+      "A": "Teachers and students should eat together to foster mutual respect",
+      "B": "Teachers and students should sit separately during the meal",
+      "C": "Students from different backgrounds should be seated separately",
+      "D": "Only students from good families should serve the meal"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "Eating together (commensality) promotes social equality and helps break down barriers of caste, class, and hierarchy. It provides an informal setting for teachers to model positive social behavior and build rapport with students."
+  },
+  {
+    "id": 34,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following should NOT be a feature of a good school library?",
+    "options": {
+      "A": "Students can only borrow textbooks; teachers may borrow any book",
+      "B": "The library includes storybooks and diverse literature",
+      "C": "Students are allowed to take books home for reading",
+      "D": "Interactive sessions with authors and workshops are organized"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "A school library should provide equitable access to all types of literature to encourage reading for pleasure among students. Limiting students to only textbooks undermines the goal of fostering a lifelong reading habit."
+  },
+  {
+    "id": 35,
+    "section": "Teaching Aptitude",
+    "question": "If children fight or misbehave in class, what should the teacher do first?",
+    "options": {
+      "A": "Talk to the children to understand the cause of the conflict",
+      "B": "Punish the children to prevent recurrence",
+      "C": "Refer the matter to the discipline committee",
+      "D": "Report the matter immediately to the principal"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "Understanding the root cause of a conflict is the first step toward effective and lasting resolution. Immediate dialogue helps de-escalate the situation and allows for a teaching moment regarding social interaction."
+  },
+  {
+    "id": 36,
+    "section": "Teaching Aptitude",
+    "question": "What is the correct view regarding the role of sports, cultural, and literary activities in schools?",
+    "options": {
+      "A": "These are integral parts of the school curriculum.",
+      "B": "These distract students from academics and are unimportant.",
+      "C": "Sports aid physical development; cultural activities are less useful.",
+      "D": "These should be conducted only outside regular school hours."
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Modern pedagogy views co-curricular activities as essential for holistic student development, making them a core part of the overall curriculum."
+  },
+  {
+    "id": 37,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following does NOT reflect the meaning of the quote: \"Education is not preparation for life, education is life itself\"?",
+    "options": {
+      "A": "Life and education are separate compartments.",
+      "B": "All life experiences are educative.",
+      "C": "Every stage of life has educational value.",
+      "D": "Schooling alone does NOT define education."
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "The quote emphasizes that education is an ongoing process integrated with living; viewing them as separate 'compartments' contradicts this philosophy."
+  },
+  {
+    "id": 38,
+    "section": "Teaching Aptitude",
+    "question": "\"Education is what remains after one has forgotten what one has learned in school.\" What is the central idea of this quote?",
+    "options": {
+      "A": "True education fosters intellectual growth beyond rote learning.",
+      "B": "Education is about memorizing and recalling facts.",
+      "C": "Attentive students never forget what they learn.",
+      "D": "Forgetting school learning means one is uneducated."
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "75%",
+    "explanation": "This quote (often attributed to Einstein) highlights that the true value of education lies in the mental habits and character formed rather than just temporary memorization."
+  },
+  {
+    "id": 39,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is LEAST relevant as a purpose of classroom group activities?",
+    "options": {
+      "A": "Peer learning opportunities",
+      "B": "Learning by doing",
+      "C": "Developing social skills",
+      "D": "Maintaining classroom discipline"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "While discipline is necessary, the primary goal of group work is collaboration and social interaction; discipline is a prerequisite or byproduct, not the core purpose."
+  },
+  {
+    "id": 40,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is NOT a goal of classroom discussions on controversial socio-scientific issues?",
+    "options": {
+      "A": "Forcing students to agree with each other",
+      "B": "Developing critical-thinking skills.",
+      "C": "Appreciating diverse viewpoints",
+      "D": "Developing reasoned argumentation skills"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "90%",
+    "explanation": "Discussions on controversial issues aim to promote empathy and critical analysis of different viewpoints, not to coerce students into a single consensus."
+  },
+  {
+    "id": 41,
+    "section": "Teaching Aptitude",
+    "question": "What is the primary purpose of an aptitude test?",
+    "options": {
+      "A": "To assess potential to succeed in a specific area before formal training",
+      "B": "To measure proficiency after extensive learning in a subject",
+      "C": "To diagnose learning difficulties for remedial support",
+      "D": "To calculate intelligence through numerical problem-solving"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Aptitude tests are designed to predict a person's future performance or potential in a specific field rather than measuring what they have already learned."
+  },
+  {
+    "id": 42,
+    "section": "Teaching Aptitude",
+    "question": "Which statement best describes the difference between a curriculum and a syllabus?",
+    "options": {
+      "A": "A syllabus outlines the content of a subject, while the curriculum covers the overall educational plan",
+      "B": "A syllabus is the entire learning framework, and the curriculum is a part of it",
+      "C": "Curriculum and syllabus are terms used interchangeably in all contexts",
+      "D": "A curriculum lists specific topics, while the syllabus defines general goals"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "60%",
+    "explanation": "Curriculum refers to the broader set of learning experiences and institutional goals, while a syllabus is a more specific document detailing the topics for a particular course."
+  },
+  {
+    "id": 43,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is NOT a typical feature of brainstorming in the classroom?",
+    "options": {
+      "A": "Generation of many ideas in a short period",
+      "B": "Inclusion of creative and divergent thinking",
+      "C": "Opportunity for broad student participation",
+      "D": "Use of a rigid, step-by-step instructional format"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "75%",
+    "explanation": "Brainstorming is intended to be a spontaneous and uninhibited process; a rigid, fixed format would be counterproductive to creative idea generation."
+  },
+  {
+    "id": 44,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following best illustrates discovery learning?",
+    "options": {
+      "A": "Students investigating factors that affect solubility through hands-on experiments",
+      "B": "Students answering questions after a direct explanation of Archimedes' Principle",
+      "C": "Students listening passively to a lecture on shadow formation",
+      "D": "A teacher demonstrating reflection and refraction in a lab session"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "65%",
+    "explanation": "Discovery learning is an inquiry-based approach where students build their own understanding through direct interaction and experimentation rather than passive reception of facts."
+  },
+  {
+    "id": 45,
+    "section": "Teaching Aptitude",
+    "question": "In middle school education, what is the preferred progression in the teaching-learning process?",
+    "options": {
+      "A": "From concrete experiences to abstract concepts",
+      "B": "From unknown information to familiar knowledge",
+      "C": "From general rules to specific examples",
+      "D": "From logical sequencing to psychological needs"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "82%",
+    "explanation": "Effective teaching starts with what the student can physically perceive and experience (concrete) before introducing complex theoretical ideas (abstract)."
+  },
+  {
+    "id": 46,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is an example of an open-ended question?",
+    "options": {
+      "A": "How might the disappearance of a species impact a food web?",
+      "B": "What is a food chain?",
+      "C": "What is the definition of a food web?",
+      "D": "What is the difference between a food chain and a food web?"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Open-ended questions require higher-order thinking and elaborated answers rather than simple recall of a definition or single factual piece of information."
+  },
+  {
+    "id": 47,
+    "section": "Teaching Aptitude",
+    "question": "A student is frequently distracted during lessons. What is the most appropriate teacher response?",
+    "options": {
+      "A": "Initiate informal conversation to understand the reason for distraction",
+      "B": "Ignore the behaviour and continue teaching",
+      "C": "Assign additional tasks after school to improve focus",
+      "D": "Ask the student to leave the class until they are attentive"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "70%",
+    "explanation": "The professional pedagogical approach is to build a relationship and investigate the underlying cause of disengagement before applying disciplinary measures."
+  },
+  {
+    "id": 48,
+    "section": "Teaching Aptitude",
+    "question": "In the term MOOC, what does the letter C stand for?",
+    "options": {
+      "A": "Committee",
+      "B": "Council",
+      "C": "Course",
+      "D": "Coordination"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "MOOC stands for Massive Open Online Course, a model for delivering free or low-cost learning content online to any person who wants to take it."
+  },
+  {
+    "id": 49,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is the most essential quality of an effective teacher?",
+    "options": {
+      "A": "Communicates ideas clearly and accurately",
+      "B": "Uses multiple instructional aids in lessons",
+      "C": "Maintains strict discipline at all times",
+      "D": "Follows textbooks without deviation"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "While many qualities are helpful, clear and accurate communication is the fundamental skill required to facilitate effective learning and knowledge transfer."
+  },
+  {
+    "id": 50,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is NOT an intended objective of co-curricular activities?",
+    "options": {
+      "A": "Encouraging student creativity",
+      "B": "Promoting excessive competition over collaboration",
+      "C": "Identifying diverse student talents",
+      "D": "Fostering cooperation among peers"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "Co-curricular activities are meant to develop teamwork, social skills, and balanced character; excessive competition can be detrimental to these educational goals."
+  },
+  {
+    "id": 51,
+    "section": "General Awareness",
+    "question": "Which political party is currently in power in Tamil Nadu (as of 1st May 2025)?",
+    "options": {
+      "A": "Bharatiya Janata Party (BJP)",
+      "B": "Dravida Munnetra Kazhagam (DMK)",
+      "C": "Indian National Congress (INC)",
+      "D": "Telugu Desam Party (TDP)"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "The DMK, led by M.K. Stalin, is the ruling party in Tamil Nadu after winning the 2021 assembly elections."
+  },
+  {
+    "id": 52,
+    "section": "General Awareness",
+    "question": "Who is the current Chief Minister of Delhi (as of 1st May 2025)?",
+    "options": {
+      "A": "Arvind Kejriwal",
+      "B": "Atishi Singh",
+      "C": "Manish Sisodia",
+      "D": "Rekha Gupta"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "Atishi Singh succeeded Arvind Kejriwal as the Chief Minister of Delhi in late 2024."
+  },
+  {
+    "id": 53,
+    "section": "General Awareness",
+    "question": "Who is the Chief Justice of India as of 1st May 2025?",
+    "options": {
+      "A": "Arvind Bobde",
+      "B": "D. Y. Chandrachud",
+      "C": "Sanjeev Khanna",
+      "D": "U. U. Lalit"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Justice Sanjeev Khanna was appointed as the 51st Chief Justice of India, succeeding Justice D.Y. Chandrachud."
+  },
+  {
+    "id": 54,
+    "section": "General Awareness",
+    "question": "Which country hosted the 2024 Summer Olympics?",
+    "options": {
+      "A": "Australia",
+      "B": "China",
+      "C": "France",
+      "D": "United States"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "The 2024 Summer Olympics, officially the Games of the XXXIII Olympiad, were held in Paris, France."
+  },
+  {
+    "id": 55,
+    "section": "General Awareness",
+    "question": "Who is India's current Minister of External Affairs (as of 1st May 2025)?",
+    "options": {
+      "A": "Harsh Vardhan",
+      "B": "Rajan Mathai",
+      "C": "S. Jaishankar",
+      "D": "Vinay Kwatra"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "92%",
+    "explanation": "Subrahmanyam Jaishankar has served as the Minister of External Affairs of the Government of India since 2019."
+  },
+  {
+    "id": 56,
+    "section": "General Awareness",
+    "question": "Which of the following dates marks the longest day and longest night in India, respectively?",
+    "options": {
+      "A": "June 1 and December 1",
+      "B": "June 21 and December 21",
+      "C": "June 30 and December 31",
+      "D": "None of the above"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "June 21 is the Summer Solstice (longest day), and December 21 is the Winter Solstice (longest night) in the Northern Hemisphere."
+  },
+  {
+    "id": 57,
+    "section": "General Awareness",
+    "question": "Which two classical Indian texts were inscribed in UNESCO's Memory of the World Register in April 2025?",
+    "options": {
+      "A": "Arthashastra and Manusmriti",
+      "B": "Mahabharata and Upanishads",
+      "C": "Shrimad Bhagavad Gita and Natyashastra",
+      "D": "Vedas and Ramayana"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "These major literary and cultural works were recognized by UNESCO for their global significance and heritage value."
+  },
+  {
+    "id": 58,
+    "section": "General Awareness",
+    "question": "Which President of India also served as Vice Chancellor of Jamia Millia Islamia?",
+    "options": {
+      "A": "A. P. J. Abdul Kalam",
+      "B": "Fakhruddin Ali Ahmed",
+      "C": "Mohammad Hidayatullah",
+      "D": "Zakir Hussain"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Dr. Zakir Hussain served as the Vice Chancellor of Jamia Millia Islamia for over 20 years before becoming the 3rd President of India."
+  },
+  {
+    "id": 59,
+    "section": "General Awareness",
+    "question": "Bihu is a major festival marking the new year in which Indian state?",
+    "options": {
+      "A": "Arunachal Pradesh",
+      "B": "Assam",
+      "C": "Nagaland",
+      "D": "Tripura"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Bohag Bihu, also known as Rongali Bihu, is the most important festival of Assam, celebrating the Assamese New Year."
+  },
+  {
+    "id": 60,
+    "section": "General Awareness",
+    "question": "Which of the following is officially recognized as the national sport of India?",
+    "options": {
+      "A": "Cricket",
+      "B": "Hockey",
+      "C": "Kabaddi",
+      "D": "Wrestling"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "90%",
+    "explanation": "Although India does not have an 'official' national sport declared by law, Field Hockey is traditionally regarded as such due to its historical success."
+  },
+  {
+    "id": 61,
+    "section": "General Awareness",
+    "question": "How many spokes are there in the Ashoka Chakra on the Indian national flag?",
+    "options": {
+      "A": "21",
+      "B": "24",
+      "C": "31",
+      "D": "36"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:10",
+    "rightPct": "99%",
+    "explanation": "The 24 spokes in the Ashoka Chakra represent the 24 hours of the day and symbolize the wheel of law (Dharma)."
+  },
+  {
+    "id": 62,
+    "section": "General Awareness",
+    "question": "Rajagopala Chidambaram, who recently passed away, was known for his contribution in which field?",
+    "options": {
+      "A": "Nuclear Physics",
+      "B": "Politics",
+      "C": "Social Work",
+      "D": "Sports"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "75%",
+    "explanation": "R. Chidambaram was a distinguished nuclear scientist who played a pivotal role in India's nuclear weapons program."
+  },
+  {
+    "id": 63,
+    "section": "General Awareness",
+    "question": "Which of the following statements about Jamia Millia Islamia is NOT true?",
+    "options": {
+      "A": "It is a central university and a minority institution.",
+      "B": "It was established in 1920 by Sir Syed Ahmad Khan as Anglo Oriental College.",
+      "C": "It began in response to Gandhi's call to boycott British-backed institutions.",
+      "D": "Its name translates to \"National Muslim University\"."
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "The Mohammadan Anglo-Oriental College (later AMU) was founded by Sir Syed Ahmad Khan; Jamia was founded in Aligarh in 1920."
+  },
+  {
+    "id": 64,
+    "section": "General Awareness",
+    "question": "Which country won the ICC Cricket World Cup in 2023?",
+    "options": {
+      "A": "Australia",
+      "B": "India",
+      "C": "Pakistan",
+      "D": "South Africa"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Australia won their sixth World Cup title by defeating India in the final at Ahmedabad in November 2023."
+  },
+  {
+    "id": 65,
+    "section": "General Awareness",
+    "question": "Which Indian state launched the digital detox initiative called \"Beyond Screens\"?",
+    "options": {
+      "A": "Karnataka",
+      "B": "Maharashtra",
+      "C": "Odisha",
+      "D": "Rajasthan"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "70%",
+    "explanation": "Karnataka introduced this initiative to spread awareness about the risks of digital addiction and promote a healthier balance with technology."
+  },
+  {
+    "id": 71,
+    "section": "General Science",
+    "question": "A solid is one which has fixed shape and volume. Talcum powder behaves as which type of substance?",
+    "options": {
+      "A": "Solid",
+      "B": "Liquid",
+      "C": "combination of solid and liquid states",
+      "D": "combination of solid and gaseous states"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Talcum powder consists of tiny solid particles. While it may pour like a liquid, each individual grain maintains a fixed shape and volume characteristic of a solid."
+  },
+  {
+    "id": 111,
+    "section": "Mathematics",
+    "question": "Determine the solution set for the system 5x - 15y = 8 and 3x - 9y = 24/5.",
+    "options": {
+      "A": "No solution",
+      "B": "Exactly one solution",
+      "C": "Infinitely many solutions",
+      "D": "Two solutions"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "50%",
+    "explanation": "Dividing the first equation by 5 gives x-3y=1.6. Dividing the second by 3 gives x-3y=1.6. Since the lines are identical, there are infinitely many solutions."
+  }
+]
+
+    },{
+      id: "jmi-3",
+      subCatId: "jmi",
+      title: "JMI Entrance B99 Mock Test",
+      timeMins: 60,
+      badgeText: "FREE",
+      badgeClass: "badge-free",
+      questions:[
+  {
+    "id": 1,
+    "section": "Teaching Aptitude",
+    "question": "Lesson plan is to instruction as assessment is to:",
+    "options": {
+      "A": "evaluation",
+      "B": "curriculum",
+      "C": "pedagogy",
+      "D": "syllabus"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "In pedagogy, a lesson plan guides the delivery of instruction, while assessment is the process used to conduct evaluation of student learning [1]."
+  },
+  {
+    "id": 2,
+    "section": "English Language",
+    "question": "Passive of: \"Officials are launching a teacher development initiative soon.\"",
+    "options": {
+      "A": "A teacher development initiative is being launched by officials soon.",
+      "B": "A teacher development initiative soon is being launched by officials.",
+      "C": "A teacher development initiative is launching by officials soon.",
+      "D": "Soon a teacher development initiative is launched by officials."
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "90%",
+    "explanation": "The original sentence is in the present continuous tense ('are launching'). The passive form for present continuous is 'is/am/are + being + past participle', making option A correct [1]."
+  },
+  {
+    "id": 3,
+    "section": "General Awareness",
+    "question": "\"The Right to Education Act seeks to ___ quality education for every child.\"",
+    "options": {
+      "A": "restrict",
+      "B": "deny",
+      "C": "ensure",
+      "D": "ignore"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "The core purpose of the Right of Children to Free and Compulsory Education (RTE) Act is to ensure that every child has access to quality education [1]."
+  },
+  {
+    "id": 4,
+    "section": "English Language",
+    "question": "\"The scheme aims to provide ___ opportunities for children from rural India.\"",
+    "options": {
+      "A": "equitable",
+      "B": "exclusive",
+      "C": "eccentric",
+      "D": "erroneous"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "88%",
+    "explanation": "'Equitable' means fair and impartial, which is the standard terminology used for educational schemes targeting underserved rural populations [1]."
+  },
+  {
+    "id": 5,
+    "section": "English Language",
+    "question": "The antonym of pedagogical (relating to teaching) is:",
+    "options": {
+      "A": "instructive",
+      "B": "learning",
+      "C": "non-educational",
+      "D": "didactic"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Pedagogical relates specifically to the theory and practice of education. 'Non-educational' is the direct antonym as it refers to things unrelated to teaching or learning [1]."
+  },
+  {
+    "id": 6,
+    "section": "General Awareness",
+    "question": "In the context of NEP 2020, holistic approach means:",
+    "options": {
+      "A": "fragmented",
+      "B": "integrated",
+      "C": "isolated",
+      "D": "narrow"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "92%",
+    "explanation": "A holistic approach in the National Education Policy 2020 emphasizes an integrated development of students across physical, mental, and social domains [1]."
+  },
+  {
+    "id": 7,
+    "section": "English Language",
+    "question": "Spot the grammatical error in the sentence: \"Neither the teacher nor the students was aware of the changes in the curriculum.\"",
+    "options": {
+      "A": "Neither",
+      "B": "was",
+      "C": "aware",
+      "D": "changes"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "75%",
+    "explanation": "When using 'neither...nor', the verb must agree with the closer subject. Since 'students' is plural, the verb should be 'were' instead of 'was' [1]."
+  },
+  {
+    "id": 8,
+    "section": "English Language",
+    "question": "Pick the antonym of rigorous in educational assessment.",
+    "options": {
+      "A": "lax",
+      "B": "strict",
+      "C": "precise",
+      "D": "thorough"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "'Rigorous' implies strictness and thoroughness. 'Lax' means not sufficiently strict or careful, making it the correct antonym [2]."
+  },
+  {
+    "id": 9,
+    "section": "English Language",
+    "question": "Choose the synonym for innovative in the context of teaching methods.",
+    "options": {
+      "A": "outdated",
+      "B": "novel",
+      "C": "conventional",
+      "D": "simple"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "'Innovative' refers to something new or original. 'Novel' is a direct synonym often used for creative and new teaching strategies [2]."
+  },
+  {
+    "id": 10,
+    "section": "English Language",
+    "question": "Read the following excerpt from an Indian school education policy document and answer the question: \"Teachers must engage learners by connecting curriculum content to students' lived experiences.\" Which word most closely means connect in this context?",
+    "options": {
+      "A": "ignore",
+      "B": "relate",
+      "C": "oppose",
+      "D": "transfer"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "95%",
+    "explanation": "In educational terminology, connecting content to life experiences means to 'relate' the abstract concepts to the students' actual daily lives [2]."
+  },
+  {
+    "id": 11,
+    "section": "Reasoning",
+    "question": "Which is different: NEP 2020, RTE Act, NCF 2005, UNESCO",
+    "options": {
+      "A": "NEP 2020",
+      "B": "RTE Act",
+      "C": "NCF 2005",
+      "D": "UNESCO"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "NEP, RTE, and NCF are Indian national education policies and acts, whereas UNESCO is an international organization [2]."
+  },
+  {
+    "id": 12,
+    "section": "Reasoning",
+    "question": "NCERT : Textbook :: CBSE : ?",
+    "options": {
+      "A": "Teacher",
+      "B": "Curriculum",
+      "C": "Student",
+      "D": "School"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "70%",
+    "explanation": "While NCERT is known for providing textbooks, CBSE is primarily responsible for the curriculum and examination standards [2]."
+  },
+  {
+    "id": 13,
+    "section": "Reasoning",
+    "question": "3, 9, 27, ?, 243",
+    "options": {
+      "A": "54",
+      "B": "72",
+      "C": "81",
+      "D": "90"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "This is a geometric progression where each term is multiplied by 3. 27 * 3 = 81 [2]."
+  },
+  {
+    "id": 14,
+    "section": "Reasoning",
+    "question": "Four teachers joined on consecutive days: Mon, Tue, Wed, Thu. P joined before Q but after R. S joined before R. Who joined last?",
+    "options": {
+      "A": "P",
+      "B": "Q",
+      "C": "R",
+      "D": "S"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "75%",
+    "explanation": "Based on the clues, the sequence of joining is S > R > P > Q. Therefore, Q joined on Thursday, which is the last day [2]."
+  },
+  {
+    "id": 15,
+    "section": "Reasoning",
+    "question": "Event A: Students' performance improved. Event B: Schools introduced formative assessment.",
+    "options": {
+      "A": "A caused B",
+      "B": "B caused A",
+      "C": "Both are effects of common cause",
+      "D": "Independent"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "65%",
+    "explanation": "Formative assessment is a pedagogical tool designed to improve learning; therefore, the introduction of the assessment (Event B) leads to the improvement in performance (Event A) [3]."
+  },
+  {
+    "id": 16,
+    "section": "Reasoning",
+    "question": "Statement: \"Teacher training workshops should be held regularly.\"\nAssumptions: (i) Workshops improve teaching quality. (ii) Teachers are unwilling to attend workshops.",
+    "options": {
+      "A": "Only (i)",
+      "B": "Only (ii)",
+      "C": "Both (i) and (ii)",
+      "D": "Neither"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "The statement recommends workshops because it assumes they have a positive impact on teaching quality. It does not imply anything about the willingness of teachers to attend [1]."
+  },
+  {
+    "id": 17,
+    "section": "Reasoning",
+    "question": "Three subjects (Math, Science, English) are assigned to three teachers X, Y, Z. X does not teach Math, Y teaches Science. Who teaches English?",
+    "options": {
+      "A": "X",
+      "B": "Y",
+      "C": "Z",
+      "D": "Cannot be determined"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "If Y teaches Science, then X and Z must teach Math and English. Since X does not teach Math, X must teach English [1]."
+  },
+  {
+    "id": 18,
+    "section": "Reasoning",
+    "question": "Choose the odd number: 121, 144, 169, 196",
+    "options": {
+      "A": "121",
+      "B": "144",
+      "C": "169",
+      "D": "196"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "60%",
+    "explanation": "While all are perfect squares (11², 12², 13², 14²), 196 is often singled out in these tests for digit-sum patterns or specific divisional properties [1]."
+  },
+  {
+    "id": 19,
+    "section": "Reasoning",
+    "question": "2 : 8 :: 3 : ?",
+    "options": {
+      "A": "9",
+      "B": "12",
+      "C": "18",
+      "D": "27"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "The relationship is x : x³. Since 2³ = 8, then 3³ = 27 [1]."
+  },
+  {
+    "id": 20,
+    "section": "Reasoning",
+    "question": "Reema says: \"The son of my grandfather's only son is my brother.\" How is Reema related to the boy?",
+    "options": {
+      "A": "Sister",
+      "B": "Cousin",
+      "C": "Aunt",
+      "D": "Mother"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Grandfather's only son is Reema's father. The son of Reema's father is Reema's brother, making Reema his sister [1]."
+  },
+  {
+    "id": 21,
+    "section": "Reasoning",
+    "question": "The letter \"E\" in a mirror looks like:",
+    "options": {
+      "A": "Mirror image of E",
+      "B": "E",
+      "C": "3",
+      "D": "W"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "A mirror reverses an image laterally; thus, the letter 'E' will appear flipped horizontally [1]."
+  },
+  {
+    "id": 22,
+    "section": "Reasoning",
+    "question": "Event A: Schools are adopting ICT tools rapidly. Event B: Government launched Digital India campaign.",
+    "options": {
+      "A": "A is the cause, B is the effect",
+      "B": "B is the cause, A is the effect",
+      "C": "Both are independent causes",
+      "D": "Both are effects of a common cause"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "The national campaign (Digital India) provides the infrastructure and policy push that leads to schools adopting digital tools [2]."
+  },
+  {
+    "id": 23,
+    "section": "Reasoning",
+    "question": "Question: What is the average age of students in class X?\nData I: Total of students' ages = 480.\nData II: Number of students = 30.",
+    "options": {
+      "A": "I alone is sufficient",
+      "B": "II alone is sufficient",
+      "C": "Both I and II together are sufficient",
+      "D": "Neither is sufficient"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "Average age is calculated as Total Sum / Total Count. Both values are required to find the average [2]."
+  },
+  {
+    "id": 24,
+    "section": "Reasoning",
+    "question": "Statement: \"Continuous assessment leads to better learning outcomes.\"\nConclusions: (i) Continuous assessment is essential for education. (ii) Without continuous assessment, learning cannot happen.",
+    "options": {
+      "A": "Only (i) follows",
+      "B": "Only (ii) follows",
+      "C": "Both follow",
+      "D": "Neither follows"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "70%",
+    "explanation": "The statement asserts the value of continuous assessment, making it 'essential'. However, saying learning 'cannot happen' without it is an extreme generalization not supported by the premise [2]."
+  },
+  {
+    "id": 25,
+    "section": "Reasoning",
+    "question": "A student walks 3 km north, then 4 km east. How far is he from the starting point?",
+    "options": {
+      "A": "5 km",
+      "B": "6 km",
+      "C": "7 km",
+      "D": "4 km"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "This follows the Pythagorean theorem: Displacement = √(3² + 4²) = √25 = 5 km [2]."
+  },
+  {
+    "id": 26,
+    "section": "Reasoning",
+    "question": "Five teachers A, B, C, D, E are sitting in a row facing north. B is to the right of A but left of C. D is to the right of C. E is at extreme left. Who is in the middle?",
+    "options": {
+      "A": "A",
+      "B": "B",
+      "C": "C",
+      "D": "D"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "65%",
+    "explanation": "The arrangement is E-A-B-C-D. In this sequence, B is exactly in the middle [2]."
+  },
+  {
+    "id": 27,
+    "section": "Reasoning",
+    "question": "Statements: All teachers are guides. All guides are mentors.\nConclusions: (i) All teachers are mentors. (ii) All mentors are teachers.",
+    "options": {
+      "A": "Only (i) follows",
+      "B": "Only (ii) follows",
+      "C": "Both follow",
+      "D": "Neither follows"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "Since Teachers are a subset of Guides, and Guides are a subset of Mentors, All Teachers are Mentors. However, some Mentors might not be Teachers [2]."
+  },
+  {
+    "id": 28,
+    "section": "Reasoning",
+    "question": "Choose the odd term: Blackboard, Chalk, Marker, Textbook",
+    "options": {
+      "A": "Blackboard",
+      "B": "Chalk",
+      "C": "Marker",
+      "D": "Textbook"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "Blackboard, Chalk, and Marker are tools used for writing/demonstration in a classroom, whereas a Textbook is a learning resource for reading [2]."
+  },
+  {
+    "id": 29,
+    "section": "Reasoning",
+    "question": "Lesson : Curriculum :: Experiment : ?",
+    "options": {
+      "A": "Laboratory",
+      "B": "Science",
+      "C": "Hypothesis",
+      "D": "Discovery"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "70%",
+    "explanation": "A lesson is a component of a curriculum, just as an experiment is a primary component and method of Science [3]."
+  },
+  {
+    "id": 30,
+    "section": "Reasoning",
+    "question": "Find the missing number: 2, 6, 12, 20, ?, 42",
+    "options": {
+      "A": "28",
+      "B": "30",
+      "C": "32",
+      "D": "34"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "The pattern is adding consecutive even numbers: 2+4=6, 6+6=12, 12+8=20, 20+10=30, 30+12=42 [3]."
+  },
+  {
+    "id": 31,
+    "section": "General Awareness",
+    "question": "Reservation for Economically Weaker Sections (EWS) in education was enabled by which Constitutional Amendment?",
+    "options": {
+      "A": "86th",
+      "B": "93rd",
+      "C": "103rd",
+      "D": "108th"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The 103rd Constitutional Amendment Act of 2019 introduced a 10% reservation for the Economically Weaker Sections (EWS) in admissions to educational institutions and government jobs [1]."
+  },
+  {
+    "id": 32,
+    "section": "General Awareness",
+    "question": "India's rank in Global Innovation Index 2023 is approximately:",
+    "options": {
+      "A": "10",
+      "B": "15",
+      "C": "40",
+      "D": "60"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "75%",
+    "explanation": "India maintained the 40th position in the Global Innovation Index 2023, reflecting its continued growth in innovation and development [1]."
+  },
+  {
+    "id": 33,
+    "section": "General Awareness",
+    "question": "Operation Blackboard was primarily aimed at:",
+    "options": {
+      "A": "Providing basic infrastructure in primary schools",
+      "B": "Increasing computer literacy",
+      "C": "Promoting higher education abroad",
+      "D": "Encouraging online education"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "85%",
+    "explanation": "Operation Blackboard was launched in 1987 following the NEP 1986 to provide basic minimum facilities (like classrooms and teaching equipment) to all primary schools in India [1]."
+  },
+  {
+    "id": 34,
+    "section": "General Awareness",
+    "question": "\"Eco-Club\" program in Indian schools is supported by:",
+    "options": {
+      "A": "Ministry of Health",
+      "B": "Ministry of Education",
+      "C": "Ministry of Environment, Forest & Climate Change",
+      "D": "NITI Aayog"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "82%",
+    "explanation": "The National Green Corps 'Eco-Club' program is a major initiative by the Ministry of Environment, Forest & Climate Change to create environmental awareness among school children [1]."
+  },
+  {
+    "id": 35,
+    "section": "General Awareness",
+    "question": "Which initiative promotes vocational skills in secondary schools?",
+    "options": {
+      "A": "Skill India Mission",
+      "B": "Mid-Day Meal Scheme",
+      "C": "Samagra Shiksha",
+      "D": "Digital India Campaign"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Skill India Mission is a government initiative to empower the youth with skill sets, making them more employable through various vocational training programs [1]."
+  },
+  {
+    "id": 36,
+    "section": "General Awareness",
+    "question": "Who is regarded as the \"Missile Man of India\"?",
+    "options": {
+      "A": "Homi J. Bhabha",
+      "B": "Vikram Sarabhai",
+      "C": "A. P. J. Abdul Kalam",
+      "D": "Satish Dhawan"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "98%",
+    "explanation": "Dr. A. P. J. Abdul Kalam, the 11th President of India, is known as the Missile Man of India for his work on the development of ballistic missile and launch vehicle technology [1]."
+  },
+  {
+    "id": 37,
+    "section": "General Awareness",
+    "question": "NEP 2020 proposes replacing the 10+2 structure with which new framework?",
+    "options": {
+      "A": "5+3+3+4",
+      "B": "8+4",
+      "C": "6+4+2",
+      "D": "12+3"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "92%",
+    "explanation": "The National Education Policy 2020 replaces the previous 10+2 school system with a new 5+3+3+4 structure corresponding to ages 3-8, 8-11, 11-14, and 14-18 [2]."
+  },
+  {
+    "id": 38,
+    "section": "General Awareness",
+    "question": "Which Schedule of the Constitution includes subjects on which both Union and States can legislate, such as education?",
+    "options": {
+      "A": "Union List",
+      "B": "State List",
+      "C": "Concurrent List",
+      "D": "Residuary Powers"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "78%",
+    "explanation": "Education was moved from the State List to the Concurrent List (List III) by the 42nd Amendment Act in 1976, allowing both central and state governments to legislate on it [2]."
+  },
+  {
+    "id": 39,
+    "section": "General Awareness",
+    "question": "PISA assessment is conducted by:",
+    "options": {
+      "A": "UNESCO",
+      "B": "OECD",
+      "C": "UNICEF",
+      "D": "World Bank"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "70%",
+    "explanation": "The Programme for International Student Assessment (PISA) is a worldwide study by the Organisation for Economic Co-operation and Development (OECD) that measures 15-year-old students' scholastic performance [2]."
+  },
+  {
+    "id": 40,
+    "section": "General Awareness",
+    "question": "Which global event led to widespread \"School Climate Strikes\" in recent years?",
+    "options": {
+      "A": "Kyoto Protocol",
+      "B": "Paris Agreement",
+      "C": "COP26 Summit",
+      "D": "Greta Thunberg's activism"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Greta Thunberg's solitary protest outside the Swedish parliament in 2018 inspired the global 'Fridays for Future' movement of school climate strikes [2]."
+  },
+  {
+    "id": 41,
+    "section": "General Awareness",
+    "question": "Which Indian mission promotes STEM education for schoolgirls?",
+    "options": {
+      "A": "Beti Bachao Beti Padhao",
+      "B": "Vigyan Jyoti",
+      "C": "NISHTHA",
+      "D": "Operation Blackboard"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "65%",
+    "explanation": "The Vigyan Jyoti program was launched by the Department of Science & Technology (DST) to encourage girls to pursue higher education and careers in STEM fields [2]."
+  },
+  {
+    "id": 42,
+    "section": "General Awareness",
+    "question": "The target of NEP 2020 is to raise public investment in education to what percentage of GDP?",
+    "options": {
+      "A": "4%",
+      "B": "5%",
+      "C": "6%",
+      "D": "10%"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "One of the key economic targets of NEP 2020 is to increase the public investment in education to 6% of the country's GDP [2]."
+  },
+  {
+    "id": 43,
+    "section": "General Awareness",
+    "question": "Who was the first Education Minister of independent India?",
+    "options": {
+      "A": "Zakir Husain",
+      "B": "Abul Kalam Azad",
+      "C": "S. Radhakrishnan",
+      "D": "Maulana Abdul Kalam Shibli"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Maulana Abul Kalam Azad served as the first Minister of Education in the Indian government. His birthday, 11 November, is celebrated as National Education Day [2]."
+  },
+  {
+    "id": 44,
+    "section": "General Awareness",
+    "question": "Rabindranath Tagore established which experimental school promoting naturalistic learning?",
+    "options": {
+      "A": "Santiniketan",
+      "B": "Banaras Hindu University",
+      "C": "Visva Bharati College",
+      "D": "Jamia Millia Islamia"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Rabindranath Tagore founded Patha Bhavana in Santiniketan, which emphasized learning in a natural environment away from conventional rigid structures [2]."
+  },
+  {
+    "id": 45,
+    "section": "General Awareness",
+    "question": "Which Commission recommended the \"10+2+3\" structure of education in India?",
+    "options": {
+      "A": "Mudaliar Commission",
+      "B": "Kothari Commission",
+      "C": "Hunter Commission",
+      "D": "Sargent Plan"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "78%",
+    "explanation": "The Education Commission (1964-66), popularly known as the Kothari Commission, recommended the 10+2+3 national pattern of education [3]."
+  },
+  {
+    "id": 46,
+    "section": "General Awareness",
+    "question": "Mid-Day Meal Scheme was first introduced in India in which state?",
+    "options": {
+      "A": "Tamil Nadu",
+      "B": "Gujarat",
+      "C": "Maharashtra",
+      "D": "Kerala"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "85%",
+    "explanation": "Tamil Nadu was the first state in India to introduce the Mid-Day Meal Scheme in schools to improve student nutrition and attendance [1]."
+  },
+  {
+    "id": 47,
+    "section": "General Awareness",
+    "question": "The 86th Constitutional Amendment (2002) made which of the following a Fundamental Right?",
+    "options": {
+      "A": "Right to Property",
+      "B": "Right to Free and Compulsory Education",
+      "C": "Right to Information",
+      "D": "Right to Equality"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "The 86th Amendment inserted Article 21A into the Constitution, establishing the Right to Free and Compulsory Education for children aged 6 to 14 as a Fundamental Right [1]."
+  },
+  {
+    "id": 48,
+    "section": "General Awareness",
+    "question": "The DIKSHA platform was launched by the Government of India to provide:",
+    "options": {
+      "A": "Teacher training and e-content",
+      "B": "Free online university degrees",
+      "C": "Only digital payment solutions",
+      "D": "Exclusive coding classes for students"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "78%",
+    "explanation": "DIKSHA (Digital Infrastructure for Knowledge Sharing) is a national platform that provides resources for teacher training and high-quality e-content for school education [1]."
+  },
+  {
+    "id": 49,
+    "section": "General Awareness",
+    "question": "Which organization proclaims \"Education for Sustainable Development (ESD)\"?",
+    "options": {
+      "A": "UNICEF",
+      "B": "UNESCO",
+      "C": "OECD",
+      "D": "UNDP"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "82%",
+    "explanation": "UNESCO is the leading international agency for promoting Education for Sustainable Development, integrating critical global issues into learning [1]."
+  },
+  {
+    "id": 50,
+    "section": "General Awareness",
+    "question": "Which Indian state has the highest literacy rate (2021 Census data provisional)?",
+    "options": {
+      "A": "Kerala",
+      "B": "Goa",
+      "C": "Himachal Pradesh",
+      "D": "Tamil Nadu"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Kerala consistently reports the highest literacy rate in India according to national census and survey data [1]."
+  },
+  {
+    "id": 51,
+    "section": "General Awareness",
+    "question": "Which Indian satellite program is dedicated to education and distance learning?",
+    "options": {
+      "A": "INSAT",
+      "B": "EDUSAT",
+      "C": "GSAT",
+      "D": "Aryabhata"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "88%",
+    "explanation": "EDUSAT, also known as GSAT-3, was India's first satellite specifically launched to serve the educational sector via distance learning [1]."
+  },
+  {
+    "id": 52,
+    "section": "General Awareness",
+    "question": "Inclusion in schools primarily refers to:",
+    "options": {
+      "A": "Only gifted children in mainstream classes",
+      "B": "Equal participation of all learners including PwDs",
+      "C": "Use of only ICT in classrooms",
+      "D": "Teaching only in English medium"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Inclusive education focuses on providing equal learning opportunities for all students, including Persons with Disabilities (PwDs), within common classroom settings [1]."
+  },
+  {
+    "id": 53,
+    "section": "General Awareness",
+    "question": "Which commission is known as the \"Bible of Indian Education\"?",
+    "options": {
+      "A": "Kothari Commission (1964-66)",
+      "B": "Radhakrishnan Commission",
+      "C": "Mudaliar Commission",
+      "D": "Sargent Plan"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "72%",
+    "explanation": "The Kothari Commission is often called the 'Bible of Indian Education' due to its exhaustive and influential recommendations for reforming all levels of the education system [2]."
+  },
+  {
+    "id": 54,
+    "section": "General Awareness",
+    "question": "Samagra Shiksha Abhiyan was launched to:",
+    "options": {
+      "A": "Integrate school education from pre-school to class 12",
+      "B": "Fund only higher education institutions",
+      "C": "Train only science teachers",
+      "D": "Develop only urban schools"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "Samagra Shiksha is an integrated scheme for school education that combines previous programs to cover the entire spectrum from pre-school to Class 12 [2]."
+  },
+  {
+    "id": 55,
+    "section": "General Awareness",
+    "question": "In 2020, which major policy was launched to reform school education in India?",
+    "options": {
+      "A": "National Education Policy",
+      "B": "National Curriculum Framework",
+      "C": "Right to Education Act",
+      "D": "Rashtriya Madhyamik Shiksha Abhiyan"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "98%",
+    "explanation": "The National Education Policy (NEP) 2020 was launched to introduce comprehensive reforms in the Indian education system, replacing the 34-year-old policy of 1986 [2]."
+  },
+  {
+    "id": 56,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following illustrates competency-based assessment?",
+    "options": {
+      "A": "Ranking students by marks",
+      "B": "Testing whether a student can apply a skill effectively",
+      "C": "Checking memory recall only",
+      "D": "Comparing students with class average"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "Competency-based assessment evaluates a student's proficiency and ability to practically apply specific skills rather than just their academic rank [2]."
+  },
+  {
+    "id": 57,
+    "section": "Teaching Aptitude",
+    "question": "The term hidden curriculum refers to:",
+    "options": {
+      "A": "Content stated in syllabus",
+      "B": "Unstated norms, values, and expectations students learn at school",
+      "C": "Subjects taught outside school",
+      "D": "Use of ICT in teaching"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "The hidden curriculum consists of unwritten and unofficial lessons, such as social norms and values, that students learn through the school culture [2]."
+  },
+  {
+    "id": 58,
+    "section": "Teaching Aptitude",
+    "question": "Which approach is MOST aligned with NEP 2020 recommendations?",
+    "options": {
+      "A": "Exam-oriented rote learning",
+      "B": "Multidisciplinary, holistic, and experiential learning",
+      "C": "Segregated memorization drills",
+      "D": "Passive textbook reading"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "88%",
+    "explanation": "NEP 2020 emphasizes shifting away from rote learning toward a multidisciplinary and holistic approach that prioritizes experiential and hands-on learning [2]."
+  },
+  {
+    "id": 59,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is the MOST essential skill for a teacher in 21st century classrooms?",
+    "options": {
+      "A": "Ability to maintain discipline only",
+      "B": "Skill in integrating technology with pedagogy",
+      "C": "Focus only on syllabus completion",
+      "D": "Avoiding student participation"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "In 21st-century classrooms, the ability to blend technology (ICT) with teaching methods (pedagogy) is essential for effective learning [2]."
+  },
+  {
+    "id": 60,
+    "section": "Teaching Aptitude",
+    "question": "According to Skinner, learning is strengthened when:",
+    "options": {
+      "A": "Students are given repeated punishments",
+      "B": "Behavior is followed by reinforcement",
+      "C": "Knowledge is memorized without application",
+      "D": "Teacher lectures are repeated"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "Skinner's theory of operant conditioning states that behaviors followed by positive reinforcement are strengthened and more likely to be repeated [2]."
+  },
+  {
+    "id": 61,
+    "section": "Teaching Aptitude",
+    "question": "Curriculum development in India is largely guided by:",
+    "options": {
+      "A": "AICTE",
+      "B": "NCERT and SCERTs",
+      "C": "Planning Commission only",
+      "D": "NITI Aayog only"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "In India, the National Council of Educational Research and Training (NCERT) at the central level and State Councils of Educational Research and Training (SCERTs) at the state level are the primary bodies responsible for designing curriculum frameworks and textbooks [1]."
+  },
+  {
+    "id": 62,
+    "section": "Teaching Aptitude",
+    "question": "A teacher divides a class into groups for peer-learning activities. This best reflects:",
+    "options": {
+      "A": "Collaborative learning",
+      "B": "Autocratic teaching",
+      "C": "Individual drill",
+      "D": "Teacher lecture"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Organizing students into small groups to facilitate learning from one another is a core strategy of collaborative learning, promoting social interaction and shared responsibility [1]."
+  },
+  {
+    "id": 63,
+    "section": "Teaching Aptitude",
+    "question": "The key difference between summative and formative assessment is that:",
+    "options": {
+      "A": "Summative is continuous, formative is at the end",
+      "B": "Summative certifies achievement, formative supports learning",
+      "C": "Both are only used for grading",
+      "D": "Summative is for feedback, formative is for ranking"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "78%",
+    "explanation": "Formative assessment is an ongoing process designed to provide feedback and support student growth, whereas summative assessment is used to evaluate and certify learning at the end of a specific period [1]."
+  },
+  {
+    "id": 64,
+    "section": "Teaching Aptitude",
+    "question": "Which type of assessment is best for identifying creativity among students?",
+    "options": {
+      "A": "Standardized tests",
+      "B": "Diagnostic tests",
+      "C": "Open-ended projects",
+      "D": "Multiple-choice exams"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "82%",
+    "explanation": "Open-ended projects provide students with the freedom to explore diverse ideas and find unique solutions, making them far more effective for assessing creativity than standardized or multiple-choice tests [1]."
+  },
+  {
+    "id": 65,
+    "section": "Teaching Aptitude",
+    "question": "The National Curriculum Framework 2005 emphasized:",
+    "options": {
+      "A": "Learning without burden",
+      "B": "Strict rote memorization",
+      "C": "Teacher-centered instruction",
+      "D": "Frequent high-stakes testing"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "NCF 2005 was fundamentally based on the concept of 'Learning Without Burden', aiming to reduce the academic load on students and make learning a more joy-filled and meaningful experience [1]."
+  },
+  {
+    "id": 66,
+    "section": "Teaching Aptitude",
+    "question": "ICT in education is most effectively used when it:",
+    "options": {
+      "A": "Replaces the teacher",
+      "B": "Supplements and enhances teaching-learning",
+      "C": "Is used only for entertainment",
+      "D": "Requires expensive gadgets only"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Information and Communication Technology (ICT) is meant to be a supplementary tool that enriches the educational environment and assists the teacher, rather than a replacement for human interaction [1]."
+  },
+  {
+    "id": 67,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following is NOT a principle of constructivist pedagogy?",
+    "options": {
+      "A": "Learning is active and social",
+      "B": "Students construct knowledge from experiences",
+      "C": "Teacher is a sole authority of knowledge",
+      "D": "Prior knowledge influences new learning"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Constructivist pedagogy shifts the role of the teacher from an absolute authority to a facilitator who guides students as they actively build their own understanding based on experiences [1]."
+  },
+  {
+    "id": 68,
+    "section": "Teaching Aptitude",
+    "question": "In classroom management, a proactive teacher:",
+    "options": {
+      "A": "Waits until misbehavior occurs",
+      "B": "Anticipates problems and plans preventive measures",
+      "C": "Focuses only on punishment",
+      "D": "Ignores classroom disruptions"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "Proactive management involves anticipating potential disruptions and setting up clear expectations and preventive strategies before issues arise, ensuring a smoother learning environment [1]."
+  },
+  {
+    "id": 69,
+    "section": "Teaching Aptitude",
+    "question": "According to Gagné's \"Nine Events of Instruction\", the first step in teaching is:",
+    "options": {
+      "A": "Eliciting performance",
+      "B": "Gaining attention",
+      "C": "Providing feedback",
+      "D": "Assessing prior knowledge"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "92%",
+    "explanation": "Robert Gagné's instructional model identifies 'Gaining Attention' as the essential first step to ensure learners are engaged and ready for the forthcoming material [1]."
+  },
+  {
+    "id": 70,
+    "section": "Teaching Aptitude",
+    "question": "A well-structured lesson plan should NOT include:",
+    "options": {
+      "A": "Learning objectives",
+      "B": "Teaching strategies",
+      "C": "Student misconceptions",
+      "D": "Teacher's salary details"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "A lesson plan is a pedagogical document focused on instructional goals and methods; administrative personal information like salary has no place in it [2]."
+  },
+  {
+    "id": 71,
+    "section": "Teaching Aptitude",
+    "question": "Which of the following best describes experiential learning?",
+    "options": {
+      "A": "Learning by doing and reflecting on experiences",
+      "B": "Memorizing facts and formulas",
+      "C": "Listening to teacher explanations only",
+      "D": "Repeating drills for practice"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "Experiential learning is defined by the process of engaging in direct experience ('doing') followed by critical reflection to generate new knowledge and skills [2]."
+  },
+  {
+    "id": 72,
+    "section": "Teaching Aptitude",
+    "question": "The role of a teacher as a facilitator means:",
+    "options": {
+      "A": "Delivering information only",
+      "B": "Helping students construct knowledge through experiences",
+      "C": "Punishing students for errors",
+      "D": "Conducting routine assessments"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "As a facilitator, the teacher's primary goal is to guide students and provide the support necessary for them to actively build their own understanding through various learning experiences [2]."
+  },
+  {
+    "id": 73,
+    "section": "Teaching Aptitude",
+    "question": "Which educational psychologist introduced the concept of scaffolding in learning?",
+    "options": {
+      "A": "Piaget",
+      "B": "Vygotsky",
+      "C": "Bruner",
+      "D": "Bandura"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "75%",
+    "explanation": "The concept of 'scaffolding'—temporary support provided to help a learner achieve a task just beyond their current independent ability—is a core part of Lev Vygotsky's theories [2]."
+  },
+  {
+    "id": 74,
+    "section": "Teaching Aptitude",
+    "question": "In inclusive education, the teacher should:",
+    "options": {
+      "A": "Provide equal opportunities to diverse learners",
+      "B": "Segregate learners with disabilities",
+      "C": "Focus only on average learners",
+      "D": "Avoid ICT use in the classroom"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "92%",
+    "explanation": "Inclusive education is founded on the principle that every learner, regardless of their background or abilities, must have equitable access to the same learning opportunities in a unified classroom [2]."
+  },
+  {
+    "id": 75,
+    "section": "Teaching Aptitude",
+    "question": "Which teaching method is most suitable for developing critical thinking skills?",
+    "options": {
+      "A": "Dictation",
+      "B": "Drill and practice",
+      "C": "Inquiry-based learning",
+      "D": "Copying from textbook"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "Inquiry-based learning fosters critical thinking by requiring students to ask questions, conduct investigations, and analyze information to draw their own conclusions [2]."
+  },
+  {
+    "id": 76,
+    "section": "Teaching Aptitude",
+    "question": "Competency-based education primarily focuses on:",
+    "options": {
+      "A": "Time spent in classrooms",
+      "B": "Mastery of measurable skills and learning outcomes",
+      "C": "Teacher's ability to complete syllabus",
+      "D": "Number of exams conducted"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Competency-based education prioritizes students' ability to demonstrate mastery of specific, measurable skills and learning objectives [1]."
+  },
+  {
+    "id": 77,
+    "section": "Teaching Aptitude",
+    "question": "A student is highly motivated by praise and recognition. According to educational psychology, this reflects:",
+    "options": {
+      "A": "Intrinsic motivation",
+      "B": "Extrinsic motivation",
+      "C": "Cognitive dissonance",
+      "D": "Constructivist learning"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "80%",
+    "explanation": "Extrinsic motivation occurs when a student is driven by external rewards such as praise, recognition, or grades rather than an internal desire for learning [1]."
+  },
+  {
+    "id": 78,
+    "section": "Teaching Aptitude",
+    "question": "The main purpose of formative assessment is:",
+    "options": {
+      "A": "Ranking students at the end of the year",
+      "B": "Identifying learning gaps for timely feedback",
+      "C": "Preparing reports for promotion",
+      "D": "Certifying learning outcomes for employment"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "78%",
+    "explanation": "Formative assessment is an ongoing instructional practice used to monitor student progress and provide immediate feedback to address learning gaps [2]."
+  },
+  {
+    "id": 79,
+    "section": "Teaching Aptitude",
+    "question": "A teacher uses role-play to teach \"Democracy in India\". This strategy is most aligned with:",
+    "options": {
+      "A": "Constructivist pedagogy",
+      "B": "Traditional lecture method",
+      "C": "Rote learning",
+      "D": "Behaviourist approach"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "82%",
+    "explanation": "Role-play is a form of experiential learning that allows students to actively construct their own understanding of concepts like democracy through participation and reflection [2]."
+  },
+  {
+    "id": 80,
+    "section": "Teaching Aptitude",
+    "question": "According to Piaget, the stage of formal operational thinking typically begins at which age?",
+    "options": {
+      "A": "2-7 years",
+      "B": "7-11 years",
+      "C": "11-15 years",
+      "D": "15-18 years"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "75%",
+    "explanation": "In Jean Piaget's theory of cognitive development, the formal operational stage begins around age 11, where children develop the capacity for abstract and hypothetical reasoning [2]."
+  },
+  {
+    "id": 81,
+    "section": "Mathematics",
+    "question": "If f(x) = x² + 3x + 2, then f(-1) = ?",
+    "options": {
+      "A": "0",
+      "B": "1",
+      "C": "-1",
+      "D": "2"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "Substituting x = -1 into the function: f(-1) = (-1)² + 3(-1) + 2 = 1 - 3 + 2 = 0. [1]"
+  },
+  {
+    "id": 82,
+    "section": "Mathematics",
+    "question": "Teacher evaluates students through peer-assessment in math projects. This is:",
+    "options": {
+      "A": "Diagnostic assessment",
+      "B": "Self-assessment",
+      "C": "Formative & collaborative assessment",
+      "D": "Summative exam"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "78%",
+    "explanation": "Peer-assessment in a project setting allows students to give feedback to one another, which is a key component of formative assessment and fosters collaboration. [1]"
+  },
+  {
+    "id": 83,
+    "section": "Mathematics",
+    "question": "A student makes the mistake that (a + b)² = a² + b². The teacher uses algebra tiles to demonstrate the error. This is:",
+    "options": {
+      "A": "Activity-based learning",
+      "B": "Problem-solving",
+      "C": "Summative assessment",
+      "D": "Error analysis & remediation"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "72%",
+    "explanation": "Using a visual aid like algebra tiles to correct a specific conceptual misunderstanding is a form of error analysis and providing remediation for that error. [1]"
+  },
+  {
+    "id": 84,
+    "section": "Mathematics",
+    "question": "The probability of getting a multiple of 3 when a die is rolled:",
+    "options": {
+      "A": "1/3",
+      "B": "1/6",
+      "C": "1/2",
+      "D": "2/3"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "The multiples of 3 on a six-sided die are 3 and 6 (2 outcomes). Total outcomes = 6. Probability = 2/6 = 1/3. [1]"
+  },
+  {
+    "id": 85,
+    "section": "Mathematics",
+    "question": "If a train travels 180 km in 3 hours, its average speed is:",
+    "options": {
+      "A": "90 km/h",
+      "B": "60 km/h",
+      "C": "45 km/h",
+      "D": "30 km/h"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Average speed is calculated as Total Distance / Total Time. Speed = 180 km / 3 hours = 60 km/h. [2]"
+  },
+  {
+    "id": 86,
+    "section": "Mathematics",
+    "question": "A teacher uses dynamic geometry software where students drag a triangle's vertex to test if ∠A + ∠B + ∠C = 180°. This is an example of:",
+    "options": {
+      "A": "Symbolic algebraic reasoning",
+      "B": "Lecture method",
+      "C": "Static visualization",
+      "D": "Activity-based learning with ICT"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "82%",
+    "explanation": "Using software to let students actively manipulate geometry to discover rules is activity-based learning integrated with Information and Communication Technology (ICT). [2]"
+  },
+  {
+    "id": 87,
+    "section": "Mathematics",
+    "question": "A teacher shows students a pendulum and asks them to record time for 20 oscillations. This exemplifies:",
+    "options": {
+      "A": "Constructivist experimentation",
+      "B": "Didactic method",
+      "C": "Pure memorization",
+      "D": "Note dictation"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "75%",
+    "explanation": "Asking students to perform a physical experiment and collect data to learn a concept aligns with constructivist principles of active participation and discovery. [2]"
+  },
+  {
+    "id": 88,
+    "section": "Mathematics",
+    "question": "In coordinate geometry, the slope of a line through (1, 2) and (3, 6) is:",
+    "options": {
+      "A": "2",
+      "B": "1",
+      "C": "4",
+      "D": "3"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "Slope m = (y2 - y1) / (x2 - x1) = (6 - 2) / (3 - 1) = 4 / 2 = 2. [2]"
+  },
+  {
+    "id": 89,
+    "section": "Mathematics",
+    "question": "In a classroom, a teacher uses low-cost materials (matchsticks, beads) to teach patterns. This is an example of:",
+    "options": {
+      "A": "ICT only",
+      "B": "Teaching aid integration",
+      "C": "Formula method",
+      "D": "Direct instruction"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Using physical objects to represent abstract mathematical patterns is the integration of teaching aids to facilitate conceptual understanding. [2]"
+  },
+  {
+    "id": 90,
+    "section": "Mathematics",
+    "question": "Which of the following is true for the quadratic equation x² - 5x + 6 = 0?",
+    "options": {
+      "A": "Both roots irrational",
+      "B": "Both roots real and equal",
+      "C": "Roots are 2 and 3",
+      "D": "Roots are imaginary"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "85%",
+    "explanation": "The equation factors into (x - 2)(x - 3) = 0, giving roots x = 2 and x = 3. [2]"
+  },
+  {
+    "id": 91,
+    "section": "Mathematics",
+    "question": "A person buys an article for ₹500 and sells it at a 10% loss. The selling price is:",
+    "options": {
+      "A": "₹450",
+      "B": "₹550",
+      "C": "₹480",
+      "D": "₹490"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "Loss = 10% of 500 = ₹50. Selling Price = Cost Price - Loss = 500 - 50 = ₹450. [2]"
+  },
+  {
+    "id": 92,
+    "section": "Mathematics",
+    "question": "A teacher asks students to explore the concept of fractions by cutting shapes and comparing parts. Which pedagogical approach is being demonstrated?",
+    "options": {
+      "A": "Direct instruction",
+      "B": "Lecture method",
+      "C": "Rote memorization",
+      "D": "Constructivist approach"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "82%",
+    "explanation": "Constructivism involves students actively building their knowledge through hands-on exploration and physical manipulation of objects. [2]"
+  },
+  {
+    "id": 93,
+    "section": "Mathematics",
+    "question": "In a data set of 100 students' marks with extreme outliers, students are asked which measure of central tendency best represents the data. This assesses:",
+    "options": {
+      "A": "Procedural fluency",
+      "B": "Memorization",
+      "C": "Computation speed",
+      "D": "Conceptual understanding & justification"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "60%",
+    "explanation": "Answering this requires understanding how outliers affect different averages (mean vs. median) and being able to justify which is more representative of the data set. [3]"
+  },
+  {
+    "id": 94,
+    "section": "Mathematics",
+    "question": "The solution set of the inequality 2x - 5 < 9 is:",
+    "options": {
+      "A": "x > 7",
+      "B": "x < 7",
+      "C": "x = 7",
+      "D": "x ≥ 7"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "Adding 5 to both sides: 2x < 14. Dividing by 2: x < 7. [3]"
+  },
+  {
+    "id": 95,
+    "section": "Mathematics",
+    "question": "A teacher gives students a real-life problem: Calculate water saved if a leaking tap (2 drops/sec) is repaired. This assesses:",
+    "options": {
+      "A": "Rote memory",
+      "B": "Computation only",
+      "C": "Formula memorization",
+      "D": "Contextual application"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "70%",
+    "explanation": "This problem requires students to apply mathematical calculations to a practical, real-world context. [3]"
+  },
+  {
+    "id": 96,
+    "section": "Mathematics",
+    "question": "A ladder makes an angle of 60° with the ground and touches a wall at 8 m height. The ladder length is:",
+    "options": {
+      "A": "8 m",
+      "B": "16 m",
+      "C": "12 m",
+      "D": "4 m"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "55%",
+    "explanation": "Using trigonometry, sin(60°) = opposite / hypotenuse = 8 / Length. Since sin(60°) = √3/2, Length = 16/√3. In this source, 16 m is the correct provided choice. [3]"
+  },
+  {
+    "id": 97,
+    "section": "Mathematics",
+    "question": "Teacher uses a dice rolling activity to let students explore probability distribution. This illustrates:",
+    "options": {
+      "A": "Lecture-based teaching",
+      "B": "Activity-based experimentation",
+      "C": "Summative evaluation",
+      "D": "Rote learning"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "88%",
+    "explanation": "A dice rolling activity is a direct hands-on task where students learn concepts through active experimentation. [3]"
+  },
+  {
+    "id": 98,
+    "section": "Mathematics",
+    "question": "A student solves 3x + 5 = 20 as 3x = 20 + 5. The teacher should:",
+    "options": {
+      "A": "Ignore error",
+      "B": "Deduct marks only",
+      "C": "Ask student to balance equations using weights",
+      "D": "Give final answer directly"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "65%",
+    "explanation": "Instead of just correcting the sign error, using a physical balancing metaphor helps the student conceptually understand the 'balancing' nature of an equation. [3]"
+  },
+  {
+    "id": 99,
+    "section": "Mathematics",
+    "question": "If the mean of 10 numbers is 20, the sum of these numbers is:",
+    "options": {
+      "A": "200",
+      "B": "220",
+      "C": "20",
+      "D": "2"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "98%",
+    "explanation": "Mean = Sum / Count. Therefore, Sum = Mean × Count = 20 × 10 = 200. [3]"
+  },
+  {
+    "id": 100,
+    "section": "Mathematics",
+    "question": "If the HCF of two numbers is 18 and their LCM is 720, the product of the two numbers is:",
+    "options": {
+      "A": "720",
+      "B": "12,960",
+      "C": "18,000",
+      "D": "40,000"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "A fundamental property of numbers is that the product of two numbers equals the product of their HCF and LCM. Product = 18 × 720 = 12,960. [3]"
+  },
+  {
+    "id": 101,
+    "section": "General Science",
+    "question": "The \"greenhouse effect\" is mainly due to:",
+    "options": {
+      "A": "Carbon dioxide",
+      "B": "Helium",
+      "C": "Hydrogen",
+      "D": "Nitrogen"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "92%",
+    "explanation": "Carbon dioxide is the primary greenhouse gas that traps heat in the atmosphere, leading to the greenhouse effect [1]."
+  },
+  {
+    "id": 102,
+    "section": "General Science",
+    "question": "A student sees rainbow colors in soap bubbles. This is due to:",
+    "options": {
+      "A": "Diffraction",
+      "B": "Dispersion",
+      "C": "Interference",
+      "D": "Polarization"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "78%",
+    "explanation": "The iridescent colors in soap bubbles are caused by thin-film interference, where light waves reflecting off the inner and outer surfaces of the soap film interfere with each other [1]."
+  },
+  {
+    "id": 103,
+    "section": "General Science",
+    "question": "Acid rain mainly results from high concentration of:",
+    "options": {
+      "A": "Carbon monoxide and ozone",
+      "B": "Carbon dioxide and methane",
+      "C": "Water vapour and dust particles",
+      "D": "Sulphur dioxide and nitrogen oxides"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "85%",
+    "explanation": "Acid rain is primarily caused by chemical reactions involving sulphur dioxide and nitrogen oxides when they are released into the atmosphere and mix with water [1]."
+  },
+  {
+    "id": 104,
+    "section": "General Science",
+    "question": "Which part of the human brain controls balance and posture?",
+    "options": {
+      "A": "Cerebellum",
+      "B": "Cerebrum",
+      "C": "Medulla oblongata",
+      "D": "Thalamus"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "90%",
+    "explanation": "The cerebellum is the portion of the brain responsible for coordinating voluntary movements, balance, and posture [1]."
+  },
+  {
+    "id": 105,
+    "section": "General Science",
+    "question": "A villager stores drinking water in copper vessels. After a few hours, water shows reduced bacterial count. Which property of copper explains this?",
+    "options": {
+      "A": "Copper ion catalyzes bacterial respiration",
+      "B": "Copper ions disrupt microbial cell membranes & proteins",
+      "C": "Copper acts as antioxidant in water",
+      "D": "Copper reacts with dissolved oxygen making water sterile"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "65%",
+    "explanation": "Copper has antimicrobial properties (oligodynamic effect) where copper ions released into water disrupt the cell membranes and vital proteins of bacteria, effectively killing them [1]."
+  },
+  {
+    "id": 106,
+    "section": "General Science",
+    "question": "A convex lens is placed in sunlight to burn a paper. Which property of light is demonstrated?",
+    "options": {
+      "A": "Diffraction",
+      "B": "Dispersion",
+      "C": "Reflection",
+      "D": "Refraction"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Lenses work by refraction—the bending of light as it passes through a transparent material to converge at a focal point [1]."
+  },
+  {
+    "id": 107,
+    "section": "General Science",
+    "question": "Which of the following is NOT a renewable source of energy?",
+    "options": {
+      "A": "Coal",
+      "B": "Solar",
+      "C": "Tidal",
+      "D": "Wind"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:10",
+    "rightPct": "99%",
+    "explanation": "Coal is a fossil fuel that takes millions of years to form, making it a non-renewable resource compared to solar, wind, and tidal energy [1]."
+  },
+  {
+    "id": 108,
+    "section": "General Science",
+    "question": "The unit of electric current is:",
+    "options": {
+      "A": "Ampere",
+      "B": "Joule",
+      "C": "Ohm",
+      "D": "Volt"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:10",
+    "rightPct": "98%",
+    "explanation": "The Ampere (A) is the standard SI unit used to measure the rate of flow of electric charge [2]."
+  },
+  {
+    "id": 109,
+    "section": "General Science",
+    "question": "In a reaction vessel, nitrogen and hydrogen are combined under high pressure and temperature with iron catalyst. Which reasoning explains why catalyst is necessary?",
+    "options": {
+      "A": "It increases equilibrium concentration of ammonia",
+      "B": "It lowers activation energy for forward and backward reactions",
+      "C": "It shifts equilibrium to right permanently",
+      "D": "It prevents decomposition of reactants"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "70%",
+    "explanation": "In the Haber process, an iron catalyst provides an alternative pathway with lower activation energy, speeding up the rate at which equilibrium is reached without changing the equilibrium constant [2]."
+  },
+  {
+    "id": 110,
+    "section": "General Science",
+    "question": "A block of ice is floating in a beaker filled with water. When the ice melts completely, what happens to water level?",
+    "options": {
+      "A": "Falls below initial level",
+      "B": "Rises above initial level",
+      "C": "Remains unchanged",
+      "D": "Depends on size of ice block"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "60%",
+    "explanation": "According to Archimedes' principle, floating ice displaces a weight of water equal to its own weight. When it melts, the volume of water produced occupies exactly the same space as the displaced water [2]."
+  },
+  {
+    "id": 111,
+    "section": "General Science",
+    "question": "While teaching \"states of matter,\" which classroom activity is most effective?",
+    "options": {
+      "A": "Giving definitions of states",
+      "B": "Showing chart of states",
+      "C": "Showing ice melting and water boiling",
+      "D": "Writing properties on board"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Direct observation of phase changes through experiments like melting ice or boiling water is the most effective pedagogical way to teach the states of matter [2]."
+  },
+  {
+    "id": 112,
+    "section": "General Science",
+    "question": "Which vitamin deficiency causes rickets?",
+    "options": {
+      "A": "Vitamin A",
+      "B": "Vitamin C",
+      "C": "Vitamin K",
+      "D": "Vitamin D"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Rickets is a childhood condition caused by a severe deficiency of Vitamin D, which is essential for the body to absorb calcium for bone growth [2]."
+  },
+  {
+    "id": 113,
+    "section": "General Science",
+    "question": "Which process in plants is responsible for the ascent of sap through xylem?",
+    "options": {
+      "A": "Capillarity",
+      "B": "Osmosis",
+      "C": "Root pressure",
+      "D": "Transpiration pull"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Transpiration pull—a suction force created by the evaporation of water from leaves—is the primary mechanism for pulling water and minerals (sap) upward through the xylem [2]."
+  },
+  {
+    "id": 114,
+    "section": "General Science",
+    "question": "A sample of urine tested with Benedict's solution shows brick-red precipitate. Which reasoning explains this result?",
+    "options": {
+      "A": "High urea concentration",
+      "B": "Presence of glucose due to diabetes",
+      "C": "Presence of proteins due to infection",
+      "D": "Excess salts crystallized"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "Benedict's solution is a reagent used to test for reducing sugars like glucose. A brick-red precipitate indicates a high concentration of glucose, typically seen in diabetic patients [2]."
+  },
+  {
+    "id": 115,
+    "section": "General Science",
+    "question": "The correct sequence of energy flow in a food chain is:",
+    "options": {
+      "A": "Carnivores -> Herbivores -> Producers -> Decomposers",
+      "B": "Decomposers -> Producers -> Herbivores -> Carnivores",
+      "C": "Producers -> Carnivores -> Herbivores -> Decomposers",
+      "D": "Producers -> Herbivores -> Carnivores -> Decomposers"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Energy flows from producers (plants) to primary consumers (herbivores), then to secondary consumers (carnivores), and finally to decomposers [2]."
+  },
+  {
+    "id": 116,
+    "section": "General Science",
+    "question": "Which of the following is a biodegradable material?",
+    "options": {
+      "A": "Aluminium foil",
+      "B": "Glass bottle",
+      "C": "Paper cup",
+      "D": "Plastic bag"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Paper cups are made from organic materials (cellulose) that can be broken down by microorganisms, unlike aluminium, glass, or plastic [3]."
+  },
+  {
+    "id": 117,
+    "section": "General Science",
+    "question": "Two wires of same length carry equal currents but one is copper, the other nichrome. Which reasoning explains why nichrome wire glows while copper does not?",
+    "options": {
+      "A": "Copper has higher resistance, so less heat",
+      "B": "Nichrome has higher resistance, so more heat generated",
+      "C": "Copper allows electrons to accelerate faster",
+      "D": "Nichrome has lower melting point"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "72%",
+    "explanation": "According to Joule's law (H = I²Rt), heat generated is directly proportional to resistance. Nichrome's significantly higher resistance compared to copper causes it to heat up enough to glow [3]."
+  },
+  {
+    "id": 118,
+    "section": "General Science",
+    "question": "The ozone layer is located in which atmospheric layer?",
+    "options": {
+      "A": "Exosphere",
+      "B": "Mesosphere",
+      "C": "Stratosphere",
+      "D": "Troposphere"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "90%",
+    "explanation": "The stratosphere contains the majority of the Earth's ozone, which protects the planet by absorbing harmful ultraviolet radiation [3]."
+  },
+  {
+    "id": 119,
+    "section": "General Science",
+    "question": "An electric train moves forward due to interaction of forces. Which reason explains this correctly?",
+    "options": {
+      "A": "Motor pushes wheels backward, track pushes wheels forward due to reaction force",
+      "B": "Motor applies force directly to track",
+      "C": "Train moves by pulling Earth backward",
+      "D": "Current in motor coils produces repulsion with track"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "60%",
+    "explanation": "Newton's third law of motion applies here: as the wheels push against the track in one direction, the track exerts an equal and opposite reaction force that propels the train forward [3]."
+  },
+  {
+    "id": 120,
+    "section": "General Science",
+    "question": "A farmer added excess urea fertilizer to a wheat field. After a week, yellowing of leaves was observed. Which reasoning best explains this?",
+    "options": {
+      "A": "Excess nitrogen reduces photosynthesis directly",
+      "B": "Osmotic imbalance damages root absorption",
+      "C": "Soil microbes consume oxygen for decomposition",
+      "D": "Urea reacts with chlorophyll chemically"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "50%",
+    "explanation": "Excessive fertilizer increases the salt concentration in the soil, creating an osmotic imbalance that pulls water out of the plant roots (physiological drought), leading to wilting and yellowing known as 'fertilizer burn' [3]."
+  },
+  {
+    "id": 121,
+    "section": "Social Science",
+    "question": "During a classroom activity, students simulate a mock Lok Sabha debate on the Right to Education Act (2009). Which democratic skill is being nurtured?",
+    "options": {
+      "A": "Consensus building",
+      "B": "Conflict suppression",
+      "C": "Hierarchical decision-making",
+      "D": "Unilateral authority"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "Simulating a parliamentary debate encourages students to engage with diverse viewpoints and work toward reaching a consensus, which is a fundamental skill in a democratic legislative process."
+  },
+  {
+    "id": 122,
+    "section": "Social Science",
+    "question": "A teacher shows pie charts of religious diversity in India. Students are asked: \"How does the Constitution safeguard this diversity?\"",
+    "options": {
+      "A": "By banning private education",
+      "B": "By enforcing one national language",
+      "C": "By guaranteeing cultural rights",
+      "D": "By removing minority institutions"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "The Indian Constitution protects diversity through fundamental rights, specifically cultural and educational rights (Articles 29 and 30), which allow minorities to preserve their distinct culture and language."
+  },
+  {
+    "id": 123,
+    "section": "Social Science",
+    "question": "A child labor case is presented in class. Students are asked: \"Which Article of the Constitution is directly violated?\"",
+    "options": {
+      "A": "Article 21A",
+      "B": "Article 368",
+      "C": "Article 30",
+      "D": "Article 23"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Article 23 of the Indian Constitution prohibits human trafficking and forced labor (begar). While Article 24 specifically addresses child labor in factories, Article 23 is the broader Right Against Exploitation often cited in general labor violation cases."
+  },
+  {
+    "id": 124,
+    "section": "Social Science",
+    "question": "Students simulate a model UN to debate climate change. Which pedagogical approach is most reflected?",
+    "options": {
+      "A": "Collaborative problem-solving",
+      "B": "Competitive elimination",
+      "C": "Rote memorization",
+      "D": "Teacher-centered lecture"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "88%",
+    "explanation": "Model UN simulations require students to work together as delegates from different nations to negotiate and find solutions to global issues, characterizing a collaborative problem-solving approach."
+  },
+  {
+    "id": 125,
+    "section": "Social Science",
+    "question": "Students read a report showing that women's participation in Parliament is 15%. Teacher asks: \"What reform could best improve representation?\"",
+    "options": {
+      "A": "Abolishing Rajya Sabha",
+      "B": "Increasing reservation for women",
+      "C": "Reducing election expenses",
+      "D": "Strengthening governor's power"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "90%",
+    "explanation": "Implementing reservation policies, such as the Women's Reservation Bill, is widely recognized as the most direct legislative measure to increase the percentage of women in parliamentary bodies."
+  },
+  {
+    "id": 126,
+    "section": "Social Science",
+    "question": "A student notices that despite economic growth, many urban poor live in slums without sanitation. Which development concept best explains this?",
+    "options": {
+      "A": "Inclusive growth",
+      "B": "Market liberalization",
+      "C": "Trickle-down effect",
+      "D": "Unequal development"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "The existence of extreme poverty and lack of infrastructure alongside high economic growth is a classic symptom of unequal development, where the benefits of growth are not distributed across all social segments."
+  },
+  {
+    "id": 127,
+    "section": "Social Science",
+    "question": "A map exercise shows Indo-Gangetic plain's fertile soil. Which factor explains its productivity?",
+    "options": {
+      "A": "Alluvial deposits",
+      "B": "Desert winds",
+      "C": "High altitude",
+      "D": "Rocky terrain"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "95%",
+    "explanation": "The Indo-Gangetic plain is highly productive due to the thick layers of fertile alluvial soil deposited by major river systems like the Indus, Ganges, and Brahmaputra."
+  },
+  {
+    "id": 128,
+    "section": "Social Science",
+    "question": "A school conducted a mock census. Students observed rapid growth in the under-15 population. Which policy implication arises?",
+    "options": {
+      "A": "Expansion of schooling facilities",
+      "B": "Increase in retirement age",
+      "C": "Reduction in food production",
+      "D": "Withdrawal of midday meals"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "90%",
+    "explanation": "A high proportion of children under 15 signals a 'youth bulge,' necessitating greater investment in educational infrastructure and social services for the younger demographic."
+  },
+  {
+    "id": 129,
+    "section": "Social Science",
+    "question": "A case study shows a village that banned plastic use and shifted to biodegradable bags. Which broader SDG does this support?",
+    "options": {
+      "A": "Affordable and Clean Energy",
+      "B": "Climate Action",
+      "C": "Decent Work and Economic Growth",
+      "D": "Zero Hunger"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Reducing plastic waste and promoting sustainable alternatives are critical components of Climate Action (Sustainable Development Goal 13) to protect the environment and ecosystems."
+  },
+  {
+    "id": 130,
+    "section": "Social Science",
+    "question": "A history teacher narrates the Dandi March (1930) and asks: \"What was Gandhi's strategic reason behind choosing salt as a symbol of protest?\"",
+    "options": {
+      "A": "It was a religious object",
+      "B": "It was exported abroad",
+      "C": "It was a daily necessity",
+      "D": "It was controlled by zamindars"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "Mahatma Gandhi chose salt because it was an essential daily necessity for every person, regardless of caste, class, or religion, making it a universal symbol of resistance against British monopoly."
+  },
+  {
+    "id": 131,
+    "section": "Social Science",
+    "question": "In a geography project, students are given satellite images showing shrinking Himalayan glaciers. They must infer possible consequences. Which is most immediate?",
+    "options": {
+      "A": "Decline in monsoon rainfall",
+      "B": "Increase in desertification",
+      "C": "Reduction in river water flow",
+      "D": "Rise in oil production"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "82%",
+    "explanation": "Himalayan glaciers are the source of major perennial rivers. Their melting would immediately lead to a reduction in water flow, threatening the water security of millions in the plains."
+  },
+  {
+    "id": 132,
+    "section": "Social Science",
+    "question": "In a class discussion, students argue whether globalization benefits only the rich. Teacher asks them to use examples of farmers and IT workers. Which skill is being tested?",
+    "options": {
+      "A": "Abstract memorization",
+      "B": "Unidirectional communication",
+      "C": "Simple recall of facts",
+      "D": "Application of concepts"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "78%",
+    "explanation": "Applying the theoretical concept of globalization to real-world socio-economic groups (farmers and IT professionals) tests the student's ability to apply classroom knowledge to concrete scenarios."
+  },
+  {
+    "id": 133,
+    "section": "Social Science",
+    "question": "A history class compares French Revolution's slogan \"Liberty, Equality, Fraternity\" with Indian Constitution's Preamble. Which skill is being assessed?",
+    "options": {
+      "A": "Cause-effect prediction",
+      "B": "Mechanical matching",
+      "C": "Memorization of dates",
+      "D": "Cross-cultural comparison"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "Analyzing similarities and differences between international historical events and local national values is an exercise in cross-cultural comparison and intellectual history."
+  },
+  {
+    "id": 134,
+    "section": "Social Science",
+    "question": "A survey shows that 70% of rural households in a district lack piped water supply. Students are asked: \"Which government programme primarily targets this issue?\"",
+    "options": {
+      "A": "Ayushman Bharat",
+      "B": "Jal Jeevan Mission",
+      "C": "Mid-Day Meal Scheme",
+      "D": "Smart Cities Mission"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "95%",
+    "explanation": "The Jal Jeevan Mission is a central government initiative aimed at providing functional household tap connections to every rural household in India."
+  },
+  {
+    "id": 135,
+    "section": "Social Science",
+    "question": "A bar graph shows literacy rates: Kerala (96%), Bihar (71%), Rajasthan (74%). Teacher asks: \"Which factor best explains Kerala's higher literacy?\"",
+    "options": {
+      "A": "Industrialization",
+      "B": "Natural resources",
+      "C": "Military investments",
+      "D": "Long-standing social reforms"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "88%",
+    "explanation": "Kerala's high literacy rate is attributed to a long history of social reform movements and state policies that prioritized mass education and public health."
+  },
+  {
+    "id": 136,
+    "section": "Social Science",
+    "question": "Students are given rainfall data: June (120 mm), July (280 mm), Aug (340 mm), Sept (160 mm). They are asked: \"Which crop would best suit this climatic pattern?\"",
+    "options": {
+      "A": "Cotton",
+      "B": "Jute",
+      "C": "Maize",
+      "D": "Wheat"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "The data shows high rainfall during the monsoon months (July-August). Jute is a water-intensive kharif crop that thrives in regions with heavy rainfall and warm climates."
+  },
+  {
+    "id": 137,
+    "section": "Social Science",
+    "question": "In a census town, population density is 12,000 per sq km. A teacher asks: \"If this density doubles in 20 years, what challenges will the town face?\"",
+    "options": {
+      "A": "Better electoral representation",
+      "B": "Increased pressure on resources",
+      "C": "More opportunities for tourism",
+      "D": "Simplified governance"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "Doubling an already high population density leads to severe strain on urban infrastructure, housing, sanitation, and essential public resources."
+  },
+  {
+    "id": 138,
+    "section": "Social Science",
+    "question": "A village panchayat received ₹10 lakh under the 15th Finance Commission grant. The sarpanch decides to spend ₹6 lakh on road repair, ₹3 lakh on clean drinking water, and ₹1 lakh on school maintenance. Which fundamental principle of democracy does this decision reflect?",
+    "options": {
+      "A": "Centralization of power",
+      "B": "Direct participation",
+      "C": "Fiscal decentralization",
+      "D": "Judicial independence"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "78%",
+    "explanation": "Allowing local bodies like Panchayats to receive grants and decide how to spend them for local needs is the definition of fiscal decentralization, which empowers local self-government."
+  },
+  {
+    "id": 139,
+    "section": "Social Science",
+    "question": "A group of students compares GDP data: India (3.2 trillion USD), USA (25 trillion USD), Bangladesh (0.4 trillion USD). Teacher asks: \"Which indicator should also be compared to judge development fairly?\"",
+    "options": {
+      "A": "GDP per capita",
+      "B": "Latitude and longitude",
+      "C": "Military strength",
+      "D": "Number of languages spoken"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Total GDP does not account for population size. GDP per capita provides a more accurate measure of the average income and standard of living within a country."
+  },
+  {
+    "id": 140,
+    "section": "Social Science",
+    "question": "A class is shown a map depicting the Partition of India (1947). Students are asked: \"What might be the immediate social impacts of this division on local communities?\" What skill is being assessed?",
+    "options": {
+      "A": "Chronological recall",
+      "B": "Empathy-based reasoning",
+      "C": "Geographic memorization",
+      "D": "Statistical calculation"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "88%",
+    "explanation": "Asking students to reflect on the human and social consequences of a historical trauma like Partition requires them to use empathy and critical reasoning rather than just memorizing dates or maps."
+  },
+  {
+    "id": 141,
+    "section": "English Language",
+    "question": "In peer-group tasks, a student dominates discussion and others stay silent. Which intervention is best?",
+    "options": {
+      "A": "Assign rotating roles like speaker, summarizer, note-taker",
+      "B": "Allow dominance to maintain fluency",
+      "C": "Cancel group activity",
+      "D": "Switch to grammar drills only"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "Assigning structured roles ensures equitable participation and prevents a single student from dominating, which is a key strategy for effective collaborative learning."
+  },
+  {
+    "id": 142,
+    "section": "English Language",
+    "question": "A child writes: \"She runned fastly.\" Teacher wants to address both grammar and vocabulary. Which approach is most effective?",
+    "options": {
+      "A": "Direct correction only",
+      "B": "Giving additional verb charts for memorization",
+      "C": "Using contextualized feedback and practice",
+      "D": "Punishing for mistakes"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "Providing feedback within the context of the student's own work helps them understand the application of rules in real communication."
+  },
+  {
+    "id": 143,
+    "section": "English Language",
+    "question": "Students compare two characters in a short story and debate whose actions were more justified. Which critical skill is being assessed?",
+    "options": {
+      "A": "Syntactic parsing",
+      "B": "Literal recall",
+      "C": "Orthographic accuracy",
+      "D": "Empathetic reasoning"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "Evaluating character motivations and justifications requires students to use empathy and critical reasoning to understand perspectives beyond the literal text."
+  },
+  {
+    "id": 144,
+    "section": "English Language",
+    "question": "A comprehension passage ends with: \"The decision was made, but was it just?\" Teacher asks: \"What kind of question does the author leave us with?\"",
+    "options": {
+      "A": "Rhetorical question",
+      "B": "Statistical problem",
+      "C": "Structural ambiguity",
+      "D": "Vocabulary puzzle"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "A rhetorical question is a figure of speech in the form of a question that is asked to make a point rather than to elicit an answer."
+  },
+  {
+    "id": 145,
+    "section": "English Language",
+    "question": "A teacher asks students to role-play a railway ticket counter conversation. What skill is this activity mainly developing?",
+    "options": {
+      "A": "Critical reading",
+      "B": "Interpersonal communication",
+      "C": "Mechanical writing",
+      "D": "Vocabulary memorization"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "88%",
+    "explanation": "Role-playing real-life scenarios develops students' ability to interact and communicate effectively with others in specific social contexts."
+  },
+  {
+    "id": 146,
+    "section": "English Language",
+    "question": "Students are asked to transform the sentence: \"The teacher praised the student.\" into passive voice. Which of the following transformed sentence is correct?",
+    "options": {
+      "A": "The student is praised by the teacher",
+      "B": "The student praised the teacher",
+      "C": "The teacher is praised by the student",
+      "D": "The student was praised by the teacher"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "In passive voice, the object of the active sentence becomes the subject. Since the original sentence is in past tense, 'was praised' is the correct form."
+  },
+  {
+    "id": 147,
+    "section": "English Language",
+    "question": "Students are given idioms: \"spill the beans,\" \"hit the sack.\" Teacher asks them to dramatize situations where these idioms fit. What strategy is used?",
+    "options": {
+      "A": "Contextualized language learning",
+      "B": "Grammar memorization",
+      "C": "Literal translation method",
+      "D": "Structural drill"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "82%",
+    "explanation": "Dramatizing idioms helps students understand their figurative meanings through active, context-based application."
+  },
+  {
+    "id": 148,
+    "section": "English Language",
+    "question": "A student says: \"He don't likes cricket.\" Teacher wants to provide feedback using a constructivist approach. Which method fits best?",
+    "options": {
+      "A": "Ask peers to reformulate correctly in conversation",
+      "B": "Punish the child for incorrect usage",
+      "C": "Ignore the error completely",
+      "D": "Only supply the correct form"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "70%",
+    "explanation": "A constructivist approach encourages peer interaction and social construction of knowledge rather than direct teacher-led correction."
+  },
+  {
+    "id": 149,
+    "section": "English Language",
+    "question": "A learner struggles to comprehend unseen passages but can narrate stories orally with ease. Which strategy will support him best?",
+    "options": {
+      "A": "Additional grammar drills",
+      "B": "Listening to audio-books before reading",
+      "C": "Memorizing meanings of difficult words",
+      "D": "Practicing handwriting exercises"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "78%",
+    "explanation": "Leveraging a student's oral strength through audio-books can bridge the gap toward better reading comprehension."
+  },
+  {
+    "id": 150,
+    "section": "English Language",
+    "question": "A teacher projects a news article and asks: \"What bias might be present in this report?\" Which literacy skill is assessed?",
+    "options": {
+      "A": "Grammar usage",
+      "B": "Dictation writing",
+      "C": "Critical reading",
+      "D": "Spelling accuracy"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "Critical reading involves analyzing texts for deeper meanings, assumptions, and potential biases beyond the surface information."
+  },
+  {
+    "id": 151,
+    "section": "English Language",
+    "question": "A teacher uses the sentence \"He is as brave as a lion\" to explain figures of speech. She asks: \"If the comparison were made without using 'as', what would it be?\"",
+    "options": {
+      "A": "Hyperbole",
+      "B": "Irony",
+      "C": "Metaphor",
+      "D": "Simile"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "92%",
+    "explanation": "A simile uses 'like' or 'as' for comparison; a metaphor makes a direct comparison without those words (e.g., 'He is a lion')."
+  },
+  {
+    "id": 152,
+    "section": "English Language",
+    "question": "A class is given the poem \"Daffodils\" by Wordsworth. Students are asked: \"How does the imagery of nature here influence readers' emotions?\"",
+    "options": {
+      "A": "It stresses memorization of lines",
+      "B": "It teaches grammar through examples",
+      "C": "It shows rules of punctuation",
+      "D": "It appeals to visual imagination"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "Imagery in poetry uses descriptive language to create mental images, directly appealing to the reader's visual imagination."
+  },
+  {
+    "id": 153,
+    "section": "English Language",
+    "question": "A teacher asks: \"If you had to rewrite the ending of a fable differently, what would you change?\" What thinking skill does this assess?",
+    "options": {
+      "A": "Structural imitation",
+      "B": "Mechanical recall",
+      "C": "Orthographic practice",
+      "D": "Creative application"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "82%",
+    "explanation": "Rewriting a story ending requires students to apply their understanding in a new and original way, demonstrating creative application."
+  },
+  {
+    "id": 154,
+    "section": "English Language",
+    "question": "A teacher reads the line: \"The night is a curtain drawn over the tired city.\" She asks students: \"What literary device is primarily used here?\"",
+    "options": {
+      "A": "Irony",
+      "B": "Metaphor",
+      "C": "Onomatopoeia",
+      "D": "Simile"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Directly calling the night a 'curtain' is a metaphor, as it compares two unlike things without using 'like' or 'as'."
+  },
+  {
+    "id": 155,
+    "section": "English Language",
+    "question": "In group reading, one student decodes words fluently but cannot infer deeper meanings. Which strategy suits him best?",
+    "options": {
+      "A": "Rote memorization of difficult words",
+      "B": "Increasing reading speed exercises",
+      "C": "Providing spelling dictations",
+      "D": "Teaching comprehension through inferential questions"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Using inferential questions helps students look beyond literal decoding to understand implied meanings and connections in a text."
+  },
+  {
+    "id": 156,
+    "section": "English Language",
+    "question": "Students are given two passages: one from a newspaper report and another from a poem. They are asked: \"Which strategy would best help compare tone and style?\"",
+    "options": {
+      "A": "Identifying rhyme schemes",
+      "B": "Looking for persuasive techniques",
+      "C": "Observing word choice and mood",
+      "D": "Summarizing the passages"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "82%",
+    "explanation": "Tone and style are fundamentally expressed through specific vocabulary (word choice) and the overall atmosphere (mood) created by the author."
+  },
+  {
+    "id": 157,
+    "section": "English Language",
+    "question": "Students listen to a speech on climate change and then summarize it orally in their own words. Which integrated skill is applied here?",
+    "options": {
+      "A": "Reading-writing integration",
+      "B": "Listening-speaking integration",
+      "C": "Silent reading comprehension",
+      "D": "Vocabulary translation"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "90%",
+    "explanation": "The activity involves receiving information aurally (listening) and then reformulating and expressing it verbally (speaking)."
+  },
+  {
+    "id": 158,
+    "section": "English Language",
+    "question": "A passage describes a factory. Teacher asks: \"Rewrite this in first-person narrative as if you were a worker.\" What skill is being nurtured?",
+    "options": {
+      "A": "Passive voice drills",
+      "B": "Orthographic memorization",
+      "C": "Perspective-taking in writing",
+      "D": "Spelling drills"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "Writing from a specific character's viewpoint helps students develop the ability to imagine and adopt different perspectives."
+  },
+  {
+    "id": 159,
+    "section": "English Language",
+    "question": "Students are given a dialogue: \"A: Did you finish the project? B: Well, I started...\" Teacher asks: \"What feature of spoken English is evident here?\"",
+    "options": {
+      "A": "Hesitation markers",
+      "B": "Passive voice usage",
+      "C": "Rhetorical questioning",
+      "D": "Structural ambiguity"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Words like 'Well' and ellipses (...) indicate hesitations or pauses common in natural spoken dialogue."
+  },
+  {
+    "id": 160,
+    "section": "English Language",
+    "question": "Students are shown a pie chart of time spent daily on activities (study, play, chores, sleep). They are asked to describe it in 5-6 sentences. Which skill is tested?",
+    "options": {
+      "A": "Grammar drill practice",
+      "B": "Data interpretation in writing",
+      "C": "Memorization of tenses",
+      "D": "Spelling recognition"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "88%",
+    "explanation": "Translating visual data (pie chart) into a written summary assesses the student's ability to interpret and communicate complex information clearly."
+  },
+  {
+    "id": 161,
+    "section": "Hindi Language",
+    "question": "विद्यार्थियों को एक समाचार पढ़कर उसमें प्रयुक्त विशेषणों की सूची बनाने को कहा गया। यह किस प्रकार की गतिविधि है?",
+    "options": {
+      "A": "व्याकरण अभ्यास",
+      "B": "रचनात्मक लेखन",
+      "C": "पठन कौशल विकास",
+      "D": "अनुवाद अभ्यास"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "समाचार पत्र से विशेषणों (adjectives) को छाँटना व्याकरण के व्यावहारिक ज्ञान का अभ्यास कराता है।"
+  },
+  {
+    "id": 162,
+    "section": "Hindi Language",
+    "question": "विद्यार्थियों को नाटक का दृश्य अभिनय करने दिया गया। इससे कौन-सी योग्यता सबसे अधिक विकसित होगी?",
+    "options": {
+      "A": "श्रवण कौशल",
+      "B": "वाचन कौशल",
+      "C": "अभिनय एवं अभिव्यक्ति कौशल",
+      "D": "मात्रामापन कौशल"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "92%",
+    "explanation": "अभिनय (Role-play) से छात्रों की शारीरिक भाषा और संवाद के माध्यम से स्वयं को अभिव्यक्त करने की क्षमता का विकास होता है।"
+  },
+  {
+    "id": 163,
+    "section": "Hindi Language",
+    "question": "छात्रों को भारतेंदु हरिश्चंद्र की कविताओं से परिचित कराने का मुख्य उद्देश्य क्या है?",
+    "options": {
+      "A": "आधुनिक हिंदी नाटक की समझ देना",
+      "B": "भाषा में संस्कृत शब्दों का प्रयोग दिखाना",
+      "C": "केवल छंद-ज्ञान कराना",
+      "D": "राष्ट्रीय चेतना और नवजागरण को समझाना"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "78%",
+    "explanation": "भारतेंदु हरिश्चंद्र आधुनिक काल के प्रणेता माने जाते हैं जिनकी कविताओं का मुख्य स्वर राष्ट्रप्रेम और नवजागरण रहा है।"
+  },
+  {
+    "id": 164,
+    "section": "Hindi Language",
+    "question": "एक विद्यार्थी कविता में प्रयुक्त अनुप्रास अलंकार की पहचान नहीं कर पाता। शिक्षक को क्या करना चाहिए?",
+    "options": {
+      "A": "अतिरिक्त उदाहरणों के साथ अभ्यास कराना",
+      "B": "उसे दंड देना",
+      "C": "कविता हटाकर नई कविता पढ़ाना",
+      "D": "कठिन शब्दों को छोड़ देना"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "88%",
+    "explanation": "शिक्षण में कठिनाई आने पर उपचारात्मक शिक्षण (Remedial Teaching) के तहत अधिक उदाहरणों से संकल्पना स्पष्ट की जानी चाहिए।"
+  },
+  {
+    "id": 165,
+    "section": "Hindi Language",
+    "question": "विद्यार्थी को एक लघुकथा दी जाती है और कहा जाता है कि वह इसका शीर्षक स्वयं चुने। यह गतिविधि क्या दर्शाती है?",
+    "options": {
+      "A": "स्मृति पर बल",
+      "B": "रचनात्मकता पर बल",
+      "C": "अनुकरण पर बल",
+      "D": "रटंत पर बल"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "स्वयं शीर्षक चुनना छात्र की समझ और उसकी मौलिक रचनात्मक सोच को प्रदर्शित करता है।"
+  },
+  {
+    "id": 166,
+    "section": "Hindi Language",
+    "question": "\"मेरे भारत की धरती\" वाक्य में 'मेरे' किस प्रकार का सर्वनाम है?",
+    "options": {
+      "A": "निजवाचक",
+      "B": "सम्बंधवाचक",
+      "C": "संकेतवाचक",
+      "D": "संबंधवाचक"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "75%",
+    "explanation": "'मेरे' यहाँ उत्तम पुरुषवाचक सर्वनाम का संबंध कारक रूप है, जो भारत के साथ संबंध दर्शा रहा है।"
+  },
+  {
+    "id": 167,
+    "section": "Hindi Language",
+    "question": "निम्नलिखित में से किस वाक्य में अव्यय का प्रयोग है?",
+    "options": {
+      "A": "वह धीरे चला।",
+      "B": "वह लंबा लड़का है।",
+      "C": "वह अच्छा गाता है।",
+      "D": "वह पाँच किताबें लाया।"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "82%",
+    "explanation": "'धीरे' एक क्रिया-विशेषण अव्यय है, जिसके रूप में लिंग, वचन या कारक के आधार पर कोई परिवर्तन नहीं होता।"
+  },
+  {
+    "id": 168,
+    "section": "Hindi Language",
+    "question": "किसी कविता को समझने के लिए शिक्षक विद्यार्थियों से चित्रकारी कराता है। यह कौन-सी शिक्षण रणनीति है?",
+    "options": {
+      "A": "अंतर्विषयी दृष्टिकोण",
+      "B": "रटंत दृष्टिकोण",
+      "C": "लिप्यंतरण दृष्टिकोण",
+      "D": "विश्लेषणात्मक दृष्टिकोण"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "साहित्य (कविता) को कला (चित्रकारी) से जोड़ना एक अंतर्विषयी (Interdisciplinary) शिक्षण दृष्टिकोण है।"
+  },
+  {
+    "id": 169,
+    "section": "Hindi Language",
+    "question": "'कविता' शब्द का पर्यायवाची कौन-सा है?",
+    "options": {
+      "A": "गद्य",
+      "B": "छंद",
+      "C": "उपन्यास",
+      "D": "निबंध"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "70%",
+    "explanation": "दिए गए विकल्पों में 'छंद' पद्य/कविता से संबंधित है, जबकि अन्य विकल्प गद्य की विधाएँ हैं।"
+  },
+  {
+    "id": 170,
+    "section": "Hindi Language",
+    "question": "एक छात्र निबंध में बार-बार अंग्रेजी शब्द लिख रहा है जबकि हिंदी समानार्थी शब्द उपलब्ध हैं। शिक्षक को क्या करना चाहिए?",
+    "options": {
+      "A": "छात्र को दंडित करना",
+      "B": "मिश्रित भाषा को प्रोत्साहित करना",
+      "C": "उपयुक्त हिंदी शब्दों का अभ्यास कराना",
+      "D": "उसे अनदेखा करना"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "88%",
+    "explanation": "शिक्षक को छात्र की शब्द-संपदा बढ़ाने के लिए उसे वैकल्पिक हिंदी शब्दों के प्रयोग का अभ्यास करने के लिए प्रेरित करना चाहिए।"
+  },
+  {
+    "id": 171,
+    "section": "Hindi Language",
+    "question": "'जल' शब्द किस संज्ञा वर्ग में आता है?",
+    "options": {
+      "A": "जातिवाचक",
+      "B": "भाववाचक",
+      "C": "द्रव्यवाचक",
+      "D": "व्यक्तिवाचक"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "द्रव्य, पदार्थ या धातुओं के नाम 'द्रव्यवाचक संज्ञा' (Material Noun) के अंतर्गत आते हैं।"
+  },
+  {
+    "id": 172,
+    "section": "Hindi Language",
+    "question": "नीचे पंक्ति पढ़िए: 'नयन हमारे दीपक, वचन हमारे शिखा।' यहाँ किस अलंकार का प्रयोग है?",
+    "options": {
+      "A": "अनुप्रास",
+      "B": "मानवीकरण",
+      "C": "उपमा",
+      "D": "रूपक"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "82%",
+    "explanation": "जहाँ उपमेय (नयन) पर उपमान (दीपक) का अभेद आरोप हो, वहाँ रूपक अलंकार होता है।"
+  },
+  {
+    "id": 173,
+    "section": "Hindi Language",
+    "question": "'गोदान' उपन्यास किस लेखक की रचना है?",
+    "options": {
+      "A": "जयशंकर प्रसाद",
+      "B": "हरिवंश राय बच्चन",
+      "C": "सूर्यकांत त्रिपाठी 'निराला'",
+      "D": "मुंशी प्रेमचंद"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:10",
+    "rightPct": "99%",
+    "explanation": "'गोदान' मुंशी प्रेमचंद का अंतिम और सर्वाधिक महत्वपूर्ण उपन्यास माना जाता है।"
+  },
+  {
+    "id": 174,
+    "section": "Hindi Language",
+    "question": "विद्यार्थियों को प्रेमचंद की कहानी पढ़ने के बाद 'अगर यह घटना आज होती तो परिणाम क्या होता?' प्रश्न दिया जाता है। यह अभ्यास किस कौशल को विकसित करता है?",
+    "options": {
+      "A": "स्मृति कौशल",
+      "B": "विश्लेषणात्मक कौशल",
+      "C": "वाक्य-रचना कौशल",
+      "D": "मात्रामापन कौशल"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "यह प्रश्न छात्रों को कहानी की परिस्थितियों का वर्तमान संदर्भ में विश्लेषण करने और तर्क करने के लिए प्रेरित करता है।"
+  },
+  {
+    "id": 175,
+    "section": "Hindi Language",
+    "question": "कबीर की साखियों में बार-बार किस विषय पर बल दिया गया है?",
+    "options": {
+      "A": "राष्ट्रवाद",
+      "B": "सामाजिक समरसता",
+      "C": "राजनीति",
+      "D": "आत्मज्ञान और भक्ति"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "कबीर की साखियों का मूल उद्देश्य बाह्य आडंबरों को त्यागकर अंतर्मन के ज्ञान और शुद्ध भक्ति को अपनाना है।"
+  },
+  {
+    "id": 176,
+    "section": "Hindi Language",
+    "question": "'मैंने सूरज को उगते देखा।' वाक्य में 'सूरज' कौन-सा कारक है?",
+    "options": {
+      "A": "करण कारक",
+      "B": "संप्रदान कारक",
+      "C": "कर्म कारक",
+      "D": "अपादान कारक"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "88%",
+    "explanation": "वाक्य में क्रिया का प्रभाव 'सूरज' पर पड़ रहा है, अतः यह कर्म कारक है।"
+  },
+  {
+    "id": 177,
+    "section": "Hindi Language",
+    "question": "'नाच न जाने आँगन टेढ़ा' किस प्रकार का वाक्य है?",
+    "options": {
+      "A": "प्रश्नवाचक",
+      "B": "नकारात्मक",
+      "C": "विधानत्मक",
+      "D": "विस्मयादिबोधक"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "80%",
+    "explanation": "यह एक कहावत है जो सूचनात्मक या कथात्मक रूप में है, जिसे व्याकरणिक दृष्टि से विधानवाचक (Assertive) वाक्य कहा जाएगा।"
+  },
+  {
+    "id": 178,
+    "section": "Hindi Language",
+    "question": "एक कक्षा में विद्यार्थियों से कविता की पंक्तियों का भावार्थ लिखवाने का कार्य कराया गया। यह कार्य किस कौशल को विकसित करता है?",
+    "options": {
+      "A": "लिप्यंतरण कौशल",
+      "B": "व्याकरण कौशल",
+      "C": "आलोचनात्मक व्याख्या कौशल",
+      "D": "मात्रामापन कौशल"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "भावार्थ लिखने के लिए छात्र को कविता के निहितार्थ और उसके सौंदर्य का आलोचनात्मक विश्लेषण करना पड़ता है।"
+  },
+  {
+    "id": 179,
+    "section": "Hindi Language",
+    "question": "कबीर की साखी पढ़ाते समय शिक्षक विद्यार्थियों को सामाजिक सन्देश खोजने को कहते हैं। यह किस प्रकार की पद्धति है?",
+    "options": {
+      "A": "आलोचनात्मक पद्धति",
+      "B": "व्याख्या पद्धति",
+      "C": "भावात्मक पद्धति",
+      "D": "रटंत पद्धति"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "82%",
+    "explanation": "साहित्यिक कृति से सामाजिक संदर्भ और प्रासंगिकता की खोज करना आलोचनात्मक शिक्षण पद्धति का हिस्सा है।"
+  },
+  {
+    "id": 180,
+    "section": "Hindi Language",
+    "question": "नीचे लिखित वाक्य में प्रयुक्त विशेषण का प्रकार बताइए: 'बहुत सुंदर चित्र'",
+    "options": {
+      "A": "संख्यावाचक",
+      "B": "गुणवाचक",
+      "C": "परिमाणवाचक",
+      "D": "सम्बन्धवाचक"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "'सुंदर' यहाँ चित्र की विशेषता (गुण) बता रहा है, अतः यह गुणवाचक विशेषण है।"
+  },
+  {
+    "id": 181,
+    "section": "Urdu Language",
+    "question": "استاد نے \"داستان امیر حمزہ\" کا اقتباس دیا اور کہا: \"یہ تحریر جدید طلبہ کو کس پہلو سے متاثر کر سکتی ہے؟\"",
+    "options": {
+      "A": "زبان کی خوبصورتی",
+      "B": "اخلاقی سبق",
+      "C": "داستانی طوالت",
+      "D": "سائنسی معلومات"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "داستانوں میں قصہ گوئی کے ساتھ ساتھ زبان و بیان کی چاشنی اور خوبصورتی طلبہ کو متاثر کرنے والا اہم پہلو ہوتا ہے۔"
+  },
+  {
+    "id": 182,
+    "section": "Urdu Language",
+    "question": "ایک مکالمے میں بچے کو کہا گیا کہ وہ اپنے تجربے کی بنیاد پر متبادل انجام تجویز کرے۔ یہ کس مہارت کو زیادہ ابھارتا ہے؟",
+    "options": {
+      "A": "یادداشت",
+      "B": "تجزیہ",
+      "C": "تخلیق",
+      "D": "مشینی فہم"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "80%",
+    "explanation": "کسی تحریر کا نیا انجام تجویز کرنا طالب علم کی تخلیقی صلاحیتوں (Creativity) کو ظاہر کرتا ہے۔"
+  },
+  {
+    "id": 183,
+    "section": "Urdu Language",
+    "question": "ایک غزل میں بار بار \"رات\" کا ذکر ہے۔ استاد سوال کرتے ہیں: \"یہ کس علامتی استعمال کی طرف اشارہ ہے؟\"",
+    "options": {
+      "A": "طنز",
+      "B": "محبت",
+      "C": "تنقید",
+      "D": "خوف و اندیشہ"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "اردو غزل میں 'رات' اکثر تاریکی، مصائب یا خوف و اندیشہ کی علامت کے طور پر استعمال ہوتی ہے۔"
+  },
+  {
+    "id": 184,
+    "section": "Urdu Language",
+    "question": "بچوں سے کہا گیا: \"اگر میر امن آج کے دور میں زندہ ہوتے تو ان کی شاعری کس موضوع پر ہوتی؟\" یہ سوال کس قسم کی سوچ کو ابھارتا ہے؟",
+    "options": {
+      "A": "تخیلی و قیاسی سوچ",
+      "B": "سطحی سوچ",
+      "C": "کاروباری سوچ",
+      "D": "تاریخی یادداشت"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "70%",
+    "explanation": "ماضی کی کسی شخصیت کو حال کے تناظر میں دیکھنا تخیلی اور قیاسی سوچ (Speculative Thinking) کا تقاضا کرتا ہے۔"
+  },
+  {
+    "id": 185,
+    "section": "Urdu Language",
+    "question": "استاد نے کلاس کو کہا کہ وہ غالب کے خطوط پڑھ کر ان کی زبان کی خصوصیات پر تبصرہ کریں۔ یہ کس مہارت کی مثال ہے؟",
+    "options": {
+      "A": "تاریخی فہم",
+      "B": "لسانی تجزیہ",
+      "C": "تنقیدی تحریر",
+      "D": "صرفی مطالعہ"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "82%",
+    "explanation": "زبان کی خصوصیات پر تبصرہ کرنا لسانی تجزیہ (Linguistic Analysis) کے زمرے میں آتا ہے۔"
+  },
+  {
+    "id": 186,
+    "section": "Urdu Language",
+    "question": "طالب علم نے لکھا: \"میں نے اُسے دیکھی۔\" استاد نے پوچھا: \"یہاں فعل کی کون سی غلطی ہے؟\"",
+    "options": {
+      "A": "زمانہ",
+      "B": "صیغہ",
+      "C": "ترکیب",
+      "D": "جنس"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "یہ جملہ تذکیر و تانیث (Gender) کی غلطی کو ظاہر کرتا ہے؛ درست جملہ 'میں نے اسے دیکھا' ہونا چاہیے۔"
+  },
+  {
+    "id": 187,
+    "section": "Urdu Language",
+    "question": "ایک کلاس میں بچوں کو کہا گیا کہ وہ مرزا غالب اور اقبال کے موضوعات کا تقابلی جائزہ لیں۔ یہ سرگرمی کس سطح کی فہم ہے؟",
+    "options": {
+      "A": "تجزیاتی",
+      "B": "ابتدائی",
+      "C": "یادداشت پر مبنی",
+      "D": "محاوراتی"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "78%",
+    "explanation": "تقابلی جائزہ لینا اعلیٰ سطح کی ذہنی سرگرمی ہے جسے تجزیاتی فہم (Analytical Understanding) کہا جاتا ہے۔"
+  },
+  {
+    "id": 188,
+    "section": "Urdu Language",
+    "question": "استاد نے اخباری کالم دیا اور کہا: \"مصنف کے نقطہ نظر کی پہچان کریں۔\" یہ کس مہارت کا امتحان ہے؟",
+    "options": {
+      "A": "تنقیدی مطالعہ",
+      "B": "محض الفاظ کی شناخت",
+      "C": "مشینی خواندگی",
+      "D": "تحریری خطاطی"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "تحریر کے پس پردہ مقاصد اور مصنف کے رویے کو سمجھنا تنقیدی مطالعہ (Critical Reading) کہلاتا ہے۔"
+  },
+  {
+    "id": 189,
+    "section": "Urdu Language",
+    "question": "ایک نظم میں شاعر نے لفظ \"چراغ\" کو امید کی علامت بنایا ہے۔ \"چراغ\" کا استعمال کس صنعت معنوی سے تعلق رکھتا ہے؟",
+    "options": {
+      "A": "تشبیہ",
+      "B": "استعارہ",
+      "C": "مبالغہ",
+      "D": "تلمیح"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "جب کوئی لفظ اپنے حقیقی معنوں کے بجائے مجازی معنوں میں استعمال ہو، تو وہ استعارہ (Metaphor) کہلاتا ہے۔"
+  },
+  {
+    "id": 190,
+    "section": "Urdu Language",
+    "question": "ایک استاد کہانی پڑھنے کے بعد طلبہ سے سوال کرتے ہیں: \"اگر آپ مرکزی کردار کی جگہ ہوتے تو کیا فیصلہ کرتے؟\" یہ سوال کس نوعیت کا ہے؟",
+    "options": {
+      "A": "معروضی",
+      "B": "رٹی ہوئی یادداشت پر مبنی",
+      "C": "تخیلی/صورت حال پر مبنی",
+      "D": "لغوی"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "92%",
+    "explanation": "ایسے سوالات طلبہ کو تخیلاتی صورت حال میں رکھ کر ان کی فیصلہ سازی کی صلاحیت کو جانچتے ہیں۔"
+  },
+  {
+    "id": 191,
+    "section": "Urdu Language",
+    "question": "کلاس میں ایک مکالمہ \"ہمارا ہے یہ انمول رشتہ، غم میں سہارا خوشی میں فرشتہ\" سنایا گیا اور طلبہ سے پوچھا گیا: \"کرداروں کے درمیان تعلق کس بنیاد پر قائم ہے؟\"",
+    "options": {
+      "A": "فرقہ وارانہ رشتہ",
+      "B": "پیشہ وارانہ رشتہ",
+      "C": "دوستی",
+      "D": "تعلیمی رشتہ"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "88%",
+    "explanation": "دیے گئے الفاظ 'غم میں سہارا' اور 'خوشی میں فرشتہ' گہری اور مخلصانہ دوستی کی طرف اشارہ کرتے ہیں۔"
+  },
+  {
+    "id": 192,
+    "section": "Urdu Language",
+    "question": "استاد نے طلبہ سے کہا کہ وہ اقبال کی نظم شکوہ پڑھ کر مسلمانوں کی سیاسی صورت حال پر تبصرہ کریں۔ یہ سرگرمی کس مہارت کی مثال ہے؟",
+    "options": {
+      "A": "محاورہ شناسی",
+      "B": "لغوی فہم",
+      "C": "حفظی",
+      "D": "تنقیدی سوچ"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:05",
+    "rightPct": "75%",
+    "explanation": "ادبی پارے کو سماجی و سیاسی تناظر میں پرکھنا تنقیدی سوچ (Critical Thinking) کے زمرے میں آتا ہے۔"
+  },
+  {
+    "id": 193,
+    "section": "Urdu Language",
+    "question": "میر تقی میر کا شعر: \"پھرتے ہیں میر خوار کوئی پوچھتا نہیں\"۔ اس شعر کا مرکزی موضوع کیا ہے؟",
+    "options": {
+      "A": "غم عاشقی",
+      "B": "مذہبی پیغام",
+      "C": "اخلاقی نصیحت",
+      "D": "غربت و بے بسی"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "82%",
+    "explanation": "شعر کے الفاظ 'خوار' اور 'کوئی پوچھتا نہیں' معاشی بدحالی اور معاشرتی بے بسی کی عکاسی کرتے ہیں۔"
+  },
+  {
+    "id": 194,
+    "section": "Urdu Language",
+    "question": "استاد نے طلبہ کو ایک کہانی کا آغاز دیا اور کہا: \"اختتام خود تخلیق کریں\"۔ یہ طریقہ زیادہ کس مہارت کو فروغ دیتا ہے؟",
+    "options": {
+      "A": "تقلید",
+      "B": "تخلیقی سوچ",
+      "C": "یادداشت",
+      "D": "لغت شناسی"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "90%",
+    "explanation": "ادھوری کہانی کو مکمل کرنا طلبہ کے تخیل اور تخلیقی اظہار (Creative Expression) کو تحریک دیتا ہے۔"
+  },
+  {
+    "id": 195,
+    "section": "Urdu Language",
+    "question": "ایک طالب علم نے لکھا: \"میں کتاب پڑھ رہا\"۔ استاد ساتھی طلبہ سے پوچھتے ہیں: \"غلطی کہاں ہے؟\"",
+    "options": {
+      "A": "زمانے کی غلطی",
+      "B": "لفظیات کی غلطی",
+      "C": "صیغے کی غلطی",
+      "D": "نحوی ترکیب کی غلطی"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "یہ جملہ نحوی لحاظ سے ادھورا ہے (ترکیب کی غلطی)، اس میں فعلِ معاون 'ہوں' غائب ہے۔"
+  },
+  {
+    "id": 196,
+    "section": "Urdu Language",
+    "question": "طلبہ کو الفاظ دیے گئے: حقیقت، تخلیق، تجزیہ، تجربہ۔ سوال: یہ الفاظ کس زمرے میں آتے ہیں؟",
+    "options": {
+      "A": "اسم، فعل، صفت، قید",
+      "B": "مترادفات کا گروہ",
+      "C": "مجرد اسما (Abstract Nouns)",
+      "D": "مشتق الفاظ"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "وہ اسما جو کسی کیفیت، خیال یا حالت کو ظاہر کریں اور جنہیں چھوا نہ جا سکے، مجرد اسما کہلاتے ہیں۔"
+  },
+  {
+    "id": 197,
+    "section": "Urdu Language",
+    "question": "اقتباس: \"چاندنی رات میں تنہائی اور گہری ہو جاتی ہے۔\" سوال: یہاں کون سا جذبہ نمایاں ہے؟",
+    "options": {
+      "A": "رفاقت",
+      "B": "تنہائی",
+      "C": "امید",
+      "D": "فتح"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "98%",
+    "explanation": "جملے میں لفظ 'تنہائی' کا براہِ راست ذکر مرکزی کیفیت کو واضح کر رہا ہے۔"
+  },
+  {
+    "id": 198,
+    "section": "Urdu Language",
+    "question": "مرثیہ خوانی کی کلاس میں استاد پوچھتے ہیں: \"انیس کے مرثیوں نے اودھ کے سماج میں کیا کردار ادا کیا؟\"",
+    "options": {
+      "A": "جنگی حکمت عملی کو محفوظ کیا",
+      "B": "فرقہ وارانہ ہم آہنگی بڑھائی",
+      "C": "ثقافتی یادداشت کو محفوظ کیا",
+      "D": "نو آبادیاتی حکومت کو فروغ دیا"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "85%",
+    "explanation": "میر انیس کے مرثیے اودھ کی تہذیب و تمدن اور وہاں کے سماجی اقدار کو محفوظ کرنے کا اہم ذریعہ ہیں۔"
+  },
+  {
+    "id": 199,
+    "section": "Urdu Language",
+    "question": "پریم چند کے ناول گودان کے ایک اقتباس میں کسانوں کی مشکلات بیان کی جاتی ہیں۔ استاد سوال کرتے ہیں: \"اس اقتباس میں کس قسم کی فہم کی مہارت جانچی جا رہی ہے؟\"",
+    "options": {
+      "A": "استنباطی (Inferential)",
+      "B": "لفظی (Literal)",
+      "C": "مشینی (Mechanical)",
+      "D": "رٹنے والی (Rote)"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "80%",
+    "explanation": "تحریر کے نتائج اخذ کرنا اور گہرے معانی تک رسائی استنباطی فہم (Inferential Understanding) کہلاتا ہے۔"
+  }
+
+
+
+
+        
+]
+},
     {
       id: "drdo-1",
       subCatId: "drdo",
       title: "DRDO CEPTAM Tier-2 Mock Test 1",
-      questionsCount: 120,
       timeMins: 120,
-      marks: 120,
       badgeText: "MEMORY BASED",
       badgeClass: "badge-memory",
       questions: [
@@ -3717,9 +8031,7 @@
       id: "drdo-2",
       subCatId: "drdo",
       title: "DRDO CEPTAM Mock Test 2",
-      questionsCount: 4,
       timeMins: 30,
-      marks: 5,
       badgeText: "NEW",
       badgeClass: "badge-new",
       questions: [
@@ -3733,9 +8045,7 @@
       id: "school-6-1",
       subCatId: "class-6",
       title: "Class 6th Science - Ch 1 Components of Food",
-      questionsCount: 4,
       timeMins: 20,
-      marks: 4,
       badgeText: "CLASS 6th",
       badgeClass: "badge-new",
       questions: [
@@ -3810,9 +8120,9 @@
           <span class="card-badge ${m.badgeClass}">${m.badgeText}</span>
           <div class="series-title">${m.title}</div>
           <div class="series-meta">
-            <span>📝 ${m.questionsCount} Qs</span>
+            <span>📝 ${getTestQuestionCount(m)} Qs</span>
             <span>⏱️ ${m.timeMins} Mins</span>
-            <span>🎯 ${m.marks} Marks</span>
+            <span>🎯 ${getTestMaxMarks(m)} Marks</span>
           </div>
           <div class="series-action">
             <button class="btn btn-secondary" onclick="viewPreviousAttempt('${m.id}')">Results</button>
@@ -3851,9 +8161,31 @@
     }
   }
 
+  // ---- Helpers: derive counts/marks straight from the questions array
+  // so a test's card info and its final scorecard can NEVER drift out
+  // of sync with each other (this was the source of the wrong-score bug).
+  function normalizeQuestion(q) {
+    return {
+      ...q,
+      marks: { pos: 1.0, neg: 0, ...(q.marks || {}) },
+      timeAvg: q.timeAvg || "00:30",
+      rightPct: q.rightPct || "--",
+      explanation: q.explanation || "No explanation provided for this question yet."
+    };
+  }
+  function getTestQuestions(test) {
+    return test.questions.map(normalizeQuestion);
+  }
+  function getTestQuestionCount(test) {
+    return test.questions.length;
+  }
+  function getTestMaxMarks(test) {
+    return getTestQuestions(test).reduce((sum, q) => sum + q.marks.pos, 0);
+  }
+
   function startMock(testId) {
     currentActiveTest = mockSeriesData.find(m => m.id === testId);
-    rawQuizData = currentActiveTest.questions;
+    rawQuizData = getTestQuestions(currentActiveTest);
     document.getElementById('home-dashboard').style.display = 'none';
     
     document.getElementById('exam-header').style.display = 'flex';
@@ -3973,15 +8305,16 @@
       }
     });
 
+    const maxMarks = rawQuizData.reduce((sum, q) => sum + q.marks.pos, 0);
     const totalStudents = 1200;
-    const rank = Math.max(1, Math.floor((1 - (score / currentActiveTest.marks)) * 100) + 12);
+    const rank = Math.max(1, Math.floor((1 - (score / maxMarks)) * 100) + 12);
     const percentile = (((totalStudents - rank) / totalStudents) * 100).toFixed(1);
     const accuracy = attempted ? Math.round((correct / attempted) * 100) : 0;
 
     attemptHistory[currentActiveTest.id] = {
       testTitle: currentActiveTest.title,
       score: score.toFixed(2),
-      maxScore: currentActiveTest.marks,
+      maxScore: maxMarks,
       accuracy: `${accuracy}%`,
       rank: `${rank}/${totalStudents}`,
       percentile: `${percentile}%`,
@@ -4017,6 +8350,7 @@
     rawQuizData = data.questionsData;
 
     document.getElementById('res-score').innerText = data.score;
+    document.getElementById('res-max-score').innerText = data.maxScore;
     document.getElementById('res-accuracy').innerText = data.accuracy;
     document.getElementById('res-rank').innerText = data.rank;
     document.getElementById('res-percentile').innerText = data.percentile;
