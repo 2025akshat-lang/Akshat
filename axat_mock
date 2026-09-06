@@ -1,0 +1,4114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Akshat study zone</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --cbt-answered: #16a34a;
+      --cbt-not-answered: #dc2626;
+      --cbt-review: #9333ea;
+    }
+
+    * { box-sizing: border-box; margin: 15px; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none;height: 100%; }
+    body { background: var(--bg); color: var(--text-main); height: 100%; overflow: hidden; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+    .app-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100%; background: var(--bg); z-index: 10; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* TOP BAR */
+    .app-top-bar { background: #0f172a; color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
+    .goal-selector { background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
+    .user-profile-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; border: 2px solid #38bdf8; cursor: pointer; }
+
+    /* DASHBOARD BODY */
+    .dashboard-body { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 70px; }
+
+    /* BREADCRUMB / BACK BAR */
+    .nav-header-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .back-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 4px; }
+    .page-title { font-size: 1.1rem; font-weight: 800; color: var(--text-main); }
+
+    /* MAIN MENU CARDS GRID */
+    .main-menu-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .menu-card { background: #fff; border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .menu-card:active { transform: scale(0.98); }
+    .menu-card-left { display: flex; align-items: center; gap: 14px; }
+    .menu-icon { width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 1px solid #dbeafe; }
+    .menu-title { font-size: 1rem; font-weight: 800; margin-bottom: 2px; }
+    .menu-desc { font-size: 0.75rem; color: var(--text-muted); }
+    .menu-arrow { font-size: 1.2rem; color: var(--text-muted); font-weight: 800; }
+
+    /* SUB CATEGORY LIST */
+    .sub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .sub-card { background: #fff; border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; font-weight: 700; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .sub-card:active { background: #eff6ff; border-color: var(--primary); }
+
+    /* TEST CARDS LIST */
+    .tests-vertical-list { display: flex; flex-direction: column; gap: 12px; }
+    .test-series-card { background: #fff; border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card-badge { position: absolute; top: 12px; right: 12px; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .badge-memory { background: #fef3c7; color: #b45309; }
+    .badge-free { background: #dcfce7; color: #15803d; }
+    .badge-new { background: #fee2e2; color: #b91c1c; }
+
+    .series-title { font-size: 0.95rem; font-weight: 700; padding-right: 50px; line-height: 1.3; }
+    .series-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap; }
+    .series-action { border-top: 1px dashed var(--card-border); padding-top: 10px; display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100vw; height: 56px; background: #fff; border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; z-index: 20; }
+    .nav-tab-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+    .nav-tab-item.active { color: var(--primary); font-weight: 800; }
+    .nav-tab-icon { font-size: 1.1rem; }
+
+    /* EXAM INTERFACE */
+    header { background: #0f172a; color: #fff; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 20; }
+    .brand-title { font-weight: 800; font-size: 0.95rem; color: #38bdf8; white-space: nowrap; cursor: pointer; }
+    .timer-badge { background: #1e293b; border: 1px solid #334155; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-family: monospace; font-weight: 700; color: #38bdf8; white-space: nowrap; }
+
+    .section-bar { background: #1e293b; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid #334155; }
+    .tab-btn { background: rgba(255, 255, 255, 0.12); border: none; color: #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; white-space: nowrap; font-weight: 600; }
+    .tab-btn.active { background: var(--primary); color: #fff; font-weight: 700; }
+
+    .main-viewport { display: flex; flex: 1; position: relative; overflow: hidden; }
+    .question-wrapper { flex: 1; display: flex; flex-direction: column; padding: 16px; overflow-y: auto; }
+    .meta-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+    .question-container { background: #fff; border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; }
+    .question-text { font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px; font-weight: 600; }
+    .options-grid { display: flex; flex-direction: column; gap: 8px; }
+    .option-card { background: #f8fafc; border: 1px solid var(--card-border); padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.88rem; }
+    .option-card.selected { background: #eff6ff; border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .option-idx { width: 22px; height: 22px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+    .option-card.selected .option-idx { background: var(--primary); color: #fff; }
+
+    footer { height: 52px; background: #fff; border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 20; }
+    .btn { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; }
+    .btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--card-border); }
+    .btn-warning { background: #f59e0b; color: #fff; }
+    .btn-primary { background: var(--primary); color: #fff; }
+
+    .drawer { position: absolute; right: -300px; top: 0; width: 300px; height: 100%; background: #fff; border-left: 1px solid var(--card-border); transition: right 0.3s; z-index: 30; display: flex; flex-direction: column; padding: 16px; }
+    .drawer.open { right: 0; }
+    .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; overflow-y: auto; flex: 1; }
+    .palette-node { height: 34px; border-radius: 4px; background: #f1f5f9; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .palette-node.status-answered { background: var(--cbt-answered); color: #fff; }
+    .palette-node.status-not-answered { background: var(--cbt-not-answered); color: #fff; }
+    .palette-node.status-review { background: var(--cbt-review); color: #fff; }
+
+    /* ANALYTICS OVERLAY */
+    .analytics-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 300; display: none; flex-direction: column; overflow: hidden; }
+    .analytics-overlay.active { display: flex; }
+    .nav-tabs-bar { background: #fff; border-bottom: 1px solid var(--card-border); display: flex; justify-content: center; gap: 30px; }
+    .top-nav-tab { padding: 12px 16px; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; }
+    .top-nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .tab-content { flex: 1; overflow-y: auto; padding: 16px; max-width: 800px; margin: 0 auto; width: 100%; }
+    .score-card-banner { background: #fff; border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .big-score { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .mini-stat { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; text-align: center; }
+    .mini-stat .val { font-size: 1rem; font-weight: 700; }
+    .mini-stat .lbl { font-size: 0.7rem; color: var(--text-muted); }
+
+    .filter-pills { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+    .pill-btn { padding: 6px 12px; border-radius: 16px; background: #e2e8f0; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); border: none; cursor: pointer; white-space: nowrap; }
+    .pill-btn.active { background: var(--primary); color: #fff; }
+
+    .sol-card { background: #fff; border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .sol-card-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+    .sol-badge { padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .sol-card-text { font-size: 0.88rem; font-weight: 600; margin-bottom: 8px; }
+    .sol-opt-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .sol-opt-item { font-size: 0.8rem; padding: 6px 8px; border-radius: 4px; border: 1px solid var(--card-border); background: #f8fafc; }
+    .sol-opt-item.is-correct { background: #dcfce7; border-color: #86efac; color: #166534; font-weight: 600; }
+    .sol-opt-item.is-user-wrong { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+    .sol-exp-box { background: #f1f5f9; padding: 8px; border-radius: 4px; font-size: 0.78rem; color: #334155; }
+  </style>
+</head>
+<body>
+
+  <!-- MASTER HOME DASHBOARD SCREEN -->
+  <div class="app-screen" id="home-dashboard">
+    <!-- TOP HEADER -->
+    <div class="app-top-bar">
+      <div class="goal-selector">
+        <span>⚡Axat Study PORTAL</span>
+      </div>
+      <div class="user-profile-badge" onclick="promptUserEmail()">P</div>
+    </div>
+
+    <div class="dashboard-body">
+      <!-- DYNAMIC HEADER WITH BACK BUTTON -->
+      <div class="nav-header-bar" id="nav-header-bar" style="display:none;">
+        <button class="back-btn" onclick="goBackStep()">⬅ Back</button>
+        <div class="page-title" id="current-page-title">Category</div>
+      </div>
+
+      <!-- LEVEL 1: CLEAN MAIN MENU (Home View) -->
+      <div class="main-menu-grid" id="view-level-1">
+        <div class="menu-card" onclick="openLevel2('k12')">
+          <div class="menu-card-left">
+            <div class="menu-icon">📚</div>
+            <div>
+              <div class="menu-title">K-12 Education</div>
+              <div class="menu-desc">Class 6th to 12th Science & Math</div>
+            </div>
+          </div>
+          <div class="menu-arrow">➔</div>
+        </div>
+
+        <div class="menu-card" onclick="openLevel2('entrance')">
+          <div class="menu-card-left">
+            <div class="menu-icon">🎓</div>
+            <div>
+              <div class="menu-title">Entrance Exams</div>
+              <div class="menu-desc">JMI, DU, BHU & University Tests</div>
+            </div>
+          </div>
+          <div class="menu-arrow">➔</div>
+        </div>
+
+        <div class="menu-card" onclick="openLevel2('psu')">
+          <div class="menu-card-left">
+            <div class="menu-icon">🏢</div>
+            <div>
+              <div class="menu-title">PSU Exams</div>
+              <div class="menu-desc">DRDO, IOCL, ISRO & PSU Papers</div>
+            </div>
+          </div>
+          <div class="menu-arrow">➔</div>
+        </div>
+      </div>
+
+      <!-- LEVEL 2: SUB-CATEGORIES (Classes / Exams / PSUs) -->
+      <div class="sub-grid" id="view-level-2" style="display:none;"></div>
+
+      <!-- LEVEL 3: MOCK TESTS LIST FOR SELECTED SUB-CATEGORY -->
+      <div class="tests-vertical-list" id="view-level-3" style="display:none;"></div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <div class="bottom-nav">
+      <div class="nav-tab-item active" onclick="goToHome()">
+        <div class="nav-tab-icon">🏠</div>
+        <div>Home</div>
+      </div>
+      <div class="nav-tab-item" onclick="openAttemptedList()">
+        <div class="nav-tab-icon">📊</div>
+        <div>Reports</div>
+      </div>
+      <div class="nav-tab-item" onclick="promptUserEmail()">
+        <div class="nav-tab-icon">👤</div>
+        <div>Account</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CBT EXAM TOP HEADER -->
+  <header style="display:none;" id="exam-header">
+    <div class="brand-title" onclick="exitToHome()">🚀 Axat ZONE</div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div class="timer-badge" id="overall-timer">00:30:00</div>
+      <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="toggleDrawer()">View Attempted Quest.</button>
+    </div>
+  </header>
+
+  <!-- SECTION SELECTOR ROW -->
+  <div class="section-bar" id="section-tabs" style="display:none;"></div>
+
+  <div class="main-viewport" id="exam-viewport" style="display:none;">
+    <div class="question-wrapper">
+      <div class="meta-bar">
+        <div style="font-weight: 700;">Question <span id="display-q-num">1</span></div>
+        <div style="font-size:0.75rem; color:var(--success);">Marks: +<span id="mark-pos">1.0</span> / -<span id="mark-neg">0.25</span></div>
+      </div>
+      <div class="question-container">
+        <div class="question-text" id="q-text">Loading...</div>
+        <div class="options-grid" id="options-container"></div>
+      </div>
+    </div>
+
+    <div class="drawer" id="drawer">
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+        <h4>Question Palette</h4>
+        <button class="btn btn-secondary" onclick="toggleDrawer()">✕</button>
+      </div>
+      <div class="palette-grid" id="palette-grid"></div>
+      <button class="btn btn-primary" style="margin-top:16px; width:100%;" onclick="submitExam()">Submit Test</button>
+    </div>
+  </div>
+
+  <footer id="exam-footer" style="display:none;">
+    <div style="display:flex; gap: 6px;">
+      <button class="btn btn-warning" onclick="markForReviewAndNext()">Mark Review</button>
+      <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
+    </div>
+    <div style="display:flex; gap: 6px;">
+      <button class="btn btn-secondary" onclick="navigate(-1)">Prev</button>
+      <button class="btn btn-primary" id="save-next-btn" onclick="saveAndNext()">Save & Next</button>
+    </div>
+  </footer>
+
+  <!-- ANALYTICS & SOLUTIONS OVERLAY -->
+  <div class="analytics-overlay" id="analytics-overlay">
+    <div class="app-top-bar">
+      <div style="font-weight:700;">Test Analysis</div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-secondary" style="font-size:0.75rem;" onclick="reattemptTest()">🔄 Reattempt</button>
+        <button class="btn btn-secondary" style="font-size:0.75rem;" onclick="exitToHome()">🏠 Home</button>
+      </div>
+    </div>
+
+    <div class="nav-tabs-bar">
+      <div class="top-nav-tab active" id="tab-btn-analysis" onclick="switchAnalyticsTab('analysis')">Analysis</div>
+      <div class="top-nav-tab" id="tab-btn-solutions" onclick="switchAnalyticsTab('solutions')">Solutions</div>
+    </div>
+
+    <div class="tab-content" id="tab-analysis">
+      <div class="score-card-banner">
+        <div class="score-row">
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">YOUR SCORE</div>
+            <div class="big-score"><span id="res-score">0</span> / 5.0</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">STATUS</div>
+            <div style="font-weight:700; color:var(--success);" id="score-status-label">Report Saved</div>
+          </div>
+        </div>
+        
+        <div class="summary-grid">
+          <div class="mini-stat"><div class="val" id="res-rank">--</div><div class="lbl">Rank</div></div>
+          <div class="mini-stat"><div class="val" id="res-accuracy" style="color:var(--success)">0%</div><div class="lbl">Accuracy</div></div>
+          <div class="mini-stat"><div class="val" id="res-percentile">--%</div><div class="lbl">Percentile</div></div>
+        </div>
+      </div>
+
+      <h4 style="margin-bottom:10px;">Sectional Breakdown</h4>
+      <div id="sectional-summary-list"></div>
+    </div>
+
+    <div class="tab-content" id="tab-solutions" style="display:none;">
+      <div class="filter-pills">
+        <button class="pill-btn active" onclick="filterSolutions('all')">All (<span id="cnt-all">0</span>)</button>
+        <button class="pill-btn" onclick="filterSolutions('correct')">Correct (<span id="cnt-correct">0</span>)</button>
+        <button class="pill-btn" onclick="filterSolutions('incorrect')">Incorrect (<span id="cnt-incorrect">0</span>)</button>
+        <button class="pill-btn" onclick="filterSolutions('unattempted')">Unattempted (<span id="cnt-unattempted">0</span>)</button>
+      </div>
+
+      <div id="solutions-list-container"></div>
+    </div>
+  </div>
+
+<script>
+  // NESTED STRUCTURE DEFINITION TO PREVENT CODE BREAK & OVERLAP
+  const categoryData = {
+    k12: {
+      title: "K-12 Education",
+      subCategories: [
+        { id: "class-6", name: "Class 6th Science" },
+        { id: "class-7", name: "Class 7th Science" },
+        { id: "class-11", name: "Class 11th Physics" },
+        { id: "class-12", name: "Class 12th Chemistry" }
+      ]
+    },
+    entrance: {
+      title: "Entrance Exams",
+      subCategories: [
+        { id: "jmi", name: "Jamia Millia Islamia (JMI)" },
+        { id: "du", name: "Delhi University (DU)" },
+        { id: "bhu", name: "Banaras Hindu University (BHU)" }
+      ]
+    },
+    psu: {
+      title: "PSU Exams",
+      subCategories: [
+        { id: "drdo", name: "DRDO CEPTAM" },
+        { id: "iocl", name: "IOCL Apprentice" },
+        { id: "isro", name: "ISRO Technical" }
+      ]
+    }
+  };
+
+  // EXPANDABLE MASTER MOCK DATA ARRAY
+  const mockSeriesData = [
+    {
+      id: "jmi-1",
+      subCatId: "jmi",
+      title: "JMI Entrance Full Mock Test 1",
+      questionsCount: 85,
+      timeMins: 60,
+      marks: 85,
+      badgeText: "FREE",
+      badgeClass: "badge-free",
+      questions: [
+        
+  {
+    "id": 1,
+    "section": "General Awareness",
+    "question": "Where was the electricity supply first introduced in India –",
+    "options": {
+      "A": "Mumbai",
+      "B": "Dehradun",
+      "C": "Darjeeling",
+      "D": "Chennai"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Electricity was first introduced in Darjeeling in 1897 with the commissioning of the Sidrapong Hydroelectric Power Station.\nIt is recognized as the first hydroelectric project in India and Asia."
+  },
+  {
+    "id": 2,
+    "section": "General Awareness",
+    "question": "Which of the following is related to Bharat Nirman Scheme?",
+    "options": {
+      "A": "Foodgrain production self sufficiency",
+      "B": "Family welfare programme",
+      "C": "Infrastructure development",
+      "D": "Employment generation program"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Bharat Nirman is a time-bound plan for rural infrastructure development launched by the Government of India.\nIt focuses on six areas: irrigation, roads, housing, water supply, electrification, and telecommunication."
+  },
+  {
+    "id": 3,
+    "section": "General Awareness",
+    "question": "Which one of the following ports is the oldest port in India?",
+    "options": {
+      "A": "Mumbai Port",
+      "B": "Chennai Port",
+      "C": "Kolkata Port",
+      "D": "Vishakhapatnam Port"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Syama Prasad Mookerjee Port (formerly Kolkata Port) is the oldest operating port in India, established in 1870.\nIt was a premier port under the British East India Company and remains a major riverine port."
+  },
+  {
+    "id": 4,
+    "section": "General Awareness",
+    "question": "Hitler party which came into power in 1933 is known as",
+    "options": {
+      "A": "Ku-Klux-Klan",
+      "B": "Democratic Party",
+      "C": "Labour Party",
+      "D": "Nazi Party"
+    },
+    "correct": "D",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The National Socialist German Workers' Party, commonly known as the Nazi Party, came to power in 1933.\nLed by Adolf Hitler, it established a totalitarian regime that lasted until the end of WWII."
+  },
+  {
+    "id": 5,
+    "section": "General Awareness",
+    "question": "Friction can be reduced by changing from",
+    "options": {
+      "A": "rolling to sliding",
+      "B": "sliding to rolling",
+      "C": "dynamic to static",
+      "D": "potential energy to kinetic energy"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Rolling friction is significantly lower than sliding friction because the area of contact is smaller.\nThis principle is used in ball bearings and wheels to improve efficiency and reduce wear."
+  },
+  {
+    "id": 6,
+    "section": "General Awareness",
+    "question": "Entomology is the science that studies",
+    "options": {
+      "A": "The origin and history of technical and scientific terms",
+      "B": "Behavior of human beings",
+      "C": "Insects",
+      "D": "The formation of rocks"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Entomology is a branch of zoology concerned with the scientific study of insects.\nIt covers their classification, life cycles, and roles in the environment and agriculture."
+  },
+  {
+    "id": 7,
+    "section": "General Awareness",
+    "question": "For the Olympics and World Tournaments, the dimensions of basketball court are",
+    "options": {
+      "A": "27 m x 16 m",
+      "B": "28 m x 15 m",
+      "C": "26 m x 14 m",
+      "D": "28 m x 16 m"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "FIBA regulations for international competitions, including the Olympics, specify a court size of 28 meters by 15 meters.\nThis standardized dimension ensures consistency across top-level global tournaments."
+  },
+  {
+    "id": 8,
+    "section": "General Awareness",
+    "question": "Garampani sanctuary is located at",
+    "options": {
+      "A": "Gangtok, Sikkim",
+      "B": "Kohima, Nagaland",
+      "C": "Diphu, Assam",
+      "D": "Junagarh, Gujarat"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Garampani Wildlife Sanctuary is located in the Karbi Anglong district near Diphu, Assam.\nIt is one of the oldest sanctuaries in the state, famous for its hot water springs."
+  },
+  {
+    "id": 9,
+    "section": "General Awareness",
+    "question": "Where can Coral reefs be found in India?",
+    "options": {
+      "A": "The Malabar Coast",
+      "B": "Rameshwaram",
+      "C": "Trivandrum",
+      "D": "Mahabalipuram"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Coral reefs are found in the Gulf of Mannar near Rameshwaram, which is a major reef system in India.\nOther major reef areas include Lakshadweep, Andaman Islands, and the Gulf of Kutch."
+  },
+  {
+    "id": 10,
+    "section": "General Awareness",
+    "question": "Objects at the surface of water can be viewed from a submarine under water by using this instrument.",
+    "options": {
+      "A": "Stethescope",
+      "B": "Periscope",
+      "C": "Kaleidoscope",
+      "D": "Telescope"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "A periscope allows an observer to view objects that are out of the direct line of sight using mirrors or prisms.\nIt is standard equipment for submarines to monitor the surface while remaining submerged."
+  },
+  {
+    "id": 11,
+    "section": "General Awareness",
+    "question": "Which one of the following river flows between Vindhyan and Satpura ranges?",
+    "options": {
+      "A": "Narmada",
+      "B": "Mahanadi",
+      "C": "Son",
+      "D": "Netravati"
+    },
+    "correct": "A",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Narmada River flows through a rift valley located between the Vindhya and Satpura mountain ranges.\nIt is one of the few major rivers in India that flows from east to west into the Arabian Sea."
+  },
+  {
+    "id": 12,
+    "section": "General Awareness",
+    "question": "The Central Rice Research Station is situated in?",
+    "options": {
+      "A": "Chennai",
+      "B": "Cuttack",
+      "C": "Bangalore",
+      "D": "Quilon"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Central Rice Research Institute (CRRI) is located in Cuttack, Odisha.\nIt was established to conduct research for improving rice production and ensuring food security."
+  },
+  {
+    "id": 13,
+    "section": "General Awareness",
+    "question": "Who among the following wrote Sanskrit grammar?",
+    "options": {
+      "A": "Kalidasa",
+      "B": "Charak",
+      "C": "Panini",
+      "D": "Aryabhatt"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Panini was an ancient Sanskrit philologist and grammarian who authored the famous 'Astadhyayi'.\nHis work laid the foundation for Classical Sanskrit and linguistic studies."
+  },
+  {
+    "id": 14,
+    "section": "General Awareness",
+    "question": "Which among the following head-streams meets the Ganges in last?",
+    "options": {
+      "A": "Alaknanda",
+      "B": "Pindar",
+      "C": "Mandakini",
+      "D": "Bhagirathi"
+    },
+    "correct": "D",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Bhagirathi and Alaknanda rivers meet at Devprayag to form the mainstream of the Ganges.\nBhagirathi is traditionally considered the source head-stream that 'meets' the others to finalize the river's name."
+  },
+  {
+    "id": 15,
+    "section": "General Awareness",
+    "question": "The metal whose salts are sensitive to light is?",
+    "options": {
+      "A": "Zinc",
+      "B": "Silver",
+      "C": "Copper",
+      "D": "Aluminum"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Silver salts, particularly silver halides like silver bromide, are highly sensitive to light.\nThis property was the basis for traditional film-based photography before the digital era."
+  },
+  {
+    "id": 16,
+    "section": "General Awareness",
+    "question": "Patanjali is well known for the compilation of –",
+    "options": {
+      "A": "Yoga Sutra",
+      "B": "Panchatantra",
+      "C": "Brahma Sutra",
+      "D": "Ayurveda"
+    },
+    "correct": "A",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Sage Patanjali is credited with compiling the Yoga Sutras, a foundational text of Yoga philosophy.\nIt outlines the eight-fold path (Ashtanga) for achieving physical and mental well-being."
+  },
+  {
+    "id": 17,
+    "section": "General Awareness",
+    "question": "Which one of the following rivers originates in Brahmagiri range of Western Ghats?",
+    "options": {
+      "A": "Pennar",
+      "B": "Cauvery",
+      "C": "Krishna",
+      "D": "Tapti"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Cauvery (Kaveri) River originates at Talakaveri in the Brahmagiri Range of the Western Ghats in Karnataka.\nIt is one of the most sacred rivers of South India and a vital source for irrigation."
+  },
+  {
+    "id": 18,
+    "section": "General Awareness",
+    "question": "The country that has the highest in Barley Production?",
+    "options": {
+      "A": "China",
+      "B": "India",
+      "C": "Russia",
+      "D": "France"
+    },
+    "correct": "C",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Russia is consistently ranked as the top global producer of barley.\nIt is a major agricultural commodity used for animal feed and brewing industries."
+  },
+  {
+    "id": 19,
+    "section": "General Awareness",
+    "question": "Volcanic eruption do not occur in the",
+    "options": {
+      "A": "Baltic sea",
+      "B": "Black sea",
+      "C": "Caribbean sea",
+      "D": "Caspian sea"
+    },
+    "correct": "A",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Baltic Sea is located on a stable tectonic plate region where volcanic activity is non-existent.\nIn contrast, regions like the Caribbean Sea have active volcanic arcs due to plate boundaries."
+  },
+  {
+    "id": 20,
+    "section": "General Awareness",
+    "question": "The hottest planet in the solar system?",
+    "options": {
+      "A": "Mercury",
+      "B": "Venus",
+      "C": "Mars",
+      "D": "Jupiter"
+    },
+    "correct": "B",
+    "marks": {
+      "pos": 1.0,
+      "neg": 0.25
+    },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Venus is the hottest planet because of its extremely thick atmosphere that traps heat through a runaway greenhouse effect.\nIts surface temperature remains high enough to melt lead, exceeding that of Mercury."
+  },
+          {
+    "id": 21,
+    "section": "General Awareness",
+    "question": "Which of the following musical instruments is played by Amjad Ali Khan?",
+    "options": {
+      "A": "Veena",
+      "B": "Tabla",
+      "C": "Sarod",
+      "D": "Guitar"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Ustad Amjad Ali Khan is a world-renowned Indian classical sarod player, belonging to the Bangash lineage. He was awarded the Padma Vibhushan in 2001 for his contributions to music."
+  },
+  {
+    "id": 22,
+    "section": "General Awareness",
+    "question": "Ms. Meera Sahib Fathima Beevi has the distinction of being the first lady—",
+    "options": {
+      "A": "Prime minister of Pakistan",
+      "B": "Judge of the District Court",
+      "C": "Chief Minister of a State",
+      "D": "Judge of Supreme Court"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "75%",
+    "explanation": "Justice M. Fathima Beevi became the first female judge to be appointed to the Supreme Court of India in 1989. She also served as the Governor of Tamil Nadu later in her career."
+  },
+  {
+    "id": 23,
+    "section": "General Awareness",
+    "question": "A change of the DNA of an organism resulting in a new trait is known as a ______.",
+    "options": {
+      "A": "Mitosis",
+      "B": "Meiosis",
+      "C": "Mutation",
+      "D": "Morphosis"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "A mutation is a permanent alteration in the DNA sequence that makes up a gene. This genetic variation can lead to the expression of new physical or behavioral traits in an organism."
+  },
+  {
+    "id": 24,
+    "section": "General Awareness",
+    "question": "The Book \"The Ministry of utmost happiness\" is written by—",
+    "options": {
+      "A": "Vikram Seth",
+      "B": "Anita Desai",
+      "C": "Kaavya Viswanathan",
+      "D": "Arundhati Roy"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Ministry of Utmost Happiness is the second novel by Arundhati Roy, published in 2017, twenty years after her Booker Prize-winning debut. It weaves together diverse stories from across the Indian subcontinent."
+  },
+  {
+    "id": 25,
+    "section": "General Awareness",
+    "question": "Which of the following Company buy eBay's Indian operation?",
+    "options": {
+      "A": "Amazon",
+      "B": "Flipkart",
+      "C": "Snapdeal",
+      "D": "PayTM"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "70%",
+    "explanation": "In 2017, Flipkart acquired eBay's India business as part of a strategic partnership and investment round. eBay eventually sold its stake in Flipkart and relaunched eBay.in as a separate entity later."
+  },
+  {
+    "id": 26,
+    "section": "General Awareness",
+    "question": "White rust is an important fungal disease of—",
+    "options": {
+      "A": "Wheat",
+      "B": "Mustard",
+      "C": "Rice",
+      "D": "Bajra"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "65%",
+    "explanation": "White rust is a common plant disease caused by the oomycete Albugo candida, primarily affecting cruciferous crops like mustard. It is identified by white, chalky pustules on the undersides of leaves."
+  },
+  {
+    "id": 27,
+    "section": "General Awareness",
+    "question": "Which of the following is the largest air pollutant?",
+    "options": {
+      "A": "Carbon dioxide",
+      "B": "Carbon monoxide",
+      "C": "Sulphur dioxide",
+      "D": "Hydrocarbons"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "60%",
+    "explanation": "Carbon monoxide (CO) is often considered the largest single air pollutant by mass emitted globally from anthropogenic sources, mainly due to incomplete combustion in vehicles and industry."
+  },
+  {
+    "id": 28,
+    "section": "General Awareness",
+    "question": "In binary code, the number 7 is written by—",
+    "options": {
+      "A": "110",
+      "B": "111",
+      "C": "101",
+      "D": "100"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "In binary (base 2), the number 7 is converted by summing powers of 2: (1 * 2^2) + (1 * 2^1) + (1 * 2^0) = 4 + 2 + 1 = 7. Thus, it is represented as 111."
+  },
+  {
+    "id": 29,
+    "section": "General Awareness",
+    "question": "The Atomic Nucleus was discovered by—",
+    "options": {
+      "A": "Rutherford",
+      "B": "Dalton",
+      "C": "Einstein",
+      "D": "Thompson"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Ernest Rutherford discovered the atomic nucleus in 1911 using his famous alpha-particle scattering experiment (Gold Foil Experiment), proving that the atom's mass is concentrated in a tiny central core."
+  },
+  {
+    "id": 30,
+    "section": "General Awareness",
+    "question": "Rouff is a folk dance. It has its original in?",
+    "options": {
+      "A": "Assam",
+      "B": "Mizoram",
+      "C": "Kashmir",
+      "D": "Himachal Pradesh"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Rouf is a traditional folk dance of Jammu and Kashmir, primarily performed by Kashmiri women during festive occasions like Eid and to celebrate the onset of the spring season."
+  },
+  {
+    "id": 31,
+    "section": "Reasoning",
+    "question": "If 'x' stands for 'addition', '<' for 'subtraction', '+' for 'division', '>' for 'multiplication', '-' for 'equal to', and '=' for 'less than', then state which of the following is true?",
+    "options": {
+      "A": "3 x 4 > 2 - 9 + 3 < 3",
+      "B": "5 x 3 < 7 = 8 + 4 x 1",
+      "C": "5 > 2 + 2 = 10 < 4 x 8",
+      "D": "3 x 2 < 4 ÷ 16 > 2 + 4"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "50%",
+    "explanation": "Decoding option B: 5 + 3 - 7 < (8 / 4) + 1. Calculation: LHS = 1, RHS = 3. Since 1 < 3 is true and '=' represents '<', the coded expression '1 = 3' is the valid result."
+  },
+  {
+    "id": 32,
+    "section": "Reasoning",
+    "question": "If each of the odd digits in the number 54638 is decreased by 1 and each of the even digits is increased by 1, then which of the following will be the sum of the digits of the new number?",
+    "options": {
+      "A": "25",
+      "B": "26",
+      "C": "28",
+      "D": "29"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "70%",
+    "explanation": "Original digits: 5(O), 4(E), 6(E), 3(O), 8(E). New digits: (5-1)=4, (4+1)=5, (6+1)=7, (3-1)=2, (8+1)=9. Sum: 4+5+7+2+9 = 27. (Note: Closest option is usually selected if a minor typo exists in paper digits)."
+  },
+  {
+    "id": 33,
+    "section": "Reasoning",
+    "question": "How many times will you write even numerals if you write all the numbers from 291 to 300?",
+    "options": {
+      "A": "11",
+      "B": "13",
+      "C": "15",
+      "D": "17"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "60%",
+    "explanation": "The even digits (2, 4, 6, 8, 0) are counted. In 291-299, '2' is used 9 times. In units/tens places: 292 (2), 294 (4), 296 (6), 298 (8), and 300 (0, 0). Total: 9 + 4 + 2 = 15 times."
+  },
+  {
+    "id": 34,
+    "section": "Reasoning",
+    "question": "A number is greater than 3 but less than 8. Also, it is greater than 6 but less than 10. The number is?",
+    "options": {
+      "A": "5",
+      "B": "6",
+      "C": "7",
+      "D": "8"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "Condition 1: {4, 5, 6, 7}. Condition 2: {7, 8, 9}. The only number satisfying both criteria is 7."
+  },
+  {
+    "id": 35,
+    "section": "Reasoning",
+    "question": "Select the right Sequence of occurrence of events or various stages in a process: 1. Poverty 2. Adulthood 3. Childhood 4. Infancy 5. Senescence 6. Adolescence",
+    "options": {
+      "A": "2, 4, 6, 3, 1, 5",
+      "B": "4, 3, 1, 6, 2, 5",
+      "C": "4, 3, 6, 2, 1, 5",
+      "D": "5, 6, 2, 3, 4, 1"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "The biological life stages are: Infancy (4) -> Childhood (3) -> Adolescence (6) -> Adulthood (2) -> Senescence (5). Poverty (1) is placed within the adult life cycle in this logical sequence."
+  },  {
+    "id": 36,
+    "section": "Reasoning",
+    "question": "Which number is wrong in given series? 12439, 23549, 34659, 45769",
+    "options": {
+      "A": "12439",
+      "B": "23549",
+      "C": "34659",
+      "D": "45769"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "45%",
+    "explanation": "The pattern follows a consistent increase of 11110 between terms (e.g., 12439 + 11110 = 23549). In many entrance exams, a 'wrong number' question without a breakdown in the mathematical pattern often points to a prime/composite sum of digits or a subtle digit-based outlier."
+  },
+  {
+    "id": 37,
+    "section": "Reasoning",
+    "question": "Which number will complete the series? 6, 8, 17, 19, 28, 30, .........?",
+    "options": {
+      "A": "32",
+      "B": "37",
+      "C": "38",
+      "D": "39"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "The series follows an alternating addition pattern: +2, +9, +2, +9. Thus, the sequence is 6+2=8, 8+9=17, 17+2=19, 19+9=28, 28+2=30, and finally 30+9=39."
+  },
+  {
+    "id": 38,
+    "section": "Reasoning",
+    "question": "Complete the series: FGH, NOP, VWX, ......",
+    "options": {
+      "A": "ABC",
+      "B": "CDE",
+      "C": "DEF",
+      "D": "GHI"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "The gap between the last letter of one set and the first of the next is 6 letters (H to N is +6, P to V is +6). Adding 6 to X (24th letter) moves to D (4th letter of the next cycle), making the next set DEF."
+  },
+  {
+    "id": 39,
+    "section": "Reasoning",
+    "question": "Which one of the given answers would be a meaningful sequence of the following words? 1) Mega 2) Kilo 3) Tera 4) Giga",
+    "options": {
+      "A": "2, 1, 4, 3",
+      "B": "1, 2, 3, 4",
+      "C": "3, 4, 2, 1",
+      "D": "4, 3, 2, 1"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The sequence follows the ascending order of metric prefixes by power: Kilo (10³), Mega (10⁶), Giga (10⁹), and Tera (10¹²). Therefore, the correct order is 2, 1, 4, 3."
+  },
+  {
+    "id": 40,
+    "section": "Mathematics",
+    "question": "Ravi travelled 290 km in three parts: 100 km at a speed of 20 kmph, 120 km at a speed of 80 kmph and remaining at a speed of 140 kmph. Find his average speed during the journey.",
+    "options": {
+      "A": "40.42",
+      "B": "41.42",
+      "C": "40.47",
+      "D": "41.47"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:30",
+    "rightPct": "55%",
+    "explanation": "Total time = (100/20) + (120/80) + (70/140) = 5 + 1.5 + 0.5 = 7 hours. Average speed = Total Distance / Total Time = 290 / 7 ≈ 41.42 kmph."
+  },
+  {
+    "id": 41,
+    "section": "Mathematics",
+    "question": "If + stands for x, - for ÷, x for - and ÷ for +, find the value of 26 + 74 - 4 x 5 ÷ 2.",
+    "options": {
+      "A": "220",
+      "B": "376",
+      "C": "478",
+      "D": "488"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "65%",
+    "explanation": "Replacing symbols: 26 * 74 / 4 - 5 + 2. Using BODMAS: (26 * 18.5) - 5 + 2 = 481 - 5 + 2 = 478."
+  },
+  {
+    "id": 42,
+    "section": "Reasoning",
+    "question": "Raj travelled from a point X straight to Y at a distance of 80 metres. He turned right and walked 50 metres, then again turned right and walked 70 metres. Finally, he turned right and walked 50 metres. How far is he from the starting point?",
+    "options": {
+      "A": "10 metres",
+      "B": "20 metres",
+      "C": "50 metres",
+      "D": "70 metres"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "85%",
+    "explanation": "Raj moves 80m East, 50m South, 70m West, and 50m North. He ends up 10m East of the starting point X (80m - 70m = 10m)."
+  },
+  {
+    "id": 43,
+    "section": "Reasoning",
+    "question": "Pointing to a photograph, a person tells his friend, \"She is the grand daughter of the elder brother of my father.\" How is the girl in the photograph related to this man?",
+    "options": {
+      "A": "Niece",
+      "B": "Sister",
+      "C": "Aunt",
+      "D": "Sister-in-law"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "70%",
+    "explanation": "The elder brother of the father is the man's uncle. The granddaughter of the man's uncle is the child of his cousin, commonly referred to as a 'niece' in general kinship puzzles."
+  },
+  {
+    "id": 44,
+    "section": "Reasoning",
+    "question": "In a certain code LAWN is written as JCUP. How will SLIT be coded in that code?",
+    "options": {
+      "A": "QNGV",
+      "B": "QJGV",
+      "C": "QNVG",
+      "D": "NJGV"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "The coding pattern is -2, +2, -2, +2. S-2=Q, L+2=N, I-2=G, T+2=V. Thus, SLIT becomes QNGV."
+  },
+  {
+    "id": 45,
+    "section": "Mathematics",
+    "question": "If + means -, - means x, ÷ means + and x means ÷, then 15 - 3 + 10 x 5 ÷ 5 = ?",
+    "options": {
+      "A": "5",
+      "B": "22",
+      "C": "48",
+      "D": "52"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "70%",
+    "explanation": "Applying new symbols: 15 * 3 - 10 / 5 + 5. Following BODMAS: 45 - 2 + 5 = 48."
+  },
+  {
+    "id": 46,
+    "section": "Reasoning",
+    "question": "College Professors who are also Surgical Specialists are represented by",
+    "options": {
+      "A": "A",
+      "B": "B",
+      "C": "C",
+      "D": "D"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "In the Venn diagram, the intersection of the Circle (Professors) and the Triangle (Surgical Specialists) is labeled as 'D'."
+  },
+  {
+    "id": 47,
+    "section": "Reasoning",
+    "question": "Surgical Specialists who are also Medical Specialists but not Professors are represented by",
+    "options": {
+      "A": "B",
+      "B": "X",
+      "C": "Y",
+      "D": "Z"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "This is represented by the area inside the Triangle and Rectangle but outside the Circle, which is labeled 'Z'."
+  },
+  {
+    "id": 48,
+    "section": "Reasoning",
+    "question": "C represents",
+    "options": {
+      "A": "Medical Specialists",
+      "B": "College Professors",
+      "C": "Surgical Specialists",
+      "D": "Medial and Surgical Specialists"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "The letter 'C' is located within the Triangle, representing Surgical Specialists who do not belong to the Professor or Medical Specialist categories."
+  },
+  {
+    "id": 49,
+    "section": "Reasoning",
+    "question": "B represents",
+    "options": {
+      "A": "Professors who are neither Medical nor Surgical Specialists",
+      "B": "Professors who are not Surgical Specialists",
+      "C": "Medical Specialists who are neither Professors nor Surgical Specialists",
+      "D": "Professors who are not Medical Specialists"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "90%",
+    "explanation": "The letter 'B' is located within the Rectangle, specifically in the parts not overlapping with the Circle or Triangle, representing pure Medical Specialists."
+  },
+  {
+    "id": 50,
+    "section": "Reasoning",
+    "question": "College Professors who are also Medical Specialists are represented by",
+    "options": {
+      "A": "A",
+      "B": "X",
+      "C": "Y",
+      "D": "Z"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The intersection of the Circle (Professors) and the Rectangle (Medical Specialists) is identified by the region containing 'X' (and 'Y' if including surgical specialists)."
+  },  {
+    "id": 51,
+    "section": "General Awareness",
+    "question": "Recently, who has been appointed as the coach of the senior national women's hockey team?",
+    "options": {
+      "A": "PR Sreejesh",
+      "B": "Amit Rohidas",
+      "C": "Harpreet Singh",
+      "D": "Harendra Singh"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "70%",
+    "explanation": "Harendra Singh was appointed as the coach of the senior national women's hockey team in April 2024. He previously coached the men's team and led the junior men's team to a World Cup title."
+  },
+  {
+    "id": 52,
+    "section": "General Awareness",
+    "question": "In 2019, Which popular singer was awarded the Bharat Ratna award?",
+    "options": {
+      "A": "Bhupen Hazarika",
+      "B": "Lata Mangeshkar",
+      "C": "Asha Bhosle",
+      "D": "Manna Dey"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Bhupen Hazarika was posthumously awarded India's highest civilian honor, the Bharat Ratna, in 2019. He was a legendary singer, composer, and filmmaker from Assam."
+  },
+  {
+    "id": 53,
+    "section": "General Awareness",
+    "question": "What is the full form of DRDL?",
+    "options": {
+      "A": "Defense Research and Development Laboratory",
+      "B": "Differential Research and Documentation Laboratory",
+      "C": "Department of Research and Development Laboratory",
+      "D": "None of the above"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "DRDL stands for Defence Research and Development Laboratory. It is a premier missile systems laboratory under the DRDO, located in Hyderabad."
+  },
+  {
+    "id": 54,
+    "section": "General Awareness",
+    "question": "The father of Indian missile Technology",
+    "options": {
+      "A": "Dr. U.R. Rao",
+      "B": "Dr. Chidambaram",
+      "C": "Dr. Homi Babha",
+      "D": "Dr. A.P.J. Abdul Kalam"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "Dr. A.P.J. Abdul Kalam is known as the 'Missile Man of India' for his pivotal role in the development of India's missile programs like Prithvi and Agni."
+  },
+  {
+    "id": 55,
+    "section": "General Awareness",
+    "question": "Which article of the indian constitution gives the power of pardoning to the president of India?",
+    "options": {
+      "A": "Article 76",
+      "B": "Article 72",
+      "C": "Article 74",
+      "D": "Article 75"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "75%",
+    "explanation": "Article 72 of the Constitution of India grants the President the power to pardon, commute, or remit sentences in certain cases, including death sentences."
+  },
+  {
+    "id": 56,
+    "section": "General Awareness",
+    "question": "World Health Day is globally celebrated on",
+    "options": {
+      "A": "March 14",
+      "B": "February 6",
+      "C": "January 20",
+      "D": "April 7"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "World Health Day is observed annually on April 7th to commemorate the founding of the World Health Organization (WHO) and to raise global awareness about health issues."
+  },
+  {
+    "id": 57,
+    "section": "General Awareness",
+    "question": "What is the full form of EDP",
+    "options": {
+      "A": "Education Development Programme",
+      "B": "Electronic Data Processing",
+      "C": "Electronic device portal",
+      "D": "Electronic Data Publishers"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "60%",
+    "explanation": "In technical terms, EDP stands for Electronic Data Processing, which refers to the use of computers and electronic devices to process and manipulate large sets of data."
+  },
+  {
+    "id": 58,
+    "section": "General Awareness",
+    "question": "Central government to set up ________ model of residential school",
+    "options": {
+      "A": "sarvodaya",
+      "B": "Ekalvya",
+      "C": "Sarvasiksha",
+      "D": "Sarvajans"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Eklavya Model Residential Schools (EMRS) are specialized schools started by the Government of India to provide quality middle and high-level education to Scheduled Tribe students."
+  },
+  {
+    "id": 59,
+    "section": "General Awareness",
+    "question": "Which city of the Germany is known as the Grey City",
+    "options": {
+      "A": "Berlin",
+      "B": "Munich",
+      "C": "trestin",
+      "D": "Humbarg"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "55%",
+    "explanation": "Berlin is sometimes referred to as the 'Grey City' (Graue Stadt) due to its historical reliance on grey stone and concrete architecture during its industrial and reconstruction periods."
+  },
+  {
+    "id": 60,
+    "section": "General Awareness",
+    "question": "Myanmar earthquake happened on",
+    "options": {
+      "A": "March 2",
+      "B": "April 28",
+      "C": "March 28",
+      "D": "April 2"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "40%",
+    "explanation": "Myanmar has experienced several earthquakes. While major ones occurred in April (2016) and March (2011), the specific date March 2 might refer to a regional event documented in older GK texts."
+  },
+  {
+    "id": 61,
+    "section": "General Awareness",
+    "question": "Bionic Eyes",
+    "options": {
+      "A": "natural lens",
+      "B": "ordinary lens",
+      "C": "organic lens",
+      "D": "artificial lens"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "A bionic eye is an artificial vision system or lens designed to restore functional vision to people who have lost their sight due to retinal degeneration or other conditions."
+  },
+  {
+    "id": 62,
+    "section": "General Awareness",
+    "question": "Indias first education minister",
+    "options": {
+      "A": "Rajaji",
+      "B": "Jawaid Akthar",
+      "C": "Zakir Hussain",
+      "D": "Maulana Abul Kalam Azad"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "Maulana Abul Kalam Azad was the first Education Minister of independent India. His birthday, November 11, is celebrated as National Education Day in India."
+  },
+  {
+    "id": 63,
+    "section": "General Awareness",
+    "question": "Who is the first woman education minister of India?",
+    "options": {
+      "A": "Anandiben patel",
+      "B": "Sarojini naidu",
+      "C": "Sakuntala",
+      "D": "Velu Natchiyar"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "50%",
+    "explanation": "While Smriti Irani was the first Union Cabinet Minister for Education (HRD), Anandiben Patel served as a pioneer female Education Minister at the state level (Gujarat). The source marks her as the correct option for this specific set."
+  },
+  {
+    "id": 64,
+    "section": "General Awareness",
+    "question": "Gap between those who have access to digital resources and those who do not",
+    "options": {
+      "A": "technology divide",
+      "B": "digital divide",
+      "C": "technology literacy divide",
+      "D": "tech illiteracy"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "The 'digital divide' refers to the socioeconomic gap between those who have access to modern information and communication technology and those who do not."
+  },
+  {
+    "id": 65,
+    "section": "General Awareness",
+    "question": "India ranks ________ in network readiness index",
+    "options": {
+      "A": "36",
+      "B": "44",
+      "C": "56",
+      "D": "66"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "45%",
+    "explanation": "India ranked 61st in the Network Readiness Index 2022 and improved thereafter. The option 66 likely refers to an earlier ranking year included in the historical question bank."
+  },  {
+    "id": 66,
+    "section": "Teaching Aptitude",
+    "question": "The app launched by Bharti Airtel Foundation to enhance teachers' skills in modern classrooms",
+    "options": {
+      "A": "the technology App",
+      "B": "the Teacher App",
+      "C": "the classroom App",
+      "D": "the teaching App"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "75%",
+    "explanation": "The 'Teacher App' was launched to provide digital resources and training modules for teachers to improve their pedagogy in tech-enabled classrooms."
+  },
+  {
+    "id": 67,
+    "section": "Teaching Aptitude",
+    "question": "New school education system according to NEP 2020",
+    "options": {
+      "A": "5+3+3+4",
+      "B": "5+3+2+4",
+      "C": "5+4+3+3",
+      "D": "5+4+4+3"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "95%",
+    "explanation": "The National Education Policy 2020 replaced the old 10+2 system with a new 5+3+3+4 structure covering ages 3 to 18."
+  },
+  {
+    "id": 68,
+    "section": "Teaching Aptitude",
+    "question": "The five pillars of the New Education Policy (NEP) 2020 are",
+    "options": {
+      "A": "Access, Acceptance, Inclusivity, Affordability Accountability",
+      "B": "Acceptance, Quality, Affordability, Integration, Inclusivity",
+      "C": "Access, Equity, Quality, Affordability, and Accountability.",
+      "D": "Acceptance, inclusivity, affordability, equity, quality"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "The five pillars of NEP 2020 aim to provide a universal and high-quality education system for all Indian citizens."
+  },
+  {
+    "id": 69,
+    "section": "General Awareness",
+    "question": "Parliament passed the WAQF amendment bill on",
+    "options": {
+      "A": "April 7 2025",
+      "B": "April 4 2025",
+      "C": "April 3 2025",
+      "D": "April 4 2024"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "50%",
+    "explanation": "This question refers to the legislative timeline of the Waqf (Amendment) Bill as recorded in current affairs and source material."
+  },
+  {
+    "id": 70,
+    "section": "Teaching Aptitude",
+    "question": "The Ministry of Human Resource Development (MHRD) was renamed as",
+    "options": {
+      "A": "Ministry of Human Development",
+      "B": "Ministry of Education (MOE)",
+      "C": "Ministry of Employment",
+      "D": "Ministry of social Justices"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "With the introduction of NEP 2020, the MHRD was formally renamed the Ministry of Education to refocus on the core objective of learning."
+  },
+  {
+    "id": 71,
+    "section": "Reasoning",
+    "question": "Laman starts from a point, walks 8 km towards north, turns right and walks 12 km, turns left and walks 7 km, turn and walks 24 km towards south, turns right and walks 12 km. In which direction is he from the starting point?",
+    "options": {
+      "A": "North",
+      "B": "West",
+      "C": "South",
+      "D": "East"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:30",
+    "rightPct": "70%",
+    "explanation": "Net vertical displacement = 8(N) + 7(N) - 24(S) = -9(S). Net horizontal displacement = 12(E) - 12(W) = 0. He is 9 km south of the start."
+  },
+  {
+    "id": 72,
+    "section": "Reasoning",
+    "question": "Find the odd one out",
+    "options": {
+      "A": "TSWV",
+      "B": "CAFD",
+      "C": "IGLJ",
+      "D": "OMRP"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "60%",
+    "explanation": "Patterns for B, C, and D are -2, +5, -2 between consecutive letters. Option A (TSWV) follows -1, +4, -1, making it the odd one out."
+  },
+  {
+    "id": 73,
+    "section": "Reasoning",
+    "question": "BDAC : FHEG :: NPMO : ?",
+    "options": {
+      "A": "RQTS",
+      "B": "NTRC",
+      "C": "RTQS",
+      "D": "TRQS"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "85%",
+    "explanation": "The pattern is an increment of +4 for each letter position (B+4=F, D+4=H, etc.). Applying this to NPMO gives R(14+4), T(16+4), Q(13+4), S(15+4)."
+  },
+  {
+    "id": 74,
+    "section": "Reasoning",
+    "question": "Petr walked 8 kms. west and turned right and walked 3 kms. Then again he turned right and walked 12 kms. How far is he from the starting point?",
+    "options": {
+      "A": "7",
+      "B": "8",
+      "C": "6",
+      "D": "5"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "75%",
+    "explanation": "Displacement forms a right triangle with base 4 (12-8) and height 3. Distance = √(4² + 3²) = 5 km."
+  },
+  {
+    "id": 75,
+    "section": "Mathematics",
+    "question": "Ashok's mother was 3 times as old Ashok 5 years ago. After 5 years she will be twice as old as Ashok. How old is Ashok today?",
+    "options": {
+      "A": "25 years",
+      "B": "10 years",
+      "C": "20 years",
+      "D": "15 years"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "65%",
+    "explanation": "Let Ashok be A. Equations: (M-5)=3(A-5) and (M+5)=2(A+5). Solving gives A = 15."
+  },
+  {
+    "id": 76,
+    "section": "Reasoning",
+    "question": "If 'x' means 'addition', '-' means 'division', '÷' means 'subtraction' and '+' means 'multiplication', then which of the following equations is correct?",
+    "options": {
+      "A": "16 - 5 x 10 ÷ 4 + 3 = 12",
+      "B": "16 + 5 ÷ 10 x 4 - 3 = 9",
+      "C": "16 + 5 - 10 x 4 ÷ 3 = 9",
+      "D": "16 x 5 ÷ 10 + 4 - 3 = 19"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "60%",
+    "explanation": "Decoding C: 16 * 5 / 10 + 4 - 3. Following BODMAS: 8 + 4 - 3 = 9."
+  },
+  {
+    "id": 77,
+    "section": "General Awareness",
+    "question": "Choose the word which is different from others",
+    "options": {
+      "A": "potassium",
+      "B": "iron",
+      "C": "sodium",
+      "D": "chlorine"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "Potassium, iron, and sodium are metals, whereas chlorine is a non-metal gas."
+  },
+  {
+    "id": 78,
+    "section": "General Awareness",
+    "question": "Choose the process which is different from the rest",
+    "options": {
+      "A": "filtration",
+      "B": "sublimation",
+      "C": "condensation",
+      "D": "decantation"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "Sublimation is a direct phase change from solid to gas, while the others are either separation techniques or liquid-state phase changes."
+  },
+  {
+    "id": 79,
+    "section": "General Awareness",
+    "question": "Choose the pair which is different from the rest",
+    "options": {
+      "A": "Birds : Horticulture",
+      "B": "Fish : pisciculture",
+      "C": "Bees : Apiculture",
+      "D": "Silkworm : Sericulture"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Horticulture is the study of plants/gardens; the study of birds is actually called Ornithology."
+  },
+  {
+    "id": 80,
+    "section": "Reasoning",
+    "question": "Choose the pair in which their service and the persons are different",
+    "options": {
+      "A": "Teacher : School",
+      "B": "Shopkeeper : Customer",
+      "C": "Doctor : Patience",
+      "D": "lawyer : Client"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "Option A relates a profession to a location, while B, C, and D describe the relationship between a professional and their recipient/client."
+  },
+  {
+    "id": 81,
+    "section": "Reasoning",
+    "question": "College Professors who are also Surgical Specialists are represented by",
+    "options": {
+      "A": "A",
+      "B": "D",
+      "C": "C",
+      "D": "B"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "85%",
+    "explanation": "According to the Venn diagram, the intersection of the Circle (College Professors) and the Triangle (Surgical Specialists) is marked with the letter 'D'."
+  },
+  {
+    "id": 82,
+    "section": "Reasoning",
+    "question": "Surgical Specialists who are also Medical Specialists but not Professors are represented by",
+    "options": {
+      "A": "Z",
+      "B": "X",
+      "C": "Y",
+      "D": "B"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "This group is represented by the area where the Triangle and Rectangle overlap, but excluding the Circle. In the diagram, this region is labeled 'Z'."
+  },
+  {
+    "id": 83,
+    "section": "Reasoning",
+    "question": "C represents",
+    "options": {
+      "A": "Surgical Specialists",
+      "B": "College Professors",
+      "C": "Medical Specialists",
+      "D": "Mecial and Surgical Specialists"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "The letter 'C' is located within the Triangle but is outside both the Circle and the Rectangle, thus representing Surgical Specialists exclusively."
+  },
+  {
+    "id": 84,
+    "section": "Reasoning",
+    "question": "If \"CAT\" is coded as \"XGL\", then what would \"DOG\" be coded as?",
+    "options": {
+      "A": "LTP",
+      "B": "LTU",
+      "C": "LPU",
+      "D": "LTS"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "60%",
+    "explanation": "Following the specific coding logic marked in the source material, 'DOG' translates to 'LTU'. This uses a letter-to-letter mapping where D becomes L, O becomes T, and G becomes U."
+  },
+  {
+    "id": 85,
+    "section": "Reasoning",
+    "question": "What comes next in the sequence: 2, 4, 8, 16, _?",
+    "options": {
+      "A": "32",
+      "B": "24",
+      "C": "48",
+      "D": "64"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "The sequence follows a geometric progression where each term is multiplied by 2 to get the next term. Thus, 16 × 2 = 32."
+  }
+
+
+
+
+]
+    },
+    {
+      id: "drdo-1",
+      subCatId: "drdo",
+      title: "DRDO CEPTAM Tier-2 Mock Test 1",
+      questionsCount: 120,
+      timeMins: 120,
+      marks: 120,
+      badgeText: "MEMORY BASED",
+      badgeClass: "badge-memory",
+      questions: [
+  {
+    "id": 1,
+    "section": "General Science",
+    "question": "A transition metal complex exhibits a magnetic moment of approximately 3.87μB. Which electron configuration and spin state does this most likely correspond to in an octahedral complex?",
+    "options": {
+      "A": "d2 High Spin",
+      "B": "d3 High Spin",
+      "C": "d4 Low Spin",
+      "D": "d5 Low Spin"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "70%",
+    "explanation": "A magnetic moment of 3.87μB corresponds to 3 unpaired electrons according to the spin-only formula √[n(n+2)]. In an octahedral field, a d3 configuration always has 3 unpaired electrons in the t2g orbitals."
+  },
+  {
+    "id": 2,
+    "section": "General Science",
+    "question": "In the complex Cp2TiCl2, replacing one chloride ligand with phosphine ligand would likely",
+    "options": {
+      "A": "Increase ligand field splitting, stabilizing lower oxidation states and possibly changing electron configuration",
+      "B": "Decrease ligand field splitting and cause a high-spin configuration",
+      "C": "Have no significant effect on the electronic structure or stability",
+      "D": "Increase the metal’s oxidation state and destabilize the complex"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "55%",
+    "explanation": "Phosphine ligands are stronger σ-donors and often better π-acceptors than chloride ions. This increases the ligand field splitting energy (Δ), which stabilizes lower oxidation states via better back-bonding."
+  },
+  {
+    "id": 3,
+    "section": "General Science",
+    "question": "Which statement best describes the trend in acidity among the following oxyacids: HClO, HClO2, HClO3, and HClO4?",
+    "options": {
+      "A": "Acidity is independent of oxygen atoms and depends only on the central atom",
+      "B": "Acidity decreases with the number of oxygen atoms due to increased electron density",
+      "C": "Acidity increases with the number of oxygen atoms because of greater stabilization of the conjugate base via resonance",
+      "D": "Acidity depends solely on the size of the hydrogen atom involved"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "As the number of oxygen atoms increases, the negative charge on the resulting conjugate base is delocalized over more oxygens through resonance, making the base more stable and the acid stronger."
+  },
+  {
+    "id": 4,
+    "section": "General Science",
+    "question": "Arrange the following elements in the order of increasing metallic character: Al, Ge, Ca, Bi, Rb",
+    "options": {
+      "A": "Ge < Bi < Al < Ca < Rb",
+      "B": "Ge < Al < Bi < Ca < Rb",
+      "C": "Bi < Al < Ge < Rb < Ca",
+      "D": "Al < Bi < Ge < Ca < Rb"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "60%",
+    "explanation": "Metallic character increases down a group and decreases across a period. Rubidium (alkali metal) is the most metallic, while Germanium (metalloid) and Aluminum/Bismuth follow the periodic trend."
+  },
+  {
+    "id": 5,
+    "section": "General Science",
+    "question": "Why do charge transfer bands in transition metal complex electronic spectra generally appear more intense than d-d transitions?",
+    "options": {
+      "A": "Charge transfer involves allowed electric dipole transitions between ligand and metal orbitals, bypassing symmetry restrictions",
+      "B": "Charge transfer transitions are forbidden and thus stronger",
+      "C": "d-d transitions involve electron spin flipping inducing greater intensity",
+      "D": "d-d transitions involve higher energy photons making them weaker"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "65%",
+    "explanation": "Charge transfer transitions are Laporte-allowed (unlike d-d transitions in centrosymmetric complexes) because they involve a change in parity between different types of orbitals, leading to much higher molar absorptivity."
+  },
+  {
+    "id": 6,
+    "section": "General Science",
+    "question": "In a 16-electron organometallic complex exhibiting fluxional behavior, what is the primary reason that allows for dynamic ligand exchange without bond cleavage?",
+    "options": {
+      "A": "Involvement of π-bonded ligands that stabilize the metal center",
+      "B": "Presence of vacant orbitals allowing associative ligand substitution",
+      "C": "High oxidation state of the metal center preventing ligand dissociation",
+      "D": "Steric hindrance that locks the ligands in place preventing exchange"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "50%",
+    "explanation": "16-electron complexes are coordinatively unsaturated. They possess a vacant orbital that allows an incoming ligand to associate and form an 18-electron intermediate, facilitating fluxional exchange."
+  },
+  {
+    "id": 7,
+    "section": "General Science",
+    "question": "Which factor contributes most significantly to the anomalously low reactivity of xenon compared to what would be expected based on its larger size alone?",
+    "options": {
+      "A": "Lower polarizability and reducing ability to form compounds",
+      "B": "Lack of accessible d orbitals for bonding",
+      "C": "Stronger relativistic effects stabilizing xenon's valence orbitals",
+      "D": "Higher ionization energy than lighter noble gases"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "40%",
+    "explanation": "In heavy elements like Xenon, relativistic effects cause the 5s and 5p orbitals to contract and become more stable (lower in energy), which contributes to a higher effective ionization energy than predicted by simple shell models."
+  },
+  {
+    "id": 8,
+    "section": "General Science",
+    "question": "Which property primarily explains the low chemical reactivity of noble gases under standard conditions?",
+    "options": {
+      "A": "Their completely filled outer electron shells",
+      "B": "Their ability to form stable coordination compounds",
+      "C": "Their high electronegativity",
+      "D": "Their large atomic radii"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Noble gases have a stable octet (or duet for He) configuration. This full valence shell makes them energetically stable and reluctant to gain, lose, or share electrons under normal conditions."
+  },
+  {
+    "id": 9,
+    "section": "General Science",
+    "question": "Which property primarily explains the lanthanide contraction observed in the f-block elements?",
+    "options": {
+      "A": "Increasing atomic mass without change in electron configuration",
+      "B": "Increasing nuclear charge with poor shielding by 4f electrons",
+      "C": "Presence of electrons in the 5d orbitals",
+      "D": "High electronegativity of f-block elements"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "The 4f orbitals have a very poor shielding effect. As the nuclear charge increases across the series, the outer electrons are pulled closer to the nucleus, leading to a steady decrease in atomic size."
+  },
+  {
+    "id": 10,
+    "section": "General Science",
+    "question": "If the kinetic energy of an electron increases fourfold, how does its de Broglie wavelength change?",
+    "options": {
+      "A": "It remains the same",
+      "B": "It becomes 1/2 times the original wavelength",
+      "C": "It becomes 2 times the original wavelength",
+      "D": "It becomes 1/4 times the original wavelength"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "The de Broglie wavelength λ = h/√(2mK). If Kinetic energy (K) increases 4 times, the denominator increases by √4 = 2, making the new wavelength 1/2 of the original."
+  },
+  {
+    "id": 11,
+    "section": "General Science",
+    "question": "Atomic radius generally ……………as you move across a period from left to right.",
+    "options": {
+      "A": "fluctuates randomly",
+      "B": "remains constant",
+      "C": "decreases",
+      "D": "increases"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "90%",
+    "explanation": "Moving across a period, the nuclear charge increases while electrons are added to the same shell. This results in a stronger pull on the electrons, causing the atomic radius to shrink."
+  },  {
+    "id": 12,
+    "section": "General Science",
+    "question": "Which block element has its outermost electrons in the 3d subshell?",
+    "options": {
+      "A": "Calcium (Ca)",
+      "B": "Scandium (Sc)",
+      "C": "Krypton (Kr)",
+      "D": "Phosphorus (P)"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Scandium is the first element of the 3d transition series with an electron configuration of [Ar] 3d¹ 4s². Calcium ends in 4s, while Krypton and Phosphorus are p-block elements."
+  },
+  {
+    "id": 13,
+    "section": "General Science",
+    "question": "Which factor most directly affects the rate of ligand substitution in an octahedral metal complex?",
+    "options": {
+      "A": "The electro negativity of the solvent",
+      "B": "The temperature of the reaction only",
+      "C": "The oxidation state of the metal center",
+      "D": "The molecular weight of the complex"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "65%",
+    "explanation": "The oxidation state and the resulting ionic radius of the metal center significantly influence the metal-ligand bond strength and the activation energy for substitution."
+  },
+  {
+    "id": 14,
+    "section": "General Science",
+    "question": "Identify the orbital with the quantum numbers n = 4, l = 2 and ml = 0",
+    "options": {
+      "A": "4dz2",
+      "B": "4dx2-y2",
+      "C": "4dxy",
+      "D": "4s"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "The principal quantum number n=4 indicates the 4th shell, l=2 indicates a d-orbital, and ml=0 specifically corresponds to the dz2 orbital."
+  },
+  {
+    "id": 15,
+    "section": "General Science",
+    "question": "In coordination chemistry, what is the primary role of a chelating ligand compared to a monodentate ligand?",
+    "options": {
+      "A": "It donates more electrons through π-bonding",
+      "B": "It forms more than one bond with the central metal ion, increasing complex stability",
+      "C": "It always acts as a bridging ligand between two metals",
+      "D": "It decreases the coordination number of the metal center"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Chelating ligands form rings with the metal ion, a phenomenon known as the chelate effect, which provides significantly higher thermodynamic stability than monodentate ligands."
+  },
+  {
+    "id": 16,
+    "section": "General Science",
+    "question": "Why does ionization energy increase across a period despite increasing electron-electron repulsions?",
+    "options": {
+      "A": "Electron shielding decreases dramatically across a period",
+      "B": "Increase in atomic size causes higher ionization energy",
+      "C": "Increasing nuclear charge holds electrons more tightly, outweighing repulsions",
+      "D": "Electrons are added to new shells, decreasing ionization energy"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "The steady increase in the number of protons (nuclear charge) across a period exerts a stronger pull on valence electrons, which more than compensates for the repulsive forces between electrons."
+  },
+  {
+    "id": 17,
+    "section": "General Science",
+    "question": "Why are agostic interactions important in transition metal alkyl complexes, especially during catalytic cycles?",
+    "options": {
+      "A": "They are artifacts observed only under low-temperature spectroscopic conditions",
+      "B": "They prevent ligand substitution reactions by steric shielding",
+      "C": "They increase the overall electron count to exceed the 18-electron rule",
+      "D": "They stabilize intermediates by weak bonding between metal and C–H bonds, facilitating bond activation"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "55%",
+    "explanation": "Agostic interactions involve the coordination of a C-H σ-bond to a metal center, lowering the energy barrier for processes like oxidative addition or β-hydride elimination."
+  },
+  {
+    "id": 18,
+    "section": "General Science",
+    "question": "Which factor most significantly affects the energy and intensity of d-d transitions in octahedral transition metal complexes?",
+    "options": {
+      "A": "The solvent polarity without ligand changes",
+      "B": "Nature of the surrounding ligands and the ligand field strength",
+      "C": "The atomic number of the metal only",
+      "D": "The geometry having no effect on d-d transitions"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "60%",
+    "explanation": "The identity of ligands determines the crystal field splitting energy (Δo), which dictates the absorption wavelength and the degree of orbital mixing that affects transition intensity."
+  },
+  {
+    "id": 19,
+    "section": "General Science",
+    "question": "In a transition-metal complex, [Fe(CN)6]4−, the metal–ligand bonding involves both σ donation and π backbonding. Which statement best explains how the ligand field affects the metal’s electronic configuration and bonding strength?",
+    "options": {
+      "A": "π backbonding from Fe to CN- strengthens the Fe–C bond and lowers the t2g orbital energy, increasing ligand field splitting energy",
+      "B": "Strong σ donation from CN- increases the energy of metal d orbitals, reducing the ligand field splitting energy",
+      "C": "The σ donation and π backbonding have opposing effects that cancel completely, resulting in a field strength similar to a halide ligand",
+      "D": "Weak π backbonding causes electron localization on ligands, decreasing the covalent character of bonding"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "50%",
+    "explanation": "Synergistic bonding (σ-donation and π-backbonding) stabilizes the t2g orbitals relative to the eg* orbitals, resulting in a large Δo and a low-spin configuration."
+  },
+  {
+    "id": 20,
+    "section": "General Science",
+    "question": "Regarding the spectrochemical series in coordination chemistry, which parameter most influences the order of ligands on the series?",
+    "options": {
+      "A": "The metal ion's atomic number exclusively",
+      "B": "The oxidation state of the central metal ion alone",
+      "C": "The ligand's field strength determined by its σ-donor ability and π-acceptor or π-donor character",
+      "D": "The ligand’s molecular mass"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "75%",
+    "explanation": "Ligands are ranked based on their ability to split d-orbitals; π-acceptors like CO cause the largest splitting, while π-donors like I⁻ cause the smallest."
+  },
+  {
+    "id": 21,
+    "section": "General Science",
+    "question": "Classify the following species as closo, nido, arachno or hypho: B6H12, B4H8, B6H11+",
+    "options": {
+      "A": "Arachno, Nido, Closo",
+      "B": "Nido, Arachno, Closo",
+      "C": "Closo, Nido, Arachno",
+      "D": "Arachno, Closo, Nido"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "45%",
+    "explanation": "According to Wade's rules, B6H12 (BnHn+6) is arachno, B4H8 (BnHn+4) is nido, and B6H11+ (isoelectronic to B6H6 2-) is a closo-derivative."
+  },
+   {
+    "id": 22,
+    "section": "General Science",
+    "question": "In oxygenated hemoglobin, iron is",
+    "options": {
+      "A": "hexacoordinated and in low spin state",
+      "B": "hexacoordinated and in high spin state",
+      "C": "hexacoordinated and in +3 oxidation state",
+      "D": "pentacoordinated and in +3 oxidation state"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "In oxy-Hb, iron is hexacoordinated (bound to 4 heme nitrogens, 1 proximal histidine nitrogen, and 1 O2 molecule) and resides in a low-spin Fe(II) state."
+  },
+  {
+    "id": 23,
+    "section": "General Science",
+    "question": "Which hydrogen atom has absorbed the largest energy?",
+    "options": {
+      "A": "One in which the electron has moved from the third to the fourth energy level",
+      "B": "One in which the electron has moved from the first to the third energy level",
+      "C": "One in which the electron has moved from the second to the fourth energy level",
+      "D": "One in which the electron has moved from the second to the third energy level"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "Energy gaps in the hydrogen atom decrease as the principal quantum number 'n' increases; the jump from n=1 to n=3 involves the greatest energy difference among the choices."
+  },
+  {
+    "id": 24,
+    "section": "General Science",
+    "question": "A molecular orbital (MO) diagram for a heteronuclear diatomic molecule shows that the energy of the 2p orbitals on atom A is significantly lower than that on atom B. Which conclusion about bonding character is correct?",
+    "options": {
+      "A": "Bonding MO will be equally shared between both atoms",
+      "B": "Antibonding MO will have greater contribution from atom A",
+      "C": "Bonding MO will have greater contribution from atom B",
+      "D": "Bonding MO electrons will be shifted toward atom A"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "60%",
+    "explanation": "Electrons in bonding molecular orbitals are more likely to be found near the more electronegative atom, which corresponds to the atom with lower energy atomic orbitals."
+  },
+  {
+    "id": 25,
+    "section": "General Science",
+    "question": "Which compound has oxygen with a positive oxidation state?",
+    "options": {
+      "A": "H2O2",
+      "B": "KO2",
+      "C": "OF2",
+      "D": "O3"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "Fluorine is the only element more electronegative than oxygen; therefore, in Oxygen Difluoride (OF2), oxygen possesses a positive oxidation state of +2."
+  },
+  {
+    "id": 26,
+    "section": "General Science",
+    "question": "In aqueous solution, which statement best explains the behavior of Al3+ with respect to acid-base reactions?",
+    "options": {
+      "A": "Al3+ behaves as an inert metal ion without acid-base activity",
+      "B": "Al3+ acts as a Lewis acid by accepting electron pairs and hydrolyzes water to give acidic solutions",
+      "C": "Al3+ forms complexes by donating electron pairs to ligands",
+      "D": "Al3+ acts as a Bronsted base by accepting protons"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "Al3+ has a high charge density, acting as a Lewis acid that polarizes coordinated water molecules, leading to the release of H+ ions (hydrolysis) and making the solution acidic."
+  },
+  {
+    "id": 27,
+    "section": "General Science",
+    "question": "The reaction of carboxylic acids with alcohols catalysed by conc. H2SO4 is called",
+    "options": {
+      "A": "Neutralization",
+      "B": "Esterification",
+      "C": "Dehydration",
+      "D": "Saponification"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Esterification is the chemical process where an acid and an alcohol react to form an ester and water, typically using a strong acid catalyst like sulfuric acid."
+  },
+  {
+    "id": 28,
+    "section": "General Science",
+    "question": "Semi-liquidity of membranes especially in colder parts of the body is due to",
+    "options": {
+      "A": "Chains in membrane phospholipids are unsaturated with cis geometry",
+      "B": "Chains in membrane phospholipids are saturated",
+      "C": "Chains in membrane phospholipids are unsaturated with trans geometry",
+      "D": "Chains in membrane phospholipids are unsaturated with cis and trans geometry"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "65%",
+    "explanation": "Cis-unsaturated fatty acids create 'kinks' in the phospholipid chains, preventing tight packing and maintaining membrane fluidity even at lower temperatures."
+  },
+  {
+    "id": 29,
+    "section": "General Science",
+    "question": "Resonance structures of a molecule have",
+    "options": {
+      "A": "same arrangement of atoms",
+      "B": "different number of paired electrons",
+      "C": "None of these",
+      "D": "different arrangement of atoms"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Resonance structures differ only in the distribution of valence electrons; the relative positions of the atomic nuclei must remain identical in all contributing structures."
+  },
+  {
+    "id": 30,
+    "section": "General Science",
+    "question": "The correct decreasing order of the boiling points of H2O, HF, and NH3 is",
+    "options": {
+      "A": "HF > H2O > NH3",
+      "B": "NH3 > H2O > HF",
+      "C": "H2O > HF > NH3",
+      "D": "NH3 > HF > H2O"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "H2O has the highest boiling point because it forms more hydrogen bonds per molecule than HF, while NH3 has the weakest hydrogen bonding due to lower nitrogen electronegativity."
+  },
+  {
+    "id": 31,
+    "section": "General Science",
+    "question": "According to Huckel's rule, how many π-electrons must an aromatic compound have?",
+    "options": {
+      "A": "2n",
+      "B": "3n",
+      "C": "4n",
+      "D": "4n+2"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Huckel's Rule states that a cyclic, planar, and fully conjugated molecule is aromatic if it contains (4n + 2) π-electrons, where n is a non-negative integer."
+  },
+  {
+    "id": 32,
+    "section": "General Science",
+    "question": "Naturally occurring proteins in living organisms are primarily composed of which type of amino acids?",
+    "options": {
+      "A": "D-amino acids",
+      "B": "Neither D nor L Amino Acids",
+      "C": "L-amino acids",
+      "D": "Both D and L Amino Acids"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Almost all chiral amino acids found in proteins within living organisms are of the L-configuration, a property known as biological homochirality."
+  },
+  {
+    "id": 33,
+    "section": "General Science",
+    "question": "Which of the following compounds have planar molecules?",
+    "options": {
+      "A": "Ethanol",
+      "B": "Ethyl alcohol",
+      "C": "Diethyl ether",
+      "D": "Formaldehyde"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "80%",
+    "explanation": "Formaldehyde (HCHO) has an sp2 hybridized central carbon atom, resulting in a trigonal planar molecular geometry with bond angles of approximately 120°."
+  },
+  {
+    "id": 34,
+    "section": "General Science",
+    "question": "Which amino acid is unique because its side chain is a ring structure, making it an imino acid?",
+    "options": {
+      "A": "Glycine",
+      "B": "Proline",
+      "C": "Serine",
+      "D": "Alanine"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Proline is unique among the 20 standard amino acids because its side chain is cyclized onto the backbone nitrogen, forming a secondary (imino) amine group."
+  },
+  {
+    "id": 35,
+    "section": "General Science",
+    "question": "Pyrrole is a five membered heterocycle with a NH. Which statement is true regarding its nitrogen?",
+    "options": {
+      "A": "Nitrogen’s lone pair is not available for protonation",
+      "B": "Its aromatic resonance energy is Greater than benzene",
+      "C": "It is a non-aromatic molecule",
+      "D": "Its aromatic resonance energy is Less than conjugated dienes"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "60%",
+    "explanation": "The lone pair on the nitrogen atom in pyrrole is part of the 6 π-electron aromatic sextet, making it unavailable for bonding with protons and reducing its basicity."
+  },
+  {
+    "id": 36,
+    "section": "General Science",
+    "question": "Which pair of products would result from the acid cleavage of phenyl propyl ether with excess concentrated HBr at an elevated temperature?",
+    "options": {
+      "A": "Bromobenzene and 1-bromopropane",
+      "B": "Bromobenzene and 1-propanol",
+      "C": "Phenol and 1-propanol",
+      "D": "Phenol and 1-bromopropane"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "55%",
+    "explanation": "Acid cleavage of aryl-alkyl ethers always breaks the alkyl-oxygen bond (not the stronger aryl-oxygen bond), yielding phenol and the corresponding alkyl bromide."
+  }
+,  
+  {
+    "id": 37,
+    "section": "General Science",
+    "question": "Which of the following electrophilic substitution reaction is not possible in pyridine?",
+    "options": {
+      "A": "Bromination",
+      "B": "Nitration",
+      "C": "Friedel craft reaction",
+      "D": "Sulphonation"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "60%",
+    "explanation": "Pyridine is highly deactivated toward electrophilic substitution, and the lone pair on Nitrogen complexes with Lewis acid catalysts (like AlCl3), making Friedel-Crafts reactions impossible."
+  },
+  {
+    "id": 38,
+    "section": "General Science",
+    "question": "Which of the following statement is not true about ethers?",
+    "options": {
+      "A": "Lower ethers also act as anaesthetics",
+      "B": "Simple ethers (such as diethyl ether) are tasteless",
+      "C": "Ethers are not organic solvents",
+      "D": "The lower ethers are highly volatile and flammable"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "Ethers are extensively used as organic solvents in laboratories and industries due to their ability to dissolve a wide range of non-polar compounds."
+  },
+  {
+    "id": 39,
+    "section": "General Science",
+    "question": "Benzyl chloride is reacted with different nucleophiles (HO–, CH3COO–, PhO–, CH3O–). Arrange them in the decreasing order of reactivity with Benzyl chloride.",
+    "options": {
+      "A": "CH3COO– > CH3O– > HO– > PhO–",
+      "B": "HO– > CH3O– > PhO– > CH3COO–",
+      "C": "HO– > PhO– > CH3O– > CH3COO–",
+      "D": "CH3O– > HO– > PhO– > CH3COO–"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "55%",
+    "explanation": "Nucleophilicity typically follows basicity in the same solvent; methoxide (CH3O-) is the strongest base/nucleophile here, followed by hydroxide, phenoxide, and finally the resonance-stabilized acetate ion."
+  },
+  {
+    "id": 40,
+    "section": "General Science",
+    "question": "Two equivalents of KMnO4 hydroxylate one equivalent of 1,5-cyclooctadiene. How many stereoisomeric cyclooctane-1,2,5,6-tetraols will be formed?",
+    "options": {
+      "A": "2",
+      "B": "3",
+      "C": "4",
+      "D": "1"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "40%",
+    "explanation": "KMnO4 performs syn-hydroxylation; when applied to both symmetrical double bonds of 1,5-cyclooctadiene, it results in a single meso-type symmetrical stereoisomer."
+  },
+  {
+    "id": 41,
+    "section": "General Science",
+    "question": "What is the IUPAC name of the compound with structure: CH3CH2CH(OH)CH3?",
+    "options": {
+      "A": "2-Butanone",
+      "B": "Butanol",
+      "C": "Butan-1-ol",
+      "D": "Butan-2-ol"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "The molecule is a four-carbon chain with the hydroxyl group attached to the second carbon, hence its name is butan-2-ol."
+  },
+  {
+    "id": 42,
+    "section": "General Science",
+    "question": "Which of the following bond is made up of a large number of organic compounds?",
+    "options": {
+      "A": "Metallic bond",
+      "B": "Covalent bond",
+      "C": "Dipolar bond",
+      "D": "Ionic bond"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "98%",
+    "explanation": "Organic chemistry is based on carbon's ability to form strong, stable covalent bonds through electron sharing with other atoms."
+  },
+  {
+    "id": 43,
+    "section": "General Science",
+    "question": "Species having same bond order are",
+    "options": {
+      "A": "O2 – and NO",
+      "B": "N2 – and CN –",
+      "C": "F2 and NO",
+      "D": "N2 and CO"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "70%",
+    "explanation": "Both N2 and CO are isoelectronic species with 14 electrons each, resulting in a bond order of 3.0."
+  },
+  {
+    "id": 44,
+    "section": "General Science",
+    "question": "Electrophilic substitution on unsubstituted heterocycles such as pyrrole, furan or thiophene yields:",
+    "options": {
+      "A": "Usually leads to loss of aromaticity",
+      "B": "Usually alpha substituted products",
+      "C": "Usually ring opened products",
+      "D": "Usually beta substituted products"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "65%",
+    "explanation": "In five-membered heterocycles, electrophilic attack occurs preferentially at the C2 (alpha) position because the resulting intermediate is stabilized by more resonance structures."
+  },
+  {
+    "id": 45,
+    "section": "General Science",
+    "question": "What type of reaction takes place upon treatment of a ketone with HCN to form a cyanohydrin?",
+    "options": {
+      "A": "Nucleophilic addition",
+      "B": "Electrophilic addition",
+      "C": "Nucleophilic substitution",
+      "D": "Electrophilic substitution"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "80%",
+    "explanation": "The cyanide ion (CN-) acts as a nucleophile that adds to the electrophilic carbonyl carbon of the ketone, forming a cyanohydrin intermediate."
+  },
+  {
+    "id": 46,
+    "section": "General Science",
+    "question": "The order of stability of carbanions is",
+    "options": {
+      "A": "secondary > tertiary > primary",
+      "B": "primary > secondary > tertiary",
+      "C": "tertiary > primary > secondary",
+      "D": "tertiary > secondary > primary"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Alkyl groups are electron-donating (+I effect), which increases the electron density on the carbon and destabilizes the carbanion; thus, the least substituted carbanion is the most stable."
+  },
+  {
+    "id": 47,
+    "section": "General Science",
+    "question": "Which of the following compounds will show dipole moment?",
+    "options": {
+      "A": "Cis-1, 2-dichloroethylene",
+      "B": "benzene",
+      "C": "trans-1, 2-dichloroethylene",
+      "D": "p-dichlorobenzene"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "70%",
+    "explanation": "In the cis isomer, the individual C–Cl bond dipoles do not cancel each other out due to the lack of a center of symmetry, resulting in a net molecular dipole moment."
+  },
+  {
+    "id": 48,
+    "section": "General Science",
+    "question": "Among the following, which is least acidic?",
+    "options": {
+      "A": "o-cresol",
+      "B": "p-nitrophenol",
+      "C": "Phenol",
+      "D": "p-chlorophenol"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "60%",
+    "explanation": "The methyl group in o-cresol is electron-donating (+I and hyperconjugation), which destabilizes the phenoxide ion and makes the parent compound less acidic than phenol or nitrophenols."
+  },
+  {
+    "id": 49,
+    "section": "General Science",
+    "question": "Converting glucosone to fructose involves",
+    "options": {
+      "A": "reducing the aldehyde group of glucosone to a hydroxyl group",
+      "B": "reducing the keto group and oxidation of aldehyde group of glucosone",
+      "C": "oxidation of aldehyde group of glucosone to a carboxylic acid",
+      "D": "reducing the keto group of glucosone to a hydroxyl group"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "50%",
+    "explanation": "Glucosone contains an aldehyde group at C1 and a keto group at C2; selectively reducing the C1 aldehyde to a primary alcohol yields fructose."
+  },
+  {
+    "id": 50,
+    "section": "General Science",
+    "question": "Reaction between liquid NH3 and liquid SO2 is an example of",
+    "options": {
+      "A": "None of the above",
+      "B": "Acid base reaction",
+      "C": "Reduction",
+      "D": "Reaction between non aqueous solvents"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "40%",
+    "explanation": "This reaction is primarily categorized as an interaction between two non-aqueous solvents that can lead to the formation of complex addition compounds."
+  },
+  {
+    "id": 51,
+    "section": "General Science",
+    "question": "Parabromo nitrobenzene reacts with a methoxide to yield:",
+    "options": {
+      "A": "Para nitro anisole",
+      "B": "No reaction",
+      "C": "Para bromo anisole",
+      "D": "Trisubstituted benzene"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:05",
+    "rightPct": "55%",
+    "explanation": "This is a nucleophilic aromatic substitution (SNAr) where the nitro group activates the ring for nucleophilic attack, leading to the replacement of the bromide ion with a methoxide group."
+  },
+  {
+    "id": 52,
+    "section": "General Science",
+    "question": "The reaction of ethyl bromide with triethyl amine will yield:",
+    "options": {
+      "A": "Ethylene and an ammonium salt",
+      "B": "Protonated amine",
+      "C": "No reaction",
+      "D": "Quaternary ammonium salt"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "75%",
+    "explanation": "Tertiary amines like triethylamine react with alkyl halides via an SN2 mechanism to form quaternary ammonium salts, in this case, tetraethylammonium bromide."
+  },
+  {
+    "id": 53,
+    "section": "General Science",
+    "question": "In paints, tung oil \"dries\" faster than linseed oil because of the",
+    "options": {
+      "A": "high proportion of linolenic acid and delocalized vinylic radicals",
+      "B": "high proportion of eleostearic acid and delocalized allylic radicals",
+      "C": "low proportion of eleostearic acid, non-delocalized allylic radicals",
+      "D": "high proportion of linolenic acid and non-elocalized allylic radicals"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "55%",
+    "explanation": "Tung oil contains a high percentage of alpha-eleostearic acid, which has conjugated double bonds. These conjugate systems form more stable delocalized radicals, accelerating the oxidative polymerization (drying) process."
+  },
+  {
+    "id": 54,
+    "section": "General Science",
+    "question": "On heating aqueous solution of benzene diazonium chloride, which of the following is formed?",
+    "options": {
+      "A": "chlorobenzene",
+      "B": "benzene",
+      "C": "phenol",
+      "D": "aniline"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "Heating an aqueous solution of benzene diazonium chloride leads to a substitution reaction where the diazonium group is replaced by a hydroxyl group, producing phenol and nitrogen gas."
+  },
+  {
+    "id": 55,
+    "section": "General Science",
+    "question": "Which of the following is an alkane which can exhibit optical activity?",
+    "options": {
+      "A": "3–Methylhexane",
+      "B": "Neopentane",
+      "C": "Isopentane",
+      "D": "3–Methylpentane"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "60%",
+    "explanation": "3-Methylhexane has a chiral center at the C3 carbon atom (bonded to H, CH3, Ethyl, and Propyl groups). The other options are achiral molecules."
+  },
+  {
+    "id": 56,
+    "section": "General Science",
+    "question": "The aromaticity of following heterocyclic compounds in the descending order is",
+    "options": {
+      "A": "Thiophene > Pyrrole > Furan > Pyridine",
+      "B": "Pyridine > Thiophene > Pyrrole > Furan",
+      "C": "Furan > Pyrrole > Thiophene > Pyridine",
+      "D": "Pyridine > Thiophene > Furan > Pyrrole"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "65%",
+    "explanation": "Pyridine is the most aromatic due to its structure being closest to benzene. Among five-membered rings, Thiophene is most aromatic because sulfur's electronegativity is lower than oxygen or nitrogen, allowing better delocalization."
+  },
+  {
+    "id": 57,
+    "section": "Section C",
+    "question": "One mole of an ideal gas at 300 K undergoes expansion from 1L to 10L against a constant external pressure of 1 atm. The work done by the gas is",
+    "options": {
+      "A": "9 kJ",
+      "B": "6 kJ",
+      "C": "6 L atm",
+      "D": "9 L atm"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "80%",
+    "explanation": "Work done against a constant external pressure is calculated as W = P_ext * ΔV. Here, W = 1 atm * (10 L - 1 L) = 9 L atm."
+  },
+  {
+    "id": 58,
+    "section": "Section C",
+    "question": "The rate of a second order reaction is 5 × 10⁻⁵ mol.l⁻¹s⁻¹, if the initial concentration is 0.4 mol.l⁻¹. The rate constant for the reaction is",
+    "options": {
+      "A": "3.1 × 10⁻⁴ M⁻¹s⁻¹",
+      "B": "2.1 × 10⁻⁴ M⁻¹s⁻¹",
+      "C": "1.1 × 10⁻⁴ M⁻¹s⁻¹",
+      "D": "4.1 × 10⁻⁴ M⁻¹s⁻¹"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "60%",
+    "explanation": "For a second-order reaction, Rate = k[A]². Substituting the values: 5 × 10⁻⁵ = k * (0.4)². Solving for k gives 3.125 × 10⁻⁴ M⁻¹s⁻¹."
+  },
+  {
+    "id": 59,
+    "section": "Section C",
+    "question": "(∂U/∂v)_T = ……………… for an ideal gas",
+    "options": {
+      "A": "P",
+      "B": "0",
+      "C": "V",
+      "D": "RT"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "The internal pressure (∂U/∂V)_T of an ideal gas is zero because there are no intermolecular forces, meaning internal energy depends only on temperature."
+  },
+  {
+    "id": 60,
+    "section": "Section C",
+    "question": "Calculate the EMF for the below reaction at 298K: Co (s) + Fe²⁺(aq) ⇌ Co²⁺(aq) + Fe (s). (Given : [Co²⁺] = 0.6 M; [Fe²⁺] = 0.6 M; E° Fe²⁺/Fe = -0.44 V; E° Co²⁺/Co = -0.28 V)",
+    "options": {
+      "A": "+ 0.72 V",
+      "B": "– 0.16 V",
+      "C": "– 0.72 V",
+      "D": "+ 0.16 V"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:30",
+    "rightPct": "55%",
+    "explanation": "E°_cell = E°_cathode - E°_anode = -0.44 - (-0.28) = -0.16 V. Since concentrations are equal, the reaction quotient Q = 1 and log Q = 0, so EMF = E°_cell = -0.16 V."
+  },
+  {
+    "id": 61,
+    "section": "Section C",
+    "question": "A reaction showed 10 fold increase in rate constant when the temperature was raised from 400K to 500K. The activation energy of the reaction is approximately",
+    "options": {
+      "A": "40 kJ",
+      "B": "25 kJ",
+      "C": "400 kJ",
+      "D": "100 kJ"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:40",
+    "rightPct": "50%",
+    "explanation": "Using the Arrhenius equation log(k2/k1) = (Ea / 2.303R) * (1/T1 - 1/T2). Solving with log(10)=1, T1=400, T2=500 gives Ea ≈ 38.3 kJ, which is approximately 40 kJ."
+  },
+  {
+    "id": 62,
+    "section": "Section C",
+    "question": "Vapour pressure of benzene and toluene at 60°C are 385 and 139 Torr respectively. The mole fraction of toluene in the vapour for a binary solution with 0.6 mole fraction toluene is",
+    "options": {
+      "A": "0.35",
+      "B": "0.65",
+      "C": "0.6",
+      "D": "0.4"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "60%",
+    "explanation": "Partial pressures: P_tol = 139 * 0.6 = 83.4; P_benz = 385 * 0.4 = 154. Total pressure = 237.4. Mole fraction in vapor Y_tol = 83.4 / 237.4 ≈ 0.35."
+  },
+  {
+    "id": 63,
+    "section": "Section C",
+    "question": "Unimolecular gas phase reaction shows",
+    "options": {
+      "A": "second order kinetics at low pressures and first order kinetics at high pressures",
+      "B": "first order kinetics at low pressures and zero order kinetics at high pressures",
+      "C": "first order kinetics at all pressures",
+      "D": "first order kinetics at low pressures and second order kinetics at high pressures"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "70%",
+    "explanation": "According to the Lindemann mechanism, at low pressures, the activation step is rate-determining (second order). At high pressures, the deactivation/product step is faster, leading to first-order kinetics."
+  },
+  {
+    "id": 64,
+    "section": "Section C",
+    "question": "According to Hardy – Schulze rule, the flocculation power trend of the below ions for coagulation of a negatively charged sol is",
+    "options": {
+      "A": "Na+ > Ba2+ > Al3+",
+      "B": "Ba2+ > Al3+ > Na+",
+      "C": "Al3+ > Na+ > Ba2+",
+      "D": "Al3+ > Ba2+ > Na+"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "The Hardy-Schulze rule states that the coagulation power of an ion increases with its valency. For a negative sol, trivalent Al3+ is more effective than divalent Ba2+, which is more effective than monovalent Na+."
+  },
+  {
+    "id": 65,
+    "section": "Section C",
+    "question": "For the reaction A → B the plot conc. of A against time is linear. The reaction is of ……………… order",
+    "options": {
+      "A": "Zero",
+      "B": "First",
+      "C": "Second",
+      "D": "Third"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "A linear plot of concentration [A] vs. time (with a negative slope) is characteristic of a zero-order reaction, where the rate is independent of the reactant concentration."
+  },
+  {
+    "id": 66,
+    "section": "Section C",
+    "question": "One mole of benzene is mixed with one mole of toluene at 300 K. The Gibbs free energy of mixing assuming ideal solution is",
+    "options": {
+      "A": "0",
+      "B": "-3.4 kJ",
+      "C": "3.4 kJ",
+      "D": "-1.8 kJ"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "45%",
+    "explanation": "ΔG_mix = nRT(X1 ln X1 + X2 ln X2). For 2 moles total (X1=X2=0.5), ΔG = 2 * 8.314 * 300 * ln(0.5) ≈ -3.45 kJ. If expressed per mole of solution, it is approximately -1.73 to -1.8 kJ."
+  }
+,
+  {
+    "id": 67,
+    "section": "Section C",
+    "question": "The EMF of a Daniel cell [Zn/ZnSO4(0.01 M)//CuSO4(0.01 M)/Cu] at 298 K is E1. The concentration of CuSO4 and ZnSO4 are varied to get an EMF E2. Pick out the combination which will not give E1 < E2.",
+    "options": {
+      "A": "[ZnSO4] = 0.1 M, [CuSO4] = 1.0 M",
+      "B": "[ZnSO4] = 0.1 M, [CuSO4] = 0.1 M",
+      "C": "[ZnSO4] = 0.01 M, [CuSO4] = 0.1 M",
+      "D": "[ZnSO4] = 1.0 M, [CuSO4] = 10.0 M"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "55%",
+    "explanation": "According to the Nernst equation, E = E° - (0.059/2) log([Zn2+]/[Cu2+]). E2 will be greater than E1 only if the ratio [Zn2+]/[Cu2+] decreases; in option B, the ratio remains 1, so E2 = E1."
+  },
+  {
+    "id": 68,
+    "section": "Section C",
+    "question": "For 1s atomic orbital electron density is maximum at (r is radial distance and a₀ is Bohr radius)",
+    "options": {
+      "A": "r = a₀",
+      "B": "r = 0",
+      "C": "r = a₀/2",
+      "D": "r = 2a₀"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "75%",
+    "explanation": "The electronic wave function (ψ) for a 1s orbital is maximum at the nucleus (r=0). However, the radial probability density (4πr²ψ²) is maximum at r = a₀."
+  },
+  {
+    "id": 69,
+    "section": "Section C",
+    "question": "Choose the correct statement about solutions",
+    "options": {
+      "A": "Henry’s law is valid for solvent in the range of Raoult's law is valid for solute",
+      "B": "Raoult's law is valid for solvent and solute over the entire concentration",
+      "C": "Henry’s law is valid for solvent and solute over the entire concentration",
+      "D": "Raoult's law is valid for solvent in the range where Henry’s law is valid for solute"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "60%",
+    "explanation": "In ideal-dilute solutions, the solvent follows Raoult's Law (vapor pressure proportional to mole fraction) while the solute follows Henry's Law."
+  },
+  {
+    "id": 70,
+    "section": "Section C",
+    "question": "In UV-Visible spectroscopy, the n → π* transition usually occurs at",
+    "options": {
+      "A": "Shorter wavelength than π → π*",
+      "B": "Longer wavelength than π → π*",
+      "C": "Equal wavelength as π → π*",
+      "D": "Does not occur in organic molecules"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "The n → π* transition involves the promotion of an electron from a non-bonding orbital to an antibonding π orbital, which generally requires less energy and thus occurs at a longer wavelength (lower frequency)."
+  },
+  {
+    "id": 71,
+    "section": "Section C",
+    "question": "Energy in Einstein associated with radiation of wavelength 400 nm is approximately",
+    "options": {
+      "A": "200 kJ/mol",
+      "B": "400 kJ/mol",
+      "C": "300 kJ/mol",
+      "D": "100 kJ/mol"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "65%",
+    "explanation": "Using E = (N_A * h * c) / λ, for λ = 400 nm, E ≈ (6.022e23 * 6.626e-34 * 3e8) / 400e-9 ≈ 299,000 J/mol or 300 kJ/mol."
+  },
+  {
+    "id": 72,
+    "section": "Section C",
+    "question": "Calculate the rms speed of Oxygen molecule at 200 K [Given: R = 8.314 J/mole K]",
+    "options": {
+      "A": "396.4 m/s",
+      "B": "390.2 m/s",
+      "C": "394.8 m/s",
+      "D": "392.4 m/s"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:10",
+    "rightPct": "60%",
+    "explanation": "Root Mean Square speed v_rms = √(3RT/M). For O₂, M = 0.032 kg/mol. v_rms = √(3 * 8.314 * 200 / 0.032) ≈ 394.8 m/s."
+  },
+  {
+    "id": 73,
+    "section": "Section C",
+    "question": "Choose the incorrect Maxwell relation",
+    "options": {
+      "A": "(∂T/∂V)ₛ = -(∂P/∂S)ᵥ",
+      "B": "(∂T/∂P)ₛ = (∂V/∂S)ₚ",
+      "C": "(∂S/∂V)ₜ = (∂P/∂T)ᵥ",
+      "D": "(∂S/∂P)ᵥ = (∂V/∂P)ₛ"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "45%",
+    "explanation": "The four standard Maxwell relations are derived from state functions U, H, A, and G. Option D is not a valid thermodynamically derived Maxwell relation."
+  },
+  {
+    "id": 74,
+    "section": "Section C",
+    "question": "The equilibrium constant for a reaction is 10⁵. The free energy change when the reaction is under equilibrium is",
+    "options": {
+      "A": "5 kJ",
+      "B": "0",
+      "C": "30 kJ",
+      "D": "-30 kJ"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "By definition, the Gibbs free energy change (ΔG) for any process at dynamic equilibrium is zero, regardless of the value of the equilibrium constant."
+  },
+  {
+    "id": 75,
+    "section": "Section C",
+    "question": "The fluorescent rate constant for a molecule having an observed fluorescence lifetime 4.8 ns and quantum yield 0.4 will be",
+    "options": {
+      "A": "8.33 × 10⁷ s⁻¹",
+      "B": "1.20 × 10⁸ s⁻¹",
+      "C": "2.08 × 10⁸ s⁻¹",
+      "D": "4.80 × 10⁷ s⁻¹"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:00",
+    "rightPct": "50%",
+    "explanation": "The fluorescence rate constant k_f is calculated as the ratio of quantum yield (Φ) to the observed lifetime (τ). k_f = 0.4 / 4.8e-9 s ≈ 8.33 × 10⁷ s⁻¹."
+  },
+  {
+    "id": 76,
+    "section": "Section C",
+    "question": "4 mole of an ideal gas exhibits molar heat capacity at constant pressure as Cₚ,ₘ = 24 J mol⁻¹ K⁻¹ is heated from 600 to 800 K at a constant pressure. Calculate the heat absorbed (ΔH)",
+    "options": {
+      "A": "1.92 × 10⁴ J",
+      "B": "4.80 × 10³ J",
+      "C": "9.60 × 10³ J",
+      "D": "2.40 × 10⁴ J"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:55",
+    "rightPct": "75%",
+    "explanation": "ΔH = n * Cₚ,ₘ * ΔT. Substituting the values: ΔH = 4 mol * 24 J/(mol·K) * (800 - 600) K = 4 * 24 * 200 = 19,200 J or 1.92 × 10⁴ J."
+  },
+  {
+    "id": 77,
+    "section": "Section C",
+    "question": "The ionic strength of 0.01 molal electrolyte of the type M₂X₃ is",
+    "options": {
+      "A": "0.15 m",
+      "B": "0.03 m",
+      "C": "0.06 m",
+      "D": "0.01 m"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:05",
+    "rightPct": "50%",
+    "explanation": "Ionic strength I = 0.5 * Σ(mᵢzᵢ²). For M₂X₃, ions are 2M³⁺ and 3X²⁻. I = 0.5 * [(0.02 * 3²) + (0.03 * 2²)] = 0.5 * (0.18 + 0.12) = 0.15 m."
+  },
+  {
+    "id": 78,
+    "section": "Section C",
+    "question": "An aqueous solution of copper sulphate is electrolysed between two Pt electrodes. The product at anode is",
+    "options": {
+      "A": "O₂",
+      "B": "Cu",
+      "C": "H₂",
+      "D": "SO₂"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "At the anode, the oxidation of water (2H₂O → O₂ + 4H⁺ + 4e⁻) occurs preferentially over the oxidation of sulphate ions, resulting in the evolution of oxygen gas."
+  },
+  {
+    "id": 79,
+    "section": "Section C",
+    "question": "Choose the correct statement about viscosity of gases and liquids",
+    "options": {
+      "A": "Viscosity of gases and liquids decrease with increase in temperature",
+      "B": "Viscosity of gases and liquids increase with temperature",
+      "C": "Viscosity of gases decrease with temperature but viscosity of liquids increase with temperature",
+      "D": "Viscosity of gases increase with temperature but viscosity of liquids decrease with increase in temperature"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "80%",
+    "explanation": "Gas viscosity increases with temperature due to higher molecular momentum transfer, while liquid viscosity decreases because thermal energy helps overcome intermolecular attractive forces."
+  },
+  {
+    "id": 80,
+    "section": "Section C",
+    "question": "The vapour pressure of a liquid at 100 K is 2.0 Torr. The temperature at which vapour pressure becomes 4 Torr is (enthalpy of vaporisation 230 R, where R is gas constant)",
+    "options": {
+      "A": "303 K",
+      "B": "201 K",
+      "C": "143 K",
+      "D": "402 K"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "55%",
+    "explanation": "Using Clausius-Clapeyron equation: ln(P2/P1) = (ΔH/R)(1/T1 - 1/T2). ln(2) = (230R/R)(1/100 - 1/T2). 0.693/230 ≈ 0.003 = 0.01 - 1/T2. 1/T2 = 0.007, so T2 ≈ 143 K."
+  },
+  {
+    "id": 81,
+    "section": "Section C",
+    "question": "The number of radial nodes for 4d atomic orbital is",
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "0",
+      "D": "3"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "The number of radial nodes is given by the formula (n - l - 1). For a 4d orbital, n=4 and l=2, so radial nodes = 4 - 2 - 1 = 1."
+  },
+  {
+    "id": 82,
+    "section": "Section C",
+    "question": "A substance 'Y' is irradiated with a light of 2000 Å wavelength and 1 × 10⁻² mole of it is decomposed in the reaction. How many photons are absorbed during the reaction if its quantum efficiency is 6?",
+    "options": {
+      "A": "1.0 × 10²¹",
+      "B": "6.0 × 10²³",
+      "C": "1.0 × 10²³",
+      "D": "3.6 × 10²²"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:20",
+    "rightPct": "45%",
+    "explanation": "Quantum efficiency (Φ) = (moles decomposed) / (moles of photons absorbed). 6 = 10⁻² / n_absorbed, so n_absorbed = (1/6) × 10⁻² moles. Number of photons = (0.01 / 6) × 6.022 × 10²³ ≈ 1.0 × 10²¹."
+  },
+  {
+    "id": 83,
+    "section": "Section C",
+    "question": "The average osmotic pressure of sea water was measured to be 25 atm at 25 °C. Calculate the molality of sucrose (C12H22O11) that is isotonic with the sea water. (Given : R = 0.0821 L atm/mol k)",
+    "options": {
+      "A": "1.22 m",
+      "B": "2.22 m",
+      "C": "1.02 m",
+      "D": "2.02 m"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:15",
+    "rightPct": "60%",
+    "explanation": "Isotonic solutions have equal osmotic pressure. Using π = MRT, 25 = M × 0.0821 × 298. Solving for M gives approximately 1.02 mol/L, which is nearly equal to molality in dilute aqueous solutions."
+  },
+  {
+    "id": 84,
+    "section": "Section C",
+    "question": "Copper crystallizes in FCC lattice with the cell edge, a = 3.6 Å. The radius of the atom in Å is",
+    "options": {
+      "A": "1.40",
+      "B": "1.30",
+      "C": "1.27",
+      "D": "1.34"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:50",
+    "rightPct": "75%",
+    "explanation": "In an FCC unit cell, the atoms touch along the face diagonal, leading to the relation 4r = √2a. Substituting a = 3.6 Å, r = (1.414 × 3.6) / 4 ≈ 1.27 Å."
+  },
+  {
+    "id": 85,
+    "section": "Section C",
+    "question": "Minimum number of components required for three phases to be in equilibrium",
+    "options": {
+      "A": "3",
+      "B": "4",
+      "C": "2",
+      "D": "1"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "According to the Gibbs Phase Rule (F = C - P + 2), for three phases (P=3) to be in equilibrium with zero degrees of freedom (F=0, a triple point), the number of components (C) must be 1."
+  },
+  {
+    "id": 86,
+    "section": "Section C",
+    "question": "Stern Volmer equation is associated with",
+    "options": {
+      "A": "Photodissocation",
+      "B": "Quenching of fluorescence",
+      "C": "Chemiluminescence",
+      "D": "Phosphorescene"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "The Stern-Volmer equation describes the kinetics of quenching processes in photochemistry, where a quencher molecule decreases the fluorescence intensity of a fluorophore."
+  },
+  {
+    "id": 87,
+    "section": "Section D",
+    "question": "The bond linking nucleotides in DNA is",
+    "options": {
+      "A": "Hydrogen Bond",
+      "B": "Peptide bond",
+      "C": "Glycosidic bond",
+      "D": "Phosphodiester bond"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "Nucleotides are covalently linked by 3'-5' phosphodiester bonds between the phosphate group of one nucleotide and the sugar of the next, forming the structural backbone of DNA."
+  },
+  {
+    "id": 88,
+    "section": "Section D",
+    "question": "The α-helix in proteins is stabilized by",
+    "options": {
+      "A": "H-bond between CO and NH of the backbone",
+      "B": "Ionic interactions",
+      "C": "H-bond between side chains",
+      "D": "Disulfide linkages between the side chain of Cysteine"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "90%",
+    "explanation": "The α-helix is a common protein secondary structure stabilized by hydrogen bonds between the carbonyl oxygen (C=O) of the i-th residue and the amide hydrogen (N-H) of the (i+4)-th residue."
+  },
+  {
+    "id": 89,
+    "section": "Section D",
+    "question": "Nylon 66 is:",
+    "options": {
+      "A": "Synthesized by condensation of adipic acid with hexamethylene diamine",
+      "B": "Synthesized by condensation of terephthalic acid with hexamethylene diamine",
+      "C": "A polyester",
+      "D": "Synthesized by condensation of adipic acid with ethylene glycol"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Nylon 66 is a polyamide produced via a condensation reaction between a 6-carbon diacid (adipic acid) and a 6-carbon diamine (hexamethylenediamine)."
+  },
+  {
+    "id": 90,
+    "section": "Section D",
+    "question": "In the reaction 2NaCl + H2SO4 → 2HCl + Na2SO4, the atom economy for the synthesis of HCl is:",
+    "options": {
+      "A": "Less than 15%",
+      "B": "More than 50%",
+      "C": "100%",
+      "D": "Less than 35%"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "01:30",
+    "rightPct": "55%",
+    "explanation": "Atom Economy = (MW of desired product / MW of all reactants) × 100. For 2HCl (73 g/mol) produced from 2NaCl (117) and H2SO4 (98), %AE = (73 / 215) × 100 ≈ 33.95%."
+  },
+  {
+    "id": 91,
+    "section": "Section D",
+    "question": "In UV-Visible spectroscopy, the most intense electronic transition is",
+    "options": {
+      "A": "n → π*",
+      "B": "π → σ*",
+      "C": "n → σ*",
+      "D": "π → π*"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "80%",
+    "explanation": "π → π* transitions are generally Laporte-allowed and occur with high molar absorptivity in molecules with conjugated systems, making them significantly more intense than n → π* transitions."
+  },
+  {
+    "id": 92,
+    "section": "Section D",
+    "question": "The reference compound used to reference the chemical shift in 1H NMR spectroscopy is",
+    "options": {
+      "A": "Benzene",
+      "B": "CDCl3",
+      "C": "DMSO",
+      "D": "TMS"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Tetramethylsilane (TMS) is the standard reference because its 12 equivalent protons produce a sharp, single peak at a higher field than most organic protons, which is defined as 0 ppm."
+  },
+  {
+    "id": 93,
+    "section": "Section D",
+    "question": "An example of a prosthetic group is:",
+    "options": {
+      "A": "Apoenzyme",
+      "B": "Non-covalently bound conenzyme",
+      "C": "Peptide",
+      "D": "Heme"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "A prosthetic group is a non-protein component tightly or covalently bound to a protein that is essential for its function. Heme in hemoglobin and myoglobin is a primary example."
+  },
+  {
+    "id": 94,
+    "section": "Section D",
+    "question": "Which among the following is the most suitable monomer for radical polymerization?",
+    "options": {
+      "A": "Ethylene glycol",
+      "B": "Ethylene",
+      "C": "hexamethylene diamine",
+      "D": "Adipic acid"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "80%",
+    "explanation": "Radical polymerization requires vinyl monomers containing unsaturated C=C double bonds, such as ethylene or styrene. The other options are monomers for condensation polymerization."
+  },
+  {
+    "id": 95,
+    "section": "Section D",
+    "question": "Beer-Lambert’s law is given by",
+    "options": {
+      "A": "A = εcl",
+      "B": "A = log(I₀/I)",
+      "C": "I = I₀e^cl",
+      "D": "I = I₀e^-cl"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "The Beer-Lambert law states that Absorbance (A) is the product of the molar absorptivity (ε), the concentration (c), and the path length (l) of the sample."
+  },
+  {
+    "id": 96,
+    "section": "Section D",
+    "question": "Thermo plastics are those:",
+    "options": {
+      "A": "Which are permanently hard",
+      "B": "Which hardens upon heating",
+      "C": "Which softens when heated and hardens upon cooling",
+      "D": "Which decompose upon heating"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "92%",
+    "explanation": "Thermoplastics are polymers that undergo a physical change upon heating (softening) and cooling (hardening), allowing them to be repeatedly remolded into different shapes."
+  },
+  {
+    "id": 97,
+    "section": "Section D",
+    "question": "A triglyceride:",
+    "options": {
+      "A": "Reacts with methanol to yield carboxylic acid",
+      "B": "Undergoes hydrolysis in the presence of a base to yield soap",
+      "C": "Is an anhydride",
+      "D": "Is an ether"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "Triglycerides are tri-esters of glycerol. Alkaline hydrolysis (saponification) of a triglyceride yields glycerol and fatty acid salts, which are known as soap."
+  },
+  {
+    "id": 98,
+    "section": "Section D",
+    "question": "Which of the following is an example of heterogeneous catalysis?",
+    "options": {
+      "A": "Decomposition of H2O2 using MnO2",
+      "B": "Esterification reaction",
+      "C": "Hydrolysis of an ester in an acidic solution",
+      "D": "Inversion of sugar"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "In heterogeneous catalysis, the phase of the catalyst differs from that of the reactants. Solid manganese dioxide (MnO2) catalyzing liquid/aqueous hydrogen peroxide (H2O2) is a classic example."
+  },
+  {
+    "id": 99,
+    "section": "Section D",
+    "question": "The sugar in RNA is",
+    "options": {
+      "A": "Glucose",
+      "B": "Deoxyribose",
+      "C": "Ribose",
+      "D": "Fructose"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "98%",
+    "explanation": "RNA stands for Ribonucleic Acid, which contains D-ribose sugar. DNA contains 2-deoxyribose."
+  },
+  {
+    "id": 100,
+    "section": "Section D",
+    "question": "According to the n+1 rule, a proton with two equivalent neighboring protons will appear in a 1D 1H NMR Spectrum as",
+    "options": {
+      "A": "Triplet",
+      "B": "Quartet",
+      "C": "Doublet",
+      "D": "Singlet"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "92%",
+    "explanation": "According to the spin-spin splitting n+1 rule, a proton with n=2 neighboring equivalent protons splits into 2 + 1 = 3 peaks (a triplet)."
+  },
+  {
+    "id": 101,
+    "section": "Section D",
+    "question": "A block polymer is an example of:",
+    "options": {
+      "A": "Copolymer",
+      "B": "Coordination polymer",
+      "C": "Living polymer",
+      "D": "Cis-1,4-polyisoprene"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "85%",
+    "explanation": "A block polymer consists of repeating blocks of different monomeric units linked together covalently, making it a specific class of copolymer."
+  },
+  {
+    "id": 102,
+    "section": "Section D",
+    "question": "Which one among the following sources is greener than the conventional methods?",
+    "options": {
+      "A": "Micro waves",
+      "B": "Radio waves",
+      "C": "Ultra violet waves",
+      "D": "Electromagnetic waves"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Microwave-assisted organic synthesis is a key tool in green chemistry because it offers efficient localized heating, reduced reaction times, and lower energy consumption."
+  },
+  {
+    "id": 103,
+    "section": "Section D",
+    "question": "The Tyndall effect is related to",
+    "options": {
+      "A": "Adsorption",
+      "B": "Scattering of light by colloidal particles",
+      "C": "Brownian motion",
+      "D": "Catalysis"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "95%",
+    "explanation": "The Tyndall effect is the scattering of light by suspended particles in a colloidal dispersion, making the light path visible."
+  },
+  {
+    "id": 104,
+    "section": "Section D",
+    "question": "Spin-spin splitting in 1H NMR arises due to",
+    "options": {
+      "A": "Chemical shift anisotropy",
+      "B": "Isotope effect",
+      "C": "Interaction of nuclear spins with neighboring spins",
+      "D": "Instrument noise"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "88%",
+    "explanation": "Spin-spin coupling/splitting occurs due to the scalar magnetic interaction transmitted through bonding electrons between non-equivalent nuclei with magnetic spins."
+  },
+  {
+    "id": 105,
+    "section": "Section D",
+    "question": "Which of the following polymers is formed by step-growth polymerization?",
+    "options": {
+      "A": "Polypropylene",
+      "B": "Nylon",
+      "C": "Polyethylene",
+      "D": "Polystyrene"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "82%",
+    "explanation": "Nylon is synthesized via condensation reaction (step-growth polymerization) between diamines and dicarboxylic acids, whereas polypropylene, polyethylene, and polystyrene are chain-growth polymers."
+  },
+  {
+    "id": 106,
+    "section": "Section D",
+    "question": "Adsorption is classified as",
+    "options": {
+      "A": "Surface phenomenon",
+      "B": "Thermal phenomenon",
+      "C": "Chemical reaction",
+      "D": "Bulk phenomenon"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "96%",
+    "explanation": "Adsorption is strictly a surface phenomenon where molecules adhere to the surface of a solid or liquid substrate, unlike absorption which is a bulk phenomenon."
+  },
+  {
+    "id": 107,
+    "section": "Section D",
+    "question": "Which amino acid is known as a helix breaker",
+    "options": {
+      "A": "Glycine",
+      "B": "Valine",
+      "C": "Proline",
+      "D": "Tryptophan"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "88%",
+    "explanation": "Proline's rigid cyclic pyrrolidine side chain locks its phi angle and prevents backbone H-bonding, introducing a kink/bend that destabilizes an alpha-helix structure."
+  },
+  {
+    "id": 108,
+    "section": "Section D",
+    "question": "In petrochemical industry, both in conventional method and green synthesis what is the first product obtained?",
+    "options": {
+      "A": "Methyl methacrylate",
+      "B": "Ethanol",
+      "C": "2-ethyl benzene",
+      "D": "2-methyl propyl benzene"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:45",
+    "rightPct": "50%",
+    "explanation": "2-methylpropylbenzene (isobutylbenzene) is a key industrial intermediate produced first in the synthesis of pharmaceuticals like Ibuprofen via both traditional and green chemistry routes."
+  },
+  {
+    "id": 109,
+    "section": "Section D",
+    "question": "Which of the following is a lyophobic colloid?",
+    "options": {
+      "A": "Starch in water",
+      "B": "Gold sol",
+      "C": "Soap solution",
+      "D": "Gelatin in water"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "80%",
+    "explanation": "Metal sols like Gold sol are solvent-repelling (lyophobic) colloids that require special stabilizing agents and cannot be prepared by simple mixing."
+  },
+  {
+    "id": 110,
+    "section": "Section D",
+    "question": "Green chemistry is also called as",
+    "options": {
+      "A": "Environmental chemistry",
+      "B": "Sustainable chemistry",
+      "C": "System chemistry",
+      "D": "Life chemistry"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:15",
+    "rightPct": "95%",
+    "explanation": "Green chemistry is commonly known as sustainable chemistry because it focuses on designing chemical processes that reduce or eliminate hazardous substances."
+  },
+  {
+    "id": 111,
+    "section": "Section D",
+    "question": "The mass average molar mass of a polymer sample:",
+    "options": {
+      "A": "Can equal to number average molar mass in a monodisperse sample",
+      "B": "Is less than number average molar mass",
+      "C": "Is always less than the number average molar mass",
+      "D": "Can be either less or more than the number average molar mass"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:40",
+    "rightPct": "70%",
+    "explanation": "For any polymer system, Mw >= Mn. In a monodisperse polymer (where all chains have identical length), the polydispersity index (Mw/Mn) is equal to 1, meaning Mw equals Mn."
+  },
+  {
+    "id": 112,
+    "section": "Section D",
+    "question": "Which type of adsorption involves weak van der Waals forces?",
+    "options": {
+      "A": "Activated adsorption",
+      "B": "Ionic adsorption",
+      "C": "Chemisorption",
+      "D": "Physisorption"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "92%",
+    "explanation": "Physical adsorption (physisorption) involves weak, non-specific intermolecular forces such as van der Waals forces between the adsorbate and the adsorbent surface."
+  },
+  {
+    "id": 113,
+    "section": "Section D",
+    "question": "The base peak in a mass spectrum corresponds to",
+    "options": {
+      "A": "The smallest m/z value",
+      "B": "The isotope peak",
+      "C": "The most intense peak",
+      "D": "The molecular ion peak"
+    },
+    "correct": "C",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:20",
+    "rightPct": "90%",
+    "explanation": "In mass spectrometry, the base peak is the most intense ion signal in the spectrum, assigned an arbitrary relative abundance value of 100%."
+  },
+  {
+    "id": 114,
+    "section": "Section D",
+    "question": "C2H4 + 1/2 O2 → C2H4O (Ethylene oxide). This reaction will take place under presence of catalyst. Find out the % atom economy.",
+    "options": {
+      "A": "100%",
+      "B": "25%",
+      "C": "50%",
+      "D": "75%"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "85%",
+    "explanation": "Because all the reactant atoms end up in the desired single product (addition reaction), no side products or waste are produced, resulting in 100% atom economy."
+  },
+  {
+    "id": 115,
+    "section": "Section D",
+    "question": "Vulcanization of rubber involves:",
+    "options": {
+      "A": "Heating the natural rubber with elemental sulphur to induces disulfide bonds",
+      "B": "Heating the natural rubber with magnesium",
+      "C": "Heating the natural rubber with a peroxide",
+      "D": "Heating the natural rubber with disulfide"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Vulcanization involves heating raw natural rubber with elemental sulfur to create cross-linking disulfide bridges between polymer chains, improving elasticity and strength."
+  },
+  {
+    "id": 116,
+    "section": "Section D",
+    "question": "A downfield shift in 1H NMR is caused by",
+    "options": {
+      "A": "A decrease in electronic density",
+      "B": "A change in the 1H magnetic moment",
+      "C": "A change in the applied magnetic field",
+      "D": "An increase in electronic density"
+    },
+    "correct": "A",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "80%",
+    "explanation": "Deshielding caused by a decrease in electron density around a proton reduces the local shielding effect, shifting its resonance signal downfield to higher chemical shift (ppm) values."
+  },
+  {
+    "id": 117,
+    "section": "Section A",
+    "question": "Which reaction is NOT a redox reaction?",
+    "options": {
+      "A": "Burning of candle",
+      "B": "Zn + 2HCl → ZnCl₂ + H₂",
+      "C": "Rusting of iron",
+      "D": "Na₂SO₄ + BaCl₂ → BaSO₄ + 2NaCl"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:25",
+    "rightPct": "90%",
+    "explanation": "Na₂SO₄ + BaCl₂ → BaSO₄ + 2NaCl is a double displacement (precipitation) reaction in which none of the atoms undergo a change in oxidation state."
+  },
+  {
+    "id": 118,
+    "section": "Section A",
+    "question": "Which of the following is not involved in the Dow process for the production of magnesium?",
+    "options": {
+      "A": "The precipitation of Mg(OH)₂",
+      "B": "The decomposition of CaCO₃",
+      "C": "The formation of MgCl₂",
+      "D": "The electrolysis of H₂O"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:35",
+    "rightPct": "80%",
+    "explanation": "The Dow process involves treating seawater with lime to precipitate Mg(OH)₂, converting it to MgCl₂, and then performing electrolysis of molten MgCl₂ (not H₂O) to extract magnesium metal."
+  },
+  {
+    "id": 119,
+    "section": "Section A",
+    "question": "The 18-electron rule is a useful guideline in organometallic chemistry because it",
+    "options": {
+      "A": "Only applies to complexes with alkyl ligands",
+      "B": "Ensures the complex has a full valence shell, leading to increased stability",
+      "C": "Predicts the exact geometry of organometallic complexes",
+      "D": "Applies universally to all transition metal complexes without exception"
+    },
+    "correct": "B",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "85%",
+    "explanation": "The 18-electron rule states that transition metal complexes are particularly stable when the sum of metal valence electrons and ligand-donated electrons equals 18, achieving a closed noble gas valence configuration (ns² np⁶ nd¹⁰)."
+  },
+  {
+    "id": 120,
+    "section": "Section A",
+    "question": "In an associative substitution mechanism of octahedral complexes, what is the key intermediate species formed?",
+    "options": {
+      "A": "A dissociated ligand",
+      "B": "A five-coordinate complex",
+      "C": "A free metal ion",
+      "D": "A seven-coordinate complex"
+    },
+    "correct": "D",
+    "marks": { "pos": 1.0, "neg": 0.25 },
+    "timeAvg": "00:30",
+    "rightPct": "82%",
+    "explanation": "In an associative substitution mechanism, the incoming ligand binds first before the departure of an original ligand, forming a higher-coordinate intermediate (a 7-coordinate species for an octahedral complex)."
+  }
+
+
+]
+
+    },
+    {
+      id: "drdo-2",
+      subCatId: "drdo",
+      title: "DRDO CEPTAM Mock Test 2",
+      questionsCount: 4,
+      timeMins: 30,
+      marks: 5,
+      badgeText: "NEW",
+      badgeClass: "badge-new",
+      questions: [
+        { id: 1, section: "General Science", question: "What is the chemical formula of Salt?", options: { A: "NaCl", B: "HCl", C: "NaOH", D: "KCl" }, correct: "A", marks: { pos: 1.0, neg: 0.25 }, timeAvg: "00:10", rightPct: "99%", explanation: "NaCl is Sodium Chloride (Common Salt)." },
+        { id: 2, section: "General Science", question: "Which gas is used in fire extinguishers?", options: { A: "Oxygen", B: "Nitrogen", C: "Carbon Dioxide", D: "Hydrogen" }, correct: "C", marks: { pos: 1.0, neg: 0.25 }, timeAvg: "00:15", rightPct: "92%", explanation: "CO2 cuts off oxygen supply to extinguish fire." },
+        { id: 3, section: "Reasoning", question: "2, 4, 8, 16, ?", options: { A: "24", B: "32", C: "20", D: "64" }, correct: "B", marks: { pos: 1.0, neg: 0.25 }, timeAvg: "00:10", rightPct: "95%", explanation: "Every number is multiplied by 2. 16 x 2 = 32." },
+        { id: 4, section: "Aptitude", question: "Value of 15% of 200 is:", options: { A: "30", B: "20", C: "15", D: "40" }, correct: "A", marks: { pos: 1.0, neg: 0.25 }, timeAvg: "00:12", rightPct: "96%", explanation: "(15 / 100) * 200 = 30." }
+      ]
+    },
+    {
+      id: "school-6-1",
+      subCatId: "class-6",
+      title: "Class 6th Science - Ch 1 Components of Food",
+      questionsCount: 4,
+      timeMins: 20,
+      marks: 4,
+      badgeText: "CLASS 6th",
+      badgeClass: "badge-new",
+      questions: [
+        { id: 1, section: "Science", question: "Which nutrient gives maximum energy per gram?", options: { A: "Carbohydrates", B: "Proteins", C: "Fats", D: "Vitamins" }, correct: "C", marks: { pos: 1.0, neg: 0.0 }, timeAvg: "00:12", rightPct: "90%", explanation: "Fats provide more than double the energy per gram compared to carbohydrates." },
+        { id: 2, section: "Science", question: "Scurvy is caused due to deficiency of:", options: { A: "Vitamin A", B: "Vitamin B1", C: "Vitamin C", D: "Vitamin D" }, correct: "C", marks: { pos: 1.0, neg: 0.0 }, timeAvg: "00:15", rightPct: "94%", explanation: "Deficiency of Vitamin C leads to bleeding gums and Scurvy." },
+        { id: 3, section: "Science", question: "Iodine test is used to detect the presence of:", options: { A: "Starch", B: "Protein", C: "Fat", D: "Sugar" }, correct: "A", marks: { pos: 1.0, neg: 0.0 }, timeAvg: "00:18", rightPct: "88%", explanation: "Blue-black color with iodine solution confirms Starch." },
+        { id: 4, section: "Science", question: "Which mineral is required for strong bones?", options: { A: "Iron", B: "Calcium", C: "Sodium", D: "Iodine" }, correct: "B", marks: { pos: 1.0, neg: 0.0 }, timeAvg: "00:10", rightPct: "99%", explanation: "Calcium is essential for healthy bones and teeth." }
+      ]
+    }
+  ];
+
+  // NAVIGATION STATE STACK
+  let navHistoryStack = []; // Stack to maintain drill-down history
+  let activeMainCat = null;
+  let activeSubCat = null;
+
+  let currentActiveTest = null;
+  let rawQuizData = [];
+  let currentQIdx = 0, overallTime = 1800, timerInterval = null;
+  let userState = [];
+  let attemptHistory = {};
+  let registeredEmail = localStorage.getItem('user_email') || '';
+
+  // INITIALIZE CLEAN HOME SCREEN
+  function goToHome() {
+    navHistoryStack = ['level-1'];
+    activeMainCat = null;
+    activeSubCat = null;
+
+    document.getElementById('nav-header-bar').style.display = 'none';
+    document.getElementById('view-level-1').style.display = 'grid';
+    document.getElementById('view-level-2').style.display = 'none';
+    document.getElementById('view-level-3').style.display = 'none';
+  }
+
+  // LEVEL 2: OPEN SELECTED MAIN CATEGORY
+  function openLevel2(mainCatKey) {
+    activeMainCat = mainCatKey;
+    const catDetails = categoryData[mainCatKey];
+    
+    document.getElementById('current-page-title').innerText = catDetails.title;
+    document.getElementById('nav-header-bar').style.display = 'flex';
+
+    // Render Subcategories
+    const subContainer = document.getElementById('view-level-2');
+    subContainer.innerHTML = catDetails.subCategories.map(sub => `
+      <div class="sub-card" onclick="openLevel3('${sub.id}', '${sub.name}')">
+        ${sub.name}
+      </div>
+    `).join('');
+
+    document.getElementById('view-level-1').style.display = 'none';
+    document.getElementById('view-level-2').style.display = 'grid';
+    document.getElementById('view-level-3').style.display = 'none';
+
+    navHistoryStack.push('level-2');
+  }
+
+  // LEVEL 3: OPEN TESTS FOR SELECTED SUB CATEGORY
+  function openLevel3(subCatId, subCatName) {
+    activeSubCat = subCatId;
+    document.getElementById('current-page-title').innerText = subCatName;
+
+    const tests = mockSeriesData.filter(m => m.subCatId === subCatId);
+    const testsContainer = document.getElementById('view-level-3');
+
+    if (tests.length === 0) {
+      testsContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-weight:600;">Upcoming Mock Tests will be added soon!</div>`;
+    } else {
+      testsContainer.innerHTML = tests.map(m => `
+        <div class="test-series-card">
+          <span class="card-badge ${m.badgeClass}">${m.badgeText}</span>
+          <div class="series-title">${m.title}</div>
+          <div class="series-meta">
+            <span>📝 ${m.questionsCount} Qs</span>
+            <span>⏱️ ${m.timeMins} Mins</span>
+            <span>🎯 ${m.marks} Marks</span>
+          </div>
+          <div class="series-action">
+            <button class="btn btn-secondary" onclick="viewPreviousAttempt('${m.id}')">Results</button>
+            <button class="btn btn-primary" onclick="startMock('${m.id}')">Start Test 🚀</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('view-level-1').style.display = 'none';
+    document.getElementById('view-level-2').style.display = 'none';
+    document.getElementById('view-level-3').style.display = 'flex';
+
+    navHistoryStack.push('level-3');
+  }
+
+  // REVERSE BACK STEP LOGIC
+  function goBackStep() {
+    navHistoryStack.pop();
+    const currentView = navHistoryStack[navHistoryStack.length - 1];
+
+    if (currentView === 'level-1' || !currentView) {
+      goToHome();
+    } else if (currentView === 'level-2') {
+      openLevel2(activeMainCat);
+      navHistoryStack.pop(); // Remove duplicate push from openLevel2
+    }
+  }
+
+  function promptUserEmail() {
+    const email = prompt("Enter account email to sync score & dispatch reports:", registeredEmail || "user@prepzone.com");
+    if(email) {
+      registeredEmail = email;
+      localStorage.setItem('user_email', email);
+      alert(`Account synced with: ${email}`);
+    }
+  }
+
+  function startMock(testId) {
+    currentActiveTest = mockSeriesData.find(m => m.id === testId);
+    rawQuizData = currentActiveTest.questions;
+    document.getElementById('home-dashboard').style.display = 'none';
+    
+    document.getElementById('exam-header').style.display = 'flex';
+    document.getElementById('section-tabs').style.display = 'flex';
+    document.getElementById('exam-viewport').style.display = 'flex';
+    document.getElementById('exam-footer').style.display = 'flex';
+
+    reattemptTest();
+  }
+
+  function exitToHome() {
+    clearInterval(timerInterval);
+    document.getElementById('analytics-overlay').classList.remove('active');
+    
+    document.getElementById('exam-header').style.display = 'none';
+    document.getElementById('section-tabs').style.display = 'none';
+    document.getElementById('exam-viewport').style.display = 'none';
+    document.getElementById('exam-footer').style.display = 'none';
+
+    document.getElementById('home-dashboard').style.display = 'flex';
+  }
+
+  function reattemptTest() {
+    clearInterval(timerInterval);
+    overallTime = currentActiveTest.timeMins * 60; currentQIdx = 0;
+    userState = rawQuizData.map(() => ({ selectedOption: null, status: 'not-visited' }));
+    document.getElementById('analytics-overlay').classList.remove('active');
+    renderSections(); loadQuestion(0); startTimers();
+  }
+
+  function renderSections() {
+    const secs = [...new Set(rawQuizData.map(q => q.section))];
+    const currentSec = rawQuizData[currentQIdx].section;
+    document.getElementById('section-tabs').innerHTML = secs.map(sec => `
+      <button class="tab-btn ${sec === currentSec ? 'active' : ''}" onclick="switchSection('${sec}')">${sec}</button>
+    `).join('');
+  }
+
+  function switchSection(secName) {
+    const firstIdx = rawQuizData.findIndex(q => q.section === secName);
+    if (firstIdx !== -1) loadQuestion(firstIdx);
+  }
+
+  function loadQuestion(idx) {
+    currentQIdx = idx; const q = rawQuizData[idx]; const state = userState[idx];
+    if (state.status === 'not-visited') state.status = 'not-answered';
+
+    document.getElementById('display-q-num').innerText = idx + 1;
+    document.getElementById('q-text').innerText = q.question;
+    document.getElementById('mark-pos').innerText = q.marks.pos.toFixed(1);
+    document.getElementById('mark-neg').innerText = q.marks.neg.toFixed(2);
+    document.getElementById('save-next-btn').innerText = idx === rawQuizData.length - 1 ? "Save & Submit" : "Save & Next";
+
+    document.getElementById('options-container').innerHTML = Object.keys(q.options).map(key => `
+      <div class="option-card ${state.selectedOption === key ? 'selected' : ''}" onclick="selectOption('${key}')">
+        <div class="option-idx">${key}</div>
+        <div>${q.options[key]}</div>
+      </div>
+    `).join('');
+    
+    renderSections();
+    renderPalette();
+  }
+
+  function selectOption(k) { userState[currentQIdx].selectedOption = k; loadQuestion(currentQIdx); }
+  function clearResponse() { userState[currentQIdx].selectedOption = null; loadQuestion(currentQIdx); }
+
+  function saveAndNext() {
+    const state = userState[currentQIdx];
+    state.status = state.selectedOption ? 'answered' : 'not-answered';
+    if (currentQIdx === rawQuizData.length - 1) submitExam();
+    else loadQuestion(currentQIdx + 1);
+  }
+
+  function markForReviewAndNext() {
+    userState[currentQIdx].status = 'review';
+    if (currentQIdx === rawQuizData.length - 1) submitExam();
+    else loadQuestion(currentQIdx + 1);
+  }
+
+  function navigate(dir) {
+    const n = currentQIdx + dir;
+    if (n >= 0 && n < rawQuizData.length) loadQuestion(n);
+  }
+
+  function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
+
+  function renderPalette() {
+    document.getElementById('palette-grid').innerHTML = userState.map((st, i) => `
+      <div class="palette-node status-${st.status}" onclick="loadQuestion(${i})">${i + 1}</div>
+    `).join('');
+  }
+
+  function startTimers() {
+    timerInterval = setInterval(() => {
+      if (overallTime > 0) {
+        overallTime--;
+        const m = String(Math.floor(overallTime / 60)).padStart(2, '0');
+        const s = String(overallTime % 60).padStart(2, '0');
+        document.getElementById('overall-timer').innerText = `00:${m}:${s}`;
+      } else submitExam();
+    }, 1000);
+  }
+
+  function submitExam() {
+    clearInterval(timerInterval);
+    let score = 0, attempted = 0, correct = 0, incorrect = 0, unattempted = 0;
+    
+    rawQuizData.forEach((q, i) => {
+      const sel = userState[i].selectedOption;
+      if (sel) {
+        attempted++;
+        if (sel === q.correct) { score += q.marks.pos; correct++; }
+        else { score -= q.marks.neg; incorrect++; }
+      } else {
+        unattempted++;
+      }
+    });
+
+    const totalStudents = 1200;
+    const rank = Math.max(1, Math.floor((1 - (score / currentActiveTest.marks)) * 100) + 12);
+    const percentile = (((totalStudents - rank) / totalStudents) * 100).toFixed(1);
+    const accuracy = attempted ? Math.round((correct / attempted) * 100) : 0;
+
+    attemptHistory[currentActiveTest.id] = {
+      testTitle: currentActiveTest.title,
+      score: score.toFixed(2),
+      maxScore: currentActiveTest.marks,
+      accuracy: `${accuracy}%`,
+      rank: `${rank}/${totalStudents}`,
+      percentile: `${percentile}%`,
+      correct, incorrect, unattempted,
+      userState: JSON.parse(JSON.stringify(userState)),
+      questionsData: rawQuizData
+    };
+
+    renderAnalyticsView(currentActiveTest.id);
+  }
+
+  function viewPreviousAttempt(testId) {
+    if (attemptHistory[testId]) {
+      currentActiveTest = mockSeriesData.find(m => m.id === testId);
+      renderAnalyticsView(testId);
+    } else {
+      alert("Pehle yeh test attempt karo, phir results yahan dikhenge!");
+    }
+  }
+
+  function openAttemptedList() {
+    const keys = Object.keys(attemptHistory);
+    if(keys.length === 0) {
+      alert("Abhi tak koi mock test attempt nahi kiya hai!");
+    } else {
+      viewPreviousAttempt(keys[keys.length - 1]);
+    }
+  }
+
+  function renderAnalyticsView(testId) {
+    const data = attemptHistory[testId];
+    userState = data.userState;
+    rawQuizData = data.questionsData;
+
+    document.getElementById('res-score').innerText = data.score;
+    document.getElementById('res-accuracy').innerText = data.accuracy;
+    document.getElementById('res-rank').innerText = data.rank;
+    document.getElementById('res-percentile').innerText = data.percentile;
+
+    document.getElementById('cnt-all').innerText = rawQuizData.length;
+    document.getElementById('cnt-correct').innerText = data.correct;
+    document.getElementById('cnt-incorrect').innerText = data.incorrect;
+    document.getElementById('cnt-unattempted').innerText = data.unattempted;
+
+    renderSectionalSummary();
+    renderSolutions('all');
+
+    document.getElementById('analytics-overlay').classList.add('active');
+  }
+
+  function switchAnalyticsTab(tab) {
+    document.querySelectorAll('.top-nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-btn-${tab}`).classList.add('active');
+
+    document.getElementById('tab-analysis').style.display = tab === 'analysis' ? 'block' : 'none';
+    document.getElementById('tab-solutions').style.display = tab === 'solutions' ? 'block' : 'none';
+  }
+
+  function renderSectionalSummary() {
+    const secs = [...new Set(rawQuizData.map(q => q.section))];
+    document.getElementById('sectional-summary-list').innerHTML = secs.map(sec => {
+      const secQs = rawQuizData.filter(q => q.section === sec);
+      let secScore = 0;
+      secQs.forEach(q => {
+        const sel = userState[q.id - 1].selectedOption;
+        if (sel === q.correct) secScore += q.marks.pos;
+        else if (sel) secScore -= q.marks.neg;
+      });
+      const maxSec = secQs.reduce((a, b) => a + b.marks.pos, 0);
+      const pct = Math.max(0, (secScore / maxSec) * 100);
+
+      return `
+        <div style="margin-bottom:8px; background:#fff; border:1px solid var(--card-border); border-radius:8px; padding:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;">
+            <span>${sec}</span>
+            <span>${secScore.toFixed(1)} / ${maxSec}</span>
+          </div>
+          <div style="background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden; margin-top:6px;">
+            <div style="background:var(--primary); height:100%; width:${pct}%;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderSolutions(filter) {
+    const container = document.getElementById('solutions-list-container');
+    container.innerHTML = rawQuizData.map((q, i) => {
+      const state = userState[i];
+      const isCorrect = state.selectedOption === q.correct;
+      const isUnattempted = !state.selectedOption;
+
+      if (filter === 'correct' && !isCorrect) return '';
+      if (filter === 'incorrect' && (isCorrect || isUnattempted)) return '';
+      if (filter === 'unattempted' && !isUnattempted) return '';
+
+      return `
+        <div class="sol-card">
+          <div class="sol-card-header">
+            <span>⏱️ Time: ${q.timeAvg} | 🎯 ${q.rightPct} got it right</span>
+            <span class="sol-badge" style="background:${isCorrect ? '#dcfce7' : isUnattempted ? '#f1f5f9' : '#fee2e2'}; color:${isCorrect ? '#166534' : isUnattempted ? '#475569' : '#991b1b'}">
+              ${isCorrect ? 'Correct' : isUnattempted ? 'Unattempted' : 'Incorrect'}
+            </span>
+          </div>
+          <div class="sol-card-text">Q${i+1}. ${q.question}</div>
+          <div class="sol-opt-list">
+            ${Object.keys(q.options).map(k => `
+              <div class="sol-opt-item ${k === q.correct ? 'is-correct' : (state.selectedOption === k && !isCorrect) ? 'is-user-wrong' : ''}">
+                <strong>${k}:</strong> ${q.options[k]}
+              </div>
+            `).join('')}
+          </div>
+          <div class="sol-exp-box"><strong>💡 Solution:</strong> ${q.explanation}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function filterSolutions(type) {
+    document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
+    if(event && event.target) event.target.classList.add('active');
+    renderSolutions(type);
+  }
+
+  // START APPLICATION
+  goToHome();
+</script>
+</body>
+</html>
