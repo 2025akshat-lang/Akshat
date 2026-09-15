@@ -9,4 +9,5 @@ https://2025akshat-lang.github.io/Akshat/practical/Chemistry.html
 3. physics:
 https://2025akshat-lang.github.io/Akshat/practical/physics.html
 4. lab visit
+   
    https://2025akshat-lang.github.io/Akshat/practical/lab_visit.html
