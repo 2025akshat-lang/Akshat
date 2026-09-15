@@ -11,3 +11,6 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
 4. lab visit
    
    https://2025akshat-lang.github.io/Akshat/practical/lab_visit.html
+5. HPLC
+
+   https://2025akshat-lang.github.io/Akshat/analytical_simulation/hplc.html
