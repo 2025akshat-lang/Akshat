@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biochemistry Research & Instrumentation Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #07090e;
+    --card-bg: rgba(18, 24, 38, 0.7);
+    --card-hover: rgba(28, 37, 57, 0.85);
+    --accent-cyan: #06b6d4;
+    --accent-glow: rgba(6, 182, 212, 0.25);
+    --accent-blue: #3b82f6;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(6, 182, 212, 0.5);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .portfolio-header {
+    margin-bottom: 50px;
+    background: rgba(15, 21, 33, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .portfolio-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  }
+
+  .header-content h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+
+  .header-content p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 700px;
+    line-height: 1.6;
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--accent-cyan);
+    padding: 6px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    letter-spacing: 0.03em;
+  }
+
+  /* GRID */
+  .instrument-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  /* CARD STYLING */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px -10px var(--accent-glow);
+  }
+
+  .card-img-wrapper {
+    width: 100%;
+    height: 220px;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+  }
+
+  .card:hover .card-img-wrapper img {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  .card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(12, 17, 29, 0.9) 100%);
+  }
+
+  .category-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(9, 14, 23, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--accent-cyan);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .card-info {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    transition: color 0.2s ease;
+  }
+
+  .card:hover .card-title {
+    color: var(--accent-cyan);
+  }
+
+  .card-sub {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .view-btn {
+    margin-top: 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* MODAL LIGHTBOX */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(4, 6, 10, 0.85);
+    backdrop-filter: blur(16px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .modal-content {
+    background: #0f1522;
+    border: 1px solid var(--border-hover);
+    border-radius: 20px;
+    max-width: 850px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: scale(1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  .modal-close:hover {
+    background: var(--accent-cyan);
+    color: #000;
+  }
+
+  .modal-img-container {
+    width: 100%;
+    max-height: 480px;
+    background: #04060a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-img-container img {
+    max-width: 100%;
+    max-height: 480px;
+    object-fit: contain;
+  }
+
+  .modal-body {
+    padding: 32px;
+  }
+
+  .modal-category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .modal-desc {
+    font-size: 0.98rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  
+  body {
+    margin: 0;
+    padding: 20px;
+    background-color: white;
+    color: #fff;
+  }
+
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .behance-card {
+    background: #111;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .behance-card:hover { transform: translateY(-6px); }
+  .img-wrapper { width: 100%; height: 220px; background: #222; }
+  .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+  .card-info { padding: 16px; }
+  .card-title { font-size: 15px; font-weight: 600; margin: 0 0 8px 0; color: #fff; }
+  .card-meta { font-size: 12px; color: #aaa; display: flex; justify-content: space-between; }
+  .badge { background: rgba(255, 255, 255, 0.12); padding: 3px 8px; border-radius: 4px; }
+
+  /* EXPANDED GALLERY VIEW */
+  .gallery-view {
+    display: none;
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #0d0d0d;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+    animation: fadeIn 0.4s ease-in-out;
+    color: white;
+    overflow: hidden;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .gallery-header {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .back-btn {
+    background: #000;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 9px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .gallery-title { font-size: 18px; font-weight: 700; color: #fff; margin: 0; }
+
+  .gallery-stream {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .gallery-stream img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  /* FIRE THEME */
+  .modal-fire-bg {
+    display: none;
+    position: absolute;
+    top: 0; right: 0; width: 100%; height: 200px;
+    pointer-events: none; z-index: 1;
+  }
+  .gallery-view.fire-active .modal-fire-bg { display: block; }
+  .modal-glow-fire {
+    position: absolute; top: -20px; right: 10px; width: 180px; height: 180px;
+    border-radius: 50%; background: rgba(255, 69, 0, 0.35); filter: blur(40px);
+  }
+  .modal-flame-wrapper { position: absolute; top: 15px; right: 30px; width: 60px; height: 100px; }
+  .flame-layer { position: absolute; bottom: 0; left: 50%; border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%; transform-origin: center bottom; }
+  .flame-main { width: 50px; height: 75px; margin-left: -25px; background: linear-gradient(to top, #ff2200, #ff6600, #ffae00, transparent); filter: blur(1px); animation: real-flicker 0.15s infinite alternate; }
+  .flame-mid { width: 32px; height: 50px; margin-left: -16px; bottom: 3px; background: linear-gradient(to top, #ff7700, #ffcc00, #ffffaa); filter: blur(0.5px); animation: real-flicker 0.10s infinite alternate; }
+  .flame-core { width: 16px; height: 30px; margin-left: -8px; bottom: 5px; background: linear-gradient(to top, #ffddaa, #ffffff); }
+
+  @keyframes real-flicker {
+    0% { opacity: 0.85; transform: scaleY(0.98); }
+    100% { opacity: 1; transform: scaleY(1.04); }
+  }
+
+  /* ==========================================
+     SCIENCE KIT THEME (FLOATING LAB APPARATUS)
+     ========================================== */
+  .modal-science-bg {
+    display: none;
+    position: absolute;
+    top: 0; right: 0; width: 100%; height: 200px;
+    pointer-events: none; z-index: 1;
+  }
+  .gallery-view.science-active .modal-science-bg { display: block; }
+
+  .modal-glow-science {
+    position: absolute; top: -20px; right: 10px; width: 220px; height: 200px;
+    border-radius: 50%; background: rgba(0, 255, 200, 0.25); filter: blur(50px);
+    animation: pulse-lab 3s infinite alternate ease-in-out;
+  }
+
+  .lab-items-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    width: 120px;
+    height: 140px;
+  }
+
+  /* SVG Icons with Glowing Neon Effect */
+  .lab-icon {
+    position: absolute;
+    bottom: -10px;
+    filter: drop-shadow(0 0 12px rgba(0, 255, 200, 0.8));
+    opacity: 0;
+    animation: float-up 3.5s infinite linear;
+  }
+
+  /* Conical Flask */
+  .icon-flask {
+    left: 10px;
+    width: 32px;
+    animation-duration: 3.2s;
+    animation-delay: 0s;
+  }
+
+  /* Test Tube */
+  .icon-testtube {
+    left: 55px;
+    width: 24px;
+    animation-duration: 4s;
+    animation-delay: 1.2s;
+  }
+
+  /* Beaker */
+  .icon-beaker {
+    left: 85px;
+    width: 28px;
+    animation-duration: 3.6s;
+    animation-delay: 0.6s;
+  }
+
+  /* Floating Chemical Drop */
+  .icon-drop {
+    left: 40px;
+    width: 14px;
+    animation-duration: 2.5s;
+    animation-delay: 1.8s;
+  }
+
+  @keyframes float-up {
+    0% {
+      transform: translateY(0) rotate(-10deg) scale(0.7);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.9;
+    }
+    80% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateY(-120px) rotate(15deg) scale(1.1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-lab {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    100% { transform: scale(1.25); opacity: 0.8; }
+</style>
+</head>
+<body>
+  
+   <div id="albumsGrid" class="albums-grid"></div>
+
+  <div id="galleryView" class="gallery-view">
+    <div class="gallery-header">
+      <button class="back-btn" onclick="closeGallery()">← Back to Overview</button>
+      <div id="galleryTitle" class="gallery-title">Project Details</div>
+    </div>
+    <div id="galleryStream" class="gallery-stream"></div>
+  </div>
+  <div class="container">
+    <header class="portfolio-header">
+      <div class="header-content">
+        <h1>Biochemistry Lab Instrumentation</h1>
+        <div class="meta-badge">🔬 11 Research Instruments</div>
+      </div>
+    </header>
+
+    <div id="grid" class="instrument-grid"></div>
+  </div>
+
+  <!-- LIGHTBOX MODAL -->
+  <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+      <div class="modal-img-container">
+        <img id="modalImg" src="" alt="Instrument Detailed View">
+      </div>
+      <div class="modal-body">
+        <div id="modalCategory" class="modal-category">Category</div>
+        <h2 id="modalTitle" class="modal-title">Instrument Name</h2>
+        <p id="modalDesc" class="modal-desc">Detailed scientific description...</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const instrumentsData = [
+    {
+      id: 1,
+      title: "Humidity Chamber",
+      category: "Environmental Control",
+      image: "https://i.postimg.cc/Hxr45CDM/Screenshot-20260806-161355-Drive.jpg",
+      description: "Provides precise control over atmospheric temperature and humidity conditions. Essential for environmental stability testing, shelf-life studies, and sensitive cell culture maintenance."
+    },
+    {
+      id: 2,
+      title: "Autoclave",
+      category: "Sterilization",
+      image: "https://i.postimg.cc/XJrcF0SY/Screenshot-20260806-161414-Drive.jpg",
+      description: "Utilizes high-pressure saturated steam to achieve thermal bio-decontamination. Guarantees complete sterilization of media, surgical tools, and laboratory bio-waste."
+    },
+    {
+      id: 3,
+      title: "B.O.D Incubator",
+      category: "Microbiology",
+      image: "https://i.postimg.cc/XJrcF0Sd/Screenshot-20260806-161424-Drive.jpg",
+      description: "Biochemical Oxygen Demand incubator engineered to maintain controlled low-temperature environments (typically 20°C) critical for microbial culture growth and biological oxygen analysis."
+    },
+    {
+      id: 4,
+      title: "Ultra-Low Freezer (-80°C)",
+      category: "Cryopreservation",
+      image: "https://i.postimg.cc/XJrcF0SC/Screenshot-20260806-161438-Drive.jpg",
+      description: "Provides ultra-low temperature preservation required for preserving biological samples like enzymes, nucleic acids (RNA/DNA), cell lysates, and tissue cultures long-term."
+    },
+    {
+      id: 5,
+      title: "Orbital Shaking Incubator",
+      category: "Cell Culture",
+      image: "https://i.postimg.cc/fyXc2jb0/Screenshot-20260806-161451-Drive.jpg",
+      description: "Combines thermal incubation with continuous circular orbital motion. Ensures optimal aeration, oxygen transfer, and nutrient mixing in liquid cultures."
+    },
+    {
+      id: 6,
+      title: "Laminar Flow Hood",
+      category: "Biosafety Workstation",
+      image: "https://i.postimg.cc/NGrkjYkN/Screenshot-20260806-161501-Drive.jpg",
+      description: "Creates a sterile workspace by drawing air through HEPA filters and blowing it in a unidirectional laminar stream. Prevents airborne sample contamination."
+    },
+    {
+      id: 7,
+      title: "Fluorescence Photomicroscope",
+      category: "Imaging System",
+      image: "https://i.postimg.cc/fW0fRZfp/Screenshot-20260806-161509-Drive.jpg",
+      description: "Advanced optical microscope featuring fluorescence excitation wavelengths and camera integration for high-contrast cellular visualization and protein localization."
+    },
+    {
+      id: 8,
+      title: "Digital pH Meter",
+      category: "Analytical Instruments",
+      image: "https://i.postimg.cc/sfZ4gyJy/Screenshot-20260806-161547-Drive.jpg",
+      description: "High-precision electro-analytical device for measuring hydrogen-ion activity (pH) in liquid media, reagent prep, and biochemical buffer solutions."
+    },
+    {
+      id: 9,
+      title: "Thermal Cycler (PCR)",
+      category: "Molecular Biology",
+      image: "https://i.postimg.cc/SQzfxqGQ/Screenshot-20260806-161610-Drive.jpg",
+      description: "Automated benchtop unit that executes rapid thermal cycling steps (denaturation, annealing, extension) to amplify targeted DNA fragments via PCR."
+    },
+    {
+      id: 10,
+      title: "Microplate Reader",
+      category: "Assay Quantification",
+      image: "https://i.postimg.cc/L4Z38RV9/Screenshot-20260806-161621-Drive.jpg",
+      description: "High-throughput microplate reader designed to quantify enzymatic, biological, or chemical reactions across 96-well formats using absorbance/fluorescence."
+    },
+    {
+      id: 11,
+      title: "Refrigerated Centrifuge",
+      category: "Sample Preparation",
+      image: "https://i.postimg.cc/fTnj3FHs/Screenshot-20260806-161711-Drive.jpg",
+      description: "High-speed centrifugal separator featuring integrated active cooling to protect heat-sensitive biological samples during density separation."
+    }
+  ];
+
+  function renderGrid() {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = instrumentsData.map(item => `
+      <div class="card" onclick="openModal(${item.id})">
+        <div class="card-img-wrapper">
+          <span class="category-badge">${item.category}</span>
+          <img src="${item.image}" alt="${item.title}" loading="lazy">
+          <div class="card-img-overlay"></div>
+        </div>
+        <div class="card-info">
+          <div>
+            <div class="card-title">${item.title}</div>
+            <div class="card-sub">${item.description.substring(0, 80)}...</div>
+          </div>
+          <div class="view-btn">View Details ↗</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openModal(id) {
+    const item = instrumentsData.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('modalImg').src = item.image;
+    document.getElementById('modalTitle').innerText = item.title;
+    document.getElementById('modalCategory').innerText = item.category;
+    document.getElementById('modalDesc').innerText = item.description;
+
+    const modal = document.getElementById('modal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(event) {
+    if (event.target.id === 'modal') {
+      closeModalDirect();
+    }
+  }
+
+  function closeModalDirect() {
+    const modal = document.getElementById('modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+
+  renderGrid();
+</script>
+
+</body>
+</html>
