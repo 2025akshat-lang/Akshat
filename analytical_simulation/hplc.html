@@ -1,0 +1,3188 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro-Level Interactive HPLC Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#051329;
+    --bg-grid:#0A2240;
+    --bg-panel:#0D3159;
+    --bg-panel-hover:#124073;
+    --bg-screen:#041526;
+    --line-cyan:#00E5FF;
+    --line-cyan-dim:#2A6D9E;
+    --flow-blue:#00B0FF;
+    --flow-sample:#FF5252;
+    --accent-amber:#FFB300;
+    --led-green:#00E676;
+    --text-primary:#EAF4FF;
+    --text-muted:#88A9C3;
+    --control-line:#3C6E99;
+    --led-off:#1A3854;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg-deep);color:var(--text-primary);font-family:'Inter',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;}
+  body{min-height:100vh;position:relative;
+    background-image:linear-gradient(var(--bg-grid) 1px, transparent 1px),linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size:24px 24px;
+  }
+  .stage{padding:18px 6px 150px;display:flex;justify-content:center;}
+  svg{width:100%;max-width:680px;height:auto;display:block;touch-action:manipulation;}
+
+  .component{cursor:pointer;}
+  .component .body{fill:url(#panelGrad);stroke:var(--line-cyan-dim);stroke-width:1.6;transition:all .18s ease;}
+  .component:hover .body{fill:var(--bg-panel-hover);stroke:var(--line-cyan);filter:drop-shadow(0 0 6px rgba(0,229,255,0.3));}
+  .component:focus{outline:none;}
+  .component:focus .body, .component.selected .body{stroke:var(--accent-amber);stroke-width:2.2;fill:#144473;filter:drop-shadow(0 0 8px rgba(255,179,0,0.4));}
+  .component .icon{stroke:var(--line-cyan);stroke-width:1.7;fill:none;}
+  .component .icon-fill{fill:var(--line-cyan-dim);}
+  .component.selected .icon{stroke:var(--accent-amber);}
+  .component.selected .icon-fill{fill:var(--accent-amber);}
+  .component .screen{fill:var(--bg-screen);stroke:var(--line-cyan-dim);stroke-width:1;}
+  .component .screen-text{fill:var(--line-cyan);font-family:'Space Grotesk',monospace;font-size:9px;}
+
+  .nameplate, .leader-label{
+    fill:var(--text-muted);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    paint-order:stroke;
+    stroke:var(--bg-deep);
+    stroke-width:4px;
+    stroke-linejoin:round;
+    pointer-events:none;
+  }
+  .leader-label{ text-anchor:end; font-size:12px; }
+  .component.selected .leader-label, .component.selected .nameplate{ fill:var(--accent-amber); }
+  .leader-line{ stroke:var(--line-cyan-dim); stroke-width:1.2; }
+  .leader-dot{ fill:var(--line-cyan-dim); }
+  .component.selected .leader-line{ stroke:var(--accent-amber); }
+  .component.selected .leader-dot{ fill:var(--accent-amber); }
+
+  .led{fill:var(--led-off);transition:fill 0.3s;}
+  .running .led{fill:var(--led-green);filter:drop-shadow(0 0 3px var(--led-green));}
+
+  .base-cabinet{fill:url(#panelGrad);stroke:var(--line-cyan-dim);stroke-width:1.4;}
+  .desk-line{stroke:var(--line-cyan-dim);stroke-width:1.4;}
+  .floor-line{stroke:var(--control-line);stroke-width:1.4;}
+
+  .flow-path{fill:none;stroke:var(--line-cyan-dim);stroke-width:2.5;}
+  .running .flow-path{stroke:var(--flow-blue);stroke-dasharray:6 6;animation:flow 0.8s linear infinite;}
+  .running .flow-sample-path{stroke:var(--flow-sample);stroke-dasharray:4 4;animation:flow 0.5s linear infinite;}
+  @keyframes flow{ to{ stroke-dashoffset:-24; } }
+
+  .control-line{fill:none;stroke:var(--control-line);stroke-width:1.3;stroke-dasharray:3 4;}
+  .data-pulse{fill:var(--accent-amber);opacity:0;}
+  .running .data-pulse{opacity:1;}
+
+  .runbtn{
+    position:fixed;top:20px;right:20px;width:56px;height:56px;border-radius:50%;
+    background:var(--bg-panel);border:2px solid var(--line-cyan);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    color:var(--line-cyan);font-size:20px;z-index:30;transition:all .2s ease;
+    box-shadow:0 0 15px rgba(0,229,255,0.25);
+  }
+  .runbtn:hover{scale:1.05;box-shadow:0 0 20px rgba(0,229,255,0.4);}
+  .runbtn:active{transform:scale(.95);}
+  .runbtn.on{border-color:var(--accent-amber);color:var(--accent-amber);box-shadow:0 0 20px rgba(255,179,0,0.4);}
+
+  .infobar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;
+    display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);
+  }
+  .infobar.show{transform:translateY(0);}
+
+  .desc-panel{
+    background:var(--bg-panel);border-top:1px solid var(--line-cyan);
+    padding:0 20px;max-height:0;overflow:hidden;transition:max-height .28s ease, padding .28s ease;
+  }
+  .desc-panel.open{padding:16px 20px;max-height:260px;}
+  .desc-panel p{margin:0;font-size:.92rem;line-height:1.6;color:var(--text-primary);}
+
+  .name-bar{
+    background:var(--bg-deep);border-top:1px solid var(--line-cyan-dim);
+    padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.05rem;
+    color:var(--accent-amber);cursor:pointer;
+  }
+  .name-bar .chev{transition:transform .25s ease;color:var(--text-muted);font-size:1rem;}
+  .name-bar.open .chev{transform:rotate(180deg);}
+</style>
+
+<style>
+/* ===== ADVANCED CDS EXTENSION ===== */
+:root{
+  --cds-bg:#07111f;--cds-panel:#0b1b2c;--cds-panel2:#0e2438;
+  --cds-line:#1d4868;--cds-cyan:#00e5ff;--cds-green:#00e676;
+  --cds-amber:#ffb300;--cds-red:#ff4d5f;--cds-text:#e8f5ff;--cds-muted:#7896ad;
+}
+#cdsApp{position:relative;z-index:50;background:linear-gradient(180deg,#07111f,#081523);
+border-bottom:1px solid #163752;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+.cds-top{display:flex;align-items:center;gap:14px;padding:12px 14px;border-bottom:1px solid #17364d;
+position:sticky;top:0;z-index:80;background:rgba(7,17,31,.96);backdrop-filter:blur(12px)}
+.cds-brand{font:700 15px "Space Grotesk",sans-serif;color:var(--cds-cyan);white-space:nowrap}
+.cds-brand small{display:block;font:500 9px Inter,sans-serif;color:var(--cds-muted);letter-spacing:1.5px}
+.cds-tabs{display:flex;gap:6px;overflow:auto;flex:1;scrollbar-width:none}.cds-tabs::-webkit-scrollbar{display:none}
+.cds-tab,.cds-btn{border:1px solid #21455f;background:#0c2032;color:#b9d5e8;border-radius:7px;padding:9px 11px;
+font:600 11px Inter,sans-serif;cursor:pointer;white-space:nowrap;transition:.18s}
+.cds-tab:hover,.cds-btn:hover{border-color:var(--cds-cyan);color:#fff}
+.cds-tab.active{background:#10354b;border-color:var(--cds-cyan);color:var(--cds-cyan);box-shadow:0 0 12px #00e5ff22}
+.cds-btn.primary{background:#0d3b4b;border-color:#00aeca;color:#dffcff}
+.cds-btn.danger{border-color:#79323b;color:#ff9da8}
+  .cds-btn:disabled,.runbtn.locked{opacity:.38!important;cursor:not-allowed!important;filter:grayscale(.35)}
+.cds-status{font:700 10px "Space Grotesk",monospace;color:var(--cds-green);white-space:nowrap}
+#cdsBody{padding:14px;max-width:1280px;margin:auto;display:none}
+#cdsBody.panel-open{display:block}
+.cds-view{display:none}.cds-view.active{display:block}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid #17364d}
+.panel-head h2{margin:0;font:700 15px "Space Grotesk",sans-serif;color:var(--cds-cyan);letter-spacing:.5px}
+.panel-close{border:1px solid #21455f;background:#0c2032;color:#b9d5e8;border-radius:7px;padding:8px 12px;
+  font:700 12px Inter,sans-serif;cursor:pointer;white-space:nowrap;transition:.18s}
+.panel-close:hover{border-color:var(--cds-red);color:#ff9da8}
+
+/* Hamburger */
+.hamburger{width:38px;height:38px;flex:0 0 auto;border:1px solid #21455f;background:#0c2032;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s;gap:0}
+.hamburger:hover{border-color:var(--cds-cyan)}
+.hamburger .bars{width:18px;height:13px;position:relative}
+.hamburger .bars span{position:absolute;left:0;width:100%;height:2px;background:var(--cds-cyan);border-radius:2px}
+.hamburger .bars span:nth-child(1){top:0}.hamburger .bars span:nth-child(2){top:5.5px}.hamburger .bars span:nth-child(3){top:11px}
+
+/* Side drawer menu */
+.sidenav-overlay{position:fixed;inset:0;background:rgba(2,8,16,.6);z-index:150;opacity:0;pointer-events:none;transition:opacity .22s ease}
+.sidenav-overlay.open{opacity:1;pointer-events:auto}
+.sidenav{position:fixed;top:0;left:0;bottom:0;width:270px;max-width:82vw;background:linear-gradient(180deg,#08182a,#061220);
+  border-right:1px solid #17364d;z-index:151;transform:translateX(-100%);transition:transform .26s cubic-bezier(.32,.72,0,1);
+  display:flex;flex-direction:column;overflow-y:auto}
+.sidenav.open{transform:translateX(0)}
+.sidenav-header{padding:16px 14px;border-bottom:1px solid #17364d;display:flex;align-items:center;justify-content:space-between}
+.sidenav-header .cds-brand{font:700 14px "Space Grotesk",sans-serif}
+.sidenav-close{border:none;background:none;color:var(--cds-muted);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px}
+.sidenav-section-title{padding:12px 14px 4px;font:700 9px Inter;letter-spacing:1.5px;color:var(--cds-muted);text-transform:uppercase}
+.sidenav-item{display:flex;align-items:center;gap:9px;padding:11px 14px;color:#b9d5e8;font:600 12px Inter,sans-serif;
+  cursor:pointer;border-left:3px solid transparent;transition:.15s}
+.sidenav-item:hover{background:#0d2235;color:#fff}
+.sidenav-item.active{background:#10354b;border-left-color:var(--cds-cyan);color:var(--cds-cyan)}
+.sidenav-item .ic{width:16px;text-align:center;opacity:.85}
+.sidenav-divider{height:1px;background:#17364d;margin:8px 0}
+.sidenav-roles{display:flex;flex-direction:column;gap:6px;padding:6px 14px 14px}
+
+/* System / power view */
+.power-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.power-btn{width:88px;height:88px;border-radius:50%;border:3px solid #79323b;background:radial-gradient(circle at 35% 30%,#2a0f13,#160709);
+  color:#ff9da8;font:700 11px "Space Grotesk";cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.22s;box-shadow:0 0 0 rgba(0,230,118,0)}
+.power-btn .pic{font-size:26px;line-height:1}
+.power-btn.on{border-color:#00e676;color:#8cffbb;background:radial-gradient(circle at 35% 30%,#0d3323,#061a13);
+  box-shadow:0 0 22px rgba(0,230,118,0.35)}
+.power-state-label{font:700 12px "Space Grotesk";color:var(--cds-muted)}
+.power-state-label b{display:block;font-size:15px;color:#e8f7ff}
+.power-state-label.on b{color:#8cffbb}
+.workflow-list{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.wf-step{display:flex;align-items:center;gap:11px;border:1px solid #1d425c;background:#081826;border-radius:9px;padding:11px 12px}
+.wf-step.done{border-color:#1d5c3a;background:#081f16}
+.wf-num{width:26px;height:26px;border-radius:50%;background:#0c2032;border:1px solid #21455f;display:flex;align-items:center;
+  justify-content:center;font:700 11px "Space Grotesk";color:#b9d5e8;flex:0 0 auto}
+.wf-step.done .wf-num{background:#0f4a2c;border-color:#00e676;color:#8cffbb}
+.wf-body{flex:1}.wf-body b{display:block;font:700 12px Inter;color:#e7f5ff;margin-bottom:2px}
+.wf-body span{font-size:10px;color:var(--cds-muted)}
+.wf-check{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.wf-check label{display:flex;align-items:center;gap:7px;font-size:11px;color:#b9d5e8;cursor:pointer}
+.wf-locked{opacity:.4;pointer-events:none}
+@media(max-width:800px){.power-wrap{gap:12px}}
+.cds-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.cds-card{grid-column:span 4;background:linear-gradient(145deg,#0d2235,#091827);
+border:1px solid #193b54;border-radius:10px;padding:13px;box-shadow:0 8px 22px #0003}
+.cds-card.wide{grid-column:span 8}.cds-card.full{grid-column:1/-1}.cds-card h3{margin:0 0 11px;font:700 12px "Space Grotesk";color:#dceeff;
+letter-spacing:.5px}.sub{color:var(--cds-muted);font-size:10px;margin:-6px 0 10px}
+.field{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;margin:9px 0}.field label{font-size:11px;color:#9db8cb}
+.field input,.field select{width:100%;background:#061321;border:1px solid #24465d;color:#e7f5ff;border-radius:6px;padding:8px;font:600 11px Inter}
+.field input[type=range]{padding:0;accent-color:var(--cds-cyan)}
+.value{font:700 11px "Space Grotesk";color:var(--cds-cyan);text-align:right}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{background:#061421;border:1px solid #19374e;border-radius:7px;padding:9px}
+.metric b{display:block;font:700 16px "Space Grotesk";color:#e8f7ff}.metric span{font-size:9px;color:var(--cds-muted)}
+#chromCanvas,#pressureCanvas,#calCanvas{width:100%;display:block;background:#03101c;border:1px solid #18364c;border-radius:7px}
+#chromCanvas{height:320px}.chart-wrap{position:relative}.chart-hint{position:absolute;top:8px;right:9px;font-size:9px;color:#6e8da4}
+table{width:100%;border-collapse:collapse;font-size:10px}th,td{padding:7px;border-bottom:1px solid #18354b;text-align:left}th{color:#80a7bf;font-weight:600}td{color:#d9edf9}
+.badge{display:inline-block;padding:3px 6px;border-radius:5px;background:#123349;color:#8fdfff;font-size:9px;font-weight:700}
+.badge.ok{color:#8cffbb;background:#103629}.badge.err{color:#ff9da8;background:#3c1720}
+.error-list{display:grid;gap:8px}.fault{border:1px solid #25455a;background:#071523;border-radius:7px;padding:10px}
+.fault label{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#d6e8f5}
+.switch{position:relative;width:38px;height:20px}.switch input{display:none}.slider{position:absolute;inset:0;background:#20394c;border-radius:20px;cursor:pointer}
+.slider:before{content:"";position:absolute;width:16px;height:16px;left:2px;top:2px;background:#91a8b8;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:#71313a}.switch input:checked+.slider:before{transform:translateX(18px);background:#ff6675}
+.diag-log{height:135px;overflow:auto;background:#030b12;border:1px solid #173248;border-radius:6px;padding:8px;
+font:10px/1.6 "Space Grotesk",monospace;color:#83b8ce}.warning{color:#ffbd68}.critical{color:#ff6675}.good{color:#67e9a0}
+.report-overlay{position:fixed;inset:0;background:#000b;z-index:200;display:none;padding:18px;overflow:auto}.report-overlay.show{display:block}
+.report{max-width:980px;margin:auto;background:#fff;color:#17212b;padding:28px;border-radius:8px;box-shadow:0 20px 70px #000}
+.report h1{font:700 23px Arial;margin:0 0 4px}.report .rsub{font:12px Arial;color:#667;margin-bottom:18px}.report h2{font:700 14px Arial;border-bottom:1px solid #ccd5dc;padding-bottom:6px;margin-top:20px}
+.report table{color:#17212b}.report th{color:#445}.report td{color:#17212b;border-color:#dce2e7}.report canvas{width:100%;border:1px solid #ccd5dc}
+.report-actions{display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px}
+@media(max-width:800px){.cds-card,.cds-card.wide{grid-column:1/-1}.metric-grid{grid-template-columns:repeat(2,1fr)}
+.cds-brand{display:none}.field{grid-template-columns:1fr 95px}#chromCanvas{height:270px}}
+@media print{body>*:not(#reportOverlay){display:none!important}.report-overlay{position:static;background:#fff;padding:0}.report{box-shadow:none;max-width:none}}
+
+/* ===== REAL-WORLD HUMAN ERROR & DIAGNOSTIC VISUAL FEEDBACK ENGINE (PART 1) ===== */
+.err-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;
+  font:700 12px "Space Grotesk",monospace;letter-spacing:.3px;border-bottom:1px solid #3c1720;user-select:none}
+.err-banner .eb-code{background:#000a;padding:2px 7px;border-radius:5px;font-size:11px}
+.err-banner .eb-more{margin-left:auto;font:600 10px Inter,sans-serif;opacity:.85;white-space:nowrap}
+.err-banner.severity-critical{background:linear-gradient(90deg,#3c0f16,#4a1119);color:#ffb3ba;
+  border-bottom-color:#7a2530;animation:errPulse 1s step-start infinite}
+.err-banner.severity-warning{background:linear-gradient(90deg,#3a2a08,#43310a);color:#ffdc9b;border-bottom-color:#6b4d12}
+@keyframes errPulse{0%,49%{background-color:#3c0f16}50%,100%{background-color:#59151e}}
+
+.blink-err{animation:blinkErr .6s step-start infinite;}
+@keyframes blinkErr{0%,49%{fill:#ff4d5f;opacity:1}50%,100%{fill:#ff4d5f;opacity:.25}}
+.blink-err-bg{animation:blinkErrBg .6s step-start infinite;}
+@keyframes blinkErrBg{0%,49%{fill:#2a0508}50%,100%{fill:#4a0d12}}
+.led-warn{fill:var(--cds-amber)!important;filter:drop-shadow(0 0 4px #ffb30099);animation:blinkAmber 1s step-start infinite}
+@keyframes blinkAmber{0%,49%{opacity:1}50%,100%{opacity:.35}}
+
+.leak-drop{fill:#00b0ff;opacity:0}
+.leak-drop-label{fill:#ff6675;font:700 8px "Space Grotesk",monospace;opacity:0}
+#leakDropGroup.active .leak-drop{animation:dripFall 0.85s linear infinite}
+#leakDropGroup.active .leak-drop.d2{animation-delay:.28s}
+#leakDropGroup.active .leak-drop.d3{animation-delay:.55s}
+#leakDropGroup.active .leak-drop-label{opacity:1;animation:blinkAmber 1s step-start infinite}
+@keyframes dripFall{0%{transform:translateY(0);opacity:0}12%{opacity:1}100%{transform:translateY(26px);opacity:0}}
+
+.diag-overlay{position:fixed;inset:0;background:#000c;z-index:220;display:none;padding:16px;overflow:auto}
+.diag-overlay.show{display:block}
+.diag-drawer{max-width:720px;margin:24px auto;background:linear-gradient(160deg,#0d2235,#081523);
+  border:1px solid #2a4c66;border-radius:12px;box-shadow:0 20px 60px #000a;overflow:hidden}
+.diag-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;
+  border-bottom:1px solid #17364d;position:sticky;top:0;background:#0d2235}
+.diag-drawer-head h2{margin:0;font:700 15px "Space Grotesk",sans-serif;color:var(--cds-cyan)}
+.diag-drawer-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.diag-entry{border:1px solid #1d425c;background:#071523;border-radius:9px;padding:12px 14px}
+.diag-entry.active-critical{border-color:#7a2530;background:#1c0a0d}
+.diag-entry.active-warning{border-color:#6b4d12;background:#211705}
+.diag-entry-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.diag-entry-head .code{font:700 10px "Space Grotesk",monospace;padding:2px 7px;border-radius:5px;background:#123349;color:#8fdfff}
+.diag-entry.active-critical .code{background:#5a151d;color:#ff9da8}
+.diag-entry.active-warning .code{background:#4a3608;color:#ffcf7a}
+.diag-entry-head b{font:700 12px Inter,sans-serif;color:#e8f5ff}
+.diag-entry-head .stat{margin-left:auto;font:700 9px Inter;padding:2px 7px;border-radius:5px}
+.diag-entry-head .stat.on{background:#3c1720;color:#ff9da8}
+.diag-entry-head .stat.off{background:#103629;color:#67e9a0}
+.diag-entry p{margin:5px 0;font-size:11px;line-height:1.55;color:#c3dbec}
+.diag-entry p b{color:#9fd6ee}
+
+.err-injector-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:8px 0}
+.err-injector-row .fault{flex:1 1 220px}
+.err-injector-row select{width:100%;background:#061321;border:1px solid #24465d;color:#e7f5ff;border-radius:6px;padding:8px;font:600 11px Inter}
+.err-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+
+/* ===== MASTER MODULE EXTENSIONS ===== */
+.role-picker{display:flex;gap:5px;align-items:center;margin-left:auto}
+.role-btn{border:1px solid #21455f;background:#0c2032;color:#7ba0b8;border-radius:6px;padding:6px 8px;font:700 9px Inter;cursor:pointer;white-space:nowrap}
+.role-btn.active{background:#123349;border-color:var(--cds-amber);color:var(--cds-amber)}
+.locked{opacity:.45;pointer-events:none;position:relative}
+.locked::after{content:"🔒 Requires higher role";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 10px Inter;color:#ff9da8;background:#07111fcc;border-radius:8px}
+.grad-table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:8px}
+.grad-table th,.grad-table td{padding:5px 4px;border-bottom:1px solid #18354b}
+.grad-table input,.grad-table select{width:100%;background:#061321;border:1px solid #24465d;color:#e7f5ff;border-radius:4px;padding:4px;font:600 10px Inter}
+.grad-canvas-wrap{position:relative}
+#gradCanvas,#pdaHeatCanvas,#pdaSpecCanvas{width:100%;display:block;background:#03101c;border:1px solid #18364c;border-radius:7px}
+#gradCanvas{height:170px}#pdaHeatCanvas{height:280px;cursor:crosshair}#pdaSpecCanvas{height:200px}
+.sst-pass{color:#67e9a0;font-weight:700}.sst-fail{color:#ff6675;font-weight:700}
+.lib-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.lib-card{flex:1 1 150px;border:1px solid #1d425c;background:#081826;border-radius:8px;padding:10px;cursor:pointer;transition:.15s}
+.lib-card:hover{border-color:var(--cds-cyan)}.lib-card.active{border-color:var(--cds-amber);box-shadow:0 0 10px #ffb30044}
+.lib-card b{display:block;font:700 11px "Space Grotesk";color:#dceeff;margin-bottom:3px}.lib-card span{font-size:9px;color:var(--cds-muted)}
+.audit-table td:nth-child(1){white-space:nowrap;color:#8fdfff;font-family:"Space Grotesk",monospace}
+.tickbar{height:4px;background:#0c2032;border-radius:2px;overflow:hidden;margin-top:4px}
+.tickbar i{display:block;height:100%;background:var(--cds-cyan);width:0%;transition:width .1s linear}
+
+/* ===== PART 2: INTERACTIVE TROUBLESHOOTING & GUIDED REPAIR WORKFLOW ENGINE ===== */
+.sys-light{display:inline-block;width:11px;height:11px;border-radius:50%;margin-left:10px;vertical-align:middle;
+  background:#3c1720;box-shadow:0 0 6px #0008 inset;}
+.sys-light-red{background:#ff4d5f;box-shadow:0 0 8px #ff4d5fcc;animation:blinkErr .6s step-start infinite;}
+.sys-light-amber{background:var(--cds-amber);box-shadow:0 0 8px #ffb300cc;animation:blinkAmber 1s step-start infinite;}
+.sys-light-green{background:var(--cds-green);box-shadow:0 0 8px #00e676cc;animation:none;}
+
+.diag-entry-head .btnrow{margin-left:8px}
+.diag-entry .repair-cta{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+
+.repair-console .diag-drawer-body{gap:16px}
+.repair-step-list{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.repair-step{display:flex;align-items:center;gap:10px;border:1px solid #1d425c;background:#071523;
+  border-radius:8px;padding:10px 12px;opacity:.5;transition:opacity .2s ease,border-color .2s ease;}
+.repair-step.enabled{opacity:1;}
+.repair-step.done{opacity:1;border-color:#1f5a3a;background:#08201a;}
+.repair-step .rs-num{width:22px;height:22px;border-radius:50%;background:#123349;color:#8fdfff;
+  display:flex;align-items:center;justify-content:center;font:700 11px "Space Grotesk";flex-shrink:0;}
+.repair-step.done .rs-num{background:#144d33;color:#67e9a0;}
+.repair-step .rs-label{flex:1;font-size:12px;color:#d6e8f5;}
+.repair-step.done .rs-label{color:#8fe6b8;}
+.repair-step .rs-check{font-size:14px;color:#67e9a0;opacity:0;}
+.repair-step.done .rs-check{opacity:1;}
+.repair-step button{flex-shrink:0}
+.repair-or-divider{text-align:center;font:700 10px Inter;color:var(--cds-muted);letter-spacing:1px;margin:2px 0}
+
+.eq-panel{border:1px solid #2a4c66;background:#08182a;border-radius:10px;padding:14px;text-align:center;display:none}
+.eq-panel.show{display:block}
+.eq-lightrow{display:flex;justify-content:center;gap:10px;margin-bottom:10px}
+.eq-lightrow .sys-light{width:16px;height:16px;margin:0}
+.eq-status-text{font:700 13px "Space Grotesk";letter-spacing:.4px;margin-bottom:10px;color:var(--cds-amber)}
+.eq-canvas-wrap canvas{width:100%;height:70px;display:block;background:#03101c;border:1px solid #18364c;border-radius:6px;margin-bottom:8px}
+.eq-progress{height:6px;background:#0c2032;border-radius:3px;overflow:hidden}
+.eq-progress i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#ff4d5f,var(--cds-amber),var(--cds-green));transition:width .2s linear}
+.eq-metrics{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;font:10px "Space Grotesk",monospace;color:#83b8ce}
+
+.diag-subtabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.diag-subtab{border:1px solid #21455f;background:#0c2032;color:#7ba0b8;border-radius:7px;padding:8px 12px;
+  font:700 11px Inter;cursor:pointer;white-space:nowrap}
+.diag-subtab.active{background:#123349;border-color:var(--cds-amber);color:var(--cds-amber)}
+.diag-subview{display:none}
+.diag-subview.active{display:grid}
+
+.health-meter{display:flex;align-items:center;gap:10px;margin:8px 0}
+.health-meter .tickbar{flex:1}
+.health-val{font:700 11px "Space Grotesk",monospace;color:#dceeff;white-space:nowrap}
+
+.toast-stack{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:400;
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;max-width:92vw}
+.toast{background:linear-gradient(160deg,#0d2235,#081523);border:1px solid #2a6d9e;color:#eaf4ff;
+  padding:10px 16px;border-radius:8px;font:600 12px Inter;box-shadow:0 8px 24px #000a;
+  opacity:0;transform:translateY(-10px);animation:toastIn .25s ease forwards, toastOut .3s ease forwards 3.2s;
+  white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;}
+.toast.good{border-color:#1f5a3a;color:#9dffc6}
+.toast.warning{border-color:#6b4d12;color:#ffdc9b}
+.toast.critical{border-color:#7a2530;color:#ffb3ba}
+@keyframes toastIn{to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px)}}
+</style>
+
+<style>
+/* ============================================================
+   PART 3 — FINAL POLISH / COMPLIANCE / AUDIO / MAINTENANCE
+   ============================================================ */
+.p3-toolbar{display:flex;align-items:center;gap:7px;margin-left:auto}
+.p3-mini{border:1px solid #21455f;background:#0c2032;color:#b9d5e8;border-radius:7px;padding:7px 9px;font:700 10px Inter;cursor:pointer;white-space:nowrap}
+.p3-mini:hover{border-color:var(--cds-cyan);color:#fff}
+.p3-mini.muted{border-color:#6b4d12;color:#ffdc9b}
+.p3-version{font:700 10px "Space Grotesk",monospace;color:#8fdfff;border:1px solid #21455f;padding:6px 8px;border-radius:6px;background:#071a2a}
+.p3-sst-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.p3-sst-head select{margin-left:auto;background:#061321;border:1px solid #24465d;color:#e7f5ff;border-radius:6px;padding:7px 9px;font:600 11px Inter}
+.sst-row-pass{background:rgba(0,230,118,.08)!important}
+.sst-row-fail{background:rgba(255,77,95,.09)!important}
+.sst-row-pass td{border-bottom-color:#1f5a3a}
+.sst-row-fail td{border-bottom-color:#7a2530}
+.p3-rulebox{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.p3-rule{border:1px solid #21455f;background:#071523;border-radius:6px;padding:6px 8px;font:600 10px "Space Grotesk";color:#a9c7d9}
+.p3-rule b{color:#e7f5ff}
+.p3-diff{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.p3-diff-card{border:1px solid #21455f;background:#071523;border-radius:8px;padding:10px}
+.p3-diff-card h4{margin:0 0 7px;font:700 10px Inter;color:#8fdfff}
+.p3-diff-card pre{margin:0;white-space:pre-wrap;font:10px/1.55 "Space Grotesk";color:#d9edf9}
+.p3-modal{position:fixed;inset:0;background:#000c;z-index:500;display:none;padding:16px;overflow:auto}
+.p3-modal.show{display:block}
+.p3-dialog{max-width:760px;margin:30px auto;background:linear-gradient(160deg,#0d2235,#081523);border:1px solid #2a4c66;border-radius:12px;box-shadow:0 24px 80px #000a;overflow:hidden}
+.p3-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid #17364d}
+.p3-dialog-head h2{margin:0;font:700 15px "Space Grotesk";color:var(--cds-cyan)}
+.p3-dialog-body{padding:16px 18px}
+.p3-dialog-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #17364d}
+.p3-input{width:100%;background:#061321;border:1px solid #24465d;color:#e7f5ff;border-radius:7px;padding:10px;font:600 11px Inter}
+.p3-input:focus{outline:none;border-color:var(--cds-cyan);box-shadow:0 0 0 2px #00e5ff18}
+.p3-label{display:block;font:700 10px Inter;color:#9db8cb;margin-bottom:6px}
+.p3-warning{padding:9px 11px;border:1px solid #6b4d12;background:#211705;color:#ffdc9b;border-radius:7px;font-size:10px;margin-bottom:10px}
+.p3-schematic{width:100%;height:330px;background:#03101c;border:1px solid #18364c;border-radius:8px}
+.p3-part-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.p3-part{border:1px solid #21455f;background:#071523;border-radius:7px;padding:9px}
+.p3-part b{display:block;font:700 10px "Space Grotesk";color:#dceeff;margin-bottom:3px}
+.p3-part span{font-size:9px;color:var(--cds-muted)}
+.p3-audit-snapshot{font:9px/1.45 "Space Grotesk";max-height:160px;overflow:auto;background:#030b12;border:1px solid #173248;border-radius:6px;padding:8px;white-space:pre-wrap}
+.p3-signature{border:1px solid #ccd5dc;border-radius:6px;padding:12px;margin-top:14px;font:11px Arial}
+.p3-signature .sigline{border-bottom:1px solid #77838c;height:22px;margin:4px 0 8px}
+@media(max-width:700px){
+  .p3-diff,.p3-part-list{grid-template-columns:1fr}
+  .p3-version{display:none}
+}
+</style>
+
+</head>
+<body>
+
+
+<div class="sidenav-overlay" id="sidenavOverlay" onclick="closeSidenav()"></div>
+<div class="sidenav" id="sidenav">
+  <div class="sidenav-header">
+    <div class="cds-brand">HPLC CDS<small>ANALYTICAL CONTROL STATION v3.7</small></div>
+    <button class="sidenav-close" onclick="closeSidenav()" aria-label="Close menu">✕</button>
+  </div>
+  <div class="sidenav-section-title">System</div>
+  <div class="sidenav-item" data-view="system" onclick="navTo('system')"><span class="ic">⏻</span> Power &amp; Workflow</div>
+  <div class="sidenav-divider"></div>
+  <div class="sidenav-section-title">Control Station</div>
+  <div class="sidenav-item" data-view="dash" onclick="navTo('dash')"><span class="ic">▦</span> Dashboard</div>
+  <div class="sidenav-item" data-view="method" onclick="navTo('method')"><span class="ic">⚙</span> Method Setup</div>
+  <div class="sidenav-item" data-view="gradient" onclick="navTo('gradient')"><span class="ic">📈</span> Gradient Editor</div>
+  <div class="sidenav-item" data-view="sequence" onclick="navTo('sequence')"><span class="ic">☰</span> Sequence</div>
+  <div class="sidenav-item" data-view="live" onclick="navTo('live')"><span class="ic">▶</span> Live Analysis</div>
+  <div class="sidenav-item" data-view="data" onclick="navTo('data')"><span class="ic">📊</span> Data Analysis</div>
+  <div class="sidenav-item" data-view="pda" onclick="navTo('pda')"><span class="ic">🌈</span> PDA Spectral</div>
+  <div class="sidenav-item" data-view="diag" onclick="navTo('diag')"><span class="ic">🛠</span> Diagnostics</div>
+  <div class="sidenav-item" data-view="audit" onclick="navTo('audit')"><span class="ic">📜</span> Audit Trail</div>
+  <div class="sidenav-divider"></div>
+  <div class="sidenav-section-title">Operator Role</div>
+  <div class="sidenav-roles" id="rolePicker">
+    <button class="role-btn active" data-role="analyst" onclick="setRole('analyst')" style="width:100%;text-align:left">Analyst</button>
+    <button class="role-btn" data-role="methoddev" onclick="setRole('methoddev')" style="width:100%;text-align:left">Method Dev</button>
+    <button class="role-btn" data-role="admin" onclick="setRole('admin')" style="width:100%;text-align:left">Admin/QA</button>
+  </div>
+</div>
+
+<div id="cdsApp">
+  <div class="err-banner" id="errBanner" onclick="openRepairConsole()" style="display:none">
+    <span class="eb-code" id="errBannerCode">ERR-00</span>
+    <span id="errBannerText">—</span>
+    <span class="eb-more">⚠ View Diagnostic Logs ▸</span>
+  </div>
+  <div class="cds-top">
+    <div class="hamburger" id="hamburgerBtn" onclick="openSidenav()" role="button" tabindex="0" aria-label="Open menu">
+      <div class="bars"><span></span><span></span><span></span></div>
+    </div>
+    <div class="cds-brand">HPLC CDS<small>ANALYTICAL CONTROL STATION v3.7</small></div>
+    <div id="cdsStatus" class="cds-status" style="margin-left:auto">● STANDBY</div>
+    <span id="sysLight" class="sys-light sys-light-red" title="System status light — RED: error · AMBER: equilibrating · GREEN: ready"></span>
+  </div>
+
+  <div id="cdsBody">
+    <div class="panel-head"><h2 id="panelTitle">Dashboard</h2><button class="panel-close" onclick="closePanel()">✕ Close</button></div>
+    <section id="view-system" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card full">
+          <h3>INSTRUMENT POWER</h3>
+          <div class="power-wrap">
+            <div class="power-btn" id="powerBtn" onclick="togglePower()" role="button" tabindex="0" aria-label="Power on/off">
+              <div class="pic">⏻</div>
+            </div>
+            <div class="power-state-label" id="powerLabel">SYSTEM<b>POWERED OFF</b></div>
+          </div>
+        </div>
+        <div class="cds-card full" id="workflowCard">
+          <h3>STARTUP &amp; SAMPLE WORKFLOW</h3>
+          <p class="sub">Follow these steps in order after powering on the instrument.</p>
+          <div class="workflow-list" id="workflowList"></div>
+        </div>
+      </div>
+    </section>
+    <section id="view-dash" class="cds-view active">
+      <div class="cds-grid">
+        <div class="cds-card full"><h3>SYSTEM OVERVIEW</h3>
+          <div class="metric-grid">
+            <div class="metric"><b id="mFlow">1.00</b><span>FLOW mL/min</span></div>
+            <div class="metric"><b id="mPress">0.0</b><span>PRESSURE bar</span></div>
+            <div class="metric"><b id="mTemp">40.0</b><span>OVEN °C</span></div>
+            <div class="metric"><b id="mUV">254</b><span>UV nm</span></div>
+          </div>
+        </div>
+        <div class="cds-card wide"><h3>HARDWARE / DATA PATH</h3><p class="sub">The original interactive SVG hardware stack remains below this control station.</p>
+          <button class="cds-btn primary" onclick="cdsTab('live')">Open Live Acquisition</button>
+          <button class="cds-btn" onclick="cdsTab('method')">Edit Method</button>
+        </div>
+        <div class="cds-card"><h3>METHOD SNAPSHOT</h3><div id="methodSnap" class="diag-log"></div></div>
+      </div>
+    </section>
+
+    <section id="view-method" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card">
+          <h3>HYDRAULICS</h3>
+          <div class="field"><label>Flow Rate</label><input id="flow" type="number" min=".1" max="5" step=".01" value="1"><span class="value" id="flowV">1.00 mL/min</span></div>
+          <div class="field"><label>Solvent A</label><input id="solA" type="range" min="0" max="100" value="70"><span class="value" id="solAV">70%</span></div>
+          <div class="field"><label>Solvent B</label><input id="solB" type="range" min="0" max="100" value="30"><span class="value" id="solBV">30%</span></div>
+          <div class="field"><label>Pressure P-Max</label><input id="pmax" type="number" min="50" max="600" value="400"><span class="value" id="pmaxV">400 bar</span></div>
+        </div>
+        <div class="cds-card">
+          <h3>THERMAL / DETECTOR</h3>
+          <div class="field"><label>Column Oven</label><input id="temp" type="number" min="20" max="80" step=".1" value="40"><span class="value" id="tempV">40.0 °C</span></div>
+          <div class="field"><label>UV Wavelength</label><select id="uv"><option>210</option><option selected>254</option><option>280</option></select><span class="value">nm</span></div>
+          <div class="field"><label>Injection Volume</label><input id="inj" type="number" min="1" max="100" value="10"><span class="value" id="injV">10 µL</span></div>
+          <div class="field"><label>Run Time</label><input id="runtime" type="number" min="2" max="60" value="12"><span class="value" id="runtimeV">12 min</span></div>
+        </div>
+        <div class="cds-card">
+          <h3>COLUMN CHEMISTRY</h3>
+          <div class="field"><label>Stationary Phase</label><select id="column"><option value="c18">C18 — Non-polar</option><option value="c8">C8 — Medium retention</option><option value="phenyl">Phenyl — π selectivity</option><option value="cyano">Cyano — Alternate selectivity</option></select></div>
+          <div class="field"><label>Particle Size</label><select id="particle"><option value="3">3 µm — higher efficiency</option><option value="5" selected>5 µm — standard</option></select></div>
+          <div id="columnInfo" class="diag-log"></div>
+        </div>
+        <div class="cds-card full"><h3>SAMPLE LIBRARY / PRESET APPLICATIONS</h3><p class="sub">Selecting a preset loads realistic compound retention behavior, UV spectra and molecular weights.</p>
+          <div class="lib-row" id="libRow"></div>
+        </div>
+        <div class="cds-card full" id="peakShapeCard"><h3>PEAK SHAPE / COLUMN DEGRADATION (Advanced)</h3>
+          <div class="field"><label>Fronting ← → Tailing</label><input id="tailSlider" type="range" min="0.5" max="3" step="0.05" value="1"><span class="value" id="tailV">1.00 (ideal)</span></div>
+          <p class="sub">Simulates asymmetric peak shapes from column degradation, void formation (fronting) or channeling/overloading (tailing). Feeds directly into the USP Tailing Factor calculation on the Data Analysis tab.</p>
+        </div>
+        <div class="cds-card full"><h3>METHOD VALIDATION</h3><div id="methodCheck" class="diag-log"></div>
+          <button class="cds-btn primary" onclick="saveMethod()">APPLY METHOD</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-gradient" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card full" id="gradEditCard"><h3>MULTI-SEGMENT GRADIENT TABLE</h3><p class="sub">Define time-programmed %A / %B / flow rate segments. Curve type controls how the pump transitions into the next segment.</p>
+          <table class="grad-table"><thead><tr><th>Time (min)</th><th>%A</th><th>%B</th><th>Flow (mL/min)</th><th>Curve</th><th></th></tr></thead><tbody id="gradBody"></tbody></table>
+          <button class="cds-btn primary" onclick="addGradRow()">+ ADD SEGMENT</button>
+          <button class="cds-btn" onclick="applyGradient()">APPLY GRADIENT TO METHOD</button>
+        </div>
+        <div class="cds-card full"><h3>GRADIENT PROFILE</h3><div class="grad-canvas-wrap"><canvas id="gradCanvas" width="1200" height="200"></canvas></div></div>
+      </div>
+    </section>
+
+    <section id="view-sequence" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card">
+          <h3>INJECTION SEQUENCE</h3>
+          <div class="field"><label>Sample ID</label><input id="seqId" value="UNKNOWN-01"></div>
+          <div class="field"><label>Concentration (mg/L)</label><input id="seqConc" type="number" value="25"></div>
+           <div class="field"><label>Injection Volume (µL)</label><input id="seqVol" type="number" min="1" max="100" step=".1" value="10"></div>
+          <button class="cds-btn primary" onclick="addSample()">ADD TO QUEUE</button>
+          <button class="cds-btn" onclick="clearQueue()">CLEAR</button>
+        </div>
+        <div class="cds-card wide"><h3>QUEUE</h3><table><thead><tr><th>#</th><th>Sample</th><th>Conc.</th><th>Status</th></tr></thead><tbody id="queueBody"></tbody></table>
+          <button class="cds-btn primary" onclick="startRun()">START SEQUENCE</button></div>
+      </div>
+    </section>
+
+    <section id="view-live" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card full"><h3>LIVE UV CHROMATOGRAM</h3><div class="chart-wrap"><canvas id="chromCanvas" width="1200" height="320"></canvas><div class="chart-hint">CLICK A PEAK TO INTEGRATE</div></div></div>
+        <div class="cds-card wide"><h3>PRESSURE TREND</h3><canvas id="pressureCanvas" width="900" height="250"></canvas></div>
+        <div class="cds-card"><h3>ACQUISITION</h3><div class="metric-grid">
+          <div class="metric"><b id="rtNow">0.00</b><span>TIME min</span></div><div class="metric"><b id="absNow">0.000</b><span>ABSORBANCE</span></div>
+          <div class="metric"><b id="livePressure">0.0</b><span>BAR</span></div><div class="metric"><b id="runState">IDLE</b><span>STATE</span></div>
+        </div><br><button class="cds-btn primary" onclick="startRun()">START RUN</button><button class="cds-btn danger" onclick="stopRun()">STOP</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-data" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card full"><h3>USP/EP SYSTEM SUITABILITY TEST (SST)</h3><p class="sub">N = theoretical plates (half-height method) · T = USP tailing factor · Rs = resolution vs. previous peak · k' = retention/capacity factor. Limits: Rs &gt; 1.5, T ≤ 2.0.</p>
+          <table><thead><tr><th>Peak</th><th>Rt (min)</th><th>Height</th><th>AUC</th><th>Conc. mg/L</th><th>N (plates)</th><th>T (tailing)</th><th>Rs</th><th>k'</th><th>SST</th></tr></thead><tbody id="peakBody"></tbody></table>
+          <div id="sstSummary" class="diag-log" style="margin-top:8px"></div>
+        </div>
+        <div class="cds-card"><h3>SELECTED PEAK</h3><div id="peakDetail" class="diag-log">No peak selected.</div></div>
+        <div class="cds-card full"><h3>CALIBRATION CURVE</h3>
+          <div class="field"><label>Standard concentrations</label><input id="calConc" value="5,10,20,40,60"></div>
+          <div class="field"><label>Peak areas</label><input id="calArea" value="105,207,418,815,1218"></div>
+          <button class="cds-btn primary" onclick="buildCalibration()">CALCULATE CALIBRATION</button>
+          <div id="calStats" class="diag-log" style="margin:10px 0"></div><canvas id="calCanvas" width="1200" height="300"></canvas>
+          <button class="cds-btn primary" onclick="generateReport()">GENERATE ANALYTICAL REPORT</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-pda" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card full"><h3>3D CONTOUR PDA / DAD SPECTRAL SCANNER</h3><p class="sub">Heatmap of Wavelength (200–400 nm, vertical) vs. Time (horizontal) vs. Absorbance (color intensity). Click anywhere on the map to pull the full UV-Vis spectrum at that time slice for peak purity assessment.</p>
+          <canvas id="pdaHeatCanvas" width="1200" height="320"></canvas>
+          <button class="cds-btn primary" onclick="buildPdaCube()">RENDER PDA CUBE FROM LAST RUN</button>
+        </div>
+        <div class="cds-card full"><h3>UV-VIS SPECTRUM / PEAK PURITY</h3><canvas id="pdaSpecCanvas" width="1200" height="220"></canvas>
+          <div id="pdaSpecInfo" class="diag-log" style="margin-top:8px">Click the contour map above to inspect a spectral slice.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-diag" class="cds-view">
+      <div class="diag-subtabs">
+        <button class="diag-subtab active" id="diagSubTabBtn-faults" onclick="diagSubTab('faults')">⚡ Fault Simulator</button>
+        <button class="diag-subtab" id="diagSubTabBtn-health" onclick="diagSubTab('health')">🧰 Consumables &amp; Hardware Health</button>
+      </div>
+      <div class="cds-grid diag-subview active" id="diagSubFaults">
+        <div class="cds-card wide"><h3>HARDWARE FAULT SIMULATOR</h3>
+          <div class="error-list">
+            <div class="fault"><label>Air Bubble in Pump Head <span><label class="switch"><input id="faultBubble" type="checkbox" onchange="faultChanged()"><span class="slider"></span></label></span></label></div>
+            <div class="fault"><label>Column Clogging <span><label class="switch"><input id="faultClog" type="checkbox" onchange="faultChanged()"><span class="slider"></span></label></span></label></div>
+            <div class="fault"><label>Lamp Degradation / Noise <span><label class="switch"><input id="faultLamp" type="checkbox" onchange="faultChanged()"><span class="slider"></span></label></span></label></div>
+            <div class="fault"><label>Loose Capillary Fitting — Autosampler Leak (ERR-02) <span><label class="switch"><input id="faultLeak" type="checkbox" onchange="faultChanged()"><span class="slider"></span></label></span></label></div>
+          </div><br>
+          <button class="cds-btn primary" onclick="purgePrime()">PURGE & PRIME</button>
+          <button class="cds-btn" onclick="backflush()">BACK-FLUSH COLUMN</button>
+          <button class="cds-btn" onclick="replaceGuard()">REPLACE GUARD FILTER</button>
+          <button class="cds-btn danger" onclick="emergencyStop()">EMERGENCY STOP</button>
+        </div>
+        <div class="cds-card"><h3>DIAGNOSTIC LOG</h3><div id="diagLog" class="diag-log"></div></div>
+
+        <div class="cds-card full"><h3>ASSEMBLY &amp; METHOD ERROR INJECTORS</h3>
+          <p class="sub">Simulate real-world hardware assembly mistakes and conflicting method parameters. Each condition below drives live error codes, LCD warnings and chromatogram/pressure behavior — click the red banner at the top of the app for the full diagnostic guide.</p>
+          <div class="err-injector-row">
+            <div class="fault"><label>Dry Run — Empty Solvent Bottle (ERR-01) <span><label class="switch"><input id="faultDryRun" type="checkbox" onchange="onDryRunToggle()"><span class="slider"></span></label></span></label></div>
+            <div class="fault"><label>UV Lamp <span><label class="switch"><input id="lampSwitch" type="checkbox" checked onchange="onLampToggle()"><span class="slider"></span></label></span></label></div>
+          </div>
+          <div class="err-injector-row">
+            <div class="fault"><label style="display:block;margin-bottom:6px">Column Installation State (ERR-03)</label>
+              <select id="columnStateSel" onchange="onColumnStateChange()">
+                <option value="installed">Installed — Correct Orientation</option>
+                <option value="reversed">Installed — Reversed (Flow Backwards)</option>
+                <option value="missing">Removed / Missing</option>
+              </select>
+            </div>
+            <div class="fault"><label style="display:block;margin-bottom:6px">Mobile Phase Solvent (UV Cut-off, ERR-05)</label>
+              <select id="solventTypeSel" onchange="onSolventTypeChange()">
+                <option value="water" selected>Water — cut-off ~190 nm</option>
+                <option value="acetonitrile">Acetonitrile — cut-off ~190 nm</option>
+                <option value="methanol">Methanol — cut-off ~205 nm</option>
+                <option value="thf">Tetrahydrofuran (THF) — cut-off ~212 nm</option>
+                <option value="chloroform">Chloroform — cut-off ~245 nm</option>
+                <option value="acetone">Acetone — cut-off ~330 nm</option>
+              </select>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:10px">Flow-vs-column mismatch is automatic: setting <b>Flow Rate &gt; 3.0 mL/min</b> on a <b>3 µm particle</b> column (Method Setup → Column Chemistry) will spike backpressure toward P-Max.</p>
+        </div>
+
+        <div class="cds-card full"><h3>MODULE HEALTH</h3><table><tbody id="healthBody"></tbody></table></div>
+        <div class="cds-card full"><h3>REAL-WORLD ERROR STATUS</h3><div class="err-status-grid" id="errStatusGrid"></div></div>
+      </div>
+
+      <div class="cds-grid diag-subview" id="diagSubHealth">
+        <div class="cds-card full">
+          <h3>🧰 CONSUMABLES &amp; HARDWARE HEALTH</h3>
+          <p class="sub">Preventive-maintenance indices update live as the instrument runs. Service a component before it fails to head off an unplanned ERR code.</p>
+        </div>
+        <div class="cds-card">
+          <h3>PUMP SEAL WEAR INDEX</h3>
+          <div class="health-meter"><div class="tickbar"><i id="sealWearBar" style="width:100%;background:var(--cds-green)"></i></div><span id="sealWearLabel" class="health-val">100%</span></div>
+          <p class="sub">Decreases with sustained high-pressure runs. A low index raises the risk of a leak or pressure fault.</p>
+          <button class="cds-btn primary" onclick="replacePumpSeals()">REPLACE PUMP SEALS</button>
+        </div>
+        <div class="cds-card">
+          <h3>UV DEUTERIUM LAMP HOURS</h3>
+          <div class="health-meter"><div class="tickbar"><i id="lampHoursBar" style="width:0%;background:var(--cds-green)"></i></div><span id="lampHoursLabel" class="health-val">0 / 2000 h</span></div>
+          <p class="sub">Baseline noise increases progressively once lamp hours pass ~1500 h (end-of-life region).</p>
+          <button class="cds-btn primary" onclick="installNewLamp()">INSTALL NEW UV LAMP</button>
+        </div>
+        <div class="cds-card">
+          <h3>COLUMN LIFETIME / EFFICIENCY</h3>
+          <div class="health-meter"><div class="tickbar"><i id="columnLifeBar" style="width:100%;background:var(--cds-green)"></i></div><span id="columnLifeLabel" class="health-val">100%</span></div>
+          <p class="sub">Efficiency drops with cumulative injections and mobile-phase exposure. Flush to remove strongly retained matrix contaminants.</p>
+          <button class="cds-btn primary" onclick="flushColumnOrganic()">FLUSH COLUMN WITH 100% ORGANIC SOLVENT</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-audit" class="cds-view">
+      <div class="cds-grid">
+        <div class="cds-card full"><h3>21 CFR PART 11 — REGULATORY AUDIT TRAIL</h3><p class="sub">Every user login, parameter modification, sequence start, emergency abort and PDF export is logged with an electronic timestamp and the acting role. Current role: <b id="auditRoleLabel">Analyst</b>. Method versioning and complete Before/After snapshots are enabled.</p>
+          <table class="audit-table"><thead><tr><th>Timestamp</th><th>Role</th><th>Action</th><th>Detail</th></tr></thead><tbody id="auditBody"></tbody></table>
+        </div>
+        <div class="cds-card full" id="signoffCard"><h3>ELECTRONIC SIGN-OFF</h3><p class="sub">Only the Admin/QA role may electronically sign and release the analytical report, per 21 CFR Part 11 §11.50/11.70.</p>
+          <button class="cds-btn primary" onclick="signOffReport()">SIGN & RELEASE REPORT</button>
+          <div id="signoffStatus" class="diag-log" style="margin-top:8px">Not yet signed.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="reportOverlay" class="report-overlay"><div class="report" id="reportSheet"></div></div>
+
+<div id="diagOverlay" class="diag-overlay">
+  <div class="diag-drawer">
+    <div class="diag-drawer-head"><h2>🛠 Instrument Diagnostic Logs</h2><button class="panel-close" onclick="closeDiagDrawer()">✕ Close</button></div>
+    <div class="diag-drawer-body" id="diagDrawerBody"></div>
+  </div>
+</div>
+
+<div id="repairOverlay" class="diag-overlay repair-overlay">
+  <div class="diag-drawer repair-console">
+    <div class="diag-drawer-head">
+      <h2 id="repairConsoleTitle">🔧 Instrument Repair &amp; Service Console</h2>
+      <button class="panel-close" onclick="closeRepairConsole()">✕ Close</button>
+    </div>
+    <div class="diag-drawer-body" id="repairConsoleBody"></div>
+  </div>
+</div>
+
+<div id="toastStack" class="toast-stack"></div>
+
+<div class="runbtn" id="runBtn" role="button" tabindex="0" aria-label="Flow animation Start/Stop">▶</div>
+
+<div class="stage">
+<svg viewBox="0 0 660 1020" xmlns="http://www.w3.org/2000/svg" id="svgRoot">
+  <defs>
+    <linearGradient id="panelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#123B63" />
+      <stop offset="100%" stop-color="#08223D" />
+    </linearGradient>
+    <marker id="arrow" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#00E5FF"></path>
+    </marker>
+  </defs>
+
+  <line class="floor-line" x1="20" y1="990" x2="640" y2="990"></line>
+  <rect class="base-cabinet" x="140" y="830" width="300" height="150" rx="4"></rect>
+  <line class="desk-line" x1="470" y1="740" x2="645" y2="740"></line>
+
+  <!-- SOLVENT RESERVOIR -->
+  <rect class="base-cabinet" x="140" y="130" width="300" height="12" rx="2"></rect>
+  <g class="component" tabindex="0" data-name="Solvent Reservoirs (Mobile Phase)"
+     data-desc="HPLC Mobile Phase solvents (Solvent A: Organic/Water & Solvent B: Organic Blend). Degassed liquids are continuously pulled into the system through inert PTFE tubing.">
+    <rect fill="transparent" x="165" y="20" width="250" height="110"></rect>
+    <!-- Bottle A -->
+    <path class="icon" d="M185,35 h34 v14 l9,12 v58 a5,5 0 0 1 -5,5 h-42 a5,5 0 0 1 -5,-5 v-58 l9,-12 z"></path>
+    <rect class="icon-fill" x="178" y="80" width="52" height="39" opacity="0.4"></rect>
+    <text class="nameplate" x="204" y="125" font-size="11" text-anchor="middle">Solvent A</text>
+    <!-- Bottle B -->
+    <path class="icon" d="M305,35 h34 v14 l9,12 v58 a5,5 0 0 1 -5,5 h-42 a5,5 0 0 1 -5,-5 v-58 l9,-12 z"></path>
+    <rect class="icon-fill" x="298" y="88" width="52" height="31" opacity="0.4"></rect>
+    <text class="nameplate" x="324" y="125" font-size="11" text-anchor="middle">Solvent B</text>
+  </g>
+
+  <!-- SOLVENT SINKER FILTER -->
+  <g class="component" tabindex="0" data-name="Solvent Inlet Filters (Sinkers)"
+     data-desc="Porous stainless steel / PTFE sinker filters placed at tubing ends inside bottles to prevent macro-particulates from reaching the high-pressure pump valves.">
+    <circle fill="transparent" cx="290" cy="165" r="16"></circle>
+    <path class="icon" d="M200,95 l4,-6 l4,6 z M320,98 l4,-6 l4,6 z"></path>
+    <line class="leader-line" x1="170" y1="165" x2="110" y2="165"></line>
+    <circle class="leader-dot" cx="110" cy="165" r="2.5"></circle>
+    <text class="leader-label" x="104" y="169">Inlet Sinker Filter</text>
+  </g>
+
+  <!-- FLOW PATH MAIN -->
+  <path class="flow-path" marker-end="url(#arrow)" d="M290,140 L290,840"></path>
+
+  <!-- DEGASSER -->
+  <g class="component" tabindex="0" data-name="Vacuum Degasser Module"
+     data-desc="Removes dissolved gasses (O2, N2) using synthetic membrane tubing under vacuum. Prevents bubble formation in pump heads and detector flow cell noise.">
+    <rect class="body" x="150" y="195" width="280" height="55" rx="4"></rect>
+    <circle class="led" cx="166" cy="210" r="4"></circle>
+    <rect class="screen" x="182" y="206" width="50" height="18" rx="2"></rect>
+    <text class="screen-text" x="187" y="219">-92 kPa</text>
+    <line class="leader-line" x1="150" y1="222" x2="110" y2="222"></line>
+    <circle class="leader-dot" cx="110" cy="222" r="2.5"></circle>
+    <text class="leader-label" x="104" y="226">Degasser</text>
+  </g>
+
+  <!-- HIGH PRESSURE PUMP -->
+  <g class="component" tabindex="0" data-name="Binary High-Pressure Pump"
+     data-desc="Dual reciprocating dual-piston pump driving mobile phase up to 600+ bar (8,700 PSI) with ultra-precise pulse-free flow rates (0.001 - 10 mL/min).">
+    <rect class="body" x="150" y="258" width="280" height="95" rx="4"></rect>
+    <circle class="led" id="pumpLed" cx="166" cy="273" r="4"></circle>
+    <rect class="screen" x="182" y="269" width="65" height="20" rx="2"></rect>
+    <text class="screen-text" id="pumpScreenText" x="186" y="283">1.00 ml/m</text>
+    <!-- Pump Pistons Graphic -->
+    <circle class="icon" cx="290" cy="315" r="18"></circle>
+    <path class="icon" d="M290,315 L290,302 M290,315 L301,322"></path>
+    <line class="leader-line" x1="150" y1="305" x2="110" y2="305"></line>
+    <circle class="leader-dot" cx="110" cy="305" r="2.5"></circle>
+    <text class="leader-label" x="104" y="309">High-Pressure Pump</text>
+  </g>
+
+  <!-- PRESSURE SENSOR & PURGE VALVE -->
+  <g class="component" tabindex="0" data-name="Pressure Transducer & Purge Valve"
+     data-desc="Monitors hydraulic line pressure continuously. Includes a manual/auto Purge Valve to prime lines or divert mobile phase directly to waste.">
+    <circle fill="transparent" cx="455" cy="305" r="20"></circle>
+    <circle class="body" cx="455" cy="305" r="14"></circle>
+    <path class="icon" d="M455,305 L455,297 M455,305 L461,310"></path>
+    <text class="nameplate" x="455" y="282" font-size="10" text-anchor="middle">Pressure/Purge</text>
+  </g>
+
+  <!-- MIXER -->
+  <g class="component" tabindex="0" data-name="High-Pressure Static Mixer"
+     data-desc="Ensures thorough blending of solvents A and B under pressure to eliminate refractive index noise during gradient elution runs.">
+    <rect class="body" x="150" y="361" width="280" height="45" rx="4"></rect>
+    <circle class="led" cx="166" cy="375" r="4"></circle>
+    <path class="icon" d="M265,383 q10,-14 20,0 q10,14 20,0 q10,-14 20,0"></path>
+    <line class="leader-line" x1="150" y1="383" x2="110" y2="383"></line>
+    <circle class="leader-dot" cx="110" cy="383" r="2.5"></circle>
+    <text class="leader-label" x="104" y="387">Gradient Mixer</text>
+  </g>
+
+  <!-- AUTOSAMPLER + 6-PORT INJECTION VALVE (UPGRADED) -->
+  <g class="component" tabindex="0" data-name="Autosampler & 6-Port Rheodyne Valve"
+     data-desc="Robotic needle draws micro-liter samples from vials. Incorporates a motor-driven 6-Port 2-Position Valve (Rheodyne switch) to inject the sample loop plug into high-pressure flow.">
+    <rect class="body" x="150" y="414" width="280" height="110" rx="4"></rect>
+    <circle class="led" cx="166" cy="429" r="4"></circle>
+    <rect class="screen" x="182" y="425" width="60" height="20" rx="2"></rect>
+    <text class="screen-text" x="187" y="439">INJ: 10µL</text>
+    
+    <!-- Sample Tray Vials -->
+    <rect class="body" x="360" y="430" width="55" height="78" rx="3"></rect>
+    <circle class="icon" cx="375" cy="445" r="4"></circle><circle class="icon" cx="400" cy="445" r="4"></circle>
+    <circle class="icon" cx="375" cy="465" r="4"></circle><circle class="icon" cx="400" cy="465" r="4"></circle>
+    <circle class="icon" cx="375" cy="485" r="4"></circle><circle class="icon" cx="400" cy="485" r="4"></circle>
+    
+    <!-- 6-PORT SWITCHING VALVE DETAILED GRAPHIC -->
+    <g transform="translate(285, 465)">
+      <circle class="icon" cx="0" cy="0" r="18" stroke-dasharray="3 2"></circle>
+      <circle class="icon-fill" cx="-10" cy="-6" r="3.5"></circle>
+      <circle class="icon-fill" cx="0" cy="-12" r="3.5"></circle>
+      <circle class="icon-fill" cx="10" cy="-6" r="3.5"></circle>
+      <circle class="icon-fill" cx="10" cy="6" r="3.5"></circle>
+      <circle class="icon-fill" cx="0" cy="12" r="3.5"></circle>
+      <circle class="icon-fill" cx="-10" cy="6" r="3.5"></circle>
+      <!-- Loop Line visual -->
+      <path class="flow-sample-path" d="M-10,-6 Q-22,-20 0,-20 Q22,-20 10,-6" fill="none"></path>
+    </g>
+
+    <line class="leader-line" x1="150" y1="469" x2="110" y2="469"></line>
+    <circle class="leader-dot" cx="110" cy="469" r="2.5"></circle>
+    <text class="leader-label" x="104" y="473">Autosampler & 6-Port Valve</text>
+  </g>
+
+  <!-- IN-LINE FILTER & GUARD COLUMN (UPGRADED) -->
+  <g class="component" tabindex="0" data-name="In-Line Filter & Guard Column"
+     data-desc="In-line particulate filter (0.2 µm) plus disposable Guard Column protecting analytical column from particulate blockages and strongly bound sample contaminants.">
+    <rect class="body" x="150" y="532" width="280" height="48" rx="4"></rect>
+    <circle class="led" cx="166" cy="546" r="4"></circle>
+    <!-- Guard Column Icon -->
+    <rect class="icon" x="281" y="540" width="18" height="32" rx="4"></rect>
+    <line class="icon" x1="281" y1="551" x2="299" y2="551"></line>
+    <line class="icon" x1="281" y1="561" x2="299" y2="561"></line>
+    <!-- In-Line Filter Disc -->
+    <circle class="icon" cx="240" cy="556" r="7"></circle>
+    <line class="leader-line" x1="150" y1="556" x2="110" y2="556"></line>
+    <circle class="leader-dot" cx="110" cy="556" r="2.5"></circle>
+    <text class="leader-label" x="104" y="560">In-Line Filter & Guard Col.</text>
+  </g>
+
+  <!-- COLUMN OVEN (ANALYTICAL COLUMN inside) -->
+  <g class="component" tabindex="0" data-name="Column Thermostat Oven (C18 Column)"
+     data-desc="Temperature-controlled chamber (usually set 30°C - 60°C). Houses the primary Stationary Phase column (e.g., C18 Reverse-Phase, 150mm x 4.6mm, 5µm silica particles) where separation occurs.">
+    <rect class="body" x="150" y="588" width="280" height="130" rx="4"></rect>
+    <circle class="led" id="ovenLed" cx="166" cy="603" r="4"></circle>
+    <rect class="screen" x="182" y="599" width="46" height="18" rx="2"></rect>
+    <text class="screen-text" id="ovenScreenText" x="187" y="612">40.0 °C</text>
+    
+    <!-- Column Enclosure Housing -->
+    <rect class="icon" x="240" y="602" width="100" height="102" rx="4"></rect>
+    <rect class="icon-fill" x="281" y="612" width="18" height="82" rx="6" opacity="0.3"></rect>
+    <rect class="icon" x="281" y="612" width="18" height="82" rx="6"></rect>
+    <line class="icon" x1="281" y1="630" x2="299" y2="630"></line>
+    <line class="icon" x1="281" y1="652" x2="299" y2="652"></line>
+    <line class="icon" x1="281" y1="674" x2="299" y2="674"></line>
+    <line class="leader-line" x1="150" y1="653" x2="110" y2="653"></line>
+    <circle class="leader-dot" cx="110" cy="653" r="2.5"></circle>
+    <text class="leader-label" x="104" y="657">Column Oven</text>
+  </g>
+
+  <!-- DETECTOR (UV/VIS / PDA) -->
+  <g class="component" tabindex="0" data-name="UV/Vis Photodiode Array (PDA) Detector"
+     data-desc="Measures light absorption of eluting analyte bands passing through a flow cell (10 mm path length). Transmits real-time absorbance absorbance data to CDS station.">
+    <rect class="body" x="150" y="726" width="280" height="95" rx="4"></rx>
+    <circle class="led" id="detLed" cx="166" cy="741" r="4"></circle>
+    <rect class="screen" x="182" y="737" width="60" height="20" rx="2"></rect>
+    <text class="screen-text" id="detScreenText" x="187" y="751">254 nm</text>
+    
+    <!-- Flow Cell Optics Graphic -->
+    <circle class="icon" cx="290" cy="773" r="20"></circle>
+    <circle class="icon-fill" cx="290" cy="773" r="6"></circle>
+    <line class="icon" x1="265" y1="773" x2="315" y2="773" stroke-dasharray="2 2"></line>
+    <line class="leader-line" x1="150" y1="773" x2="110" y2="773"></line>
+    <circle class="leader-dot" cx="110" cy="773" r="2.5"></circle>
+    <text class="leader-label" x="104" y="777">UV/Vis Detector</text>
+  </g>
+
+  <!-- WASTE BOTTLE -->
+  <g class="component" tabindex="0" data-name="Solvent Waste Outlet"
+     data-desc="Safely collects spent mobile phase and separated analytes post-detection. Standard HPLC configurations keep waste bottles at floor level inside base cabinet.">
+    <path class="body" d="M245,850 h90 v75 a10,10 0 0 1 -10,10 h-70 a10,10 0 0 1 -10,-10 z"></path>
+    <line class="icon" x1="245" y1="850" x2="335" y2="850"></line>
+    <text class="nameplate" x="290" y="895" text-anchor="middle">Waste Container</text>
+  </g>
+
+  <!-- DATA SYSTEM COMPUTER (CDS) -->
+  <g class="component" tabindex="0" data-name="Chromatography Data System (CDS PC)"
+     data-desc="Software interface (e.g. Empower / LabSolutions). Controls system hardware modules, acquires detector signal, performs peak integration, and calculates sample concentrations.">
+    <rect class="body" x="495" y="635" width="135" height="100" rx="4"></rect>
+    <rect class="icon" x="510" y="648" width="105" height="60" rx="3"></rect>
+    <!-- Chromatogram peaks graph on monitor -->
+    <path class="icon" d="M518,695 L538,695 L548,670 L558,695 L572,655 L585,695 L605,695" fill="none" stroke-width="2"></path>
+    <!-- Monitor Stand & Keyboard -->
+    <line class="icon" x1="562" y1="708" x2="562" y2="720"></line>
+    <line class="icon" x1="540" y1="720" x2="584" y2="720"></line>
+    <rect class="icon" x="518" y="725" width="88" height="6" rx="2"></rect>
+    <text class="nameplate" x="562" y="755" font-size="11" text-anchor="middle">Data System</text>
+  </g>
+
+  <!-- SIGNAL BUS LINES -->
+  <path class="control-line" id="busPath" d="M430,305 L478,305 L478,685 L495,685"></path>
+  <line class="control-line" x1="430" y1="469" x2="478" y2="469"></line>
+  <line class="control-line" x1="430" y1="773" x2="478" y2="773"></line>
+  <circle class="data-pulse" r="4">
+    <animateMotion id="pulseMotion" dur="2s" repeatCount="indefinite" begin="indefinite">
+      <mpath href="#busPath"></mpath>
+    </animateMotion>
+  </circle>
+
+  <!-- ERR-02 LEAK DROP VISUAL (autosampler / fitting) -->
+  <g id="leakDropGroup" transform="translate(150,478)">
+    <circle class="leak-drop" cx="0" cy="0" r="3"></circle>
+    <circle class="leak-drop d2" cx="9" cy="4" r="2.4"></circle>
+    <circle class="leak-drop d3" cx="-7" cy="6" r="2"></circle>
+    <text class="leak-drop-label" x="14" y="4">LEAK</text>
+  </g>
+
+</svg>
+</div>
+
+<div class="infobar" id="infobar">
+  <div class="desc-panel" id="descPanel"><p id="descText"></p></div>
+  <div class="name-bar" id="nameBar" role="button" tabindex="0">
+    <span id="nameText"></span>
+    <span class="chev">▾</span>
+  </div>
+</div>
+
+<script>
+  const components = document.querySelectorAll('.component');
+  const infobar = document.getElementById('infobar');
+  const nameBar = document.getElementById('nameBar');
+  const nameText = document.getElementById('nameText');
+  const descPanel = document.getElementById('descPanel');
+  const descText = document.getElementById('descText');
+  const runBtn = document.getElementById('runBtn');
+  const svgRoot = document.getElementById('svgRoot');
+  const pulseMotion = document.getElementById('pulseMotion');
+
+  function selectComponent(el){
+    components.forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    nameText.textContent = el.getAttribute('data-name');
+    descText.textContent = el.getAttribute('data-desc');
+    descPanel.classList.remove('open');
+    nameBar.classList.remove('open');
+    infobar.classList.add('show');
+  }
+
+  function deselectAll(){
+    components.forEach(c => c.classList.remove('selected'));
+    infobar.classList.remove('show');
+    descPanel.classList.remove('open');
+    nameBar.classList.remove('open');
+  }
+
+  components.forEach(el => {
+    el.addEventListener('click', (e) => { e.stopPropagation(); selectComponent(el); });
+    el.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); e.stopPropagation(); selectComponent(el); }
+    });
+  });
+
+  function toggleDesc(e){
+    if(e) e.stopPropagation();
+    const open = descPanel.classList.toggle('open');
+    nameBar.classList.toggle('open', open);
+  }
+  nameBar.addEventListener('click', toggleDesc);
+  nameBar.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleDesc(e); }
+  });
+
+  document.addEventListener('click', (e) => {
+    if(e.target.closest('.component') || e.target.closest('#infobar') || e.target.closest('#runBtn')) return;
+    deselectAll();
+  });
+
+  let running = false;
+  function setRunning(state){
+    running = state;
+    svgRoot.classList.toggle('running', running);
+    runBtn.classList.toggle('on', running);
+    runBtn.textContent = running ? '❚❚' : '▶';
+    try{
+      if(running){ pulseMotion.beginElement(); }
+      else{ pulseMotion.endElement(); }
+    }catch(e){}
+  }
+  runBtn.addEventListener('click', (e) => { e.stopPropagation(); setRunning(!running); });
+  runBtn.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); e.stopPropagation(); setRunning(!running); }
+  });
+</script>
+
+
+<script>
+/* ===== ADVANCED HPLC CDS ENGINE ===== */
+const S={
+  flow:1,temp:40,uv:254,a:70,b:30,pmax:400,inj:10,runtime:12,column:'c18',particle:5,
+  state:'STANDBY',running:false,t:0,elapsed:0,pressure:0,peaks:[],integrated:[],queue:[],
+  faults:{bubble:false,clog:false,lamp:false,leak:false},cal:null,log:[],
+  role:'analyst',audit:[],tailFactor:1,compounds:null,activePreset:null,pdaCube:null,
+  gradient:[{t:0,a:70,b:30,flow:1,curve:'linear'},{t:12,a:30,b:70,flow:1,curve:'linear'}],
+  power:false,
+  workflow:{power:false,leak:false,prep:false,blank:false,load:false,run:false},
+  prep:{mobile:false,standards:false,vials:false}
+};
+const $=id=>document.getElementById(id);
+const VIEW_TITLES={system:'Power & Workflow',dash:'Dashboard',method:'Method Setup',gradient:'Gradient Editor',
+ sequence:'Sequence',live:'Live Analysis',data:'Data Analysis',pda:'PDA Spectral',diag:'Diagnostics',audit:'Audit Trail'};
+function cdsTab(view){
+ document.querySelectorAll('.sidenav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===view));
+ document.querySelectorAll('.cds-view').forEach(x=>x.classList.toggle('active',x.id==='view-'+view));
+ $('panelTitle').textContent=VIEW_TITLES[view]||'';
+ if(view==='live') drawAll(); if(view==='data') renderPeaks();
+ if(view==='gradient'){renderGradTable();drawGradientProfile();}
+ if(view==='pda'&&S.pdaCube) drawPdaHeat();
+ if(view==='system') renderWorkflow();
+}
+function openSidenav(){$('sidenav').classList.add('open');$('sidenavOverlay').classList.add('open');}
+function closeSidenav(){$('sidenav').classList.remove('open');$('sidenavOverlay').classList.remove('open');}
+function navTo(view){
+ cdsTab(view);
+ $('cdsBody').classList.add('panel-open');
+ closeSidenav();
+}
+function closePanel(){ $('cdsBody').classList.remove('panel-open'); }
+
+/* ===== MODULE 5: ROLES & 21 CFR PART 11 AUDIT TRAIL ===== */
+const ROLE_LABEL={analyst:'Analyst',methoddev:'Method Developer',admin:'Admin/QA'};
+function setRole(r){
+ const prev=S.role;S.role=r;
+ document.querySelectorAll('.role-btn').forEach(b=>b.classList.toggle('active',b.dataset.role===r));
+ $('auditRoleLabel').textContent=ROLE_LABEL[r];
+ applyRoleLocks();
+ auditLog('User Login / Role Switch',`${ROLE_LABEL[prev]||'—'} → ${ROLE_LABEL[r]}`);
+}
+function applyRoleLocks(){
+ const canEditGradient=S.role==='methoddev'||S.role==='admin';
+ const canSign=S.role==='admin';
+ const gc=$('gradEditCard'); if(gc)gc.classList.toggle('locked',!canEditGradient);
+ const sc=$('signoffCard'); if(sc)sc.classList.toggle('locked',!canSign);
+}
+function auditLog(action,detail){
+ const row={ts:new Date().toISOString().replace('T',' ').slice(0,19),role:ROLE_LABEL[S.role]||S.role,action,detail:detail||''};
+ S.audit.unshift(row);
+ const b=$('auditBody'); if(b)b.innerHTML=S.audit.slice(0,300).map(r=>`<tr><td>${r.ts}</td><td>${r.role}</td><td>${r.action}</td><td>${r.detail}</td></tr>`).join('');
+}
+function signOffReport(){
+ if(S.role!=='admin'){alert('Only Admin/QA may sign and release the report.');return;}
+ $('signoffStatus').innerHTML=`<span class="good">SIGNED & RELEASED</span> by Admin/QA at ${new Date().toLocaleString()} (21 CFR Part 11 electronic signature).`;
+ auditLog('Report Sign-Off','Electronically signed and released by Admin/QA');
+}
+
+/* ===== MODULE 3: SAMPLE LIBRARY / PRESET APPLICATIONS ===== */
+const SAMPLE_LIBRARY={
+ analgesics:{label:'Analgesics Mix',desc:'Acetaminophen, Aspirin, Caffeine',compounds:[
+   {name:'Acetaminophen',MW:151.2,rtBase:2.4,refB:35,width:.11,baseHeight:.9,uvPeaks:[{peak:243,w:18,rel:1}]},
+   {name:'Aspirin',MW:180.2,rtBase:4.1,refB:35,width:.15,baseHeight:.65,uvPeaks:[{peak:230,w:14,rel:1},{peak:276,w:16,rel:.55}]},
+   {name:'Caffeine',MW:194.2,rtBase:5.6,refB:35,width:.19,baseHeight:.78,uvPeaks:[{peak:273,w:14,rel:1}]}
+ ]},
+ painkiller:{label:'Painkiller Assay',desc:'Ibuprofen, Naproxen',compounds:[
+   {name:'Ibuprofen',MW:206.3,rtBase:6.4,refB:55,width:.22,baseHeight:.7,uvPeaks:[{peak:222,w:12,rel:1}]},
+   {name:'Naproxen',MW:230.3,rtBase:8.1,refB:55,width:.26,baseHeight:.6,uvPeaks:[{peak:230,w:12,rel:.9},{peak:262,w:16,rel:.5},{peak:330,w:20,rel:.35}]}
+ ]},
+ vitamins:{label:'Vitamin Complex',desc:'Water-soluble Vitamins B & C',compounds:[
+   {name:'Vitamin C',MW:176.1,rtBase:1.6,refB:15,width:.09,baseHeight:.85,uvPeaks:[{peak:245,w:14,rel:1}]},
+   {name:'Niacin (B3)',MW:123.1,rtBase:2.1,refB:15,width:.10,baseHeight:.7,uvPeaks:[{peak:261,w:12,rel:1}]},
+   {name:'Pyridoxine (B6)',MW:169.2,rtBase:2.7,refB:20,width:.12,baseHeight:.6,uvPeaks:[{peak:290,w:16,rel:1},{peak:254,w:12,rel:.6}]},
+   {name:'Thiamine (B1)',MW:300.8,rtBase:3.3,refB:20,width:.14,baseHeight:.55,uvPeaks:[{peak:246,w:14,rel:1}]},
+   {name:'Riboflavin (B2)',MW:376.4,rtBase:4.2,refB:22,width:.16,baseHeight:.5,uvPeaks:[{peak:267,w:14,rel:.9},{peak:373,w:18,rel:1}]}
+ ]}
+};
+function renderLibCards(){
+ $('libRow').innerHTML=Object.keys(SAMPLE_LIBRARY).map(k=>{const p=SAMPLE_LIBRARY[k];
+  return `<div class="lib-card ${S.activePreset===k?'active':''}" onclick="loadPreset('${k}')"><b>${p.label}</b><span>${p.desc}</span></div>`;
+ }).join('');
+}
+function loadPreset(key){
+ const p=SAMPLE_LIBRARY[key]; if(!p)return;
+ S.activePreset=key; S.compounds=p.compounds.map(c=>({...c}));
+ renderLibCards();
+ log('Sample Library preset loaded: '+p.label,'good');
+ auditLog('Parameter Modification','Sample Library: (none) → '+p.label);
+ updateModel();
+}
+
+/* ===== MODULE 2: MULTI-SEGMENT GRADIENT BUILDER ===== */
+function renderGradTable(){
+ $('gradBody').innerHTML=S.gradient.map((g,i)=>`<tr>
+  <td><input type="number" step="0.1" value="${g.t}" onchange="gradEdit(${i},'t',this.value)"></td>
+  <td><input type="number" step="1" value="${g.a}" onchange="gradEdit(${i},'a',this.value)"></td>
+  <td><input type="number" step="1" value="${g.b}" onchange="gradEdit(${i},'b',this.value)"></td>
+  <td><input type="number" step="0.1" value="${g.flow}" onchange="gradEdit(${i},'flow',this.value)"></td>
+  <td><select onchange="gradEdit(${i},'curve',this.value)">
+    <option value="linear" ${g.curve==='linear'?'selected':''}>Linear</option>
+    <option value="step" ${g.curve==='step'?'selected':''}>Step</option>
+    <option value="ramp" ${g.curve==='ramp'?'selected':''}>Ramp</option></select></td>
+  <td><button class="cds-btn danger" onclick="removeGradRow(${i})">✕</button></td>
+ </tr>`).join('');
+}
+function gradEdit(i,field,val){
+ const old=S.gradient[i][field];
+ if(field==='curve'){S.gradient[i].curve=val;} else {S.gradient[i][field]=+val;}
+ if(field==='a')S.gradient[i].b=100-S.gradient[i].a;
+ if(field==='b')S.gradient[i].a=100-S.gradient[i].b;
+ S.gradient.sort((x,y)=>x.t-y.t);
+ auditLog('Parameter Modification',`Gradient segment ${i} ${field}: ${old} → ${val}`);
+ renderGradTable();drawGradientProfile();
+}
+function addGradRow(){
+ const last=S.gradient[S.gradient.length-1];
+ S.gradient.push({t:+(last.t+2).toFixed(1),a:last.a,b:last.b,flow:last.flow,curve:'linear'});
+ renderGradTable();drawGradientProfile();
+}
+function removeGradRow(i){ if(S.gradient.length<=2){alert('At least two segments required.');return;} S.gradient.splice(i,1); renderGradTable();drawGradientProfile(); }
+function applyGradient(){
+ if(S.role==='analyst'){alert('Method Developer or Admin/QA role required to edit the gradient.');return;}
+ S.runtime=Math.max(S.runtime,S.gradient[S.gradient.length-1].t);
+ $('runtime').value=S.runtime;
+ log('Multi-segment gradient applied to method — '+S.gradient.length+' segments','good');
+ auditLog('Parameter Modification','Gradient method applied ('+S.gradient.length+' segments)');
+ updateModel();
+}
+function gradientAt(t){
+ const seg=S.gradient;
+ if(t<=seg[0].t) return {a:seg[0].a,b:seg[0].b,flow:seg[0].flow};
+ for(let i=0;i<seg.length-1;i++){
+   const s0=seg[i],s1=seg[i+1];
+   if(t>=s0.t&&t<=s1.t){
+     let f=(s1.t-s0.t)>0?(t-s0.t)/(s1.t-s0.t):1;
+     if(s0.curve==='step')f=0; else if(s0.curve==='ramp')f=Math.pow(f,2.2);
+     return {a:s0.a+(s1.a-s0.a)*f, b:s0.b+(s1.b-s0.b)*f, flow:s0.flow+(s1.flow-s0.flow)*f};
+   }
+ }
+ const last=seg[seg.length-1]; return {a:last.a,b:last.b,flow:last.flow};
+}
+function avgBUpTo(tEnd,n=24){ let sum=0; for(let i=0;i<=n;i++){sum+=gradientAt(i/n*tEnd).b;} return sum/(n+1); }
+function avgFlowUpTo(tEnd,n=24){ let sum=0; for(let i=0;i<=n;i++){sum+=gradientAt(i/n*tEnd).flow;} return sum/(n+1); }
+function drawGradientProfile(){
+ const c=$('gradCanvas'); if(!c)return; const ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);
+ const tmax=S.gradient[S.gradient.length-1].t||S.runtime;
+ drawAxes(ctx,w,h,tmax,100,'%B / Flow');
+ ctx.strokeStyle='#00b0ff';ctx.lineWidth=2;ctx.beginPath();
+ for(let i=0;i<=w-56;i++){let t=i/(w-56)*tmax,y=gradientAt(t).b,px=45+i,py=h-32-(y/100)*(h-45);i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();
+ ctx.fillStyle='#00b0ff';ctx.font='10px Inter';ctx.fillText('%B',w-70,20);
+ ctx.strokeStyle='#ffb300';ctx.lineWidth=1.6;ctx.beginPath();
+ const fmax=Math.max(...S.gradient.map(g=>g.flow),1)*1.3;
+ for(let i=0;i<=w-56;i++){let t=i/(w-56)*tmax,y=gradientAt(t).flow,px=45+i,py=h-32-(y/fmax)*(h-45);i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();
+ ctx.fillStyle='#ffb300';ctx.fillText('Flow',w-70,34);
+ S.gradient.forEach(g=>{const x=45+g.t/tmax*(w-55);ctx.strokeStyle='#3c6e99';ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(x,10);ctx.lineTo(x,h-32);ctx.stroke();ctx.setLineDash([]);});
+}
+
+let lastVal={};
+function bind(id,fn){$(id).addEventListener('input',()=>{
+  const oldVal=$(id).value; fn(); updateModel();
+  const newVal=$(id).value;
+  if(lastVal[id]!==undefined&&lastVal[id]!==newVal) auditLog('Parameter Modification',`${id}: ${lastVal[id]} → ${newVal}`);
+  lastVal[id]=newVal;
+});lastVal[id]=$(id).value;}
+bind('flow',()=>S.flow=+$('flow').value); bind('temp',()=>S.temp=+$('temp').value);
+bind('solA',()=>{S.a=+$('solA').value;S.b=100-S.a;$('solB').value=S.b});
+bind('solB',()=>{S.b=+$('solB').value;S.a=100-S.b;$('solA').value=S.a});
+bind('pmax',()=>S.pmax=+$('pmax').value); bind('inj',()=>S.inj=+$('inj').value);
+bind('runtime',()=>S.runtime=+$('runtime').value);
+bind('tailSlider',()=>{S.tailFactor=+$('tailSlider').value;$('tailV').textContent=S.tailFactor.toFixed(2)+(S.tailFactor<0.9?' (fronting)':S.tailFactor>1.1?' (tailing)':' (ideal)');});
+$('uv').onchange=()=>{S.uv=+$('uv').value;updateModel()}; $('column').onchange=()=>{S.column=$('column').value;updateModel()};
+$('particle').onchange=()=>{S.particle=+$('particle').value;updateModel()};
+
+function updateModel(){
+ $('flowV').textContent=S.flow.toFixed(2)+' mL/min';$('solAV').textContent=S.a+'%';$('solBV').textContent=S.b+'%';
+ $('pmaxV').textContent=S.pmax+' bar';$('tempV').textContent=S.temp.toFixed(1)+' °C';$('injV').textContent=S.inj+' µL';$('runtimeV').textContent=S.runtime+' min';
+ $('mFlow').textContent=S.flow.toFixed(2);$('mTemp').textContent=S.temp.toFixed(1);$('mUV').textContent=S.uv;
+ $('methodSnap').textContent=`Flow ${S.flow.toFixed(2)} mL/min\nA/B ${S.a}/${S.b}\nOven ${S.temp.toFixed(1)} °C\nUV ${S.uv} nm\n${colName()} / ${S.particle} µm\nP-Max ${S.pmax} bar`;
+ $('columnInfo').textContent=columnInfo();
+ $('methodCheck').textContent=validateMethod();
+ updateHardware();
+ calcPressure(0);
+}
+function colName(){return {c18:'C18',c8:'C8',phenyl:'Phenyl',cyano:'Cyano'}[S.column]}
+function columnInfo(){
+ let d={c18:'Hydrophobic RP phase; strongest retention of the selectable chemistries.',c8:'Less hydrophobic RP phase; typically shorter retention.',phenyl:'Aromatic selectivity with π–π interactions; alternate selectivity.',cyano:'Polar/selective phase; altered retention relative to RP C18/C8.'}[S.column];
+ return d+`\nParticle size: ${S.particle} µm\nEfficiency model: ${S.particle===3?'higher plate efficiency / narrower peaks':'standard efficiency / broader peaks'}.`;
+}
+function validateMethod(){
+ let issues=[]; if(S.a+S.b!==100)issues.push('Mobile phase composition invalid.');
+ if(S.flow<.1||S.flow>5)issues.push('Flow outside simulator range.');
+ if(S.temp<20||S.temp>80)issues.push('Oven temperature outside range.');
+ if(!issues.length)return 'METHOD STATUS: VALID\nHydraulic, thermal, detector and column parameters within configured simulator limits.';
+ return 'METHOD STATUS: REVIEW REQUIRED\n'+issues.join('\n');
+}
+function calcPressure(t){
+ let visc=1+(S.b/100)*.32+(S.column==='c18'?.18:S.column==='c8'?.10:.14);
+ visc*=1-Math.max(0,S.temp-20)*.003;
+ let p=S.flow*visc*92;
+ if(S.faults.clog)p*=2.9;
+ if(S.faults.leak)p*=.32;
+ if(S.faults.bubble)p+=Math.sin(t*17)*p*.12;
+ p+=S.running?Math.sin(t*3.1)*1.2:0;
+ return Math.max(0,p);
+}
+function updateHardware(){
+ const svg=$('svgRoot'); if(!svg)return;
+ svg.querySelectorAll('.screen-text').forEach((el,i)=>{
+   const txt=el.textContent;
+   if(txt.includes('ml/m'))el.textContent=S.flow.toFixed(2)+' ml/m';
+   else if(txt.includes('°C'))el.textContent=S.temp.toFixed(1)+' °C';
+   else if(txt.includes('nm'))el.textContent=S.uv+' nm';
+   else if(txt.includes('INJ'))el.textContent='INJ: '+S.inj+'µL';
+ });
+ svg.style.setProperty('--flow-duration',Math.max(.12,1.1/S.flow)+'s');
+}
+function setState(st){
+ S.state=st;$('runState').textContent=st;$('cdsStatus').textContent='● '+st;
+ $('cdsStatus').style.color=st.includes('ERROR')?'var(--cds-red)':st==='RUNNING SEQUENCE'?'var(--cds-cyan)':'var(--cds-green)';
+}
+function log(msg,cls=''){S.log.unshift(new Date().toLocaleTimeString()+'  '+msg);$('diagLog').innerHTML=S.log.slice(0,40).map(x=>`<div class="${cls}">${x}</div>`).join('')}
+function faultChanged(){
+ S.faults.bubble=$('faultBubble').checked;S.faults.clog=$('faultClog').checked;S.faults.lamp=$('faultLamp').checked;S.faults.leak=$('faultLeak').checked; S.leakRate=S.faults.leak?0.68:0;
+ if(S.faults.bubble)log('WARN: Air bubble detected — pressure oscillation and peak splitting enabled','warning');
+ if(S.faults.clog)log('CRITICAL: Column restriction simulated — pressure multiplier active','critical');
+ if(S.faults.lamp)log('WARN: Detector lamp degradation — high-frequency baseline ripple active','warning');
+ if(S.faults.leak)log('WARN: Fitting leak — low-pressure condition simulated','warning');
+ updateModel();
+}
+/* ===== SYSTEM POWER & STARTUP WORKFLOW ===== */
+function togglePower(){
+ S.power=!S.power;
+ $('powerBtn').classList.toggle('on',S.power);
+ $('powerLabel').classList.toggle('on',S.power);
+ $('powerLabel').innerHTML='SYSTEM<b>'+(S.power?'POWERED ON':'POWERED OFF')+'</b>';
+ S.workflow.power=S.power;
+ if(!S.power){
+  S.running=false; const svg=$('svgRoot'); if(svg)svg.classList.remove('running'); stopPumpAudio();
+  setState('STANDBY'); $('cdsStatus').textContent='● OFFLINE'; $('cdsStatus').style.color='var(--cds-muted)';
+ } else {
+  setState('STANDBY');
+  log('Instrument powered ON','good'); auditLog('System Power','Instrument powered ON');
+ }
+ if(!S.power) auditLog('System Power','Instrument powered OFF');
+ renderWorkflow();
+}
+function requirePower(){ if(!S.power){alert('Power on the instrument first (System → Power & Workflow).');return false;} return true; }
+function toggleWfCheck(key,el){
+ S.prep[key]=el.checked;
+ S.workflow.prep=S.prep.mobile&&S.prep.standards&&S.prep.vials;
+ renderWorkflow();
+}
+function runBlankTest(){
+ if(!requirePower())return;
+ const savedCompounds=S.compounds, savedPreset=S.activePreset;
+ S.compounds=[]; S.activePreset=null;
+ log('Blank test injection started — no sample compounds loaded','good');
+ auditLog('Blank Test','Blank injection run to verify baseline / carryover');
+ S.workflow.blank=true;
+ navTo('live'); startRun();
+ setTimeout(()=>{ S.compounds=savedCompounds; S.activePreset=savedPreset; renderWorkflow(); },200);
+}
+const WF_STEPS=[
+ {key:'power',title:'Power On Instrument',desc:'Switch the system on from the button above.'},
+ {key:'leak',title:'Leak Check / Purge & Prime',desc:'Purge the pump lines and confirm no leaks or bubbles.',action:'purgeFromWorkflow()',btn:'Purge & Prime'},
+ {key:'prep',title:'Sample Preparation',desc:'Confirm mobile phase, standards and sample vials are ready.'},
+ {key:'blank',title:'Run Blank Test',desc:'Inject a blank to verify a clean, stable baseline.',action:'runBlankTest()',btn:'Run Blank'},
+ {key:'load',title:'Load Samples / Build Sequence',desc:'Add samples to the run sequence.',action:"navTo('sequence')",btn:'Open Sequence'},
+ {key:'run',title:'Start Analytical Run',desc:'Begin the acquisition on Live Analysis.',action:"navTo('live')",btn:'Open Live Analysis'}
+];
+function purgeFromWorkflow(){ if(!requirePower())return; purgePrime(); S.workflow.leak=true; renderWorkflow(); }
+function renderWorkflow(){
+ const list=$('workflowList'); if(!list)return;
+ list.innerHTML=WF_STEPS.map((s,i)=>{
+   const done=S.workflow[s.key];
+   let extra='';
+   if(s.key==='prep'){
+     extra=`<div class="wf-check">
+       <label><input type="checkbox" ${S.prep.mobile?'checked':''} onchange="toggleWfCheck('mobile',this)"> Mobile phase A/B prepared &amp; degassed</label>
+       <label><input type="checkbox" ${S.prep.standards?'checked':''} onchange="toggleWfCheck('standards',this)"> Calibration standards prepared</label>
+       <label><input type="checkbox" ${S.prep.vials?'checked':''} onchange="toggleWfCheck('vials',this)"> Sample vials loaded in autosampler</label>
+     </div>`;
+   } else if(s.action){
+     extra=`<div style="margin-top:8px"><button class="cds-btn primary" onclick="${s.action}">${s.btn}</button></div>`;
+   }
+   return `<div class="wf-step ${done?'done':''} ${!S.power&&s.key!=='power'?'wf-locked':''}">
+     <div class="wf-num">${done?'✓':(i+1)}</div>
+     <div class="wf-body"><b>${s.title}</b><span>${s.desc}</span>${extra}</div>
+   </div>`;
+ }).join('');
+}
+function purgePrime(){S.faults.bubble=false;$('faultBubble').checked=false;log('Pump purge/prime complete — air removed','good');setState('PURGING');setTimeout(()=>setState('STANDBY'),900)}
+function backflush(){S.faults.clog=false;$('faultClog').checked=false;log('Back-flush completed — simulated restriction cleared','good');updateModel()}
+function replaceGuard(){S.faults.clog=false;$('faultClog').checked=false;log('Guard filter replaced — restriction cleared','good');updateModel()}
+function emergencyStop(){S.running=false;setState('STANDBY');$('svgRoot').classList.remove('running');log('EMERGENCY STOP — acquisition halted','critical');auditLog('Emergency Abort','Acquisition halted manually by operator');stopPumpAudio();stopAlarm();}
+
+function absorbanceRel(compound,wavelength){
+ if(!compound.uvPeaks)return 1;
+ let v=0; compound.uvPeaks.forEach(pk=>{v+=pk.rel*Math.exp(-0.5*Math.pow((wavelength-pk.peak)/pk.w,2));});
+ return v;
+}
+function samplePeaks(){
+ const chem={c18:1,c8:.82,phenyl:1.05,cyano:.9}[S.column], eff=S.particle===3?.88:1;
+ if(!S.compounds){ // fallback default trio if no library preset chosen
+   let base=[{rt:2.1,h:1.0,w:.13},{rt:4.35,h:.72,w:.18},{rt:6.8,h:.52,w:.22}];
+   return base.map((p,i)=>({rt:p.rt*chem*eff,h:p.h*(S.uv===210?1.2:S.uv===280?.78:1)*(1+S.inj/100),w:p.w*(S.particle===3?.72:1),name:'Peak '+(i+1),tailFactor:S.tailFactor}));
+ }
+ return S.compounds.map(c=>{
+   let estRt=c.rtBase*chem*eff;
+   let avgB=avgBUpTo(estRt)||1, refB=c.refB||50;
+   let scale=Math.pow(refB/avgB,0.9);
+   let flowNow=avgFlowUpTo(estRt)||1;
+   let rt=Math.max(.15,estRt*scale/flowNow);
+   let relAbs=absorbanceRel(c,S.uv);
+   let h=c.baseHeight*relAbs*(1+S.inj/100);
+   let w=c.width*(S.particle===3?.72:1)/Math.sqrt(flowNow);
+   return {name:c.name,rt,h,w,tailFactor:S.tailFactor,compound:c};
+ }).sort((a,b)=>a.rt-b.rt);
+}
+function peakValue(t,p){
+ const dt=t-p.rt, tf=p.tailFactor||1;
+ const frontSigma=p.w/Math.sqrt(tf), tailSigma=p.w*tf;
+ const sigma=dt<0?frontSigma:tailSigma;
+ return p.h*Math.exp(-0.5*Math.pow(dt/sigma,2));
+}
+function signalAt(t){
+ const grad=gradientAt(t);
+ let y=.012+(.0006*grad.b)+(.002+S.b*.000035)*t*.3;
+ if(S.faults.lamp)y+=.012*Math.sin(t*38)+.006*Math.sin(t*71);
+ S.peaks.forEach(p=>{
+   y+=peakValue(t,p);
+   if(S.faults.bubble)y+=p.h*.28*Math.exp(-0.5*Math.pow((t-(p.rt+.18))/(p.w*.65),2));
+ });
+ return Math.max(0,y);
+}
+function startRun(){
+ if(S.running)return;
+ if(!requirePower())return;
+ S.workflow.run=true;
+ S.peaks=samplePeaks();S.integrated=[];S.t=0;S.elapsed=0;S.running=true;S.pdaCube=null;
+ setState('PURGING');$('svgRoot').classList.add('running');log('Acquisition initialized');
+ auditLog('Sequence Start',`${S.activePreset?SAMPLE_LIBRARY[S.activePreset].label:'Default mix'} / ${S.flow.toFixed(2)} mL/min / ${S.uv} nm`);
+ startPumpAudio();
+ setTimeout(()=>{if(S.running)setState('EQUILIBRATING')},700);
+ setTimeout(()=>{if(S.running){setState('INJECTING');playValveClick();}},1500);
+ setTimeout(()=>{if(S.running)setState('RUNNING SEQUENCE')},2300);
+ runLoop();
+}
+function stopRun(){S.running=false;$('svgRoot').classList.remove('running');setState('STANDBY');log('Acquisition stopped');stopPumpAudio();}
+let lastFrame=0;
+function runLoop(ts=performance.now()){
+ if(!S.running)return;
+ let dt=Math.min(.05,(ts-lastFrame)/1000||.016);lastFrame=ts;S.elapsed+=dt;S.t=Math.min(S.runtime,S.t+dt*.9);
+ S.pressure=calcPressure(S.t);
+ $('rtNow').textContent=S.t.toFixed(2);$('livePressure').textContent=S.pressure.toFixed(1);$('mPress').textContent=S.pressure.toFixed(1);
+ $('absNow').textContent=signalAt(S.t).toFixed(3);
+ if(S.pressure>S.pmax){S.running=false;$('svgRoot').classList.remove('running');setState('ERROR: OVERPRESSURE ALARM');log('OVERPRESSURE CUT-OFF — flow stopped automatically','critical');auditLog('Emergency Abort','Automatic overpressure cut-off at '+S.pressure.toFixed(1)+' bar');stopPumpAudio();playAlarm();return}
+ drawAll();
+ if(S.t>=S.runtime){finishRun();return}
+ requestAnimationFrame(runLoop);
+}
+function finishRun(){S.running=false;$('svgRoot').classList.remove('running');setState('DATA COMPLETE');integrateAll();log('Run complete — peak integration available','good');stopPumpAudio();buildPdaCube();}
+function integratePeak(p){
+ let lo=p.rt-p.w*3,hi=p.rt+p.w*3,n=120,area=0,max=0,dx=(hi-lo)/n;
+ for(let i=0;i<=n;i++){let y=signalAt(lo+i*dx);area+=y*dx;max=Math.max(max,y)}
+ return {name:p.name,rt:p.rt,height:max,area,conc:unknownFromArea(area),w:p.w,tailFactor:p.tailFactor}
+}
+function integrateAll(){S.integrated=S.peaks.map(integratePeak);computeSST();renderPeaks()}
+function unknownFromArea(area){if(!S.cal)return null;return Math.max(0,(area-S.cal.b)/S.cal.m)}
+
+/* ===== MODULE 1: COMPLIANCE & SST ENGINE ===== */
+function voidTime(){ return Math.max(.1, 0.9/Math.max(.1,S.flow)); }
+function computeSST(){
+ const t0=voidTime();
+ S.integrated.forEach((p,i)=>{
+   const tf=p.tailFactor||1;
+   const frontSigma=p.w/Math.sqrt(tf), tailSigma=p.w*tf;
+   const w05=2.355*((frontSigma+tailSigma)/2);     // FWHH, half-height width
+   p.N=5.54*Math.pow(p.rt/w05,2);                   // theoretical plates (USP half-height method)
+   const k=2.448;                                    // z at 5% height
+   const front005=frontSigma*k, tail005=tailSigma*k;
+   p.T=(front005+tail005)/(2*front005);              // USP tailing factor
+   p.kprime=(p.rt-t0)/t0;                            // capacity/retention factor
+   const wBase=4*((frontSigma+tailSigma)/2);
+   if(i>0){
+     const prev=S.integrated[i-1];
+     const wBasePrev=4*((prev.w/Math.sqrt(prev.tailFactor||1)+prev.w*(prev.tailFactor||1))/2);
+     p.Rs=2*(p.rt-prev.rt)/(wBase+wBasePrev);
+   } else p.Rs=null;
+   p.pass=(p.T<=2.0)&&(p.Rs==null||p.Rs>1.5)&&(p.N>800);
+ });
+}
+function renderPeaks(){
+ $('peakBody').innerHTML=S.integrated.map((p)=>`<tr><td>${p.name}</td><td>${p.rt.toFixed(3)}</td><td>${p.height.toFixed(3)}</td><td>${p.area.toFixed(3)}</td><td>${p.conc==null?'—':p.conc.toFixed(3)}</td>
+  <td>${p.N?Math.round(p.N):'—'}</td><td>${p.T?p.T.toFixed(2):'—'}</td><td>${p.Rs==null?'—':p.Rs.toFixed(2)}</td><td>${p.kprime?p.kprime.toFixed(2):'—'}</td>
+  <td class="${p.pass?'sst-pass':'sst-fail'}">${p.pass?'PASS':'FAIL'}</td></tr>`).join('');
+ const allPass=S.integrated.length&&S.integrated.every(p=>p.pass);
+ $('sstSummary').innerHTML=S.integrated.length? `Overall System Suitability: <span class="${allPass?'sst-pass':'sst-fail'}">${allPass?'PASS':'REVIEW REQUIRED'}</span> — limits applied: Rs &gt; 1.5, T ≤ 2.0, N &gt; 800 plates.` : 'Run a sequence and integrate peaks to evaluate SST.';
+}
+$('chromCanvas').addEventListener('click',e=>{
+ let r=$('chromCanvas').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*S.runtime;
+ let p=S.peaks.reduce((a,b)=>Math.abs(a.rt-x)<Math.abs(b.rt-x)?a:b);
+ if(p&&Math.abs(p.rt-x)<.6){let q=integratePeak(p);$('peakDetail').textContent=`${q.name}\nRetention Time: ${q.rt.toFixed(3)} min\nPeak Height: ${q.height.toFixed(4)} AU\nAUC: ${q.area.toFixed(4)} AU·min\nCalculated concentration: ${q.conc==null?'Calibration required':q.conc.toFixed(4)+' mg/L'}`;if(!S.integrated.length)integrateAll()}
+});
+function drawAxes(ctx,w,h,xmax,ymax,ylabel){
+ ctx.strokeStyle='#24455c';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(45,10);ctx.lineTo(45,h-32);ctx.lineTo(w-10,h-32);ctx.stroke();
+ ctx.fillStyle='#6f8ea5';ctx.font='10px Inter';ctx.fillText('0',30,h-28);ctx.fillText(xmax.toFixed(1),w-38,h-14);ctx.fillText(ylabel,5,18);ctx.fillText('Time (min)',w/2,h-6)
+}
+function drawAll(){
+ drawChrom();drawPressure();
+}
+function drawChrom(){
+ let c=$('chromCanvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);
+ let ymax=Math.max(1.2,...S.peaks.map(p=>p.h*1.5));drawAxes(ctx,w,h,S.runtime,ymax,'AU');
+ ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.beginPath();
+ for(let i=0;i<=w-56;i++){let t=i/(w-56)*S.runtime,y=signalAt(t),px=45+i,py=h-32-(y/ymax)*(h-45);i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
+ S.peaks.forEach(p=>{let x=45+p.rt/S.runtime*(w-55);ctx.strokeStyle='#ffb300';ctx.beginPath();ctx.moveTo(x,h-32);ctx.lineTo(x,h-38);ctx.stroke();ctx.fillStyle='#ffcf62';ctx.font='10px Inter';ctx.fillText(p.name,x+4,22)})
+}
+function drawPressure(){
+ let c=$('pressureCanvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);drawAxes(ctx,w,h,S.runtime,S.pmax,'bar');
+ ctx.strokeStyle='#00e676';ctx.lineWidth=1.8;ctx.beginPath();
+ for(let i=0;i<w-55;i++){let t=i/(w-55)*S.runtime,y=calcPressure(t),px=45+i,py=h-32-(y/S.pmax)*(h-45);i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
+ ctx.strokeStyle='#ff4d5f';ctx.setLineDash([5,4]);let py=h-32-(S.pmax/S.pmax)*(h-45);ctx.beginPath();ctx.moveTo(45,py);ctx.lineTo(w-10,py);ctx.stroke();ctx.setLineDash([]);
+}
+function addSample(){S.queue.push({id:$('seqId').value,conc:+$('seqConc').value,status:'QUEUED'});S.workflow.load=S.queue.length>0;renderQueue();renderWorkflow();}
+function clearQueue(){S.queue=[];renderQueue()}
+function renderQueue(){$('queueBody').innerHTML=S.queue.map((x,i)=>`<tr><td>${i+1}</td><td>${x.id}</td><td>${x.conc} mg/L</td><td><span class="badge">${x.status}</span></td></tr>`).join('')}
+function saveMethod(){log('Method applied: '+colName()+' / '+S.flow.toFixed(2)+' mL/min / '+S.uv+' nm','good');setState('STANDBY')}
+function buildCalibration(){
+ let x=$('calConc').value.split(',').map(Number).filter(Number.isFinite),y=$('calArea').value.split(',').map(Number).filter(Number.isFinite);
+ if(x.length<2||x.length!==y.length){$('calStats').textContent='Enter equal-length numeric concentration and area lists.';return}
+ let n=x.length,sx=x.reduce((a,b)=>a+b),sy=y.reduce((a,b)=>a+b),sxx=x.reduce((a,b)=>a+b*b),sxy=x.reduce((a,b,i)=>a+x[i]*b,0);
+ let m=(n*sxy-sx*sy)/(n*sxx-sx*sx),b=(sy-m*sx)/n,mean=sy/n,ssTot=y.reduce((a,v)=>a+(v-mean)**2,0),ssRes=y.reduce((a,v,i)=>a+(v-(m*x[i]+b))**2,0),r2=1-ssRes/ssTot;
+ S.cal={m,b,r2};$('calStats').textContent=`Regression: Area = ${m.toFixed(4)} × Concentration + ${b.toFixed(4)}\nR² = ${r2.toFixed(6)}\nUnknown concentration is calculated as (Area − intercept) / slope.`;
+ let c=$('calCanvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);drawAxes(ctx,w,h,Math.max(...x)*1.1,Math.max(...y)*1.15,'Area');
+ ctx.strokeStyle='#ffb300';ctx.fillStyle='#ffb300';x.forEach((v,i)=>{let px=45+v/(Math.max(...x)*1.1)*(w-55),py=h-32-y[i]/(Math.max(...y)*1.15)*(h-45);ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill()});
+ ctx.strokeStyle='#00e5ff';ctx.beginPath();for(let i=0;i<w-55;i++){let xv=i/(w-55)*Math.max(...x)*1.1,yv=m*xv+b,px=45+i,py=h-32-yv/(Math.max(...y)*1.15)*(h-45);i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
+ if(S.integrated.length)S.integrated.forEach(p=>p.conc=unknownFromArea(p.area));renderPeaks();
+}
+function health(){
+ let rows=[['Pump',S.faults.bubble?'FAULT — AIR':'READY'],['Column',S.faults.clog?'FAULT — RESTRICTION':'READY'],['Detector',S.faults.lamp?'WARN — LAMP NOISE':'READY'],['Fluidics',S.faults.leak?'WARN — LEAK':'READY']];
+ $('healthBody').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td><span class="badge ${r[1].includes('FAULT')||r[1].includes('WARN')?'err':'ok'}">${r[1]}</span></td></tr>`).join('');
+}
+function generateReport(){
+ integrateAll();
+ let snapshot=$('chromCanvas').toDataURL('image/png');
+ const allPass=S.integrated.length&&S.integrated.every(p=>p.pass);
+ $('reportSheet').innerHTML=`<div class="report-actions"><button onclick="window.print()">PRINT / SAVE PDF</button><button onclick="$('reportOverlay').classList.remove('show')">CLOSE</button></div>
+ <h1>Analytical HPLC Report</h1><div class="rsub">Simulated CDS report • Generated ${new Date().toLocaleString()} • Role: ${ROLE_LABEL[S.role]}</div>
+ <h2>Method Parameters</h2><table><tr><td>Flow</td><td>${S.flow.toFixed(2)} mL/min</td><td>Oven</td><td>${S.temp.toFixed(1)} °C</td></tr>
+ <tr><td>UV</td><td>${S.uv} nm</td><td>Mobile phase</td><td>A ${S.a}% / B ${S.b}%</td></tr>
+ <tr><td>Column</td><td>${colName()}</td><td>Particle</td><td>${S.particle} µm</td></tr>
+ <tr><td>Sample Library</td><td>${S.activePreset?SAMPLE_LIBRARY[S.activePreset].label:'Default mix'}</td><td>Gradient segments</td><td>${S.gradient.length}</td></tr></table>
+ <h2>Chromatogram</h2><img src="${snapshot}" style="width:100%;border:1px solid #ccd5dc">
+ <h2>Integrated Peak Table &amp; System Suitability</h2><table><thead><tr><th>Peak</th><th>Rt (min)</th><th>Area</th><th>Height</th><th>Conc.</th><th>N</th><th>T</th><th>Rs</th><th>k'</th><th>SST</th></tr></thead>
+ <tbody>${S.integrated.map(p=>`<tr><td>${p.name}</td><td>${p.rt.toFixed(3)}</td><td>${p.area.toFixed(4)}</td><td>${p.height.toFixed(4)}</td><td>${p.conc==null?'—':p.conc.toFixed(4)+' mg/L'}</td><td>${p.N?Math.round(p.N):'—'}</td><td>${p.T?p.T.toFixed(2):'—'}</td><td>${p.Rs==null?'—':p.Rs.toFixed(2)}</td><td>${p.kprime?p.kprime.toFixed(2):'—'}</td><td>${p.pass?'PASS':'FAIL'}</td></tr>`).join('')}</tbody></table>
+ <p><b>Overall System Suitability: ${allPass?'PASS':'REVIEW REQUIRED'}</b></p>
+ <h2>System Status</h2><p>Final state: ${S.state}. Pressure safety limit: ${S.pmax} bar.</p>
+ <h2>21 CFR Part 11</h2><p>Report generated under role "${ROLE_LABEL[S.role]}". Electronic sign-off must be completed by Admin/QA in the Audit Trail tab before release.</p>`;
+ $('reportOverlay').classList.add('show');
+ auditLog('PDF Export','Analytical report generated ('+S.integrated.length+' peaks, SST '+(allPass?'PASS':'REVIEW')+')');
+}
+
+/* ===== MODULE 4: 3D CONTOUR PDA / DAD SPECTRAL SCANNER ===== */
+function buildPdaCube(){
+  if(!S.rawData.length && !S.analytes.length && !S.integrated.length){alert('Run a sequence first to generate a PDA cube.');return;}
+  const wavelengths=[]; for(let wl=200;wl<=400;wl+=2)wavelengths.push(wl);
+  const nT=180; const cube=[];
+  const peaks=S.analytes?.length?S.analytes:(S.integrated||[]).map(p=>({name:p.name,rt:p.rt,compound:p.analyte?.compound||null,width:p.width50||.15,baseHeight:p.rawHeight||p.height||.3,areaScale:1,volumeScale:1}));
+  for(let ti=0;ti<=nT;ti++){
+    const t=ti/nT*S.runtime; const row=[];
+    for(let wi=0;wi<wavelengths.length;wi++){
+      let y=detectorBaseline(t);
+      peaks.forEach(a=>{
+        const rt=a.rt??(a.analyte?.rt);
+        if(rt==null)return;
+        const tf=Math.max(.5,a.tailFactor||1), sig=(t<rt?(a.width||.15)/Math.sqrt(tf):(a.width||.15)*tf);
+        const amp=(a.baseHeight||.3)*(a.areaScale||1)*(a.volumeScale||1);
+        const rel=a.compound?absorbanceRel(a.compound,wavelengths[wi]):(wavelengths[wi]>230&&wavelengths[wi]<260?1:.3);
+        y+=amp*rel*Math.exp(-.5*Math.pow((t-rt)/Math.max(.012,sig),2));
+      });
+      if(S.solventFront){ const sf=S.solventFront, sig=sf.width; y+=sf.height*Math.exp(-.5*Math.pow((t-sf.t0)/sig,2)); }
+      row.push(Math.max(0,y));
+    }
+    cube.push(row);
+  }
+  S.pdaCube={wavelengths,nT,cube,tmax:S.runtime};
+  log('PDA spectral cube rendered — 200–400 nm / 2 nm resolution','good');
+  drawPdaHeat();
+}
+function drawPdaHeat(){
+ const c=$('pdaHeatCanvas'); if(!c||!S.pdaCube)return;
+ const ctx=c.getContext('2d'),w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+ const {wavelengths,cube,nT,tmax}=S.pdaCube;
+ let maxA=0; cube.forEach(row=>row.forEach(v=>maxA=Math.max(maxA,v)));
+ const x0=45,y0=10,pw=w-60,ph=h-42;
+ const cellW=pw/(nT+1), cellH=ph/wavelengths.length;
+ for(let ti=0;ti<=nT;ti++){
+   for(let wi=0;wi<wavelengths.length;wi++){
+     const v=cube[ti][wi]/(maxA||1);
+     const hue=200-v*200; const light=8+v*45;
+     ctx.fillStyle=`hsl(${hue},90%,${light}%)`;
+     ctx.fillRect(x0+ti*cellW,y0+ (wavelengths.length-1-wi)*cellH,cellW+1,cellH+1);
+   }
+ }
+ ctx.fillStyle='#6f8ea5';ctx.font='10px Inter';
+ ctx.fillText('200nm',6,y0+ph-4);ctx.fillText('400nm',6,y0+10);ctx.fillText('0',x0-4,h-24);ctx.fillText(tmax.toFixed(1)+' min',w-56,h-24);
+ ctx.fillText('Time →',w/2-20,h-8);
+ S.pdaCube._geom={x0,y0,pw,ph,cellW,cellH};
+}
+function drawPdaSpectrum(t){
+ if(!S.pdaCube)return;
+ const {wavelengths,cube,nT,tmax}=S.pdaCube;
+ const ti=Math.round(t/tmax*nT);
+ const row=cube[Math.max(0,Math.min(nT,ti))];
+ const c=$('pdaSpecCanvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);
+ const maxA=Math.max(...row,.01);
+ drawAxes(ctx,w,h,400,maxA*1.15,'AU');
+ ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.beginPath();
+ wavelengths.forEach((wl,i)=>{ const x=45+(wl-200)/200*(w-55), y=h-32-(row[i]/(maxA*1.15))*(h-45); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+ ctx.stroke();
+ // simple purity heuristic: compare spectral shape at leading edge, apex, trailing edge of nearest peak
+ const nearest=S.peaks.reduce((a,b)=>Math.abs(a.rt-t)<Math.abs(b.rt-t)?a:b,S.peaks[0]);
+ let purityNote='No eluting peak at this time slice.';
+ if(nearest&&Math.abs(nearest.rt-t)<nearest.w*3){
+   const shapeAt=tt=>{const ti2=Math.round(Math.max(0,Math.min(tmax,tt))/tmax*nT); return cube[ti2];};
+   const a=shapeAt(nearest.rt-nearest.w),b=shapeAt(nearest.rt),cc=shapeAt(nearest.rt+nearest.w);
+   const norm=arr=>{const m=Math.max(...arr,1e-6);return arr.map(v=>v/m);}
+   const na=norm(a),nb=norm(b),nc=norm(cc);
+   let diff=0; for(let i=0;i<nb.length;i++){diff+=Math.abs(na[i]-nb[i])+Math.abs(nc[i]-nb[i]);}
+   diff/=nb.length*2;
+   const pure=diff<0.08;
+   purityNote=`Nearest peak: ${nearest.name} (Rt ${nearest.rt.toFixed(2)} min). Spectral overlay deviation across up-slope/apex/down-slope = ${diff.toFixed(3)} → Peak Purity: ${pure?'<span class="sst-pass">PURE</span>':'<span class="sst-fail">POSSIBLE CO-ELUTION</span>'}`;
+ }
+ $('pdaSpecInfo').innerHTML=`Spectral slice: ${t.toFixed(2)} min<br>${purityNote}`;
+}
+$('pdaHeatCanvas').addEventListener('click',e=>{
+ if(!S.pdaCube){alert('Render the PDA cube first.');return;}
+ const hc=$('pdaHeatCanvas'), r=hc.getBoundingClientRect();
+ const {x0,pw}=(S.pdaCube._geom)||{x0:45,pw:hc.width-60};
+ const xr=(e.clientX-r.left)*(hc.width/r.width);
+ const t=Math.max(0,Math.min(S.pdaCube.tmax,(xr-x0)/pw*S.pdaCube.tmax));
+ drawPdaSpectrum(t);
+});
+
+/* ===== MODULE 6: AUDIO REALISM (Web Audio API) ===== */
+let audioCtx=null,pumpTimer=null,alarmOsc=null;
+function ensureAudio(){ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } return audioCtx; }
+function pumpTick(){
+ const ctx=ensureAudio(); if(!ctx)return;
+ const o=ctx.createOscillator(),g=ctx.createGain();
+ o.type='square'; o.frequency.value=180+Math.random()*20;
+ g.gain.setValueAtTime(0.05,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.06);
+ o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.07);
+}
+function startPumpAudio(){
+ stopPumpAudio();
+ const interval=()=>Math.max(80,420/Math.max(.1,S.flow));
+ function loop(){ pumpTick(); pumpTimer=setTimeout(loop,interval()); }
+ loop();
+}
+function stopPumpAudio(){ if(pumpTimer){clearTimeout(pumpTimer);pumpTimer=null;} }
+function playValveClick(){
+ const ctx=ensureAudio(); if(!ctx)return;
+ const bufferSize=ctx.sampleRate*0.03; const buffer=ctx.createBuffer(1,bufferSize,ctx.sampleRate);
+ const data=buffer.getChannelData(0); for(let i=0;i<bufferSize;i++)data[i]=(Math.random()*2-1)*(1-i/bufferSize);
+ const src=ctx.createBufferSource(); src.buffer=buffer;
+ const g=ctx.createGain(); g.gain.value=0.35;
+ src.connect(g); g.connect(ctx.destination); src.start();
+ log('Rheodyne valve switched — sample loop injected','good');
+}
+function playAlarm(){
+ const ctx=ensureAudio(); if(!ctx)return;
+ stopAlarm();
+ alarmOsc=ctx.createOscillator(); const g=ctx.createGain();
+ alarmOsc.type='square'; alarmOsc.frequency.value=880;
+ g.gain.value=0.06;
+ alarmOsc.connect(g); g.connect(ctx.destination); alarmOsc.start();
+ setTimeout(stopAlarm,1800);
+}
+function stopAlarm(){ if(alarmOsc){try{alarmOsc.stop();}catch(e){} alarmOsc=null;} }
+
+function updateLoop(){health();S.pressure=calcPressure(S.t);$('mPress').textContent=S.pressure.toFixed(1);drawPressure();requestAnimationFrame(updateLoop)}
+renderLibCards();renderGradTable();drawGradientProfile();applyRoleLocks();
+updateModel();renderQueue();health();drawAll();updateLoop();renderWorkflow();
+document.querySelectorAll('.sidenav-item').forEach(x=>x.classList.toggle('active',x.dataset.view==='dash'));
+auditLog('User Login','Session started as '+ROLE_LABEL[S.role]);
+['hamburgerBtn','powerBtn'].forEach(id=>{
+ const el=$(id); if(!el)return;
+ el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();} });
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeSidenav();} });
+</script>
+
+<script>
+/* =====================================================================
+   REAL-WORLD HUMAN ERROR & DIAGNOSTIC VISUAL FEEDBACK ENGINE  (PART 1)
+   Modular extension — reads/writes the existing global `S` state object
+   and wraps existing engine functions (calcPressure, signalAt, startRun,
+   updateHardware, drawPressure) without rewriting the core simulator.
+   ===================================================================== */
+
+/* ---- 1. Extend shared state with new hardware/method fault fields ---- */
+Object.assign(S,{
+  solventLevel:100,          // % — 0 = dry run / empty bottle
+  lampOn:true,               // UV/Vis lamp power state
+  columnState:'installed',   // 'installed' | 'reversed' | 'missing'
+  solventType:'water',       // drives UV cut-off conflict check
+  activeErrors:[],
+  _leakTimerSet:false
+});
+
+const SOLVENT_CUTOFF={water:190,acetonitrile:190,methanol:205,thf:212,chloroform:245,acetone:330};
+const SOLVENT_LABEL={water:'Water',acetonitrile:'Acetonitrile',methanol:'Methanol',thf:'THF',chloroform:'Chloroform',acetone:'Acetone'};
+
+/* ---- 2. Diagnostic knowledge base: What / Why / Fix per error code ---- */
+const ERR_KB={
+  ERR01:{code:'ERR-01',severity:'critical',title:'PUMP CAVITATION / NO FLOW',
+    what:'The solvent reservoir was allowed to run empty (a "dry run"), and the pump was started — or kept running — with no mobile phase available at the inlet.',
+    why:'With no liquid at the pump inlet, the reciprocating pistons draw air instead of solvent. Air is compressible, so the inlet/outlet check valves cannot build hydraulic pressure. This is pump cavitation / air lock: system pressure collapses to 0 bar and no mobile phase reaches the column or detector.',
+    fix:'1) Stop the pump immediately.<br>2) Refill the mobile phase reservoir(s) — never let a bottle run dry mid-sequence.<br>3) Open the purge valve and manually prime each pump head until bubble-free solvent flows to waste.<br>4) Confirm the inlet sinker filters are fully submerged.<br>5) Restart the pump only once pressure builds and stabilizes.'},
+  ERR02:{code:'ERR-02',severity:'critical',title:'LEAK DETECTED AT AUTOSAMPLER',
+    what:'A fitting on the flow path — commonly at the autosampler / injection valve — was left loose or under-tightened.',
+    why:'High-pressure mobile phase escapes at the loose connection instead of reaching the column. The instrument\'s leak sensor tray beneath the autosampler detects the moisture and immediately auto-stops the sequence to protect electronics and prevent sample loss.',
+    fix:'1) Do not simply restart — the sequence has been auto-stopped for safety.<br>2) Visually confirm the leak location (solvent visible at the fitting).<br>3) Depressurize the line per SOP before touching fittings.<br>4) Re-seat the capillary with a proper ferrule; finger-tighten, then a small wrench nip — do not overtighten.<br>5) Wipe the leak sensor dry and run a short leak/pressure test before resuming the sequence.'},
+  ERR03_missing:{code:'ERR-03',severity:'critical',title:'NO COLUMN DETECTED',
+    what:'The analytical column is missing from the flow path — removed for a prior procedure (e.g. backflush, cleaning) and never reinstalled, or bypassed with a union fitting.',
+    why:'The CDS expects the backpressure signature of an installed column at the set flow/viscosity. With no column, measured backpressure falls far below the expected range, so the system cannot confirm a valid flow path and flags "no column detected".',
+    fix:'1) Do not start the sequence yet.<br>2) Install the correct analytical column in the oven, matching the printed flow-direction arrow.<br>3) Finger-tighten fittings, then torque to the column manufacturer\'s spec.<br>4) Purge/equilibrate for several column volumes before starting the sequence.'},
+  ERR03_reversed:{code:'ERR-03',severity:'critical',title:'REVERSE FLOW / HIGH BACKPRESSURE',
+    what:'The analytical column was installed backwards relative to the printed flow-direction arrow on the column body.',
+    why:'Reversed flow forces mobile phase through the outlet frit first. Outlet frits are typically finer and foul more easily from that side, so reverse flow rapidly traps particulates, building abnormal backpressure — separation efficiency also collapses.',
+    fix:'1) Stop the pump before backpressure trips the overpressure alarm.<br>2) Depressurize the line.<br>3) Remove and reinstall the column with the printed arrow pointing in the direction of flow (inlet → outlet).<br>4) Replace the guard column/frit if fouled.<br>5) Re-equilibrate before resuming the sequence.'},
+  WARN_PMAX:{code:'WARN',severity:'warning',title:'NEAR P-MAX LIMIT — FLOW / PARTICLE MISMATCH',
+    what:'The method flow rate was set above 3.0 mL/min while a 3 µm particle-size column is installed.',
+    why:'Sub-3 µm particles pack far more densely than standard 5 µm media, generating much higher intrinsic backpressure per unit flow. Pushing flow past this column\'s validated linear-velocity limit spikes system backpressure toward the pump\'s P-Max ceiling.',
+    fix:'1) Reduce flow rate to within the validated range for 3 µm media (typically ≤ 2–3 mL/min, depending on column dimensions).<br>2) Or switch to the 5 µm particle column if higher flow is required.<br>3) Re-check the live pressure trend before starting an acquisition.'},
+  ERR05:{code:'ERR-05',severity:'critical',title:'DETECTOR OVERLOAD',
+    what:'The UV detection wavelength was set below the UV cut-off wavelength of the selected mobile-phase solvent (e.g. 200 nm with Acetone, cut-off ≈ 330 nm).',
+    why:'Below its cut-off wavelength, the solvent itself absorbs UV light so strongly that it saturates the photodiode. The detector reports maximum absorbance — a pinned-high, flat baseline — and can no longer resolve any analyte peaks.',
+    fix:'1) Increase the UV wavelength above the solvent\'s published cut-off, OR<br>2) choose a mobile-phase solvent with a lower UV cut-off for the desired detection wavelength.<br>3) Re-check the live baseline before starting the sequence.'},
+  WARN_LAMP:{code:'WARN',severity:'warning',title:'LAMP OFF — NO SIGNAL DETECTED',
+    what:'The sequence was started (or is running) while the UV/Vis lamp (deuterium/tungsten source) was switched off.',
+    why:'With no light source through the flow cell, the photodiode array has no transmitted light to reference against, so the detector reports zero absorbance for the entire run regardless of what elutes.',
+    fix:'1) Stop the run.<br>2) Switch the lamp ON and allow the standard warm-up / energy-stabilization time (commonly 15–30 min for deuterium lamps).<br>3) Confirm lamp energy/intensity readings are within spec before resuming the sequence.'}
+};
+
+/* ---- 3. Live fault evaluation: recompute S.activeErrors from current state ---- */
+function evaluateErrors(){
+  const errs=[];
+  if(S.solventLevel<=0) errs.push('ERR01');
+  if(S.faults.leak) errs.push('ERR02');
+  if(S.columnState==='missing') errs.push('ERR03_missing');
+  else if(S.columnState==='reversed') errs.push('ERR03_reversed');
+  if(S.flow>3 && S.particle===3) errs.push('WARN_PMAX');
+  if(!S.lampOn) errs.push('WARN_LAMP');
+  else if(S.uv < (SOLVENT_CUTOFF[S.solventType]||0)) errs.push('ERR05');
+  S.activeErrors=errs;
+  renderErrStatusGrid();
+  updateErrBanner();
+  if($('diagOverlay') && $('diagOverlay').classList.contains('show')) openDiagDrawer();
+}
+function priorityErrorCode(){
+  const crit=S.activeErrors.find(k=>ERR_KB[k].severity==='critical');
+  return crit || S.activeErrors[0] || null;
+}
+function updateSysLight(state){ const el=$('sysLight'); if(el) el.className='sys-light sys-light-'+state; }
+function updateErrBanner(){
+  const banner=$('errBanner'); if(!banner)return;
+  const code=priorityErrorCode();
+  if(!code){
+    banner.style.display='none';
+    if(!S.equilibrating) updateSysLight(S.power?'green':'red');
+    return;
+  }
+  const e=ERR_KB[code];
+  banner.style.display='flex';
+  banner.className='err-banner severity-'+e.severity;
+  $('errBannerCode').textContent=e.code;
+  $('errBannerText').textContent=e.title;
+  if(!S.equilibrating) updateSysLight(e.severity==='critical'?'red':'amber');
+}
+function renderErrStatusGrid(){
+  const grid=$('errStatusGrid'); if(!grid)return;
+  grid.innerHTML=Object.keys(ERR_KB).map(k=>{
+    const e=ERR_KB[k], active=S.activeErrors.includes(k);
+    return `<div class="badge ${active?'err':'ok'}" style="text-align:center;padding:6px 4px;display:block">${e.code}<br><span style="font-weight:400">${active?'ACTIVE':'clear'}</span></div>`;
+  }).join('');
+}
+
+/* ---- 4. Diagnostic drawer (What / Why / Fix reference, with jump to repair) ---- */
+function openDiagDrawer(){
+  $('diagOverlay').classList.add('show');
+  $('diagDrawerBody').innerHTML=Object.keys(ERR_KB).map(k=>{
+    const e=ERR_KB[k], active=S.activeErrors.includes(k);
+    return `<div class="diag-entry ${active?('active-'+e.severity):''}">
+      <div class="diag-entry-head"><span class="code">${e.code}</span><b>${e.title}</b><span class="stat ${active?'on':'off'}">${active?'ACTIVE':'CLEAR'}</span></div>
+      <p><b>What:</b> ${e.what}</p>
+      <p><b>Why:</b> ${e.why}</p>
+      <p><b>Fix:</b> ${e.fix}</p>
+      ${active?`<div class="repair-cta"><button class="cds-btn primary" onclick="openRepairConsole('${k}')">🔧 Start Guided Repair</button></div>`:''}
+    </div>`;
+  }).join('');
+}
+function closeDiagDrawer(){ $('diagOverlay').classList.remove('show'); }
+
+/* ---- 5. Error-injector control bindings (Diagnostics → Assembly & Method Error Injectors) ---- */
+function onDryRunToggle(){
+  S.solventLevel=$('faultDryRun').checked?0:100; S.airLocked=S.solventLevel<=0; S.primed=S.solventLevel>0;
+  log(S.solventLevel<=0?'CRITICAL: Solvent reservoir emptied — dry run condition simulated (ERR-01)':'Solvent reservoir refilled to 100%', S.solventLevel<=0?'critical':'good');
+  auditLog('Fault Injection', S.solventLevel<=0?'Dry run / empty solvent bottle simulated (ERR-01)':'Solvent bottle refilled');
+  evaluateErrors(); updateModel();
+}
+function onLampToggle(){
+  S.lampOn=$('lampSwitch').checked;
+  log(S.lampOn?'UV/Vis lamp switched ON':'WARN: UV/Vis lamp switched OFF — no signal', S.lampOn?'good':'warning');
+  auditLog('Fault Injection', S.lampOn?'UV/Vis lamp turned ON':'UV/Vis lamp turned OFF (simulated)');
+  evaluateErrors(); updateModel();
+}
+function onColumnStateChange(){
+  S.columnState=$('columnStateSel').value;
+  const msg={installed:'Column installed correctly — flow path nominal',reversed:'CRITICAL: Column installed REVERSED — reverse flow / high backpressure (ERR-03)',missing:'CRITICAL: Column removed / missing from flow path (ERR-03)'}[S.columnState];
+  log(msg, S.columnState==='installed'?'good':'critical');
+  auditLog('Fault Injection', msg);
+  evaluateErrors(); updateModel();
+}
+function onSolventTypeChange(){
+  S.solventType=$('solventTypeSel').value;
+  log('Mobile phase solvent changed to '+SOLVENT_LABEL[S.solventType]+' (UV cut-off ≈ '+SOLVENT_CUTOFF[S.solventType]+' nm)','good');
+  auditLog('Parameter Modification','Mobile phase solvent → '+SOLVENT_LABEL[S.solventType]);
+  evaluateErrors(); updateModel();
+}
+
+/* ---- 6. Wrap core engine functions so faults drive live pressure / signal behavior ---- */
+const _calcPressure_p1=calcPressure;
+calcPressure=function(t){
+  if(S.solventLevel<=0) return 0; // pump cavitation / air lock — no hydraulic pressure can build
+  let p=_calcPressure_p1(t);
+  if(S.columnState==='missing') p*=0.15;
+  if(S.columnState==='reversed') p*=1.9;
+  return Math.max(0,p);
+};
+const _signalAt_p1=signalAt;
+signalAt=function(t){
+  if(!S.lampOn) return 0; // no light source through flow cell
+  const cutoff=SOLVENT_CUTOFF[S.solventType]||0;
+  if(S.uv<cutoff) return 2.6+Math.sin(t*4)*0.01; // detector saturated / pinned high
+  let y=_signalAt_p1(t);
+  if(S.lampHours>1800){ const age=(S.lampHours-1800)/200; y+=age*0.03*Math.sin(t*53)+age*0.02*Math.sin(t*97); }
+  return Math.max(0,y);
+};
+const _health_p1=health;
+health=function(){ _health_p1(); renderErrStatusGrid(); renderHealthDashboard(); };
+const _updateModel_p1=updateModel;
+updateModel=function(){ _updateModel_p1(); evaluateErrors(); };
+
+/* =====================================================================
+   PART 2: INTERACTIVE TROUBLESHOOTING & GUIDED REPAIR WORKFLOW ENGINE
+   Adds: Repair & Service Console with step-by-step corrective actions,
+   a true 5-column-volume System Re-Equilibration stage (RED→AMBER→GREEN), a Consumables
+   & Hardware Health dashboard, toast notifications, and 21 CFR Part 11
+   audit entries for every repair / maintenance action.
+   ===================================================================== */
+
+Object.assign(S,{ pumpSealWear:100, lampHours:0, columnLifePct:100, equilibrating:false, purgeValveOpen:false, airLocked:false, leakRate:0, eqCV:0, eqTargetCV:5, pumpedVolume:0, solventFront:null });
+
+const _setState_p2=setState;
+setState=function(st){
+  _setState_p2(st);
+  if(st.includes('EQUILIBRATING')){ $('cdsStatus').style.color='var(--cds-amber)'; }
+  else if(st==='SYSTEM READY'){ $('cdsStatus').style.color='var(--cds-green)'; }
+};
+
+/* ---- 1. Toast notifications ---- */
+function toast(msg,cls=''){
+  const stack=$('toastStack'); if(!stack)return;
+  const el=document.createElement('div');
+  el.className='toast '+cls;
+  el.textContent=msg;
+  stack.appendChild(el);
+  setTimeout(()=>el.remove(),3600);
+}
+
+/* ---- 2. Repair recipes per error code ---- */
+const REPAIR_STEPS={
+  ERR01:{mode:'sequence',steps:[
+    {label:'Refill mobile phase reservoir',fn:'stepRefillBottle'},
+    {label:'Open purge valve',fn:'stepOpenPurge'},
+    {label:'Run pump prime at 5 mL/min',fn:'stepPrimePump'},
+    {label:'Close purge valve',fn:'stepClosePurge'}
+  ]},
+  ERR02:{mode:'sequence',steps:[
+    {label:'Tighten tubing fitting (wrench tool)',fn:'stepTightenFitting'},
+    {label:'Clear leak sensor tray',fn:'stepClearLeakTray'}
+  ]},
+  ERR03_missing:{mode:'choice',steps:[
+    {label:'Replace guard filter',fn:'stepReplaceGuardRepair'},
+    {label:'Back-flush column',fn:'stepBackflushRepair'}
+  ]},
+  ERR03_reversed:{mode:'choice',steps:[
+    {label:'Replace guard filter',fn:'stepReplaceGuardRepair'},
+    {label:'Back-flush column',fn:'stepBackflushRepair'}
+  ]},
+  ERR05:{mode:'choice',steps:[
+    {label:'Turn ON deuterium lamp',fn:'stepTurnOnLamp'},
+    {label:'Adjust wavelength above cut-off',fn:'stepAdjustWavelength'}
+  ]},
+  WARN_LAMP:{mode:'choice',steps:[
+    {label:'Turn ON deuterium lamp',fn:'stepTurnOnLamp'}
+  ]},
+  WARN_PMAX:{mode:'choice',steps:[
+    {label:'Reduce flow to ≤ 3.0 mL/min',fn:'stepReduceFlow'},
+    {label:'Switch to 5 µm particle column',fn:'stepSwitchParticle'}
+  ]}
+};
+
+/* ---- 3. Individual repair step actions — each mutates state & returns a toast/audit message ---- */
+function stepRefillBottle(){ S.solventLevel=100; return 'Mobile phase reservoir refilled to 100%'; }
+function stepOpenPurge(){ S.purgeValveOpen=true; S.pumpFlow=5; S.airLocked=false; S.pressure=0; return 'Purge valve OPEN — pump flow routed directly to waste; column pressure forced to 0 bar'; }
+function stepPrimePump(){ S.airLocked=false; S.primed=true; S.pumpFlow=5; return 'Pump primed at 5 mL/min — S.airLocked cleared and bubble-free flow confirmed at waste'; }
+function stepClosePurge(){ S.purgeValveOpen=false; S.pumpFlow=0; S.pressure=0; return 'Purge valve CLOSED — analytical flow path restored'; }
+
+function stepTightenFitting(){ S.leakRate=0; S.faults.leak=false; if($('faultLeak'))$('faultLeak').checked=false; return 'Capillary fitting tightened to specification — leakRate set to 0'; }
+function stepClearLeakTray(){ S.faults.leak=false; S.leakRate=0; if($('faultLeak'))$('faultLeak').checked=false; return 'Leak sensor tray cleared and dried'; }
+
+function stepReplaceGuardRepair(){ S.columnState='installed'; if($('columnStateSel'))$('columnStateSel').value='installed'; return 'Guard filter replaced — flow path restored'; }
+function stepBackflushRepair(){ S.columnState='installed'; if($('columnStateSel'))$('columnStateSel').value='installed'; return 'Column back-flushed — flow path restored, orientation corrected'; }
+
+function stepTurnOnLamp(){ S.lampOn=true; if($('lampSwitch'))$('lampSwitch').checked=true; return 'Deuterium lamp switched ON — warm-up initiated'; }
+function stepAdjustWavelength(){
+  const oldSolvent=SOLVENT_LABEL[S.solventType], cutoff=SOLVENT_CUTOFF[S.solventType];
+  const opts=[210,254,280], safe=opts.find(v=>v>cutoff);
+  if(safe){ S.uv=safe; if($('uv'))$('uv').value=safe; updateModel(); return `Wavelength adjusted to ${safe} nm (above ${oldSolvent} cut-off of ${cutoff} nm)`; }
+  S.solventType='water'; if($('solventTypeSel'))$('solventTypeSel').value='water'; updateModel();
+  return `No available detector wavelength clears the ${oldSolvent} cut-off — mobile phase switched to Water (cut-off ≈190 nm) instead`;
+}
+
+function stepReduceFlow(){ S.flow=3; if($('flow'))$('flow').value=3; updateModel(); return 'Flow rate reduced to 3.0 mL/min'; }
+function stepSwitchParticle(){ S.particle=5; if($('particle'))$('particle').value=5; updateModel(); return 'Switched to 5 µm particle column'; }
+
+/* ---- 4. Repair console rendering & control ---- */
+let repairState={code:null,done:new Set()};
+function topActiveErrorCode(){ return priorityErrorCode(); }
+function openRepairConsole(code){
+  if(!code) code=topActiveErrorCode();
+  if(!code){ toast('No active faults — instrument nominal.','good'); return; }
+  if(!REPAIR_STEPS[code]){ openDiagDrawer(); return; }
+  repairState={code,done:new Set()};
+  renderRepairConsole();
+  $('repairOverlay').classList.add('show');
+}
+function closeRepairConsole(){ $('repairOverlay').classList.remove('show'); }
+function renderRepairConsole(){
+  const code=repairState.code, e=ERR_KB[code], recipe=REPAIR_STEPS[code];
+  $('repairConsoleTitle').textContent='🔧 Instrument Repair & Service Console — '+e.code;
+  const stepsHtml=recipe.steps.map((s,i)=>{
+    const done=repairState.done.has(i);
+    const enabled = recipe.mode==='choice' ? !done : (i===0 || repairState.done.has(i-1)) ;
+    return `<div class="repair-step ${enabled?'enabled':''} ${done?'done':''}">
+      <div class="rs-num">${done?'✓':(i+1)}</div>
+      <div class="rs-label">${s.label}</div>
+      ${done?'<span class="rs-check">✔ done</span>':`<button class="cds-btn primary" ${enabled?'':'disabled'} onclick="runRepairStep(${i})">Execute</button>`}
+    </div>${recipe.mode==='choice'&&i<recipe.steps.length-1?'<div class="repair-or-divider">— OR —</div>':''}`;
+  }).join('');
+  $('repairConsoleBody').innerHTML=`
+    <div class="diag-entry active-${e.severity}">
+      <div class="diag-entry-head"><span class="code">${e.code}</span><b>${e.title}</b><span class="stat on">ACTIVE</span></div>
+      <p><b>Why:</b> ${e.why}</p>
+    </div>
+    <div>
+      <p class="sub" style="margin:0 0 6px">${recipe.mode==='sequence'?'Execute the following corrective actions in order:':'Execute one of the following corrective actions:'}</p>
+      <div class="repair-step-list">${stepsHtml}</div>
+    </div>
+    <div class="eq-panel" id="eqPanel">
+      <div class="eq-lightrow">
+        <span class="sys-light" id="eqLightRed"></span><span class="sys-light" id="eqLightAmber"></span><span class="sys-light" id="eqLightGreen"></span>
+      </div>
+      <div class="eq-status-text" id="eqStatusText">SYSTEM EQUILIBRATING…</div>
+      <div class="eq-canvas-wrap"><canvas id="eqCanvas" width="600" height="80"></canvas></div>
+      <div class="eq-progress"><i id="eqProgressBar"></i></div>
+      <div class="eq-metrics"><span id="eqCvVal">Equilibrating: 0.0 / 5.0 CVs (0.0 mL pumped)</span><span id="eqPressureVal">Pressure: — bar</span><span id="eqBaselineVal">Baseline noise: — mAU</span></div>
+    </div>
+  `;
+}
+function runRepairStep(i){
+  const code=repairState.code, recipe=REPAIR_STEPS[code], step=recipe.steps[i];
+  const msg=window[step.fn]();
+  repairState.done.add(i);
+  toast(msg,'good');
+  auditLog('Repair Action',`${ERR_KB[code].code}: ${msg}`);
+  const complete = recipe.mode==='sequence' ? repairState.done.size===recipe.steps.length : true;
+  renderRepairConsole();
+  if(complete) setTimeout(()=>startEquilibration(code),250);
+}
+
+/* ---- 5. System re-equilibration stage (RED → AMBER → GREEN until 5 column volumes are pumped) ---- */
+function startEquilibration(code){
+  S.equilibrating=true;
+  const wasRunning=S.running;
+  const targetCV=5;
+  const targetVolume=columnVoidVolume()*targetCV;
+  let pumped=0;
+  if(!wasRunning){ const svg=$('svgRoot'); if(svg)svg.classList.add('running'); startPumpAudio(); }
+  setState('SYSTEM EQUILIBRATING');
+  document.querySelectorAll('.repair-step button').forEach(b=>b.disabled=true);
+  const panel=$('eqPanel'); if(panel)panel.classList.add('show');
+  S.eqCV=0; S.eqTargetCV=targetCV; S.pumpedVolume=0;
+  toast('Repair complete — re-equilibrating by true column volume…','good');
+  auditLog('Guided Repair Completed', ERR_KB[code].code+' — '+ERR_KB[code].title+' resolved; entering 5 CV re-equilibration');
+  let lastTs=performance.now();
+  function tick(ts){
+    const dtMin=Math.max(0,(ts-lastTs)/60000); lastTs=ts;
+    const q=Math.max(.01,gradientAtSystem(0).flow||S.flow);
+    pumped += q*dtMin;
+    S.pumpedVolume=pumped;
+    S.eqCV=Math.min(targetCV,pumped/Math.max(.0001,columnVoidVolume()));
+    const pct=Math.min(1,S.eqCV/targetCV);
+    drawEqVisual(pct);
+    const bar=$('eqProgressBar'); if(bar)bar.style.width=(pct*100).toFixed(1)+'%';
+    const cv=$('eqCvVal'); if(cv)cv.textContent=`Equilibrating: ${S.eqCV.toFixed(1)} / ${targetCV.toFixed(1)} CVs (${pumped.toFixed(2)} mL pumped)`;
+    const statusText=$('eqStatusText');
+    if(pct<.15){ setEqLights('red'); if(statusText)statusText.textContent='SYSTEM EQUILIBRATING… (flushing initial mobile phase)'; }
+    else if(pct<.92){ setEqLights('amber'); if(statusText)statusText.textContent='SYSTEM EQUILIBRATING… (5-column-volume stabilization)'; }
+    else { setEqLights('green'); if(statusText)statusText.textContent='SYSTEM READY — CV target reached'; }
+    if(!S.equilibrating)return;
+    if(pct<1){ requestAnimationFrame(tick); } else { finishEquilibration(code,wasRunning); }
+  }
+  requestAnimationFrame(tick);
+}
+function setEqLights(state){
+  updateSysLight(state);
+  ['Red','Amber','Green'].forEach(c=>{ const el=$('eqLight'+c); if(el)el.className='sys-light'+(c.toLowerCase()===state?' sys-light-'+state:''); });
+}
+function drawEqVisual(pct){
+  const c=$('eqCanvas'); if(!c)return; const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const amp=(1-pct)*(h*0.32), baseline=h*0.55;
+  ctx.strokeStyle=pct<0.9?'#ffb300':'#00e676'; ctx.lineWidth=1.8; ctx.beginPath();
+  for(let x=0;x<w;x++){ const t=x/w*20; const y=baseline+Math.sin(t*3+pct*10)*amp*0.6+Math.sin(t*11)*amp*0.4; x?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.stroke();
+  const noise=(1-pct)*2.4 + Math.max(0,(S.lampHours-1500)/500)*.8;
+  $('eqPressureVal')&&($('eqPressureVal').textContent='Pressure: '+calcPressure(0).toFixed(1)+' bar');
+  $('eqBaselineVal')&&($('eqBaselineVal').textContent='Baseline noise: '+noise.toFixed(2)+' mAU');
+}
+function finishEquilibration(code,wasRunning){
+  S.equilibrating=false;
+  evaluateErrors();
+  if(!wasRunning){ const svg=$('svgRoot'); if(svg)svg.classList.remove('running'); stopPumpAudio(); }
+  if(!S.activeErrors.length){
+    setState('SYSTEM READY');
+    updateSysLight('green');
+    toast('System Ready — all diagnostics nominal','good');
+    auditLog('System Status','SYSTEM READY — re-equilibration complete, all faults cleared');
+    log('System re-equilibration complete — SYSTEM READY','good');
+    closeRepairConsole();
+  } else {
+    const stillCritical=S.activeErrors.some(k=>ERR_KB[k].severity==='critical');
+    updateSysLight(stillCritical?'red':'amber');
+    setState(stillCritical?'ERROR: ADDITIONAL FAULT ACTIVE':'STANDBY');
+    toast('Additional fault still active — continue diagnostics','warning');
+    log('Re-equilibration complete but additional fault(s) remain active','warning');
+    updateErrBanner();
+    openRepairConsole(); // hand off directly to the next active fault
+  }
+}
+
+/* ---- 6. Preventive Maintenance & Module Health Dashboard ---- */
+function renderHealthDashboard(){
+  const sw=Math.max(0,Math.round(S.pumpSealWear));
+  const swBar=$('sealWearBar'); if(swBar){ swBar.style.width=sw+'%'; swBar.style.background=sw<25?'var(--cds-red)':sw<55?'var(--cds-amber)':'var(--cds-green)'; }
+  const swLabel=$('sealWearLabel'); if(swLabel) swLabel.textContent=sw+'%';
+
+  const lh=Math.max(0,Math.round(S.lampHours));
+  const lhBar=$('lampHoursBar'); if(lhBar){ const pct=Math.min(100,lh/2000*100); lhBar.style.width=pct+'%'; lhBar.style.background=lh>1800?'var(--cds-red)':lh>1400?'var(--cds-amber)':'var(--cds-green)'; }
+  const lhLabel=$('lampHoursLabel'); if(lhLabel) lhLabel.textContent=lh+' / 2000 h';
+
+  const cl=Math.max(0,Math.round(S.columnLifePct));
+  const clBar=$('columnLifeBar'); if(clBar){ clBar.style.width=cl+'%'; clBar.style.background=cl<30?'var(--cds-red)':cl<60?'var(--cds-amber)':'var(--cds-green)'; }
+  const clLabel=$('columnLifeLabel'); if(clLabel) clLabel.textContent=cl+'%';
+}
+function replacePumpSeals(){
+  S.pumpSealWear=100; renderHealthDashboard();
+  toast('Pump seals replaced — wear index reset to 100%','good');
+  auditLog('Preventive Maintenance','Pump seals replaced');
+  log('Pump seals replaced — wear index reset','good');
+}
+function installNewLamp(){
+  S.lampHours=0; renderHealthDashboard();
+  toast('New UV deuterium lamp installed — hour counter reset','good');
+  auditLog('Preventive Maintenance','UV deuterium lamp replaced');
+  log('UV deuterium lamp replaced — hour counter reset','good');
+}
+function flushColumnOrganic(){
+  S.columnLifePct=Math.min(100,S.columnLifePct+40); renderHealthDashboard();
+  toast('Column flushed with 100% organic solvent — efficiency partially restored','good');
+  auditLog('Preventive Maintenance','Column flushed with 100% organic solvent');
+  log('Column flushed with 100% organic solvent','good');
+}
+setInterval(()=>{
+  if(!S.power) return;
+  if(S.lampOn) S.lampHours=Math.min(2000,S.lampHours+(1/60));
+  if(S.running){
+    const stress=Math.min(2,S.pressure/Math.max(50,S.pmax*0.6));
+    S.pumpSealWear=Math.max(0,S.pumpSealWear-0.03*stress);
+    S.columnLifePct=Math.max(0,S.columnLifePct-0.02*(S.columnState==='reversed'?3:1));
+  }
+  renderHealthDashboard();
+},1000);
+
+/* ---- 7. Diagnostics sub-tab switcher (Fault Simulator ↔ Consumables & Hardware Health) ---- */
+function diagSubTab(name){
+  document.querySelectorAll('.diag-subtab').forEach(b=>b.classList.remove('active'));
+  const btn=$('diagSubTabBtn-'+name); if(btn)btn.classList.add('active');
+  document.querySelectorAll('.diag-subview').forEach(v=>v.classList.remove('active'));
+  const panel=$(name==='health'?'diagSubHealth':'diagSubFaults'); if(panel)panel.classList.add('active');
+  if(name==='health') renderHealthDashboard();
+}
+
+/* ---- 8. Initial paint ---- */
+evaluateErrors();
+renderHealthDashboard();
+updateSysLight(S.power?'green':'red');
+</script>
+
+<script>
+/* ==========================================================================
+   HPLC SIMULATOR — PHYSICS / ACQUISITION KERNEL v4.0
+   Refactored kernel layered over the existing CDS/SVG UI.
+   - Darcy/Kozeny-Carman packed-bed hydraulics
+   - temperature/composition-dependent viscosity
+   - delayed, integrated gradient history at the column inlet
+   - real-time analyte transport (no precomputed Rt)
+   - detector raw-data acquisition + raw-array integration
+   - sequential autosampler execution with per-vial identity/concentration/volume
+   - hard fault interlocks for ERR-01 / ERR-02
+   ========================================================================== */
+
+(function(){
+'use strict';
+
+/* ---------- Kernel state extensions ---------- */
+Object.assign(S,{
+  dwellVolume:0.45,             // mL, representative low-pressure mixer/dwell volume
+  columnLength:0.150,           // m
+  columnID:0.0046,              // m
+  columnPorosity:0.40,          // packed-bed interstitial porosity
+  rawData:[],                   // detector output: [time, absorbance]
+  pressureData:[],              // [time, bar]
+  detectorSampleInterval:0.01,  // min
+  nextDetectorT:0,
+  analytes:[],
+  currentSample:null,
+  sequenceActive:false,
+  sequenceIndex:-1,
+  sequenceResults:[],
+  vialRawData:null,
+  primed:true,
+  airLocked:false,
+  purgeValveOpen:false,
+  leakRate:0,
+  pumpFlow:0,
+  detectorBaseline:0.012,
+  lastDetectorSignal:0,
+  simRate:.9
+});
+
+/* ---------- Helpers ---------- */
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const finiteOr=(v,d)=>Number.isFinite(v)?v:d;
+
+function columnSpec(){
+  const specs={
+    c18:{length:.150,id:.0046,porosity:.40,perm:1.00,retention:1.00},
+    c8:{length:.150,id:.0046,porosity:.40,perm:.92,retention:.82},
+    phenyl:{length:.150,id:.0046,porosity:.39,perm:1.12,retention:1.05},
+    cyano:{length:.150,id:.0046,porosity:.41,perm:.95,retention:.90}
+  };
+  return specs[S.column]||specs.c18;
+}
+
+/* Dynamic viscosity model.
+   A is treated as water-like and B as ACN-like, with log mixing and
+   Arrhenius-like temperature correction. Values are deliberately smooth
+   rather than pretending to be a solvent-property database. */
+function mobilePhaseViscosity(){
+  const T=clamp(+S.temp||40,20,80);
+  const xB=clamp((+S.b||0)/100,0,1);
+  const muA20=1.002, muB20=.369;       // mPa·s, water / ACN at ~20 °C
+  const mu20=Math.exp((1-xB)*Math.log(muA20)+xB*Math.log(muB20));
+  const tempFactor=Math.exp(-0.025*(T-20)); // compact temperature dependence
+  return Math.max(.16,mu20*tempFactor);     // mPa·s
+}
+function columnVoidVolume(){
+  const c=columnSpec();
+  // For equilibration we use the requested fluid-accessible column volume
+  // (geometric volume × ~0.70 porosity), independently of the packed-bed
+  // porosity used by the Kozeny-Carman pressure model.
+  const eps=Number.isFinite(S.columnVolumePorosity)?S.columnVolumePorosity:.70;
+  return Math.PI*(c.id/2)**2*c.length*eps*1e6; // mL
+}
+function linearVelocity(flow){
+  const c=columnSpec();
+  const q=Math.max(0,flow)*1e-6/60; // m3/s
+  return q/(Math.PI*(c.id/2)**2);
+}
+function hydraulicPressure(t){
+  if(S.solventLevel<=0 || S.pumpFlow<=0 || S.columnState==='missing' || S.purgeValveOpen || S.airLocked) return 0;
+  const c=columnSpec();
+  const dp=Math.max(1e-6,(+S.particle||5)*1e-6);
+  const mu=mobilePhaseViscosity()*1e-3; // Pa·s
+  const v=linearVelocity(S.pumpFlow);
+  // Kozeny-Carman packed-bed pressure drop:
+  // ΔP = 180 μ L v (1-ε)^2 / (dp^2 ε^3)
+  let pPa=180*mu*c.length*v*Math.pow(1-c.porosity,2)/
+          (dp*dp*Math.pow(c.porosity,3));
+  let pBar=pPa/1e5*c.perm;
+  if(S.faults.clog)pBar*=2.9;
+  if(S.columnState==='reversed')pBar*=1.9;
+  if(S.faults.bubble)pBar*=1+0.10*Math.sin((t||0)*17);
+  // Dual-piston crossover ripple: stroke frequency rises with flow.
+  // t is simulator minutes; stroke volume is representative of a small analytical pump.
+  const strokeVol=.025;
+  const strokeHz=Math.max(.2,S.pumpFlow/strokeVol/60);
+  const rippleAmp=S.faults.bubble?.025:.008;
+  pBar*=1+rippleAmp*Math.sin(2*Math.PI*strokeHz*(t||0)*60)+.003*Math.sin(2*Math.PI*strokeHz*2*(t||0)*60+.7);
+  if(S.leakRate>0)pBar*=Math.max(0,1-S.leakRate);
+  // seal wear adds a small pressure-dependent drift
+  if(Number.isFinite(S.pumpSealWear))pBar*=1+Math.max(0,100-S.pumpSealWear)*0.0015;
+  return Math.max(0,pBar);
+}
+
+/* ---------- Gradient transport / dwell-volume history ---------- */
+function gradientAtSystem(t){
+  const seg=(S.gradient||[]).slice().sort((a,b)=>a.t-b.t);
+  if(!seg.length)return {a:S.a,b:S.b,flow:S.flow};
+  if(t<=seg[0].t)return {a:seg[0].a,b:seg[0].b,flow:seg[0].flow};
+  for(let i=0;i<seg.length-1;i++){
+    const s0=seg[i],s1=seg[i+1];
+    if(t>=s0.t&&t<=s1.t){
+      let f=(s1.t-s0.t)>0?(t-s0.t)/(s1.t-s0.t):1;
+      if(s0.curve==='step')f=0;
+      else if(s0.curve==='ramp')f=Math.pow(f,2.2);
+      return {
+        a:s0.a+(s1.a-s0.a)*f,
+        b:s0.b+(s1.b-s0.b)*f,
+        flow:s0.flow+(s1.flow-s0.flow)*f
+      };
+    }
+  }
+  const z=seg[seg.length-1];
+  return {a:z.a,b:z.b,flow:z.flow};
+}
+function flowIntegral(t0,t1){
+  if(t1<=t0)return 0;
+  // mL traversed through the mixer between two instrument times.
+  const n=Math.max(4,Math.ceil((t1-t0)/.02));
+  const h=(t1-t0)/n;
+  let sum=0;
+  for(let i=0;i<=n;i++){
+    const t=t0+i*h, q=gradientAtSystem(t).flow;
+    sum+=(i===0||i===n ? .5 : 1)*q;
+  }
+  return sum*h;
+}
+function systemTimeForDwell(columnTime){
+  const target=Math.max(0,S.dwellVolume);
+  if(target<=0)return columnTime;
+  let hi=columnTime,lo=0;
+  // If the run is shorter than the dwell time, gradient at t=0 is used.
+  if(flowIntegral(0,hi)<target)return 0;
+  for(let i=0;i<28;i++){
+    const mid=(lo+hi)/2;
+    // volume delivered from mid -> columnTime
+    if(flowIntegral(mid,columnTime)>target)lo=mid; else hi=mid;
+  }
+  return (lo+hi)/2;
+}
+function columnConditions(t){
+  const sourceT=systemTimeForDwell(Math.max(0,t));
+  const g=gradientAtSystem(sourceT);
+  return {a:g.a,b:g.b,flow:g.flow,sourceTime:sourceT};
+}
+
+/* ---------- Real-time analyte transport ---------- */
+function analyteK(analyte,bPct){
+  const c=columnSpec();
+  const refB=finiteOr(analyte.refB,50);
+  const kRef=Math.max(.05,finiteOr(analyte.kRef,1));
+  // RP-like gradient retention: increasing organic weakens retention.
+  const gamma=finiteOr(analyte.gradientSensitivity,.018);
+  const k=kRef*Math.exp(-gamma*(bPct-refB))*c.retention;
+  return clamp(k,.01,250);
+}
+function makeAnalytes(sample){
+  const compounds=Array.isArray(sample?.compounds)?sample.compounds:(Array.isArray(S.compounds)?S.compounds:[]);
+  const fallback=compounds.length?compounds:[
+    {name:'Peak 1',rtBase:2.1,baseHeight:1.0,width:.13,refB:30},
+    {name:'Peak 2',rtBase:4.35,baseHeight:.72,width:.18,refB:40},
+    {name:'Peak 3',rtBase:6.8,baseHeight:.52,width:.22,refB:50}
+  ];
+  const c=columnSpec(), tv=columnVoidVolume()/Math.max(.1,S.flow);
+  return fallback.map(comp=>{
+    const rtRef=Math.max(.2,finiteOr(comp.rtBase,3));
+    const kRef=Math.max(.05,rtRef/tv-1);
+    return {
+      name:comp.name,
+      compound:comp,
+      refB:finiteOr(comp.refB,50),
+      kRef,
+      gradientSensitivity:finiteOr(comp.gradientSensitivity,.018),
+      progress:0,
+      injected:false,
+      eluted:false,
+      rt:null,
+      areaScale:(sample?.conc||25)/25,
+      volumeScale:(sample?.volume||S.inj)/Math.max(1,S.inj),
+      baseHeight:finiteOr(comp.baseHeight,.5),
+      width:finiteOr(comp.width,.18),
+      tailFactor:S.tailFactor
+    };
+  });
+}
+function updateAnalyteTransport(dt){
+  if(!S.analytes.length)return;
+  const L=columnSpec().length;
+  const cond=columnConditions(S.t);
+  const u=linearVelocity(cond.flow);
+  for(const a of S.analytes){
+    if(a.eluted)continue;
+    const k=analyteK(a,cond.b);
+    // Solute velocity = mobile-phase velocity / (1+k).
+    a.progress+=u/(1+k)*dt*60; // m; dt is minutes
+    if(a.progress>=L){
+      a.eluted=true;
+      a.rt=S.t;
+    }
+  }
+}
+function analyteSignal(t,a){
+  if(a.rt==null)return 0;
+  const tf=Math.max(.5,finiteOr(a.tailFactor,1));
+  const rt=a.rt;
+  const sigma0=Math.max(.012,a.width*(S.particle===3?.72:1)/Math.sqrt(Math.max(.2,gradientAtSystem(t).flow)));
+  const sigma=t<rt?sigma0/Math.sqrt(tf):sigma0*tf;
+  const rel=typeof absorbanceRel==='function'?absorbanceRel(a.compound,S.uv):1;
+  const h=a.baseHeight*rel*a.areaScale*a.volumeScale*(1+S.inj/100);
+  return h*Math.exp(-.5*Math.pow((t-rt)/sigma,2));
+}
+
+/* ---------- Detector: raw [time, absorbance] only ---------- */
+function detectorBaseline(t){
+  const g=columnConditions(t);
+  let base=.012+.0006*g.b+.00012*t;
+  // Slow lamp/thermal baseline wander; aged lamps become progressively less stable.
+  const age=Math.max(0,(S.lampHours-1500)/500);
+  base += (.0007 + age*.0025)*Math.sin(t*.75) + age*.0012*Math.sin(t*.17);
+  return base;
+}
+function detectorNoise(t){
+  // Detector shot/electronic noise, with a marked increase after 1500 lamp hours.
+  const age=Math.max(0,(S.lampHours-1500)/500);
+  let sigma=.00075 + age*.0035;
+  let n=(Math.random()-.5)*2*sigma;
+  n += (.0005 + age*.002)*Math.sin(t*53);
+  n += (.00025 + age*.001)*Math.sin(t*97);
+  if(S.faults.lamp){
+    n+=.010*Math.sin(t*38)+.0055*Math.sin(t*71);
+  }
+  return n;
+}
+function detectorSignalAt(t){
+  if(!S.lampOn)return 0;
+  const cutoff=SOLVENT_CUTOFF[S.solventType]||0;
+  if(S.uv<cutoff)return 2.6+detectorNoise(t);
+  let y=detectorBaseline(t)+detectorNoise(t);
+  // Injection solvent / refractive-index shock at the dynamically calculated t0.
+  if(S.solventFront){
+    const sf=S.solventFront, dt=t-sf.t0, sig=dt<0?sf.width*.65:sf.width;
+    y += sf.height*Math.exp(-.5*Math.pow(dt/sig,2));
+  }
+  S.analytes.forEach(a=>{y+=analyteSignal(t,a);});
+  if(S.faults.bubble){
+    S.analytes.forEach(a=>{
+      if(a.rt!=null)y+=a.baseHeight*.20*Math.exp(-.5*Math.pow((t-(a.rt+.18))/(a.width*.65),2));
+    });
+  }
+  return Math.max(0,y);
+}
+function appendDetectorSamples(){
+  while(S.nextDetectorT<=S.t+1e-9){
+    const t=S.nextDetectorT;
+    const y=detectorSignalAt(t);
+    S.rawData.push([t,y]);
+    S.lastDetectorSignal=y;
+    S.nextDetectorT+=S.detectorSampleInterval;
+  }
+}
+
+/* ---------- Raw-array peak detection / integration ---------- */
+function linearBaselineAt(t,left,right){
+  const x1=left[0],y1=left[1],x2=right[0],y2=right[1];
+  if(x2===x1)return Math.min(y1,y2);
+  return y1+(y2-y1)*(t-x1)/(x2-x1);
+}
+function trapIntegral(data,i0,i1){
+  let area=0;
+  for(let i=i0;i<i1;i++){
+    const p=data[i],q=data[i+1];
+    area+=.5*((p[1])+(q[1]))*(q[0]-p[0]);
+  }
+  return area;
+}
+function interpolateCross(p,q,target){
+  if(q[1]===p[1])return (p[0]+q[0])/2;
+  const f=(target-p[1])/(q[1]-p[1]);
+  return p[0]+clamp(f,0,1)*(q[0]-p[0]);
+}
+function widthAtFraction(data,peakIdx,leftIdx,rightIdx,fraction){
+  const apex=data[peakIdx][1];
+  const leftBase=data[leftIdx][1],rightBase=data[rightIdx][1];
+  const base=Math.min(leftBase,rightBase);
+  const target=base+(apex-base)*fraction;
+  let tl=data[leftIdx][0],tr=data[rightIdx][0];
+  for(let i=peakIdx;i>leftIdx;i--){
+    if((data[i-1][1]-target)*(data[i][1]-target)<=0){
+      tl=interpolateCross(data[i-1],data[i],target);break;
+    }
+  }
+  for(let i=peakIdx;i<rightIdx;i++){
+    if((data[i][1]-target)*(data[i+1][1]-target)<=0){
+      tr=interpolateCross(data[i],data[i+1],target);break;
+    }
+  }
+  return {left:tl,right:tr,width:Math.max(0,tr-tl),target};
+}
+function baselineEstimate(data){
+  if(!data.length)return .012;
+  const vals=data.map(p=>p[1]).sort((a,b)=>a-b);
+  const n=Math.max(1,Math.floor(vals.length*.15));
+  return vals.slice(0,n).reduce((a,b)=>a+b,0)/n;
+}
+function detectAndIntegrateRaw(){
+  const data=S.rawData||[];
+  if(data.length<5)return [];
+  const baseGlobal=baselineEstimate(data);
+  const candidates=[];
+  let lastAccepted=-Infinity;
+  for(let i=2;i<data.length-2;i++){
+    const y=data[i][1];
+    if(y<=data[i-1][1]||y<data[i+1][1])continue;
+    // Local prominence against a ±0.25 min neighborhood.
+    let l=Math.max(0,i-Math.ceil(.25/S.detectorSampleInterval));
+    let r=Math.min(data.length-1,i+Math.ceil(.25/S.detectorSampleInterval));
+    const localMin=Math.min(...data.slice(l,r+1).map(p=>p[1]));
+    if(y-Math.max(localMin,baseGlobal)<.035)continue;
+    if(data[i][0]-lastAccepted<.20)continue;
+    candidates.push(i);lastAccepted=data[i][0];
+  }
+  return candidates.map((pi,idx)=>{
+    const peak=data[pi], apex=peak[1];
+    const threshold=Math.max(baseGlobal,baseGlobal+(apex-baseGlobal)*.005);
+    let li=pi,ri=pi;
+    while(li>0&&data[li-1][1]>threshold)li--;
+    while(ri<data.length-1&&data[ri+1][1]>threshold)ri++;
+    if(li===pi||ri===pi)return null;
+    const left=data[li],right=data[ri];
+    const area=Math.max(0,trapIntegral(
+      data.slice(li,ri+1).map(p=>[p[0],Math.max(0,p[1]-linearBaselineAt(p[0],left,right))]),0,ri-li
+    ));
+    const w50=widthAtFraction(data,pi,li,ri,.50);
+    const w05=widthAtFraction(data,pi,li,ri,.05);
+    // Match the raw-data peak to the nearest simulated analyte identity.
+    let nearest=S.analytes.reduce((a,b)=>!a||Math.abs((b.rt??1e9)-peak[0])<Math.abs((a.rt??1e9)-peak[0])?b:a,null);
+    const compound=nearest?.compound||null;
+    return {
+      name:compound?.name||('Peak '+(idx+1)),
+      rt:peak[0],
+      height:Math.max(0,apex-baseGlobal),
+      rawHeight:apex,
+      area,
+      width50:w50.width,
+      width5:w05.width,
+      left5:w05.left,
+      right5:w05.right,
+      tailing: w05.width/(2*Math.max(.0001,w05.left-peak[0])),
+      conc:unknownFromArea(area),
+      analyte:nearest||null
+    };
+  }).filter(Boolean);
+}
+
+/* ---------- Sequence controller ---------- */
+function setRunControlsLocked(lock,reason){
+  ['runBtn'].forEach(id=>{const el=$(id);if(el){el.classList.toggle('locked',lock);el.title=reason||'';}});
+  document.querySelectorAll('button[onclick="startRun()"]').forEach(b=>{
+    b.disabled=!!lock;
+    b.title=reason||'';
+  });
+}
+function sequenceFaultLock(){
+  return S.solventLevel<=0 || S.activeErrors?.includes('ERR01') || S.activeErrors?.includes('ERR02');
+}
+function abortSequence(code,msg){
+  const wasRunning=S.running||S.sequenceActive;
+  S.running=false;S.sequenceActive=false;S.pumpFlow=0;
+  if($('svgRoot'))$('svgRoot').classList.remove('running');
+  stopPumpAudio();
+  if(wasRunning)S.sequenceIndex=Math.max(S.sequenceIndex,0);
+  setState(code==='ERR02'?'ERROR: LEAK INTERLOCK':'ERROR: '+(ERR_KB?.[code]?.code||code)+' INTERLOCK');
+  log(msg,'critical');
+  auditLog('Emergency Abort',msg);
+  if(code==='ERR02')playAlarm();
+  updateModel();
+}
+function prepareVial(vial){
+  S.currentSample={...vial};
+  S.rawData=[];S.pressureData=[];S.integrated=[];S.pdaCube=null;
+  S.t=0;S.elapsed=0;S.nextDetectorT=0;
+  S.pumpFlow=gradientAtSystem(0).flow;
+  const q0=Math.max(.1,S.pumpFlow), vc=columnVoidVolume();
+  S.solventFront={t0:vc/q0, width:Math.max(.025,Math.min(.16,vc/q0*.045)), height:Math.min(.085,Math.max(.025,(vial?.volume||S.inj)/Math.max(.001,vc*1000)*3.5))};
+  S.analytes=makeAnalytes(vial);
+  vial.rawData=null;vial.integrated=null;vial.pressureData=null;
+}
+function beginVialAcquisition(){
+  const vial=S.queue[S.sequenceIndex];
+  if(!vial){finishSequence();return;}
+  vial.status='ACQUIRING';renderQueue();
+  prepareVial(vial);
+  S.running=true;S.sequenceActive=true;
+  setState('INJECTING');
+  if(typeof playValveClick==='function')playValveClick();
+  auditLog('Sequence Injection',`Vial ${S.sequenceIndex+1}: ${vial.id} / ${vial.conc} mg/L / ${vial.volume} µL`);
+  setTimeout(()=>{if(S.running)setState('RUNNING SEQUENCE');},350);
+  startPumpAudio();
+  lastFrame=0;
+  requestAnimationFrame(runLoop);
+}
+function startRun(){
+  if(S.running||S.sequenceActive)return;
+  if(!requirePower())return;
+  if(sequenceFaultLock()){
+    if(S.solventLevel<=0){alert('ERR-01: Refill the solvent reservoir and complete PURGE & PRIME before starting.');}
+    else if(S.activeErrors?.includes('ERR02')){alert('ERR-02: Leak interlock active. Repair the leak before starting.');}
+    return;
+  }
+  if(!S.primed){
+    alert('Start Run locked: system must be purged and primed after a dry-run fault.');
+    return;
+  }
+  if(!S.queue.length){
+    // Preserve single-run behavior when the queue is empty.
+    S.queue=[{id:S.activePreset?SAMPLE_LIBRARY[S.activePreset].label:'UNKNOWN-01',
+              conc:25,volume:S.inj,status:'QUEUED',implicit:true}];
+    renderQueue();
+  }
+  S.sequenceActive=true;S.sequenceIndex=0;S.sequenceResults=[];
+  S.workflow.run=true;
+  setRunControlsLocked(true,'Sequence running');
+  auditLog('Sequence Start',`${S.queue.length} vial(s) queued`);
+  beginVialAcquisition();
+}
+function runLoop(ts=performance.now()){
+  if(!S.running)return;
+  const dt=Math.min(.05,Math.max(.008,(ts-lastFrame)/1000||.016));
+  lastFrame=ts;
+  S.elapsed+=dt;
+  // Simulator clock is 1:1 with the physical minute axis; frame dt is seconds.
+  const simDt=dt*(S.simRate||.9); // accelerated simulator clock: ~0.9 min / real second
+  S.t=Math.min(S.runtime,S.t+simDt);
+  const cond=columnConditions(S.t);
+  S.pumpFlow=Math.max(0,cond.flow);
+  updateAnalyteTransport(simDt);
+  S.pressure=calcPressure(S.t);
+  S.pressureData.push([S.t,S.pressure]);
+  appendDetectorSamples();
+  $('rtNow').textContent=S.t.toFixed(2);
+  $('livePressure').textContent=S.pressure.toFixed(1);
+  $('mPress').textContent=S.pressure.toFixed(1);
+  $('absNow').textContent=S.lastDetectorSignal.toFixed(3);
+
+  if(S.activeErrors?.includes('ERR02')){
+    abortSequence('ERR02','ERR-02 LEAK DETECTED — pump flow cut off and sequence aborted immediately.');
+    return;
+  }
+  if(S.activeErrors?.includes('ERR01')||S.solventLevel<=0){
+    abortSequence('ERR01','ERR-01 DRY RUN — pump flow cut off; Start Run remains locked until purge/prime.');
+    return;
+  }
+  if(S.pressure>S.pmax){
+    S.running=false;S.pumpFlow=0;S.sequenceActive=false;
+    $('svgRoot').classList.remove('running');stopPumpAudio();
+    setState('ERROR: OVERPRESSURE ALARM');
+    log('OVERPRESSURE CUT-OFF — pump flow stopped automatically','critical');
+    auditLog('Emergency Abort','Automatic overpressure cut-off at '+S.pressure.toFixed(1)+' bar');
+    playAlarm();setRunControlsLocked(false);
+    return;
+  }
+  drawAll();
+  if(S.t>=S.runtime){finishRun();return;}
+  requestAnimationFrame(runLoop);
+}
+function stopRun(){
+  S.running=false;S.pumpFlow=0;
+  if(!S.sequenceActive)S.sequenceIndex=-1;
+  $('svgRoot').classList.remove('running');setState('STANDBY');
+  stopPumpAudio();log('Acquisition stopped','warning');
+}
+function finishRun(){
+  S.running=false;S.pumpFlow=0;$('svgRoot').classList.remove('running');stopPumpAudio();
+  // Final detector samples exactly through the run endpoint.
+  S.t=S.runtime;appendDetectorSamples();
+  setState('DATA PROCESSING');
+  S.integrated=detectAndIntegrateRaw();
+  computeSST();
+  const vial=S.queue[S.sequenceIndex];
+  if(vial){
+    vial.status='COMPLETE';
+    vial.rawData=S.rawData.slice();
+    vial.integrated=S.integrated.map(x=>({...x}));
+    vial.pressureData=S.pressureData.slice();
+    S.sequenceResults.push({
+      id:vial.id,conc:vial.conc,volume:vial.volume,
+      rawData:vial.rawData,integrated:vial.integrated
+    });
+  }
+  S.workflow.run=false;
+  log(`Post-run processing complete — ${S.integrated.length} raw-data peak(s) integrated`,'good');
+  auditLog('Post-Run Processing',`Vial ${S.sequenceIndex+1}: ${vial?.id||'—'}; ${S.integrated.length} integrated peak(s)`);
+  renderQueue();renderPeaks();drawAll();
+  buildPdaCube();
+  if(S.sequenceActive && S.sequenceIndex<S.queue.length-1){
+    setState('POST-RUN PROCESSING');
+    setTimeout(()=>{
+      if(!S.sequenceActive)return;
+      S.sequenceIndex++;
+      beginVialAcquisition();
+    },700);
+  }else{
+    finishSequence();
+  }
+}
+function finishSequence(){
+  S.running=false;S.sequenceActive=false;S.pumpFlow=0;
+  $('svgRoot').classList.remove('running');stopPumpAudio();
+  setRunControlsLocked(false);
+  setState('DATA COMPLETE');
+  S.workflow.run=false;
+  log(`Sequence complete — ${S.queue.length} vial(s) acquired and processed`,'good');
+  auditLog('Sequence Complete',`${S.queue.length} vial(s) completed`);
+  renderQueue();renderWorkflow();
+}
+function addSample(){
+  const id=String($('seqId').value||'UNKNOWN').trim();
+  const conc=Math.max(0,finiteOr(+$('seqConc').value,25));
+  const volume=Math.max(1,finiteOr(+$('seqVol')?.value,S.inj));
+  S.queue.push({
+    id,conc,volume,status:'QUEUED',
+    preset:S.activePreset||null,
+    compounds:Array.isArray(S.compounds)?S.compounds.map(c=>({...c})):null
+  });
+  S.workflow.load=S.queue.length>0;
+  renderQueue();renderWorkflow();
+}
+function clearQueue(){
+  if(S.running||S.sequenceActive){alert('Stop the sequence before clearing the queue.');return;}
+  S.queue=[];S.sequenceIndex=-1;renderQueue();
+}
+function renderQueue(){
+  $('queueBody').innerHTML=S.queue.map((x,i)=>`<tr><td>${i+1}</td><td>${x.id}</td><td>${x.conc} mg/L</td><td><span class="badge">${x.status}${x.volume?' · '+x.volume+' µL':''}</span></td></tr>`).join('');
+}
+
+/* ---------- Fault interlocks ---------- */
+const _evaluateErrorsKernel=evaluateErrors;
+evaluateErrors=function(){
+  _evaluateErrorsKernel();
+  if(S.solventLevel<=0)S.primed=false;
+  const lock=sequenceFaultLock()||!S.primed;
+  setRunControlsLocked(lock, S.solventLevel<=0?
+    'ERR-01: refill reservoir and PURGE & PRIME':
+    S.activeErrors?.includes('ERR02')?'ERR-02: leak interlock active':
+    !S.primed?'Purge and prime required':'');
+  if(S.faults.leak&&(S.running||S.sequenceActive)){
+    abortSequence('ERR02','ERR-02 LEAK DETECTED — pump flow cut off and sequence execution aborted.');
+  }
+};
+
+/* Purge/prime is the explicit release action for ERR-01. */
+const _purgePrimeKernel=purgePrime;
+purgePrime=function(){
+  _purgePrimeKernel();
+  S.solventLevel=Math.max(100,finiteOr(S.solventLevel,100));
+  S.primed=true; S.airLocked=false; S.purgeValveOpen=false; S.leakRate=0;
+  S.pumpFlow=0;
+  evaluateErrors();
+  log('PURGE & PRIME verified — ERR-01 start interlock released','good');
+  auditLog('Maintenance','Purge & Prime completed; dry-run interlock cleared');
+  renderWorkflow();updateModel();
+};
+
+/* Leak must be an immediate hardware interlock, not merely a diagnostic flag. */
+const _faultChangedKernel=faultChanged;
+faultChanged=function(){
+  _faultChangedKernel();
+  if(S.faults.leak){
+    S.pumpFlow=0;
+    if(S.running||S.sequenceActive)abortSequence('ERR02','ERR-02 LEAK DETECTED — pump flow cut off immediately.');
+  }
+  evaluateErrors();
+};
+
+/* Keep the existing fault wrapper behavior, but make hydraulic pressure use
+   the actual packed-bed kernel and actual programmed flow. */
+calcPressure=function(t){
+  return hydraulicPressure(t);
+};
+
+/* Detector output is now the raw-data kernel. Existing callers such as PDA
+   continue to receive a detector-like signal. */
+signalAt=function(t){
+  return detectorSignalAt(t);
+};
+
+/* drawChrom must plot acquired raw data, not reconstruct a synthetic trace. */
+drawChrom=function(){
+  const c=$('chromCanvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const data=S.rawData||[];
+  const ymax=Math.max(.1,1.2,...data.map(p=>p[1]));
+  drawAxes(ctx,w,h,S.runtime,ymax,'AU');
+  ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.beginPath();
+  if(data.length){
+    data.forEach((p,i)=>{
+      const px=45+p[0]/S.runtime*(w-55);
+      const py=h-32-(p[1]/ymax)*(h-45);
+      i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+    });
+  }else{
+    ctx.moveTo(45,h-32);ctx.lineTo(w-10,h-32);
+  }
+  ctx.stroke();
+  S.integrated.forEach(p=>{
+    const x=45+p.rt/S.runtime*(w-55);
+    ctx.strokeStyle='#ffb300';ctx.beginPath();ctx.moveTo(x,h-32);ctx.lineTo(x,h-38);ctx.stroke();
+    ctx.fillStyle='#ffcf62';ctx.font='10px Inter';ctx.fillText(p.name,x+4,22);
+  });
+};
+
+/* Pressure trend uses the acquired pressure trace during a run and the
+   real-time hydraulic model for preview. */
+drawPressure=function(){
+  const c=$('pressureCanvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);drawAxes(ctx,w,h,S.runtime,S.pmax,'bar');
+  const data=S.pressureData||[];
+  ctx.strokeStyle='#00e676';ctx.lineWidth=1.8;ctx.beginPath();
+  if(data.length){
+    data.forEach((p,i)=>{
+      const px=45+p[0]/S.runtime*(w-55),py=h-32-(p[1]/S.pmax)*(h-45);
+      i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+    });
+  }else{
+    for(let i=0;i<w-55;i++){
+      const t=i/(w-55)*S.runtime,y=calcPressure(t),px=45+i,py=h-32-(y/S.pmax)*(h-45);
+      i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+    }
+  }
+  ctx.stroke();
+  ctx.strokeStyle='#ff4d5f';ctx.setLineDash([5,4]);
+  const py=h-32-(S.pmax/S.pmax)*(h-45);ctx.beginPath();ctx.moveTo(45,py);ctx.lineTo(w-10,py);ctx.stroke();
+  ctx.setLineDash([]);
+};
+
+/* Replace the old analytical SST implementation with measurements from raw
+   detector points. */
+computeSST=function(){
+  const t0=Math.max(.05,columnVoidVolume()/Math.max(.1,S.flow));
+  S.integrated.forEach((p,i)=>{
+    p.N=p.width50>0?5.54*Math.pow(p.rt/p.width50,2):0;
+    p.T=p.tailing;
+    p.kprime=Math.max(0,(p.rt-t0)/t0);
+    if(i>0){
+      const prev=S.integrated[i-1];
+      p.Rs=2*(p.rt-prev.rt)/Math.max(.0001,p.width50+prev.width50);
+    }else p.Rs=null;
+    p.pass=(p.T<=2.0)&&(p.Rs==null||p.Rs>1.5)&&(p.N>800);
+  });
+};
+
+/* Ensure the data view reports measured raw widths and baseline-subtracted
+   area. */
+renderPeaks=function(){
+  $('peakBody').innerHTML=S.integrated.map(p=>`<tr>
+    <td>${p.name}</td><td>${p.rt.toFixed(3)}</td><td>${p.height.toFixed(3)}</td>
+    <td>${p.area.toFixed(3)}</td><td>${p.conc==null?'—':p.conc.toFixed(3)}</td>
+    <td>${p.N?Math.round(p.N):'—'}</td><td>${p.T?p.T.toFixed(2):'—'}</td>
+    <td>${p.Rs==null?'—':p.Rs.toFixed(2)}</td><td>${p.kprime.toFixed(2)}</td>
+    <td class="${p.pass?'sst-pass':'sst-fail'}">${p.pass?'PASS':'FAIL'}</td>
+  </tr>`).join('');
+  const allPass=S.integrated.length&&S.integrated.every(p=>p.pass);
+  $('sstSummary').innerHTML=S.integrated.length?
+    `Overall System Suitability: <span class="${allPass?'sst-pass':'sst-fail'}">${allPass?'PASS':'REVIEW REQUIRED'}</span> — raw-data limits applied: Rs &gt; 1.5, T ≤ 2.0, N &gt; 800.`
+    :'Run a sequence and integrate peaks to evaluate SST.';
+};
+
+/* Method UI now exposes the physically meaningful hydraulic state. */
+const _updateModelKernel=updateModel;
+updateModel=function(){
+  _updateModelKernel();
+  const mu=mobilePhaseViscosity();
+  const p=calcPressure(0);
+  const snap=$('methodSnap');
+  if(snap)snap.textContent+=`\nViscosity ${mu.toFixed(3)} mPa·s\nBase pressure ${p.toFixed(1)} bar`;
+  $('mPress').textContent=p.toFixed(1);
+};
+
+/* Gradient edits are live during acquisition: runLoop reads gradientAtSystem()
+   every frame, so programmed flow changes alter pump pressure immediately. */
+const _gradientAtOriginal=gradientAt;
+gradientAt=function(t){return gradientAtSystem(t);};
+
+/* Prime state should be initialized consistently on first load. */
+S.primed=S.solventLevel>0;
+setRunControlsLocked(false);
+evaluateErrors();
+updateModel();
+renderQueue();
+renderWorkflow();
+drawAll();
+
+})();
+</script>
+
+
+<!-- PART 3 UI -->
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const top=document.querySelector('.cds-top');
+  if(top && !document.getElementById('p3Toolbar')){
+    const wrap=document.createElement('div'); wrap.id='p3Toolbar'; wrap.className='p3-toolbar';
+    wrap.innerHTML='<span id="p3Version" class="p3-version">METHOD_ASSAY_v1.0</span><button id="p3Mute" class="p3-mini" type="button" title="Toggle hardware audio">🔊 AUDIO</button>';
+    top.appendChild(wrap);
+  }
+
+  const dataCard=document.querySelector('#view-data .cds-card.full');
+  if(dataCard && !document.getElementById('p3Monograph')){
+    const h=dataCard.querySelector('h3');
+    const controls=document.createElement('div'); controls.id='p3Monograph'; controls.className='p3-sst-head';
+    controls.innerHTML='<label style="font:600 10px Inter;color:#7896ad">ACTIVE MONOGRAPH</label><select id="p3MonographSelect"><option value="usp_paracetamol">USP Paracetamol Monograph</option><option value="ep_caffeine">EP Caffeine Assay</option><option value="generic">Generic Simulator SST</option></select><div id="p3Rules" class="p3-rulebox"></div>';
+    h.parentNode.insertBefore(controls,h.nextSibling);
+  }
+
+  if(!document.getElementById('p3ReasonModal')){
+    document.body.insertAdjacentHTML('beforeend',`
+      <div id="p3ReasonModal" class="p3-modal" role="dialog" aria-modal="true">
+        <div class="p3-dialog">
+          <div class="p3-dialog-head"><h2>🔐 Method Change Authorization</h2><button class="panel-close" onclick="p3CancelMethodChange()">✕ Close</button></div>
+          <div class="p3-dialog-body">
+            <div class="p3-warning">A saved method change creates a new method version and an immutable Before/After state record. Enter a meaningful reason for change.</div>
+            <div id="p3Diff" class="p3-diff"></div>
+            <label class="p3-label" for="p3Reason">Reason for Change *</label>
+            <textarea id="p3Reason" class="p3-input" rows="4" placeholder="Example: Adjusted flow to reduce analysis time after pressure verification."></textarea>
+          </div>
+          <div class="p3-dialog-foot"><button class="cds-btn" onclick="p3CancelMethodChange()">CANCEL</button><button class="cds-btn primary" onclick="p3CommitMethodChange()">SAVE NEW VERSION</button></div>
+        </div>
+      </div>
+      <div id="p3ExplodedModal" class="p3-modal" role="dialog" aria-modal="true">
+        <div class="p3-dialog">
+          <div class="p3-dialog-head"><h2 id="p3ExplodedTitle">Component Exploded View</h2><button class="panel-close" onclick="p3CloseExploded()">✕ Close</button></div>
+          <div class="p3-dialog-body"><canvas id="p3Schematic" class="p3-schematic" width="1100" height="420"></canvas><div id="p3Parts" class="p3-part-list"></div></div>
+        </div>
+      </div>
+    `);
+  }
+
+  if(typeof S!=='undefined'){
+    S.monograph=S.monograph||'usp_paracetamol';
+    S.methodVersion=S.methodVersion||'METHOD_ASSAY_v1.0';
+    S.methodBaseline=S.methodBaseline||null;
+    S.methodVersions=S.methodVersions||[];
+    S.auditSnapshots=S.auditSnapshots||[];
+    S.audioMuted=!!S.audioMuted;
+  }
+
+  if(typeof p3Install==='function') p3Install();
+});
+</script>
+
+
+<script>
+/* ============================================================
+   PART 3 — FINAL POLISH / COMPLIANCE / AUDIO / MAINTENANCE
+   ============================================================ */
+(function(){
+'use strict';
+
+const P3_METHOD_KEYS=['flow','temp','uv','a','b','pmax','inj','runtime','column','particle','tailFactor','gradient','activePreset','monograph'];
+
+function p3Clone(v){
+  try{return JSON.parse(JSON.stringify(v));}catch(e){return v;}
+}
+function p3MethodState(){
+  const out={};
+  P3_METHOD_KEYS.forEach(k=>out[k]=p3Clone(S[k]));
+  return out;
+}
+function p3Diff(before,after){
+  const rows=[];
+  P3_METHOD_KEYS.forEach(k=>{
+    const a=JSON.stringify(before?.[k]),b=JSON.stringify(after?.[k]);
+    if(a!==b) rows.push({key:k,before:before?.[k],after:after?.[k]});
+  });
+  return rows;
+}
+function p3Pretty(v){
+  if(v===undefined)return '—';
+  if(typeof v==='object')return JSON.stringify(v,null,2);
+  return String(v);
+}
+function p3MethodLabel(k){
+  return ({flow:'Flow Rate',temp:'Column Oven',uv:'UV Wavelength',a:'Solvent A',b:'Solvent B',pmax:'Pressure P-Max',inj:'Injection Volume',runtime:'Run Time',column:'Stationary Phase',particle:'Particle Size',tailFactor:'Peak Shape',gradient:'Gradient Program',activePreset:'Sample Preset',monograph:'Monograph'})[k]||k;
+}
+
+/* ---------- Monograph / dynamic SST ---------- */
+const P3_MONOGRAPHS={
+  usp_paracetamol:{name:'USP Paracetamol Monograph',Rs:2.0,T:1.5,N:2000,rsOp:'≥',tOp:'≤',nOp:'≥'},
+  ep_caffeine:{name:'EP Caffeine Assay',Rs:1.5,T:2.0,N:1500,rsOp:'≥',tOp:'≤',nOp:'≥'},
+  generic:{name:'Generic Simulator SST',Rs:1.5,T:2.0,N:800,rsOp:'>',tOp:'≤',nOp:'>'}
+};
+function p3Spec(){return P3_MONOGRAPHS[S.monograph]||P3_MONOGRAPHS.usp_paracetamol;}
+function p3SstPass(p){
+  const r=p3Spec();
+  const rsOk=p.Rs==null ? true : (r.rsOp==='≥'?p.Rs>=r.Rs:p.Rs>r.Rs);
+  const tOk=p.T<=r.T;
+  const nOk=p.N>=r.N;
+  return !!(rsOk&&tOk&&nOk);
+}
+function p3RenderRules(){
+  const r=p3Spec(),box=$('p3Rules');
+  if(!box)return;
+  box.innerHTML=`<span class="p3-rule"><b>Rs</b> ${r.rsOp} ${r.Rs}</span><span class="p3-rule"><b>T</b> ≤ ${r.T.toFixed(1)}</span><span class="p3-rule"><b>N</b> ${r.nOp} ${r.N}</span>`;
+  const sel=$('p3MonographSelect'); if(sel)sel.value=S.monograph;
+}
+function p3ApplySst(){
+  if(!Array.isArray(S.integrated))return;
+  S.integrated.forEach(p=>p.pass=p3SstPass(p));
+}
+function p3RenderPeaks(){
+  if(!Array.isArray(S.integrated))return;
+  p3ApplySst();
+  const body=$('peakBody'); if(!body)return;
+  body.innerHTML=S.integrated.map(p=>{
+    const pass=p3SstPass(p);
+    return `<tr class="${pass?'sst-row-pass':'sst-row-fail'}" title="${p3Spec().name}"><td>${p.name}</td><td>${p.rt.toFixed(3)}</td><td>${p.height.toFixed(3)}</td><td>${p.area.toFixed(3)}</td><td>${p.conc==null?'—':p.conc.toFixed(3)}</td><td>${p.N?Math.round(p.N):'—'}</td><td>${p.T?p.T.toFixed(2):'—'}</td><td>${p.Rs==null?'—':p.Rs.toFixed(2)}</td><td>${p.kprime!=null?p.kprime.toFixed(2):'—'}</td><td class="${pass?'sst-pass':'sst-fail'}">${pass?'PASS':'FAIL'}</td></tr>`;
+  }).join('');
+  const allPass=S.integrated.length>0&&S.integrated.every(p=>p3SstPass(p));
+  $('sstSummary').innerHTML=S.integrated.length
+    ? `Monograph: <b>${p3Spec().name}</b> — Overall System Suitability: <span class="${allPass?'sst-pass':'sst-fail'}">${allPass?'PASS':'REVIEW REQUIRED'}</span>. Acceptance: Rs ${p3Spec().rsOp} ${p3Spec().Rs}, T ≤ ${p3Spec().T}, N ${p3Spec().nOp} ${p3Spec().N}.`
+    : 'Run a sequence and integrate peaks to evaluate monograph-specific SST.';
+}
+window.p3RenderPeaks=p3RenderPeaks;
+
+const oldComputeSST=window.computeSST;
+window.computeSST=function(){
+  if(typeof oldComputeSST==='function')oldComputeSST();
+  p3ApplySst();
+};
+const oldRenderPeaks=window.renderPeaks;
+window.renderPeaks=function(){
+  if(typeof oldRenderPeaks==='function')oldRenderPeaks();
+  p3RenderPeaks();
+};
+const oldCdsTab=window.cdsTab;
+window.cdsTab=function(view){
+  if(typeof oldCdsTab==='function')oldCdsTab(view);
+  if(view==='data'){p3RenderRules();p3RenderPeaks();}
+};
+
+/* ---------- Method snapshots / reason-for-change / versioning ---------- */
+function p3SetBaseline(){
+  S.methodBaseline=p3MethodState();
+  S.methodVersion=S.methodVersion||'METHOD_ASSAY_v1.0';
+  S.methodVersions=S.methodVersions||[];
+  const v=S.methodVersions.find(x=>x.version===S.methodVersion);
+  if(!v)S.methodVersions.push({version:S.methodVersion,ts:new Date().toISOString(),state:p3Clone(S.methodBaseline),reason:'Initial method state'});
+  const badge=$('p3Version');if(badge)badge.textContent=S.methodVersion;
+}
+function p3VersionNext(v){
+  const m=String(v||'METHOD_ASSAY_v1.0').match(/^(.*)_v(\d+)\.(\d+)$/);
+  if(!m)return String(v)+'_v1.1';
+  return `${m[1]}_v${+m[2]}.${+m[3]+1}`;
+}
+function p3ShowChangeModal(){
+  const before=S.methodBaseline||p3MethodState(),after=p3MethodState(),diff=p3Diff(before,after);
+  if(!diff.length){
+    if(typeof log==='function')log('Method applied — no parameter changes detected','good');
+    if(typeof setState==='function')setState('STANDBY');
+    return;
+  }
+  const box=$('p3Diff');
+  box.innerHTML=diff.map(d=>`<div class="p3-diff-card"><h4>${p3MethodLabel(d.key)}</h4><pre>BEFORE\n${p3Pretty(d.before)}\n\nAFTER\n${p3Pretty(d.after)}</pre></div>`).join('');
+  $('p3Reason').value='';
+  $('p3ReasonModal').classList.add('show');
+  setTimeout(()=>$('p3Reason').focus(),50);
+}
+window.p3CancelMethodChange=()=>{$('p3ReasonModal')?.classList.remove('show');};
+window.p3CommitMethodChange=()=>{
+  const reason=String($('p3Reason')?.value||'').trim();
+  if(!reason){alert('Reason for Change is required.');return;}
+  const before=S.methodBaseline||p3MethodState(),after=p3MethodState(),diff=p3Diff(before,after);
+  const next=p3VersionNext(S.methodVersion);
+  const entry={
+    versionFrom:S.methodVersion,versionTo:next,reason,
+    ts:new Date().toISOString(),role:ROLE_LABEL[S.role]||S.role,
+    before:p3Clone(before),after:p3Clone(after),changes:p3Clone(diff)
+  };
+  S.auditSnapshots=S.auditSnapshots||[]; S.auditSnapshots.unshift(entry);
+  S.methodVersions=S.methodVersions||[]; S.methodVersions.unshift({version:next,ts:entry.ts,state:p3Clone(after),reason});
+  S.methodVersion=next; S.methodBaseline=p3Clone(after);
+  auditLog('Method Version Saved',`${entry.versionFrom} → ${entry.versionTo}; Reason: ${reason}`);
+  S.auditSnapshots=S.auditSnapshots.slice(0,300);
+  const badge=$('p3Version');if(badge)badge.textContent=next;
+  $('p3ReasonModal').classList.remove('show');
+  if(typeof log==='function')log(`Method ${next} saved — ${diff.length} parameter group(s) changed`,'good');
+  if(typeof setState==='function')setState('STANDBY');
+};
+const oldSaveMethod=window.saveMethod;
+window.saveMethod=function(){
+  if(!S.methodBaseline)p3SetBaseline();
+  p3ShowChangeModal();
+};
+function p3RenderAuditSnapshots(){
+  const b=$('auditBody'); if(!b)return;
+  const base=(S.audit||[]).slice();
+  const snap=(S.auditSnapshots||[]).map(x=>({
+    ts:x.ts.replace('T',' ').slice(0,19),role:x.role,
+    action:`Method ${x.versionTo}`,
+    detail:`${x.versionFrom} → ${x.versionTo}; ${x.changes.length} change(s); Reason: ${x.reason}`
+  }));
+  const rows=base.concat(snap).sort((a,b)=>String(b.ts).localeCompare(String(a.ts))).slice(0,300);
+  b.innerHTML=rows.map(r=>`<tr><td>${r.ts}</td><td>${r.role}</td><td>${r.action}</td><td>${r.detail}</td></tr>`).join('');
+}
+
+/* ---------- Native Web Audio synthesis ---------- */
+let p3AudioMaster=null,p3PumpTimer=null,p3AlarmTimers=[];
+function p3Audio(){
+  if(S.audioMuted)return null;
+  try{
+    if(!window.__p3AudioCtx)window.__p3AudioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const c=window.__p3AudioCtx;
+    if(c.state==='suspended')c.resume().catch(()=>{});
+    if(!p3AudioMaster)p3AudioMaster=c.createGain(),p3AudioMaster.gain.value=.42,p3AudioMaster.connect(c.destination);
+    return c;
+  }catch(e){return null}
+}
+function p3PumpTick(){
+  const c=p3Audio();if(!c)return;
+  const now=c.currentTime;
+  const osc=c.createOscillator(),g=c.createGain();
+  osc.type='triangle';osc.frequency.setValueAtTime(155+Math.min(75,S.flow*12),now);
+  g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.075,now+.008);g.gain.exponentialRampToValueAtTime(.0001,now+.085);
+  osc.connect(g);g.connect(p3AudioMaster);osc.start(now);osc.stop(now+.09);
+}
+function p3StartPumpAudio(){
+  p3StopPumpAudio();
+  const loop=()=>{if(!S.running||S.audioMuted)return;p3PumpTick();p3PumpTimer=setTimeout(loop,Math.max(90,390/Math.max(.1,S.flow)));};
+  loop();
+}
+function p3StopPumpAudio(){if(p3PumpTimer){clearTimeout(p3PumpTimer);p3PumpTimer=null;}}
+function p3ValveClick(){
+  const c=p3Audio();if(!c)return;
+  const now=c.currentTime;
+  [0,.045].forEach((d,i)=>{
+    const o=c.createOscillator(),g=c.createGain();
+    o.type='square';o.frequency.value=i?1450:2100;
+    g.gain.setValueAtTime(.0001,now+d);g.gain.exponentialRampToValueAtTime(.16,now+d+.003);g.gain.exponentialRampToValueAtTime(.0001,now+d+.025);
+    o.connect(g);g.connect(p3AudioMaster);o.start(now+d);o.stop(now+d+.03);
+  });
+}
+function p3Alarm(){
+  const c=p3Audio();if(!c)return;
+  p3AlarmTimers.forEach(clearTimeout);p3AlarmTimers=[];
+  [0,.32,.64,1.15,1.47].forEach((d,i)=>{
+    p3AlarmTimers.push(setTimeout(()=>{
+      const cc=p3Audio();if(!cc)return;const now=cc.currentTime;
+      const o=cc.createOscillator(),g=cc.createGain();
+      o.type='square';o.frequency.value=i%2?660:990;
+      g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.10,now+.015);g.gain.exponentialRampToValueAtTime(.0001,now+.18);
+      o.connect(g);g.connect(p3AudioMaster);o.start(now);o.stop(now+.2);
+    },d*1000));
+  });
+}
+function p3SetMute(m){
+  S.audioMuted=!!m;
+  if(S.audioMuted){p3StopPumpAudio();p3AlarmTimers.forEach(clearTimeout);p3AlarmTimers=[];}
+  const btn=$('p3Mute');if(btn){btn.textContent=S.audioMuted?'🔇 MUTED':'🔊 AUDIO';btn.classList.toggle('muted',S.audioMuted);}
+  auditLog('Audio Setting',S.audioMuted?'Hardware audio muted':'Hardware audio enabled');
+}
+const oldStartPumpAudio=window.startPumpAudio,oldStopPumpAudio=window.stopPumpAudio,oldValve=window.playValveClick,oldAlarm=window.playAlarm;
+window.startPumpAudio=function(){if(!S.audioMuted){p3StartPumpAudio();} if(typeof oldStartPumpAudio==='function'&&!S.audioMuted)oldStartPumpAudio();};
+window.stopPumpAudio=function(){p3StopPumpAudio();if(typeof oldStopPumpAudio==='function')oldStopPumpAudio();};
+window.playValveClick=function(){p3ValveClick();if(!S.audioMuted&&typeof oldValve==='function')oldValve();};
+window.playAlarm=function(){p3Alarm();if(!S.audioMuted&&typeof oldAlarm==='function')oldAlarm();};
+
+/* ---------- Exploded component / maintenance schematics ---------- */
+const P3_PARTS={
+  'Binary High-Pressure Pump':[
+    ['Dual piston assembly','Reciprocating pistons and drive mechanism'],
+    ['Inlet/outlet check valves','Prevent reverse flow and support metering'],
+    ['Pump head seals','High-pressure dynamic sealing elements'],
+    ['Damping / pulse-control path','Reduces reciprocating flow pulsation']
+  ],
+  'Autosampler':[
+    ['Injection needle','Transfers sample from vial to injection port'],
+    ['Rotor seal','Seals stator/rotor interfaces during valve switching'],
+    ['Sample loop','Defines nominal injection volume'],
+    ['Needle seat / wash path','Limits carryover and leakage']
+  ],
+  'Column Oven':[
+    ['Column enclosure','Thermally controlled separation zone'],
+    ['Temperature sensor','Feeds closed-loop oven control'],
+    ['Column inlet/outlet fittings','Maintains low-dead-volume connections'],
+    ['Guard column / frit','Protects analytical bed from particulates']
+  ],
+  'Vacuum Degasser Module':[
+    ['Membrane tubing','Gas-permeable solvent contact surface'],
+    ['Vacuum chamber','Maintains reduced pressure around membrane'],
+    ['Vacuum pump path','Removes dissolved gases'],
+    ['Degasser channel','Dedicated solvent channel']
+  ],
+  'Pressure Transducer & Purge Valve':[
+    ['Pressure transducer','Measures hydraulic pressure'],
+    ['Purge valve seat','Diverts flow to waste during priming'],
+    ['Valve seal','Maintains pressure boundary'],
+    ['Waste outlet','Safe low-pressure discharge path']
+  ],
+  'UV/Vis Photodiode Array (PDA) Detector':[
+    ['Flow cell','Optical path through eluent'],
+    ['Lamp/source optics','Provides UV/Vis radiation'],
+    ['Photodiode array','Resolves wavelength-dependent absorbance'],
+    ['Cell windows / seals','Maintain optical and fluidic integrity']
+  ],
+  'Solvent Waste Outlet':[
+    ['Waste line','Carries post-detector effluent'],
+    ['Outlet frit / trap','Reduces splash and particulate backflow'],
+    ['Cap / vent','Controls bottle closure and venting'],
+    ['Waste bottle','Receives spent mobile phase']
+  ]
+};
+function p3FindParts(name){
+  const k=Object.keys(P3_PARTS).find(x=>name.includes(x)||x.includes(name));
+  return P3_PARTS[k]||[
+    ['Primary housing','External module enclosure'],
+    ['Fluidic seals','Contain pressurized solvent'],
+    ['Check / valve elements','Control directional fluid movement'],
+    ['Service interfaces','Accessible fittings and maintenance points']
+  ];
+}
+function p3DrawSchematic(name){
+  const c=$('p3Schematic');if(!c)return;const x=c.getContext('2d'),w=c.width,h=c.height;
+  x.clearRect(0,0,w,h);x.strokeStyle='#2a6d9e';x.lineWidth=2;x.fillStyle='#0d3159';
+  const parts=p3FindParts(name);
+  const cx=w/2,cy=h/2;
+  x.strokeRect(cx-140,cy-100,280,200);x.fillRect(cx-140,cy-100,280,200);
+  x.strokeStyle='#00e5ff';x.beginPath();x.moveTo(cx-90,cy);x.lineTo(cx+90,cy);x.stroke();
+  x.beginPath();x.arc(cx,cy,38,0,Math.PI*2);x.stroke();
+  parts.forEach((p,i)=>{
+    const ang=-Math.PI/2+i*(Math.PI*2/parts.length),rx=cx+Math.cos(ang)*230,ry=cy+Math.sin(ang)*135;
+    x.strokeStyle='#7896ad';x.beginPath();x.moveTo(cx+Math.cos(ang)*140,cy+Math.sin(ang)*100);x.lineTo(rx,ry);x.stroke();
+    x.fillStyle='#071523';x.strokeStyle='#21455f';x.beginPath();x.roundRect(rx-70,ry-24,140,48,6);x.fill();x.stroke();
+    x.fillStyle='#dceeff';x.font='bold 12px Inter';x.textAlign='center';x.fillText(String(i+1),rx,ry-3);
+  });
+  x.fillStyle='#00e5ff';x.font='bold 15px Space Grotesk';x.textAlign='center';x.fillText(name,cx,cy-8);
+  x.fillStyle='#7896ad';x.font='11px Inter';x.fillText('Educational maintenance schematic — not a service manual',cx,cy+16);
+}
+function p3OpenExploded(el){
+  const name=el.getAttribute('data-name')||'HPLC Component';
+  $('p3ExplodedTitle').textContent='🔧 '+name+' — Exploded View & Maintenance';
+  $('p3Parts').innerHTML=p3FindParts(name).map((p,i)=>`<div class="p3-part"><b>${i+1}. ${p[0]}</b><span>${p[1]}</span></div>`).join('');
+  p3DrawSchematic(name);$('p3ExplodedModal').classList.add('show');
+  auditLog('Maintenance Guide Opened',name);
+}
+window.p3CloseExploded=()=>{$('p3ExplodedModal')?.classList.remove('show');};
+
+/* ---------- Report cleanup / snapshots ---------- */
+function p3CalibrationSnapshot(){
+  const c=$('calCanvas');return c?c.toDataURL('image/png'):'';
+}
+function p3ChromSnapshot(){
+  const c=$('chromCanvas');return c?c.toDataURL('image/png'):'';
+}
+const oldGenerateReport=window.generateReport;
+window.generateReport=function(){
+  if(typeof oldGenerateReport==='function')oldGenerateReport();
+  const sheet=$('reportSheet');if(!sheet)return;
+  const chrom=p3ChromSnapshot(),cal=p3CalibrationSnapshot();
+  const allPass=S.integrated?.length&&S.integrated.every(p=>p3SstPass(p));
+  const sig=$('signoffStatus')?.textContent||'Not yet signed.';
+  const auditRows=(S.auditSnapshots||[]).slice(0,8).map(a=>`<tr><td>${a.ts.replace('T',' ').slice(0,19)}</td><td>${a.versionFrom} → ${a.versionTo}</td><td>${a.role}</td><td>${a.reason}</td></tr>`).join('');
+  sheet.innerHTML=`
+    <div class="report-actions"><button onclick="window.print()">PRINT / SAVE PDF</button><button onclick="$('reportOverlay').classList.remove('show')">CLOSE</button></div>
+    <h1>Simulated Analytical Method &amp; Quantitation Report</h1>
+    <div class="rsub">Educational HPLC CDS simulation • Generated ${new Date().toLocaleString()} • Method ${S.methodVersion} • Role: ${ROLE_LABEL[S.role]}</div>
+    <h2>Method Parameters</h2>
+    <table><tr><td>Method Version</td><td>${S.methodVersion}</td><td>Monograph</td><td>${p3Spec().name}</td></tr>
+    <tr><td>Flow</td><td>${S.flow.toFixed(2)} mL/min</td><td>Oven</td><td>${S.temp.toFixed(1)} °C</td></tr>
+    <tr><td>UV</td><td>${S.uv} nm</td><td>Mobile phase</td><td>A ${S.a}% / B ${S.b}%</td></tr>
+    <tr><td>Column</td><td>${colName()}</td><td>Particle</td><td>${S.particle} µm</td></tr>
+    <tr><td>Sample Library</td><td>${S.activePreset?SAMPLE_LIBRARY[S.activePreset].label:'Default mix'}</td><td>Gradient segments</td><td>${S.gradient.length}</td></tr></table>
+    <h2>Chromatographic Trace</h2><img src="${chrom}" style="width:100%;border:1px solid #ccd5dc">
+    <h2>Calibration Curve Plot Snapshot</h2><img src="${cal}" style="width:100%;border:1px solid #ccd5dc">
+    <h2>Integrated Peak Table &amp; Monograph SST</h2>
+    <table><thead><tr><th>Peak</th><th>Rt</th><th>Area</th><th>Height</th><th>Conc.</th><th>N</th><th>T</th><th>Rs</th><th>k'</th><th>SST</th></tr></thead>
+    <tbody>${(S.integrated||[]).map(p=>{const pass=p3SstPass(p);return `<tr><td>${p.name}</td><td>${p.rt.toFixed(3)}</td><td>${p.area.toFixed(4)}</td><td>${p.height.toFixed(4)}</td><td>${p.conc==null?'—':p.conc.toFixed(4)+' mg/L'}</td><td>${p.N?Math.round(p.N):'—'}</td><td>${p.T?p.T.toFixed(2):'—'}</td><td>${p.Rs==null?'—':p.Rs.toFixed(2)}</td><td>${p.kprime!=null?p.kprime.toFixed(2):'—'}</td><td>${pass?'PASS':'FAIL'}</td></tr>`}).join('')}</tbody></table>
+    <p><b>Overall System Suitability: ${allPass?'PASS':'REVIEW REQUIRED'}</b> — ${p3Spec().name}: Rs ${p3Spec().rsOp} ${p3Spec().Rs}, T ≤ ${p3Spec().T}, N ${p3Spec().nOp} ${p3Spec().N}.</p>
+    <h2>Compliance / Method Version History</h2>
+    <table><thead><tr><th>Timestamp</th><th>Version</th><th>Role</th><th>Reason for Change</th></tr></thead><tbody>${auditRows||'<tr><td colspan="4">No saved method revisions.</td></tr>'}</tbody></table>
+    <h2>Electronic Signature</h2>
+    <div class="p3-signature"><b>Electronic Signature Status</b><div class="sigline"></div>${sig}<br><small>Simulation feature for educational demonstration of controlled electronic records; not a validated regulatory system.</small></div>
+    <h2>System Status</h2><p>Final state: ${S.state}. Pressure safety limit: ${S.pmax} bar.</p>
+  `;
+  auditLog('PDF Export','Simulated Analytical Method & Quantitation Report generated; method '+S.methodVersion+'; SST '+(allPass?'PASS':'REVIEW'));
+};
+
+/* ---------- Hook component double-clicks ---------- */
+function p3InstallComponentHooks(){
+  document.querySelectorAll('.component').forEach(el=>{
+    if(el.dataset.p3Hooked)return;
+    el.dataset.p3Hooked='1';
+    el.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation();p3OpenExploded(el);});
+  });
+}
+
+/* ---------- UI initialization ---------- */
+function p3Install(){
+  p3SetBaseline();
+  p3RenderRules();
+  p3InstallComponentHooks();
+  const sel=$('p3MonographSelect');
+  if(sel && !sel.dataset.p3Bound){
+    sel.dataset.p3Bound='1';
+    sel.addEventListener('change',()=>{
+      S.monograph=sel.value;
+      auditLog('Monograph Selection','Active SST specification → '+p3Spec().name);
+      p3RenderRules();p3RenderPeaks();
+    });
+  }
+  const mute=$('p3Mute');
+  if(mute && !mute.dataset.p3Bound){
+    mute.dataset.p3Bound='1';
+    mute.addEventListener('click',()=>p3SetMute(!S.audioMuted));
+  }
+  p3RenderAuditSnapshots();
+  const oldAuditLog=window.auditLog;
+  if(!window.__p3AuditWrapped){
+    window.__p3AuditWrapped=true;
+    window.auditLog=function(action,detail){
+      if(typeof oldAuditLog==='function')oldAuditLog(action,detail);
+      p3RenderAuditSnapshots();
+    };
+  }
+  const oldSetRole=window.setRole;
+  if(!window.__p3RoleWrapped && typeof oldSetRole==='function'){
+    window.__p3RoleWrapped=true;
+    window.setRole=function(r){oldSetRole(r);p3RenderAuditSnapshots();};
+  }
+  p3RenderPeaks();
+  const b=$('p3Version');if(b)b.textContent=S.methodVersion;
+}
+
+/* Make Part 3 explicit to the existing UI without replacing the original kernel. */
+window.p3Install=p3Install;
+
+/* Rebind after the original scripts have completed. */
+setTimeout(()=>{
+  if(typeof p3Install==='function')p3Install();
+},0);
+
+})();
+</script>
+
+</body>
+</html>
