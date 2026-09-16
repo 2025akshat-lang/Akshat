@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Okra Smoothie Infinite Animated</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #fdf3f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 280px;
+      height: 440px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    /* Glass Body with Shimmer */
+    .glass {
+      position: relative;
+      width: 220px;
+      height: 300px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.15));
+      backdrop-filter: blur(6px);
+      border-radius: 10px 10px 60px 60px;
+      border: 3px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08), inset 0 0 20px rgba(255,255,255,0.9);
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    /* Infinite Glass Shine Sweep */
+    .glass::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      transform: skewX(-25deg);
+      animation: glassShine 4s infinite linear;
+    }
+
+    @keyframes glassShine {
+      0% { left: -100%; }
+      30%, 100% { left: 200%; }
+    }
+
+    /* Smoothie Fill & Waves */
+    .smoothie {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 92%;
+      background: linear-gradient(180deg, #d3f3b5 0%, #a2e078 100%);
+      border-radius: 0 0 55px 55px;
+      overflow: hidden;
+    }
+
+    /* Infinite Wave Animation Top */
+    .wave {
+      position: absolute;
+      top: -12px;
+      left: -50%;
+      width: 200%;
+      height: 25px;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 40%;
+      animation: waveMotion 3.5s infinite linear;
+    }
+
+    @keyframes waveMotion {
+      0% { transform: translateX(0) rotate(0deg); }
+      100% { transform: translateX(-50%) rotate(360deg); }
+    }
+
+    /* Infinite Rising Bubbles */
+    .bubble {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      bottom: -20px;
+      animation: rise 4s infinite ease-in;
+    }
+
+    .b1 { width: 10px; height: 10px; left: 20%; animation-duration: 3.2s; animation-delay: 0s; }
+    .b2 { width: 14px; height: 14px; left: 50%; animation-duration: 4.5s; animation-delay: 1.2s; }
+    .b3 { width: 8px; height: 8px; left: 75%; animation-duration: 2.8s; animation-delay: 0.7s; }
+    .b4 { width: 12px; height: 12px; left: 35%; animation-duration: 3.8s; animation-delay: 2.1s; }
+
+    @keyframes rise {
+      0% { bottom: -20px; opacity: 0; transform: translateX(0); }
+      50% { opacity: 0.9; transform: translateX(10px); }
+      100% { bottom: 100%; opacity: 0; transform: translateX(-10px); }
+    }
+
+    /* Ice Cream Scoops with Infinite Soft Float */
+    .cream-group {
+      position: absolute;
+      top: 105px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 230px;
+      height: 60px;
+      z-index: 3;
+      animation: creamFloat 4s infinite ease-in-out;
+    }
+
+    @keyframes creamFloat {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-3px); }
+    }
+
+    .cream-scoop {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: inset -2px -4px 6px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.06);
+    }
+
+    .scoop-1 { width: 65px; height: 55px; left: 5px; top: 10px; }
+    .scoop-2 { width: 75px; height: 65px; left: 50px; top: -5px; }
+    .scoop-3 { width: 80px; height: 70px; left: 100px; top: -10px; }
+    .scoop-4 { width: 70px; height: 60px; left: 160px; top: 8px; }
+
+    /* Sprinkles */
+    .sprinkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #78bd3a;
+      border-radius: 50%;
+    }
+
+    .s1 { top: 15px; left: 40px; }
+    .s2 { top: 8px; left: 85px; }
+    .s3 { top: 22px; left: 120px; }
+    .s4 { top: 12px; left: 155px; }
+    .s5 { top: 25px; left: 180px; }
+
+    /* Okra Character Base */
+    .okra {
+      position: absolute;
+      width: 38px;
+      height: 110px;
+      background: linear-gradient(180deg, #81ba41 0%, #4c8220 100%);
+      border-radius: 20px 20px 8px 8px;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: inset -3px 0 5px rgba(0,0,0,0.2);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .okra::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      width: 12px;
+      height: 15px;
+      background: #6a9c2d;
+      border-radius: 5px 5px 0 0;
+    }
+
+    /* Eye Container */
+    .eyes {
+      display: flex;
+      gap: 3px;
+      margin-top: 25px;
+      animation: eyeBlink 3.5s infinite;
+    }
+
+    @keyframes eyeBlink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.1); }
+    }
+
+    .eye {
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .pupil {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 6px;
+      height: 6px;
+      background: black;
+      border-radius: 50%;
+      animation: autoEyeRoll 5s infinite ease-in-out;
+    }
+
+    /* Infinite Eye Roll Loop */
+    @keyframes autoEyeRoll {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 0); }
+      50% { transform: translate(2px, -1px); }
+      75% { transform: translate(0, -2px); }
+    }
+
+    /* Default Smile Mouth */
+    .mouth {
+      width: 8px;
+      height: 4px;
+      border-bottom: 2px solid #2d4f10;
+      border-radius: 0 0 10px 10px;
+      margin-top: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* Surprised Mouth Class */
+    .okra.surprised .mouth {
+      width: 6px;
+      height: 6px;
+      background: #2d4f10;
+      border-radius: 50%;
+      border: none;
+    }
+
+    /* Idle Floating Animations & Angles */
+    @keyframes float1 { 0%, 100% { transform: rotate(-18deg) translateY(0); } 50% { transform: rotate(-15deg) translateY(-6px); } }
+    @keyframes float2 { 0%, 100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-11deg) translateY(-8px); } }
+    @keyframes float3 { 0%, 100% { transform: rotate(2deg) translateY(0); } 50% { transform: rotate(0deg) translateY(-10px); } }
+    @keyframes float4 { 0%, 100% { transform: rotate(12deg) translateY(0); } 50% { transform: rotate(15deg) translateY(-7px); } }
+    @keyframes float5 { 0%, 100% { transform: rotate(22deg) translateY(0); } 50% { transform: rotate(19deg) translateY(-8px); } }
+
+    .okra-1 { left: 25px; top: 20px; animation: float1 3s infinite ease-in-out; }
+    .okra-2 { left: 68px; top: 5px; animation: float2 3.2s infinite ease-in-out 0.2s; }
+    .okra-3 { left: 120px; top: 0px; animation: float3 2.8s infinite ease-in-out 0.4s; }
+    .okra-4 { left: 168px; top: 12px; animation: float4 3.1s infinite ease-in-out 0.1s; }
+    .okra-5 { left: 212px; top: 30px; animation: float5 2.9s infinite ease-in-out 0.3s; }
+
+    /* Surprised Automatic Jump State */
+    .okra.surprised {
+      animation: none !important;
+      transform: translateY(-22px) scale(1.15) !important;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="okra okra-1"><div class="eyes"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div><div class="mouth"></div></div>
+    <div class="okra okra-2"><div class="eyes"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div><div class="mouth"></div></div>
+    <div class="okra okra-3"><div class="eyes"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div><div class="mouth"></div></div>
+    <div class="okra okra-4"><div class="eyes"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div><div class="mouth"></div></div>
+    <div class="okra okra-5"><div class="eyes"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div><div class="mouth"></div></div>
+
+    <div class="cream-group">
+      <div class="cream-scoop scoop-1"></div>
+      <div class="cream-scoop scoop-2"></div>
+      <div class="cream-scoop scoop-3"></div>
+      <div class="cream-scoop scoop-4"></div>
+      <div class="sprinkle s1"></div>
+      <div class="sprinkle s2"></div>
+      <div class="sprinkle s3"></div>
+      <div class="sprinkle s4"></div>
+      <div class="sprinkle s5"></div>
+    </div>
+
+    <div class="glass">
+      <div class="smoothie">
+        <div class="wave"></div>
+        <div class="bubble b1"></div>
+        <div class="bubble b2"></div>
+        <div class="bubble b3"></div>
+        <div class="bubble b4"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Automatic Infinite Pop-up Reaction Loop
+    const okras = document.querySelectorAll('.okra');
+
+    function triggerRandomSurprise() {
+      // Pick a random okra
+      const randomIndex = Math.floor(Math.random() * okras.length);
+      const selectedOkra = okras[randomIndex];
+
+      selectedOkra.classList.add('surprised');
+
+      setTimeout(() => {
+        selectedOkra.classList.remove('surprised');
+      }, 1200);
+    }
+
+    // Run automatically every 2.5 seconds in infinite loop
+    setInterval(triggerRandomSurprise, 2500);
+  </script>
+
+</body>
+</html>
