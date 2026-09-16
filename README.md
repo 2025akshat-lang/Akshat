@@ -18,3 +18,7 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
 6. animation
    
    https://2025akshat-lang.github.io/Akshat/animation/animation_gallery.html
+
+7. biochemistry
+   https://2025akshat-lang.github.io/Akshat/practical/biochemistry.html
+   
