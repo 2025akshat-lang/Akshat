@@ -31,3 +31,6 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
 11. https://2025akshat-lang.github.io/Akshat/games/gamedashboard.html
 
 12. mindmaps
+13. https://2025akshat-lang.github.io/Akshat/mindmap/mixtures.html
+
+14. 
