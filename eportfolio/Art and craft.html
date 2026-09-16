@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art & Craft Interactive Showcase</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1f4037, #99f2c8);
+            --transition-speed: 0.8s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            width: 100vw;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            transition: background var(--transition-speed) ease-in-out;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            z-index: 10;
+            position: relative;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn-gallery {
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Hero Container */
+        .hero {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            padding: 20px 80px 40px 80px;
+            position: relative;
+            gap: 40px;
+        }
+
+        /* Left Content */
+        .content {
+            flex: 1;
+            z-index: 5;
+            max-width: 550px;
+        }
+
+        .content h1 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        }
+
+        .content p {
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        /* Thumbnails SVG Card Selector */
+        .selectors {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            max-width: 100%;
+        }
+
+        .selectors::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .selectors::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .thumb-item {
+            width: 85px;
+            height: 100px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 6px 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .thumb-card-svg {
+            width: 100%;
+            height: 62px;
+            border-radius: 8px;
+            background: #1a1a24;
+        }
+
+        .thumb-item span {
+            font-size: 8.5px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .thumb-item:hover {
+            transform: translateY(-5px);
+            border-color: #ffbb33;
+        }
+
+        .thumb-item.active {
+            border: 2px solid #ffbb33;
+            background: rgba(255, 187, 51, 0.15);
+            box-shadow: 0 0 15px rgba(255, 187, 51, 0.5);
+        }
+
+        /* Right Main Art Photo Container */
+        .visual-container {
+            flex: 1;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 4;
+            position: relative;
+        }
+
+        .main-art-image {
+            max-height: 85%;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 20px;
+            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.35));
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), opacity var(--transition-speed) ease;
+        }
+
+        .art-animating {
+            transform: scale(0.6) translateY(-40px);
+            opacity: 0;
+        }
+
+        /* Floating Background Elements */
+        .bg-shapes-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .bg-shape {
+            position: absolute;
+            font-size: clamp(40px, 8vw, 80px);
+            filter: blur(3px);
+            opacity: 0.25;
+            transition: all var(--transition-speed) ease-in-out;
+            user-select: none;
+        }
+
+        .bg-shape:nth-child(1) { top: 10%; left: 5%; transform: rotate(-20deg); }
+        .bg-shape:nth-child(2) { top: 50%; left: 2%; transform: rotate(15deg); }
+        .bg-shape:nth-child(3) { top: 75%; left: 40%; transform: rotate(-10deg); }
+        .bg-shape:nth-child(4) { top: 15%; right: 5%; transform: rotate(35deg); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                flex-direction: column-reverse;
+                justify-content: flex-end;
+                padding: 10px 20px 30px 20px;
+                min-height: auto;
+                gap: 20px;
+            }
+
+            .visual-container {
+                width: 100%;
+                height: 38vh;
+            }
+
+            .content {
+                width: 100%;
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .selectors {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav>
+        <div class="logo">ART & CRAFT</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Creations</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+        <a href="#" class="btn-gallery">View Gallery</a>
+    </nav>
+
+    <!-- Floating Background Shapes -->
+    <div class="bg-shapes-container">
+        <div class="bg-shape">🎨</div>
+        <div class="bg-shape">🎨</div>
+        <div class="bg-shape">🎨</div>
+        <div class="bg-shape">🎨</div>
+    </div>
+
+    <!-- Main Hero Section -->
+    <main class="hero">
+        <div class="content">
+            <h1 id="title">Mixed Painting</h1>
+            <p id="description">
+                A creative fusion of multiple painting techniques and textures, blending vibrant colors and expressive strokes into a unique masterpiece.
+            </p>
+
+            <!-- Bottom SVG Card Selectors -->
+            <div class="selectors" id="selectors-container"></div>
+        </div>
+
+        <!-- Main Real Art Image Display -->
+        <div class="visual-container">
+            <img src="" id="main-art" class="main-art-image" alt="Art Piece">
+        </div>
+    </main>
+
+    <script>
+        const craftData = [
+            {
+                name: "Mixed Art",
+                fullName: "Mixed Painting",
+                description: "A creative fusion of multiple painting techniques and textures, blending vibrant colors and expressive strokes into a unique masterpiece.",
+                bgGradient: "linear-gradient(135deg, #1f4037, #99f2c8)",
+                symbol: "🎨",
+                realImage: "https://i.postimg.cc/hPSf0bZ9/20260419-164908.avif",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#2d3748"/><path d="M15,65 Q35,25 55,50 T85,30 L85,65 Z" fill="#99f2c8"/><circle cx="35" cy="35" r="8" fill="#ffbb33"/></svg>`
+            },
+            {
+                name: "Gond Painting",
+                fullName: "Gond Traditional Art",
+                description: "Traditional tribal art from central India characterized by intricate patterns, vibrant natural colors, and deep connection with nature and folklore.",
+                bgGradient: "linear-gradient(135deg, #d38312, #a83279)",
+                symbol: "🌿",
+                realImage: "https://i.postimg.cc/tTN918jM/20260426-140333.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#4a2e18"/><ellipse cx="50" cy="40" rx="30" ry="15" fill="#ffbb33"/><path d="M30,40 L15,25 M70,40 L85,25" stroke="#ff5722" stroke-width="4"/></svg>`
+            },
+            {
+                name: "Dot Painting",
+                fullName: "Dot Art Masterpiece",
+                description: "Meticulously crafted using fine dotting techniques to build complex geometrical patterns, symmetry, and depth through vibrant colors.",
+                bgGradient: "linear-gradient(135deg, #4b6cb7, #182848)",
+                symbol: "⚪",
+                realImage: "https://i.postimg.cc/2jd1vXGz/Adobe-Scan-28-Aug-2026-1.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#182848"/><circle cx="50" cy="40" r="22" fill="none" stroke="#4b6cb7" stroke-width="4" stroke-dasharray="4,4"/><circle cx="50" cy="40" r="8" fill="#ffbb33"/></svg>`
+            },
+            {
+                name: "Madhubani",
+                fullName: "Madhubani Folk Painting",
+                description: "Classic Mithila painting style featuring rich cultural motifs, fine line work, and traditional storytelling themes passed down through generations.",
+                bgGradient: "linear-gradient(135deg, #f12711, #f5af19)",
+                symbol: "🦚",
+                realImage: "https://i.postimg.cc/v8749Sh8/Adobe-Scan-28-Aug-2026-2.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#5c1d1d"/><path d="M50,15 L65,55 L35,55 Z" fill="#f5af19"/><circle cx="50" cy="30" r="6" fill="#f12711"/></svg>`
+            },
+            {
+                name: "Mandala Art",
+                fullName: "Mandala Art",
+                description: "An intricate spiritual and geometric design symbolizing balance, cosmic harmony, and deep meditative focus drawn with absolute precision.",
+                bgGradient: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)",
+                symbol: "⭕",
+                realImage:
+                "https://i.postimg.cc/DfQSsYgH/IMG-20260828-WA0002.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#3a1c57"/><circle cx="50" cy="40" r="25" fill="none" stroke="#fcb045" stroke-width="3"/><circle cx="50" cy="40" r="12" fill="none" stroke="#fd1d1d" stroke-width="2"/></svg>`
+            },
+            {
+                name: "Warli Art",
+                fullName: "Warli Tribal Art",
+                description: "Indigenous tribal folk art using fundamental geometric shapes like circles, triangles, and squares to depict daily life, rituals, and nature.",
+                bgGradient: "linear-gradient(135deg, #3a6073, #16222a)",
+                symbol: "🪵",
+                realImage: "https://i.postimg.cc/7P157Q98/IMG-20260828-WA0004.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#16222a"/><circle cx="50" cy="30" r="6" fill="#fff"/><polygon points="45,38 55,38 58,60 42,60" fill="#fff"/></svg>`
+            },
+            {
+                name: "Tissue Flower",
+                fullName: "Tissue Paper Flower Craft",
+                description: "Delicate handmade floral craft sculpted from soft tissue paper, capturing soft textures and vibrant decorative presentation.",
+                bgGradient: "linear-gradient(135deg, #ff758c, #ff7eb3)",
+                symbol: "🌸",
+                realImage: "https://i.postimg.cc/Wpmdrfnx/IMG-20260828-WA0005.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#5a1835"/><circle cx="50" cy="40" r="18" fill="#ff758c"/><circle cx="50" cy="40" r="6" fill="#ffbb33"/></svg>`
+            },
+            {
+                name: "Waste Flower",
+                fullName: "Waste Paper Flower Craft",
+                description: "Eco-friendly sustainable craft transforming discarded paper into charming, decorative flowers with a creative touch.",
+                bgGradient: "linear-gradient(135deg, #56ab2f, #a8e063)",
+                symbol: "♻️",
+                realImage: "https://i.postimg.cc/FFbYcnpN/IMG-20260828-WA0007.jpg",
+                thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#1f3a15"/><path d="M50,20 Q65,40 50,60 Q35,40 50,20" fill="#a8e063"/><circle cx="50" cy="40" r="5" fill="#56ab2f"/></svg>`
+            },{
+    name: "Wooden Cutlery",
+    fullName: "Wooden Cutlery Painting",
+    description: "Hand-painted wooden cutlery featuring intricate traditional patterns and vibrant artistic motifs, blending functional utility with classic folk art aesthetics.",
+    bgGradient: "linear-gradient(135deg, #8B4513, #D2B48C)",
+    symbol: "🪵",
+    realImage: "https://i.postimg.cc/gjC0P8qS/IMG-20260828-WA0009.jpg",
+    thumbSvg: `<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#8B4513"/><path d="M45,15 L55,15 L55,65 L45,65 Z" fill="#D2B48C"/><circle cx="50" cy="25" r="5" fill="#f12711"/></svg>`
+}
+
+        ];
+
+        const titleEl = document.getElementById('title');
+        const descEl = document.getElementById('description');
+        const mainArt = document.getElementById('main-art');
+        const selectorsContainer = document.getElementById('selectors-container');
+        const bgShapes = document.querySelectorAll('.bg-shape');
+
+        let currentIndex = 0;
+
+        function initSelectors() {
+            selectorsContainer.innerHTML = '';
+            craftData.forEach((item, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = `thumb-item ${index === currentIndex ? 'active' : ''}`;
+                thumb.innerHTML = `
+                    <div class="thumb-card-svg">${item.thumbSvg}</div>
+                    <span>${item.name}</span>
+                `;
+                
+                thumb.addEventListener('click', () => {
+                    if (index !== currentIndex) {
+                        changeArtPiece(index);
+                    }
+                });
+                selectorsContainer.appendChild(thumb);
+            });
+        }
+
+        function changeArtPiece(index) {
+            currentIndex = index;
+            const data = craftData[index];
+
+            document.querySelectorAll('.thumb-item').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+
+            document.documentElement.style.setProperty('--bg-gradient', data.bgGradient);
+
+            titleEl.classList.add('fade-out');
+            descEl.classList.add('fade-out');
+            mainArt.classList.add('art-animating');
+
+            bgShapes.forEach(shape => {
+                shape.style.opacity = '0';
+                shape.style.transform = 'scale(0.2)';
+            });
+
+            setTimeout(() => {
+                titleEl.textContent = data.fullName;
+                descEl.textContent = data.description;
+                mainArt.src = data.realImage;
+
+                bgShapes.forEach(shape => {
+                    shape.textContent = data.symbol;
+                    shape.style.opacity = '0.25';
+                    shape.style.transform = '';
+                });
+
+                titleEl.classList.remove('fade-out');
+                descEl.classList.remove('fade-out');
+                mainArt.classList.remove('art-animating');
+            }, 400);
+        }
+
+        initSelectors();
+        mainArt.src = craftData[0].realImage;
+    </script>
+</body>
+</html>
