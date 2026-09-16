@@ -1,0 +1,3338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 ">
+
+
+
+
+    <title>Chemistry Practical Database</title>
+
+    <!-- =========================================================
+         EXTERNAL LIBRARIES
+         Do not modify unless a library is actually required.
+    ========================================================== -->
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ]
+            }
+        };
+    </script>
+
+    <!-- MathJax -->
+    <script
+        id="MathJax-script"
+        async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+
+    <!-- =========================================================
+         MASTER CSS
+         
+         RULE:
+         All future reusable CSS will be organized here.
+         Do NOT blindly paste CSS at the bottom.
+    ========================================================== -->
+
+    <style>
+
+        /* =====================================================
+           01. GLOBAL VARIABLES
+        ====================================================== */
+
+        :root {
+
+            /* Main Colors */
+            --primary: #059669;
+            --primary-dark: #065f46;
+            --secondary: #0284c7;
+
+            /* Accent Colors */
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+
+            /* Backgrounds */
+            --page-bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --white: #ffffff;
+
+            /* Text */
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+
+            /* Borders */
+            --border-color: #e2e8f0;
+
+            /* Shadows */
+            --shadow-small:
+                0 4px 12px rgba(0, 0, 0, 0.05);
+
+            --shadow-medium:
+                0 10px 25px rgba(0, 0, 0, 0.10);
+
+            --shadow-large:
+                0 20px 40px rgba(0, 0, 0, 0.20);
+        }
+
+
+        /* =====================================================
+           02. BASIC RESET
+        ====================================================== */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+
+            margin: 0;
+            padding: 30px 15px;
+
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+
+            color: var(--text-dark);
+
+            background:
+                linear-gradient(
+                    -45deg,
+                    #064e3b,
+                    #0f172a,
+                    #0c4a6e,
+                    #022c22
+                );
+
+            background-size: 400% 400%;
+
+            animation:
+                gradientBG 15s ease infinite;
+        }
+
+
+        /* =====================================================
+           03. BACKGROUND ANIMATION
+        ====================================================== */
+
+        @keyframes gradientBG {
+
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
+        /* =====================================================
+           04. BACKGROUND LOADER / DECORATION
+        ====================================================== */
+
+        .bg-loader-wrapper {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            
+
+            pointer-events: none;
+
+            z-index: 0;
+        }
+
+        .bg-loader-wrapper .loader,
+        .bg-loader-wrapper .loader span {
+
+            width: 10em;
+            height: 10em;
+
+            position: absolute;
+
+            border: 0.25em solid white;
+
+            border-radius: 1em;
+
+            font-size: 10px;
+
+            mix-blend-mode: screen;
+        }
+
+        .bg-loader-wrapper .loader {
+
+            position: relative;
+
+            background-color: gold;
+
+            animation:
+                rotating 2s linear infinite;
+        }
+
+        .bg-loader-wrapper .loader span {
+
+            animation:
+                de-rotating 4s linear infinite;
+        }
+
+        .bg-loader-wrapper .loader span:nth-child(1) {
+            top: 5em;
+            left: 5em;
+            background-color: dodgerblue;
+        }
+
+        .bg-loader-wrapper .loader span:nth-child(2) {
+            top: -5em;
+            left: 5em;
+            background-color: hotpink;
+        }
+
+        .bg-loader-wrapper .loader span:nth-child(3) {
+            top: 5em;
+            left: -5em;
+            background-color: mediumpurple;
+        }
+
+        .bg-loader-wrapper .loader span:nth-child(4) {
+            top: -5em;
+            left: -5em;
+            background-color: limegreen;
+        }
+
+        @keyframes rotating {
+
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes de-rotating {
+
+            from,
+            to {
+                transform: rotate(0deg) scale(0.5);
+            }
+
+            50% {
+                transform: rotate(-180deg) scale(1.2);
+            }
+        }
+
+
+        /* =====================================================
+           05. PRACTICAL NAVIGATION
+        ====================================================== */
+
+        .category-container {
+
+            position: relative;
+            z-index: 10;
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 10px;
+
+            width: 100%;
+
+            padding: 15px 10px;
+
+            margin-bottom: 10px;
+        }
+
+
+        /* Practical Button */
+
+        .cat-btn {
+
+            border: 1.5px solid #e2e8f0;
+
+            border-radius: 25px;
+
+            padding: 10px 18px;
+
+            background-color: #f1f3f5;
+
+            color: #333333;
+
+            font-family: inherit;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+
+            outline: none;
+
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.04);
+
+            transition:
+                background-color 0.25s ease,
+                border-color 0.25s ease,
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .cat-btn:hover {
+
+            background-color: #e2e8f0;
+
+            border-color: #cbd5e1;
+
+            transform: translateY(-1px);
+        }
+
+        .cat-btn:active {
+
+            transform: scale(0.97);
+        }
+
+        .cat-btn.active {
+
+            background-color: #0066ff;
+
+            color: #ffffff;
+
+            border-color: #0066ff;
+
+            box-shadow:
+                0 4px 10px rgba(0, 102, 255, 0.30);
+        }
+
+
+        /* =====================================================
+           06. MAIN DATABASE WRAPPER
+        ====================================================== */
+
+        .report-wrapper {
+
+            position: relative;
+            z-index: 5;
+
+            width: 100%;
+            max-width: 100%;
+
+            margin: 0 auto;
+
+            padding: 25px;
+
+            background:
+                var(--card-bg);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.40);
+
+            border-radius: 24px;
+
+            box-shadow:
+                var(--shadow-large);
+
+            backdrop-filter:
+                blur(16px);
+
+            -webkit-backdrop-filter:
+                blur(16px);
+        }
+
+
+        /* =====================================================
+           07. PRACTICAL TAB SYSTEM
+        ====================================================== */
+        .practical-block {
+    display: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: auto; /* Taki andar ka bada content screen break na kare */
+    -webkit-overflow-scrolling: touch; /* Mobile me smooth scroll ke liye */
+    touch-action: auto; /* Pinch-zoom aur scroll enable rakhne ke liye */
+}
+
+.practical-block.active {
+    display: block;
+    width: 100%;
+}
+
+
+
+
+
+        /* =====================================================
+           08. MAIN TITLES
+        ====================================================== */
+
+        .main-title {
+
+            margin-top: 0;
+            margin-bottom: 8px;
+
+            text-align: center;
+
+            font-size: 1.6rem;
+            font-weight: 700;
+
+            line-height: 1.3;
+
+            letter-spacing: -0.5px;
+
+            text-transform: uppercase;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    #059669,
+                    #0284c7,
+                    #0d9488
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-heading {
+
+            margin-bottom: 30px;
+
+            text-align: center;
+
+            color: #0d9488;
+
+            font-size: 0.95rem;
+            font-weight: 600;
+
+            line-height: 1.4;
+        }
+
+
+        /* =====================================================
+           09. HEADINGS
+        ====================================================== */
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin-top: 0;
+        }
+
+        h2.section-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-top: 35px;
+            margin-bottom: 20px;
+
+            padding: 10px 15px;
+
+            color: var(--primary-dark);
+
+            font-size: 1.2rem;
+
+            border-left:
+                6px solid var(--primary);
+
+            border-radius:
+                0 12px 12px 0;
+
+            background:
+                rgba(5, 150, 105, 0.06);
+        }
+
+        h3.sub-section-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 25px;
+            margin-bottom: 15px;
+
+            color: #0369a1;
+
+            font-size: 1.2rem;
+        }
+
+
+        /* =====================================================
+           10. PARAGRAPHS
+        ====================================================== */
+
+        p {
+
+            margin-top: 0;
+            margin-bottom: 15px;
+
+            color: #334155;
+
+            font-size: 1.05rem;
+
+            line-height: 1.8;
+
+            text-align: justify;
+        }
+
+
+        /* =====================================================
+           11. TABLE FOUNDATION
+           
+           Specialized table styles can be added later.
+        ====================================================== */
+
+        .table-container {
+
+            width: 100%;
+
+            margin: 25px 0;
+
+            overflow-x: auto;
+
+            border-radius: 16px;
+
+            box-shadow:
+                var(--shadow-small);
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            background: #ffffff;
+
+            font-size: 0.98rem;
+        }
+
+        th {
+
+            padding: 14px 15px;
+
+            background: #0f172a;
+
+            color: #ffffff;
+
+            font-weight: 600;
+
+            text-align: center;
+        }
+
+        td {
+
+            padding: 14px 15px;
+
+            color: #334155;
+
+            border-bottom:
+                1px solid var(--border-color);
+
+            text-align: center;
+
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) {
+
+            background-color:
+                #f8fafc;
+        }
+
+
+        /* =====================================================
+           12. ORDERED LIST FOUNDATION
+        ====================================================== */
+
+        ol {
+
+            padding-left: 25px;
+
+            list-style:
+                decimal;
+        }
+
+        ol li {
+
+            padding: 5px 0;
+
+            background: none;
+        }
+
+
+        /* =====================================================
+           13. MATHJAX
+        ====================================================== */
+
+        .MathJax,
+        .mjx-chtml {
+
+            background: transparent !important;
+        }
+
+
+        /* =====================================================
+           14. RESPONSIVE DESIGN
+        ====================================================== */
+
+        @media (min-width: 768px) {
+
+            body {
+                padding: 30px;
+            }
+
+            .main-title {
+                font-size: 2.3rem;
+            }
+
+            .sub-heading {
+                font-size: 1.1rem;
+                margin-bottom: 40px;
+            }
+
+            h2.section-header {
+                font-size: 1.45rem;
+
+                margin-top: 45px;
+                margin-bottom: 25px;
+            }
+        }
+
+
+        @media (max-width: 767px) {
+
+            .report-wrapper {
+                padding: 18px 14px;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            table {
+                min-width: 600px;
+            }
+        }
+        /* =====================================================
+           15. CUSTOM LISTS & PROCEDURE STEPS
+        ====================================================== */
+
+        /* General Chemistry List */
+
+        .custom-list {
+
+            padding-left: 0;
+
+            margin-top: 15px;
+
+            list-style: none;
+        }
+
+        .custom-list li {
+
+            position: relative;
+
+            padding: 14px 20px 14px 45px;
+
+            margin-bottom: 12px;
+
+            background: #ffffff;
+
+            border: 1px solid #f1f5f9;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.02);
+
+            font-size: 1.02rem;
+
+            line-height: 1.7;
+        }
+
+        .custom-list li::before {
+
+            content: "✨";
+
+            position: absolute;
+
+            left: 15px;
+
+            top: 14px;
+
+            font-size: 1.1rem;
+        }
+
+
+        /* Numbered Procedure / Step List */
+
+        .step-list {
+
+            padding-left: 0;
+
+            margin-top: 15px;
+
+            counter-reset: step-counter;
+
+            list-style: none;
+        }
+
+        .step-list li {
+
+            position: relative;
+
+            padding: 16px 20px 16px 55px;
+
+            margin-bottom: 15px;
+
+            background: #ffffff;
+
+            border-radius: 14px;
+
+            border-left:
+                4px solid var(--secondary);
+
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.03);
+
+            font-size: 1.02rem;
+
+            line-height: 1.7;
+        }
+
+        .step-list li::before {
+
+            counter-increment:
+                step-counter;
+
+            content:
+                counter(step-counter);
+
+            position: absolute;
+
+            left: 15px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 28px;
+            height: 28px;
+
+            background:
+                var(--secondary);
+
+            color: #ffffff;
+
+            border-radius: 50%;
+
+            font-size: 0.9rem;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           16. TABLE COMPONENTS
+        ====================================================== */
+
+        .table-heading-tag {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 12px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1e293b,
+                    #334155
+                );
+
+            color: #ffffff;
+
+            border-radius:
+                12px 12px 0 0;
+
+            font-size: 0.98rem;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           17. CALCULATION COMPONENT
+        ====================================================== */
+
+        .calc-box {
+
+            margin: 25px 0;
+
+            padding: 25px;
+
+            background: #fffbeb;
+
+            border:
+                2px dashed #f59e0b;
+
+            border-radius: 16px;
+
+            color: #78350f;
+
+            font-family:
+                'Courier New',
+                Courier,
+                monospace;
+
+            font-size: 1.05rem;
+
+            line-height: 1.8;
+
+            white-space: pre-wrap;
+
+            box-shadow:
+                0 4px 15px
+                rgba(245, 158, 11, 0.08);
+        }
+
+
+        /* =====================================================
+           18. CHEMICAL BADGE
+        ====================================================== */
+
+        .chem-badge {
+
+            display: inline-block;
+
+            padding: 3px 8px;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            border-radius: 6px;
+
+            font-family:
+                'Courier New',
+                Courier,
+                monospace;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           19. ACCORDION COMPONENT
+           
+           This is independent of the practical-tab system.
+           
+           Use it only where a practical needs an expandable
+           section inside its content.
+        ====================================================== */
+
+        .main-heading {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            width: 100%;
+
+            padding: 14px 18px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1a73e8;
+
+            color: #ffffff;
+
+            font-family: inherit;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 2px 5px
+                rgba(0, 0, 0, 0.10);
+        }
+
+        .main-heading::after {
+
+            content: '\25BC';
+
+            margin-left: 10px;
+
+            font-size: 12px;
+        }
+
+        .main-heading.active::after {
+
+            content: '\25B2';
+        }
+
+        .inside-content {
+
+            padding: 15px;
+
+            background: #ffffff;
+
+            border:
+                1px solid #dadce0;
+
+            border-top: none;
+
+            border-radius:
+                0 0 8px 8px;
+        }
+        .flowchart {
+            background-color: #f8fafc;
+            
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .flow-step {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .flow-step::after {
+            content: " ↓";
+            
+            font-weight: bold;
+        }
+        .flow-step:last-child::after {
+            content: " ";
+        }
+        /* Image container ko responsive aur centered rakhne ke liye */
+.report-image {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 20px 0 !important;
+    padding: 10px;
+    box-sizing: border-box !important;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Image ko box ke andar 100% fit karne ke liye */
+.report-image img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain;
+    display: block;
+    border-radius: 4px;
+}
+
+/* Caption styling */
+.report-image figcaption {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    text-align: center;
+}
+
+
+
+        /* =====================================================
+           20. FUTURE COMPONENTS
+           
+           Add future CSS ONLY after classification.
+
+           Planned sections:
+
+           21. Highlight Cards
+           22. Reaction Cards
+           23. Apparatus Grid
+           24. Chemical Structures
+           25. Indicator Components
+           26. TLC / Chromatography
+           27. Formula Components
+           28. Observation Components
+           29. Result Components
+           30. Warning / Safety Components
+           31. Special Practical Components
+        ====================================================== */
+
+        /* =====================================================
+           15. FUTURE CSS COMPONENTS
+           
+           DO NOT ADD RANDOM CSS BELOW THIS POINT.
+
+           Future CSS will be organized into categories such as:
+
+           - Highlight Cards
+           - Reaction Cards
+           - Apparatus Grid
+           - Chemical Structures
+           - Observation Tables
+           - Calculation Boxes
+           - Result Cards
+           - Warning Cards
+           - TLC
+           - Indicators
+           - Special Practical Components
+        ====================================================== */
+
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         DECORATIVE BACKGROUND
+    ====================================================== -->
+
+    <div class="bg-loader-wrapper">
+
+        <div class="loader">
+
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PRACTICAL NAVIGATION
+         
+         New practical buttons will eventually be generated
+         automatically. For now they remain simple.
+    ====================================================== -->
+
+    <div class="category-container">
+        <button
+            class="cat-btn active"
+            onclick="openTab('p0')">home
+        </button>
+        <button
+            class="cat-btn"
+            onclick="openTab('p1')">
+            disclaimer
+        </button>
+                <button
+            class="cat-btn"
+            onclick="openTab('p2')">
+            sterlization
+        </button>
+
+        <button
+            class="cat-btn"
+            onclick="openTab('p3')">
+            LB media preparation
+        </button>
+        <button
+            class="cat-btn"
+            onclick="openTab('p4')">
+            Genomic D.N.A isolation from E.coli
+        </button>
+        <button
+            class="cat-btn"
+            onclick="openTab('p5')">
+            Transformation efficiency
+        </button>
+        <button class="cat-btn" onclick="openTab('p6')"  >
+          Restriction Digestion
+        </button>
+        
+        
+
+    </div>
+
+  <!-- MAIN DATABASE-->
+
+    <div class="report-wrapper">
+
+        <div
+            id="p0"
+            class="practical-block active">
+        </div>
+        <!--PRACTICAL 1-->
+        <div
+            id="p1"
+            class="practical-block">
+          A brief hands-on exploration of Biotech practicals, coded and
+          documented out of pure curiosity.
+        </div>
+
+             <!--PRACTICAL 2-->
+        <div
+            id="p2"
+            class="practical-block">
+            <!--
+                PRACTICAL 2 CONTENT GOES HERE
+            --><h1 style="margin-bottom:0">
+            Aim:
+          </h1>
+          <p>packing and sterilization of glass and plastic wares</p>
+          <div class="practical-content">
+    <h2>PRACTICAL No. 1</h2>
+    <p><strong>Aim:</strong> Packing and sterilization of glass and plastic wares for microbial culture</p>
+
+    <!-- Autoclave Section -->
+    <div class="section-box">
+        <h3>Autoclave</h3>
+         <!-- Autoclave Diagram Image -->
+        <figure class="report-image">
+            <img src="https://i.postimg.cc/Y9SpTT2C/01-autoclave.png" alt="Autoclave Diagram" loading="lazy">
+            <figcaption>Fig: Autoclave</figcaption>
+        </figure>
+        <ul>
+            <li>An autoclave is a device which works under high pressure.</li>
+            <li>It was invented by Charles Chamberland in 1879.</li>
+            <li>It works by heating the material at a definite temperature which is above its boiling point at normal atmospheric pressure to achieve sterilization. It is also named as steam sterilizer. This is based on the method of humid heat sterilization; it is the most effective and reliable way of sterilization.</li>
+            <li>This is used in industries for cure coating, hypothermal synthesis, and in research experiments for the sterilization of the instrument and culture media.</li>
+        </ul>
+
+        <h4>Principle</h4>
+        <p>It creates saturated vapour at a pressure of 15 pounds/sq. inch to generate 250°F (121°C) temperature for 30–60 mins. Humid heat kills all microbes by disrupting cell membranes, denaturing enzymes, degradation of nucleic acid and other vital proteins. To kill all microbes ten minutes exposure of boiling water is enough; killing of heat-resistant endospores needs more heating than boiling point of water. This will be done by increasing the inner pressure of the autoclave.</p>
+
+        <h4>Construction / Components of Autoclave</h4>
+        <ul>
+            <li><strong>Pressure Chamber:</strong> It is the main component of a steam autoclave consisting of inner chamber and an outer jacket (iron case). The size of the chamber ranges from 100L to 300L.</li>
+            <li><strong>Lid / Door:</strong> The purpose is to seal off the outside atmosphere and create sterilized condition on heat inside of the autoclave. The lid is made airtight via the screw clamps and asbestos washer. It consists of various components like pressure gauge, whistle, and safety valve.</li>
+            <li><strong>Pressure Gauge:</strong> A pressure gauge is present on the lid of autoclave to indicate the pressure created in the autoclave during sterilization. It is essential as it assures the safety of the autoclave and working condition of the operation.</li>
+            <li><strong>Pressure Releasing Unit / Whistle:</strong> The whistle is placed on top of the surface of the lid, just like pressure cooker. The whistle allows us to release the pressure whenever required.</li>
+            <li><strong>Safety Valve:</strong> It is present on the surface of the lid; its function is to avoid catastrophic accident especially when pressure inside the chamber is uncontrolled.</li>
+            <li><strong>Heater:</strong> The electric heater is placed beneath the chamber. The electric heater working is similar to geyser.</li>
+        </ul>
+
+        <h4>Working</h4>
+        <ol>
+            <li>Before beginning to use the autoclave, it should be checked for any items left from previous cycle.</li>
+            <li>A sufficient amount of water is then put inside the chamber.</li>
+            <li>Now, the materials to be sterilized are placed inside the chamber. Don't autoclave materials that catch fire easily; combustible material like paper should be in secondary object/autoclave bag.</li>
+            <li>The lid is then closed, and screws are tightened to ensure an airtight condition & electric heater is switched on. The safety valves are adjusted to maintain the required pressure in the chamber.</li>
+            <li>Once the water inside chamber boils, the air-water mixture is allowed to escape through discharge tube to let all air inside be displaced.</li>
+            <li>Drainage pipe is then closed & steam is allowed to reach the desired level (15 lbs in most cases).</li>
+            <li>Once pressure is reached, the whistle blows to remove excess pressure from the case.</li>
+            <li>Now, electric heater is switched off and the autoclave is allowed to cool until pressure gauge indicates the pressure inside has lowered down to that of atmospheric pressure.</li>
+            <li>The discharge pipe is then opened to allow entry of air from outside into autoclave.</li>
+            <li>Finally, the lid is opened and the sterilized materials are taken out of the chamber.</li>
+        </ol>
+
+        <h4>Application</h4>
+        <ul>
+            <li>They are absolutely essential for ensuring sterile environment in location of medical and healthcare facilities, for sterilizing surgical instruments, medical equipment, dressing leading to removal of harmful substances.</li>
+            <li>In laboratories and research institutions, essential for many applications that are required to maintain aseptic things, sterility of the growth media necessary for culture of cell and analytical studies.</li>
+            <li>Used in food & beverage industries for ensuring desired hygiene standards through maintenance of the safe material.</li>
+        </ul>
+
+        <h4>Precautions</h4>
+        <ul>
+            <li>There should be sufficient space inside the autoclave after keeping all material for sterilization.</li>
+            <li>The material should be kept inside secondary container.</li>
+            <li>Do NOT keep combustible materials like papers; keep them in an autoclave bag to prevent fire.</li>
+            <li>Do NOT use plastic trays or containers as they might melt and damage the autoclave.</li>
+            <li>The liquid inside the container should be 2/3rd of total volume. This will avoid the spilling of the liquid.</li>
+            <li>Do NOT open the lid when the autoclave is working.</li>
+        </ul>
+    </div>
+
+    <!-- Physical Methods Summary Section -->
+    <div class="section-box">
+        <h3>Physical Methods of Sterilization</h3>
+        <p>There are many kinds of approaches done to sterilize the material:</p>
+        <ul>
+            <li>
+                <strong>A) Moist Heat:</strong> Culture media and water are sterilized by using moist heat i.e. steam under pressure. It is done through autoclaving and also by using a pressure cooker.
+                <ul>
+                    <li>Autoclaving is the most effective and most efficient means of sterilization.</li>
+                    <li>Standard parameters: 121°C / 15 psi for 15 min.</li>
+                </ul>
+            </li>
+            <li><strong>B) Dry Heat:</strong> Produced by hot air oven. Glassware (syringes, forceps, scalpel, pipette, flask, petri dish, etc.) are sterilized at 160°C/2 hours or 170°C/1 hour. Care should be taken to remove these apparatuses only when temperature cools down.</li>
+            <li><strong>C) Incineration:</strong> Process of killing microorganisms using flame (flame sterilization). Done by holding inoculation needle, loop & tip of forceps into Bunsen burner flame till red hot.</li>
+        </ul>
+    </div>
+
+    <!-- Hot Air Oven Section -->
+    <div class="section-box">
+        <h3>Hot Air Oven</h3>
+        <!-- Drying Oven Image -->
+        <figure class="report-image">
+            <img src="https://i.postimg.cc/Jnh1SS77/06-drying-oven.png" alt="Hot Air Oven / Drying Oven" loading="lazy">
+            <figcaption>Fig: Hot Air Oven / Drying Oven</figcaption>
+        </figure>
+        <p>A hot air oven is an electrical device that uses dry heat to sterilize material that can resist heat, thereby removing microorganisms such as bacterial spores from the object placed inside its chamber. It has origins in Pasteur's work.</p>
+
+        <h4>Principle</h4>
+        <p>Combines conduction, convection, and radiation mechanics. Conduction is the main factor. Heat is gradually transmitted layer by layer as exterior surface absorbs it until the item reaches required sterilizing temperature.</p>
+
+        <h4>Components / Construction of Hot Air Oven</h4>
+        <ul>
+            <li><strong>Cabinet:</strong> Outermost layer of protection made of stainless steel or aluminium, resistant to oxidation & robust against impact.</li>
+            <li><strong>Fiber Glass Insulation:</strong> Layer of glass wool insulation between inner chamber and outer cabinet.</li>
+            <li><strong>Chamber:</strong> Rectangular inner chamber made of stainless steel or aluminium with ribs for shelves.</li>
+            <li><strong>Shelves:</strong> Aluminium built shelves to store objects.</li>
+            <li><strong>Motorized Fans / Blowers:</strong> Ensures equal dispersion of heat throughout the chamber.</li>
+            <li><strong>Power Supply:</strong> Transformer and rectifier supplying 220V, 50Hz.</li>
+            <li><strong>Thermostat:</strong> Connected directly to heater & heat sensor to regulate temperature.</li>
+        </ul>
+    </div>
+
+    <!-- Laminar Flow Hood Section -->
+    <div class="section-box">
+        <h3>Laminar Flow Hood</h3>
+        <!-- Biosafety Cabinet Image -->
+        <figure class="report-image">
+            <img src="https://i.postimg.cc/mDrbKKZb/03-biosafety-cabinet.png" alt="Biosafety Cabinet / Laminar Flow Hood" loading="lazy">
+            <figcaption>Fig: Biosafety Cabinet / Laminar Flow Workstation</figcaption>
+        </figure>
+        <p>An enclosed workbench designed to create a microbial-free work environment through an installed filter in the cabinet so that most particles are prevented from entering.</p>
+
+        <h4>Principle / Working</h4>
+        <p>Based on laminar flow of air through HEPA filters. Air first passes through filter pad, then blower/fan directs it toward HEPA filter, which traps bacteria and fungi.</p>
+
+        <h4>Types of Laminar Flow Hood</h4>
+        <ul>
+            <li><strong>Vertical Laminar Flow Cabinet:</strong> Air moves from top to bottom. Requires less floor space.</li>
+            <li><strong>Horizontal Laminar Flow Cabinet:</strong> Air comes from behind and projects outward toward user. Parallel airflow cleanses workspace with constant velocity.</li>
+        </ul>
+
+        <h4>Construction / Parts</h4>
+        <ul>
+            <li><strong>Cabinet:</strong> Stainless steel body with a front glass shield.</li>
+            <li><strong>Fan / Blower:</strong> Sucks air into cabinet.</li>
+            <li><strong>UV Lamp:</strong> Germicidal, sterilizes interior before use.</li>
+            <li><strong>Fluorescent Lamp:</strong> Light during operation.</li>
+            <li><strong>Working Station:</strong> Area where experiment is conducted.</li>
+            <li><strong>Filter Pad:</strong> Pre-filter on top to catch dust/large particles.</li>
+        </ul>
+
+        <h4>Precautions for Hood</h4>
+        <ul>
+            <li>UV sterilization should be done before and after experiment.</li>
+            <li>Do NOT use UV light and airflow simultaneously.</li>
+            <li>UV lamp should not be on for a long period.</li>
+        </ul>
+    </div>
+</div>
+<!-- Wrapped Samples Image -->
+    <figure class="report-image">
+        <img src="https://i.postimg.cc/hjGSNN4P/02-wrapped-samples.png" alt="Aluminium folded plastic glassware and microtubes" loading="lazy">
+        <figcaption>Fig: Aluminium folded plastic glassware and microtubes.</figcaption>
+    </figure>
+
+
+
+
+
+      
+
+        </div>
+
+        <div id="p3" class="practical-block "> <h1>PRACTICAL NO. 2</h1>
+
+    <div class="section">
+        <h2>Aim</h2>
+        <p><strong>LB MEDIA PREPARATION AND STERILIZATION</strong></p>
+        <ul>
+            <li>Luria Broth (LB) Media</li>
+            <li>Luria Agar (LA) Media</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Theory</h2>
+        <h3>History:</h3>
+        <p>LB is widely used bacterial culture medium today but it has its origins in the field of bacteriophage genetics. Giuseppe Bertani created the LB recipe while trying to optimize plaque formation on a Shigella indicator strain.</p>
+        <p>According to Bertani, LB media has been variously misconstrued to stand for "Luria Broth", "Luria-Bertani" medium, and "Lennox Broth"; however, the acronym originally stood for <strong>"Lysogeny Broth"</strong>.</p>
+        <p>The agar form of the medium should be designated LA but it is often referred to as LB. Although originally developed for bacteriophage studies and Shigella growth, LB subsequently became the medium of choice for growth of <em>Escherichia coli</em> and other related enteric species.</p>
+    </div>
+
+    <div class="section">
+        <h2>Sterilization and the Autoclave</h2>
+        <p>When microbiological media has been made, it still has to be sterilized because of microbial contamination from air, glassware, hands etc. Within a few hours there will be thousands of bacteria reproducing in the media so it has to be sterilized quickly before the microbes start using the nutrient up.</p>
+        <p>The sterilization process is a 100% kill, and guarantees that the medium will stay sterile unless exposed to contaminants by less than adequate aseptic technique to exposure to air.</p>
+        <p>Media sterilization is carried out with the autoclave, basically a huge steam cooker. Steam enters into the jacket surrounded the chamber. When the pressure from the steam at a certain point in the jacket, a valve allows the steam to enter the chamber.</p>
+        <p>The pressure will go up over 15 pounds per square inch (Psi); at this point the timer begins to count down — usually for 15 mins, depending on this type of media. The high pressure in a closed container allows the temperature to go above the highest temp one could get by just boiling, around 121°C.</p>
+        <p>Therefore, the parameter for sterilization with an autoclave are <strong>121°C at >15 psi for 15 min</strong>. 15 minutes is the thermal death time for most organism (except some really hardy spore formers).</p>
+    </div>
+<!-- Prepared LB Media to Sterilize Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/vHn6PxNZ/Prepared-lb-media-to-sterilize.jpg" alt="Prepared LB media to sterilize" loading="lazy">
+    <figcaption>Fig: Prepared LB media ready for sterilization.</figcaption>
+</figure>
+
+<!-- Weighing of LB Material Agar Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/RFRBdBkZ/Weighing-of-Lb-material-Agar.jpg " alt="Weighing of LB material and Agar" loading="lazy">
+    <figcaption>Fig: Weighing of LB broth components and Agar media.</figcaption>
+</figure>
+
+<!-- Prepared LB Broth and LB Agar Media Image -->
+<figure class="report-image">
+    <img
+    src="https://i.postimg.cc/C1Ng7g3M/Prepared-lb-broth-theek-hai-and-LV-Agar-media.jpg" alt="Prepared LB broth and LB Agar media" loading="lazy">
+    <figcaption>Fig: Prepared LB broth and LB Agar media.</figcaption>
+</figure>
+
+<!-- Prepared Semi-Solid and Agar LB Media Image -->
+<figure class="report-image">
+    <img
+    src="https://i.postimg.cc/HxHmbxhV/Prepared-semi-solid-aur-Agar-lb-mediaa.jpg" alt="Prepared Semi-Solid and Agar LB Media Image" loading="lazy">
+    <figcaption>Fig: Prepared Semi-Solid and Agar LB Media Imagea.</figcaption>
+</figure>
+
+    <div class="section">
+        <h2>Growth of E. Coli Cells in LB Medium</h2>
+        <h3>Growth Curve:</h3>
+        <p>It is a graphical representation of how particular quantity increases over time.</p>
+        <p><strong>Bacterial Growth Curve:</strong> No. of live cells in a bacterial population over a period of time.</p>
+        
+        <p>It has 4 Phases:</p>
+        <ol>
+            <li>
+                <strong>Lag Phase:</strong>
+                <ul>
+                    <li>Initial Phase</li>
+                    <li>Cellular activity but no growth.</li>
+                    <li>Adaptation</li>
+                    <li>Cell increases in size but no cell division.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Exponential Phase:</strong>
+                <ul>
+                    <li>Cell division by binary fission.</li>
+                    <li>Metabolic activity increases (DNA, RNA etc.) growth phase.</li>
+                    <li>Utilize nutrients fully.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Stationary Phase:</strong>
+                <ul>
+                    <li>Nutrient depletion</li>
+                    <li>No. of dividing cells = No. of cells dying</li>
+                    <li>No overall growth</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Death / Decline Phase:</strong>
+                <ul>
+                    <li>Nutrient decline</li>
+                    <li>No. of dying bacteria increases</li>
+                    <li>Population decreases</li>
+                </ul>
+            </li>
+        </ol>
+        
+    </div>
+         <svg viewBox="0 0 600 380" width="100%" xmlns="http://www.w3.org/2000/svg">
+                <!-- Axes -->
+                <line x1="80" y1="280" x2="350" y2="280" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+                <line x1="80" y1="280" x2="80" y2="80" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+                <line x1="80" y1="280" x2="30" y2="350" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- Arrowhead definition -->
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+                    </marker>
+                </defs>
+
+                <!-- Axis Labels -->
+                <text x="210" y="325" font-family="Arial" font-size="14" font-weight="bold">Time (hours) &rarr;</text>
+                <text x="-210" y="45" font-family="Arial" font-size="14" font-weight="bold" transform="rotate(-90)">NO. of cells</text>
+                <text x="15" y="340" font-family="Arial" font-size="13" font-weight="bold">Inoculation</text>
+
+                <!-- Ticks on X Axis -->
+                <line x1="120" y1="280" x2="120" y2="285" stroke="#000" stroke-width="2"/>
+                <text x="116" y="300" font-family="Arial" font-size="12">1</text>
+                <line x1="160" y1="280" x2="160" y2="285" stroke="#000" stroke-width="2"/>
+                <text x="156" y="300" font-family="Arial" font-size="12">2</text>
+                <line x1="200" y1="280" x2="200" y2="285" stroke="#000" stroke-width="2"/>
+                <text x="196" y="300" font-family="Arial" font-size="12">3</text>
+                <line x1="240" y1="280" x2="240" y2="285" stroke="#000" stroke-width="2"/>
+                <text x="236" y="300" font-family="Arial" font-size="12">4</text>
+
+                <!-- Growth Curve Path -->
+                <path d="M 80 240 L 130 240 C 180 240, 200 130, 240 120 L 310 120" fill="none" stroke="#2563eb" stroke-width="3"/>
+                <path d="M 310 120 L 410 180" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,5"/>
+
+                <!-- Dotted Vertical Phase Lines -->
+                <line x1="130" y1="240" x2="130" y2="280" stroke="#64748b" stroke-width="1" stroke-dasharray="3,3"/>
+                <line x1="240" y1="120" x2="240" y2="280" stroke="#64748b" stroke-width="1" stroke-dasharray="3,3"/>
+
+                <!-- Phase Top Markers & Arrows -->
+                <!-- Lag Phase -->
+                <line x1="80" y1="200" x2="130" y2="200" stroke="#000" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <line x1="110" y1="200" x2="110" y2="150" stroke="#000" stroke-width="1"/>
+                <text x="90" y="115" font-family="Arial" font-size="14" font-weight="bold" fill="#1e293b">Lag Phase</text>
+
+                <!-- Exponential Phase -->
+                <line x1="130" y1="210" x2="240" y2="210" stroke="#000" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <line x1="175" y1="210" x2="175" y2="170" stroke="#000" stroke-width="1"/>
+                <text x="150" y="145" font-family="Arial" font-size="13" font-weight="bold" fill="#1e293b">Exponential</text>
+                <text x="165" y="160" font-family="Arial" font-size="13" font-weight="bold" fill="#1e293b">Phase</text>
+
+                <!-- Stationary Phase -->
+                <line x1="240" y1="110" x2="310" y2="110" stroke="#000" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <line x1="275" y1="110" x2="275" y2="80" stroke="#000" stroke-width="1"/>
+                <text x="250" y="60" font-family="Arial" font-size="13" font-weight="bold" fill="#1e293b">Stationary</text>
+                <text x="260" y="75" font-family="Arial" font-size="13" font-weight="bold" fill="#1e293b">Phase</text>
+
+                <!-- Decline Phase -->
+                <line x1="310" y1="150" x2="410" y2="200" stroke="#000" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <text x="325" y="215" font-family="Arial" font-size="13" font-weight="bold" fill="#1e293b">Decline/death Phase</text>
+
+                <!-- Caption -->
+                <text x="300" y="360" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">
+                    Fig: Graphical representation of Growth Curve of Bacteria over a Period of time.
+                </text>
+            </svg>
+    <h4>Diagram</h4>
+<svg viewBox="0 0 750 480" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Blue Arrowhead for Steam In / Flow -->
+            <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb" />
+            </marker>
+            
+            <!-- Red Arrowhead for Steam Exhaust / Drain -->
+            <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626" />
+            </marker>
+        </defs>
+
+        <!-- Background Panel -->
+        <rect x="10" y="10" width="730" height="460" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8" />
+
+        <!-- LEFT SCHEMATIC DIAGRAM -->
+        <g id="autoclave-schematic">
+            
+            <!-- Outer Jacket -->
+            <rect x="170" y="110" width="260" height="110" fill="#f1f5f9" stroke="#1e293b" stroke-width="3" />
+            
+            <!-- Inner Chamber -->
+            <rect x="182" y="122" width="236" height="86" fill="#ffffff" stroke="#1e293b" stroke-width="2" />
+            
+            <!-- Bottom Rack / Platform -->
+            <line x1="182" y1="195" x2="418" y2="195" stroke="#475569" stroke-width="2" />
+
+            <!-- Culture Flask -->
+            <g id="flask" transform="translate(285, 150)">
+                <!-- Flask Liquid -->
+                <path d="M 12 25 L 2 40 C 0 45 5 48 15 48 C 25 48 30 45 28 40 L 18 25 Z" fill="#dc2626" />
+                <!-- Flask Glass Body -->
+                <path d="M 11 10 L 11 22 L 2 38 C -2 45 4 50 15 50 C 26 50 32 45 28 38 L 19 22 L 19 10 Z" fill="none" stroke="#000000" stroke-width="2" />
+                <ellipse cx="15" cy="10" rx="4" ry="1.5" fill="none" stroke="#000000" stroke-width="1.5" />
+            </g>
+
+            <!-- Door (Right side) -->
+            <path d="M 430 130 L 445 135 L 445 195 L 430 200 Z" fill="#cbd5e1" stroke="#1e293b" stroke-width="2" />
+            <rect x="445" y="150" width="10" height="30" fill="#64748b" stroke="#1e293b" stroke-width="1.5" />
+
+            <!-- PIPES AND FLOW SYSTEM -->
+
+            <!-- 1. Steam Supply (Bottom Input) -->
+            <path d="M 350 260 L 350 220" fill="none" stroke="#1e293b" stroke-width="3" />
+            <path d="M 350 255 L 350 225" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+
+            <!-- 2. Jacket Flow (Bottom left to Top) -->
+            <path d="M 340 215 L 175 215 L 175 105 L 330 105 L 330 120" fill="none" stroke="#2563eb" stroke-width="2" />
+            <!-- Flow Arrows along jacket -->
+            <line x1="320" y1="215" x2="290" y2="215" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+            <line x1="175" y1="180" x2="175" y2="160" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+            <line x1="220" y1="105" x2="260" y2="105" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+            <line x1="330" y1="110" x2="330" y2="120" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+
+            <!-- 3. Steam Exhaust Pipe & To Drain (Red Line) -->
+            <path d="M 210 122 L 210 80 L 140 80 L 140 300" fill="none" stroke="#1e293b" stroke-width="3" />
+            <!-- Exhaust Flow Arrows (Red) -->
+            <line x1="210" y1="115" x2="210" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+            <line x1="190" y1="80" x2="160" y2="80" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+            <line x1="140" y1="180" x2="140" y2="220" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+
+            <!-- LABELS WITH TEXT -->
+            
+            <!-- Steam Exhaust Pipe -->
+            <text x="120" y="65" font-family="Arial" font-size="13" font-weight="bold" fill="#000000">steam exhaust pipe</text>
+
+            <!-- Steam from jacket into chamber -->
+            <text x="225" y="100" font-family="Arial" font-size="11" font-weight="bold" fill="#000000">steam from jacket into chamber</text>
+
+            <!-- Inner Chamber -->
+            <text x="235" y="138" font-family="Arial" font-size="13" font-weight="bold" fill="#000000">inner chamber</text>
+
+            <!-- Culture Medium -->
+            <text x="230" y="165" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">culture</text>
+            <text x="228" y="180" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">medium</text>
+
+            <!-- Steam In -->
+            <text x="365" y="155" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">steam in</text>
+
+            <!-- Door -->
+            <text x="450" y="145" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">door</text>
+
+            <!-- Jacket -->
+            <text x="215" y="222" font-family="Arial" font-size="13" font-weight="bold" fill="#000000">jacket</text>
+
+            <!-- To Drain -->
+            <text x="125" y="320" font-family="Arial" font-size="13" font-weight="bold" fill="#000000">to drain</text>
+
+            <!-- Steam Supply -->
+            <text x="310" y="280" font-family="Arial" font-size="13" font-weight="bold" fill="#000000">steam supply</text>
+
+        </g>
+
+        <!-- RIGHT REALISTIC MACHINE PHOTO / VECTOR ILLUSTRATION -->
+        <g id="autoclave-machine" transform="translate(470, 80)">
+            <!-- Machine Body Box -->
+            <rect x="0" y="0" width="180" height="250" fill="#1e293b" rx="4" />
+            <rect x="8" y="8" width="164" height="234" fill="#0f172a" rx="2" />
+
+            <!-- Control Panel Top -->
+            <rect x="15" y="15" width="150" height="50" fill="#334155" stroke="#475569" stroke-width="1" />
+            
+            <!-- Gauges -->
+            <circle cx="40" cy="40" r="15" fill="#f8fafc" stroke="#000000" stroke-width="1.5" />
+            <line x1="40" y1="40" x2="48" y2="32" stroke="#dc2626" stroke-width="1.5" />
+            
+            <circle cx="85" cy="30" r="6" fill="#f8fafc" stroke="#000000" stroke-width="1" />
+            <circle cx="105" cy="30" r="6" fill="#f8fafc" stroke="#000000" stroke-width="1" />
+            
+            <rect x="125" y="22" width="30" height="25" fill="#000000" />
+
+            <!-- Chamber Main Door (Front) -->
+            <rect x="15" y="75" width="150" height="155" fill="#1e1e1e" stroke="#475569" stroke-width="2" rx="6" />
+            <rect x="25" y="85" width="130" height="135" fill="#0a0a0a" rx="4" />
+            
+            <!-- Door Handle / Locking Wheel -->
+            <circle cx="90" cy="152" r="28" fill="none" stroke="#334155" stroke-width="4" />
+            <circle cx="90" cy="152" r="8" fill="#475569" />
+
+            <!-- Small Bottom Indicators -->
+            <circle cx="40" cy="225" r="4" fill="#38bdf8" />
+            <circle cx="55" cy="225" r="4" fill="#22c55e" />
+        </g>
+
+        <!-- BOTTOM TITLE -->
+        <text x="375" y="415" font-family="Arial" font-size="22" font-weight="bold" fill="#1e293b" text-anchor="middle">Sterilization &amp; Autoclave</text>
+
+    </svg>
+    <div class="section">
+        <h2>Purpose</h2>
+        <p>LB medium is a rich medium that is commonly used to culture membrane of the Enterobacteriaceae as well as for coliphage plaque assays. LB and related media (SOC, Terrific Broth, 2xYT, etc.) are used extensively in recombinant DNA work and other molecular biology procedures. Often an antibiotic is added to the sterilized medium to select for cells that contain a specific genetic element such as a plasmid, a transposon, or a gene disruption via an antibiotic resistance cassette. X-Gal (5-bromo-4-chloro-3-indolyl-beta-D-galactoside) may be added to sterile medium when using the blue-white screen for plasmids bearing the alpha fragment of the beta-galactosidase gene (a complementation analysis).</p>
+        <p>IPTG (Isopropyl-beta-D-thiogalactopyranoside) is sometimes added to induce expression of gene controlled by the lac promoter.</p>
+        <p>In addition to (or perhaps because of) its prominent position in the molecular biological field, LB has also been used as a general purpose bacterial culture medium for a variety of facultative organisms.</p>
+        <p>In the undergraduate microbiology teaching labs, LB is sometimes used as the growth surface when attempting to analyze bacterial colony morphology.</p>
+    </div>
+
+    <div class="section">
+        <h2>Composition of 1 Liter Media Preparation</h2>
+        <ul>
+            <li><strong>Tryptone:</strong> 10g</li>
+            <li><strong>Yeast Extract:</strong> 5g</li>
+            <li><strong>NaCl:</strong> 10g</li>
+        </ul>
+        <p>Dissolve components in 1L of distilled or deionized water. For LB agar add agar to final conc. of 1.5%. Heat the mixture to boiling to dissolve agar and sterilize by autoclave at 15 psi, from 121-124°C for 15 min.</p>
+    </div>
+
+    <div class="section">
+        <h2>Media Distribution</h2>
+        <p>The prepared media is distributed in different ways, depending on the form one is making. Broth and agar deeps are dispensed into tubes and then sterilized. Agar slant tubes are sterilized and then the rack tilted to allow the agar to solidify in a slanted fashion. Agar medium to be poured into plates is sterilized via an autoclave.</p>
+        <p>Certain high protein solutions such as vaccines, and the serum will denature in the extreme heat, and so they may have to be filter sterilized without heat. You will be making slant and broth media, but not plate media in this lab.</p>
+    </div>
+</div>
+        <div id="p4" class="practical-block "> Genomic DNA
+        <h1>PRACTICAL - 03</h1>
+
+    <div class="section">
+        <h2>Aim</h2>
+        <p><strong>To Perform the genomic D.N.A isolation from <em>E. Coli</em> bacterium.</strong></p>
+    </div>
+
+    <div class="section">
+        <h2>E. Coli Bacterium</h2>
+        <!-- Hand-Drawn Diagram of E. coli Cell Structure -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/htBh2SwZ/20260824-094458.jpg" alt="Hand-drawn diagram of Escherichia coli cell structure" loading="lazy">
+    <figcaption>Fig: Schematic representation and labelled diagram of <i>Escherichia coli</i> cell structure.</figcaption>
+</figure>
+
+        <ul>
+            <li><em>E. Coli</em> (<em>Escherichia coli</em>) is a type of bacteria that normally lives in intestines. It's also found in the gut of some animals and even helps keep the digestive tract healthy.</li>
+            <li>Some strains of <em>E. coli</em> can cause diarrhea if you eat contaminated food or drink fouled water.</li>
+            <li><em>E. Coli</em> O157:H7 strain causes severe food poisoning. It causes abdominal cramps, vomiting, and bloody diarrhea. It is the leading cause of acute kidney failure in children. It can also cause life-threatening symptoms.</li>
+            <li>We can also get pneumonia and urinary tract infection from different types of the bacterial strain. In fact, 75-95% of urinary tract infections are caused by <em>E. coli</em>.</li>
+            <li>Some types of <em>E. coli</em> make you sick by making a toxin called Shiga. Toxin damages the lining of your intestine. The strains of <em>E. coli</em> that make the toxin are sometimes called STEC "shiga toxin-producing <em>E.coli</em>".</li>
+            <li>It is gram-negative, facultative anaerobic, rod-shaped, coliform bacterium of the genus <em>Escherichia</em> that is commonly found in the lower intestine of warm-blooded organisms.</li>
+        </ul>
+    </div>
+
+            <div class="section">
+        <h2>Chromosomal or Genomic D.N.A</h2>
+        <ul>
+            <li>Chromosomal DNA is the genomic DNA (gDNA) found in prokaryotic and eukaryotic organisms.</li>
+            <li>Eukaryotic genomes possess a few linear chromosomes, whereas prokaryotic genomes carry a single circular chromosome.</li>
+            <li>In eukaryotes, they are double-stranded and contain an origin of replication. The presence of more than one origin of replication in eukaryotes is credited to their larger size. The chromosomal number of particular types varies in species.</li>
+            <li>Most of the species are diploid containing two copies of a particular type of chromosome. As it represents the genome of an individual, it is essential for the growth, evolution, and reproduction of an individual.</li>
+        </ul>
+    </div>
+        <h2>Key Differences Between Chromosomal D.N.A and Plasmid D.N.A</h2>
+        <div class="table-container">
+        <table >
+            <thead>
+                <tr>
+                    <th>Chromosomal D.N.A</th>
+                    <th>Plasmid D.N.A</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Transfer of genetic information in cellular form.</td>
+                    <td>Double-stranded D.N.A - circular, small and is different from a chromosomal D.N.A.</td>
+                </tr>
+                <tr>
+                    <td>Type of genomic D.N.A.</td>
+                    <td>A form of extrachromosomal D.N.A.</td>
+                </tr>
+                <tr>
+                    <td>Larger than plasmid D.N.A.</td>
+                    <td>Smaller than chromosomal D.N.A.</td>
+                </tr>
+                <tr>
+                    <td>Found in both prokaryotic and eukaryotic cells.</td>
+                    <td>Mainly found in prokaryotes, but also present in some
+                    eukaryotes like 2-micron
+                    plasmid in Saccharomyces cerevisiae / yeast </td>
+                </tr>
+                <tr>
+                    <td>Size varies, circular in prokaryotes and linear in eukaryotes.</td>
+                    <td>Circular in shape.</td>
+                </tr>
+                <tr>
+                    <td>The number varies depending upon species.</td>
+                    <td>Number of occurrence in a cell varies from 1 to thousands.</td>
+                </tr>
+                <tr>
+                    <td>Crucial in development, growth and reproduction of an entity.</td>
+                    <td>Not essential for the functioning of the cell.</td>
+                </tr>
+                <tr>
+                    <td>Replicate with the genome.</td>
+                    <td>Can duplicate independent of the genome.</td>
+                </tr>
+                <tr>
+                    <td>Prokaryotes - Possess an open reading frame.<br>Eukaryotes - Possess exons and introns.</td>
+                    <td>Do not contain introns and exons. Possess an open reading frame.</td>
+                </tr>
+                <tr>
+                    <td>Transferred by cell division.</td>
+                    <td>Transferred by Horizontal gene transfer.</td>
+                </tr>
+                <tr>
+                    <td>Significant in the reading of genetic information.</td>
+                    <td>Significant in recombinant DNA technology.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+             <div class="section">
+        <h2>Requirements</h2>
+        <ul>
+            <li>Nutritive medium (Luria Bertani, LB)</li>
+            <li>GTE (Glucose, Tris, EDTA)</li>
+            <li>SDS (Sodium Dodecyl Sulphate)</li>
+            <li>NaCl</li>
+            <li>BPB (Bromophenol Blue) Dyes</li>
+            <li>Ethidium Bromide</li>
+            <li>0.8% Agarose</li>
+            <li>TBE Buffer (Tris Borate EDTA)</li>
+        </ul>
+    </div>
+    <h3>Structure</h3>
+    <svg viewBox="0 0 850 380" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+
+  <!-- ==================== 1. GLUCOSE (Haworth Projection) ==================== -->
+  <g transform="translate(10, 20)">
+    <!-- Box Frame -->
+    <rect x="10" y="10" width="250" height="330" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="135" y="40" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Glucose (α-D-Pyranose)</text>
+    <text x="135" y="60" font-size="12" fill="#64748b" text-anchor="middle">C₆H₁₂O₆</text>
+
+    <!-- Ring Bonds -->
+    <g stroke="#1e293b" stroke-width="2" stroke-linecap="round">
+      <!-- Ring carbons & oxygen connections -->
+      <line x1="135" y1="100" x2="185" y2="125" /> <!-- O to C1 -->
+      <line x1="185" y1="125" x2="185" y2="185" /> <!-- C1 to C2 -->
+      <line x1="185" y1="185" x2="135" y2="210" /> <!-- C2 to C3 -->
+      <line x1="135" y1="210" x2="85" y2="185" />  <!-- C3 to C4 -->
+      <line x1="85" y1="185" x2="85" y2="125" />   <!-- C4 to C5 -->
+      <line x1="85" y1="125" x2="120" y2="100" />  <!-- C5 to O -->
+
+      <!-- C5 to CH2OH bond -->
+      <line x1="85" y1="125" x2="85" y2="80" />
+
+      <!-- OH / H Vertical Bonds -->
+      <line x1="185" y1="125" x2="215" y2="125" /> <!-- C1 - OH -->
+      <line x1="185" y1="185" x2="185" y2="225" /> <!-- C2 - OH -->
+      <line x1="135" y1="210" x2="135" y2="250" /> <!-- C3 - OH -->
+      <line x1="85" y1="185" x2="55" y2="185" />   <!-- C4 - OH -->
+    </g>
+
+    <!-- Atoms / Functional Groups -->
+    <text x="127" y="100" font-size="16" font-weight="bold" fill="#dc2626">O</text>
+    <text x="65" y="75" font-size="14" font-weight="bold" fill="#1e293b">CH₂OH</text>
+    
+    <text x="220" y="130" font-size="13" font-weight="bold" fill="#0284c7">OH</text>
+    <text x="178" y="240" font-size="13" font-weight="bold" fill="#0284c7">OH</text>
+    <text x="128" y="265" font-size="13" font-weight="bold" fill="#0284c7">OH</text>
+    <text x="30" y="190" font-size="13" font-weight="bold" fill="#0284c7">HO</text>
+
+    <!-- Role Subtext -->
+    <text x="135" y="300" font-size="12" font-weight="bold" fill="#0f766e" text-anchor="middle">Osmotic shock prevention</text>
+    <text x="135" y="318" font-size="11" fill="#475569" text-anchor="middle">Maintains cell integrity</text>
+  </g>
+
+
+  <!-- ==================== 2. TRIS BUFFER ==================== -->
+  <g transform="translate(290, 20)">
+    <!-- Box Frame -->
+    <rect x="10" y="10" width="250" height="330" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="135" y="40" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Tris Base</text>
+    <text x="135" y="60" font-size="12" fill="#64748b" text-anchor="middle">C₄H₁₁NO₃</text>
+
+    <!-- Bonds -->
+    <g stroke="#1e293b" stroke-width="2" stroke-linecap="round">
+      <!-- Central C to N bond -->
+      <line x1="135" y1="160" x2="135" y2="205" />
+
+      <!-- Central C to 3 Arm CH2 carbons -->
+      <line x1="135" y1="160" x2="80" y2="130" />
+      <line x1="135" y1="160" x2="190" y2="130" />
+      <line x1="135" y1="160" x2="135" y2="110" />
+
+      <!-- CH2 to OH bonds -->
+      <line x1="80" y1="130" x2="45" y2="130" />
+      <line x1="190" y1="130" x2="225" y2="130" />
+      <line x1="135" y1="110" x2="135" y2="80" />
+    </g>
+
+    <!-- Atoms / Groups -->
+    <!-- Central Carbon -->
+    <circle cx="135" cy="160" r="4" fill="#1e293b" />
+    
+    <!-- Nitrogen Base Group -->
+    <text x="122" y="225" font-size="14" font-weight="bold" fill="#2563eb">NH₂</text>
+
+    <!-- Hydroxymethyl Arms -->
+    <text x="20" y="135" font-size="13" font-weight="bold" fill="#0284c7">HO</text>
+    <text x="230" y="135" font-size="13" font-weight="bold" fill="#0284c7">OH</text>
+    <text x="126" y="75" font-size="13" font-weight="bold" fill="#0284c7">OH</text>
+
+    <!-- Labels for CH2 Arms -->
+    <text x="68" y="120" font-size="10" fill="#64748b">CH₂</text>
+    <text x="185" y="120" font-size="10" fill="#64748b">CH₂</text>
+    <text x="142" y="105" font-size="10" fill="#64748b">CH₂</text>
+
+    <!-- Role Subtext -->
+    <text x="135" y="300" font-size="12" font-weight="bold" fill="#0f766e" text-anchor="middle">pH Buffering (~8.0)</text>
+    <text x="135" y="318" font-size="11" fill="#475569" text-anchor="middle">Protects DNA from acid degradation</text>
+  </g>
+
+
+  <!-- ==================== 3. EDTA ==================== -->
+  <g transform="translate(570, 20)">
+    <!-- Box Frame -->
+    <rect x="10" y="10" width="260" height="330" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="140" y="40" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">EDTA</text>
+    <text x="140" y="60" font-size="12" fill="#64748b" text-anchor="middle">Ethylenediaminetetraacetic acid</text>
+
+    <!-- Bonds Structure -->
+    <g stroke="#1e293b" stroke-width="2" stroke-linecap="round">
+      <!-- Central Ethylene Bridge (N - CH2 - CH2 - N) -->
+      <line x1="100" y1="160" x2="180" y2="160" />
+
+      <!-- Left Nitrogen Acetate Arms -->
+      <line x1="100" y1="160" x2="65" y2="120" />
+      <line x1="65" y1="120" x2="35" y2="120" />
+      
+      <line x1="100" y1="160" x2="65" y2="200" />
+      <line x1="65" y1="200" x2="35" y2="200" />
+
+      <!-- Right Nitrogen Acetate Arms -->
+      <line x1="180" y1="160" x2="215" y2="120" />
+      <line x1="215" y1="120" x2="245" y2="120" />
+
+      <line x1="180" y1="160" x2="215" y2="200" />
+      <line x1="215" y1="200" x2="245" y2="200" />
+    </g>
+
+    <!-- Atoms -->
+    <!-- Nitrogens -->
+    <text x="94" y="165" font-size="15" font-weight="bold" fill="#2563eb">N</text>
+    <text x="175" y="165" font-size="15" font-weight="bold" fill="#2563eb">N</text>
+
+    <!-- Carboxyl / Acetate Terminals -->
+    <text x="12" y="125" font-size="11" font-weight="bold" fill="#dc2626">HOOC</text>
+    <text x="12" y="205" font-size="11" font-weight="bold" fill="#dc2626">HOOC</text>
+    
+    <text x="247" y="125" font-size="11" font-weight="bold" fill="#dc2626">COOH</text>
+    <text x="247" y="205" font-size="11" font-weight="bold" fill="#dc2626">COOH</text>
+
+    <!-- Central CH2 text -->
+    <text x="125" y="152" font-size="11" fill="#64748b">(CH₂)₂</text>
+
+    <!-- Role Subtext -->
+    <text x="140" y="300" font-size="12" font-weight="bold" fill="#0f766e" text-anchor="middle">Metal Chelating Agent</text>
+    <text x="140" y="318" font-size="11" fill="#475569" text-anchor="middle">Inactivates DNase (Binds Mg²⁺)</text>
+  </g>
+
+</svg>
+<svg viewBox="0 0 650 200" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+  <rect x="10" y="10" width="630" height="180" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="325" y="35" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Sodium Dodecyl Sulphate (SDS)</text>
+  <text x="325" y="52" font-size="12" fill="#64748b" text-anchor="middle">NaC₁₂H₂₅SO₄</text>
+
+  <!-- Hydrocarbon Zig-zag Chain (12 Carbons) -->
+  <polyline points="40,110 60,90 80,110 100,90 120,110 140,90 160,110 180,90 200,110 220,90 240,110 260,90 280,110 300,90 320,110 340,90 360,110 380,90 400,110 420,90 440,110 460,90" fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Connection to Sulfate Head -->
+  <line x1="460" y1="90" x2="490" y2="90" stroke="#1e293b" stroke-width="2.5"/>
+
+  <!-- Sulfate Head (O - S(=O)2 - O⁻ Na⁺) -->
+  <text x="492" y="95" font-size="15" font-weight="bold" fill="#dc2626">O</text>
+  <line x1="508" y1="90" x2="528" y2="90" stroke="#1e293b" stroke-width="2"/>
+  
+  <text x="530" y="95" font-size="16" font-weight="bold" fill="#d97706">S</text>
+  
+  <!-- Double bond O top -->
+  <line x1="533" y1="80" x2="533" y2="65" stroke="#1e293b" stroke-width="2"/>
+  <line x1="538" y1="80" x2="538" y2="65" stroke="#1e293b" stroke-width="2"/>
+  <text x="530" y="60" font-size="14" font-weight="bold" fill="#dc2626">O</text>
+
+  <!-- Double bond O bottom -->
+  <line x1="533" y1="100" x2="533" y2="115" stroke="#1e293b" stroke-width="2"/>
+  <line x1="538" y1="100" x2="538" y2="115" stroke="#1e293b" stroke-width="2"/>
+  <text x="530" y="130" font-size="14" font-weight="bold" fill="#dc2626">O</text>
+
+  <!-- Single bond O⁻ Na⁺ right -->
+  <line x1="545" y1="90" x2="565" y2="90" stroke="#1e293b" stroke-width="2"/>
+  <text x="568" y="95" font-size="14" font-weight="bold" fill="#dc2626">O⁻</text>
+  <text x="588" y="95" font-size="14" font-weight="bold" fill="#2563eb">Na⁺</text>
+
+  <!-- Chain Labels -->
+  <text x="240" y="140" font-size="11" fill="#64748b" text-anchor="middle">Hydrophobic Tail (C₁₂H₂₅)</text>
+  <text x="535" y="155" font-size="11" fill="#64748b" text-anchor="middle">Hydrophilic Head</text>
+</svg>
+<p>Linear amphiphilic structure showing hydrophobic hydrocarbon chain + ionic
+sulfate head</p>
+<svg viewBox="0 0 500 320" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+  <rect x="10" y="10" width="480" height="300" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="250" y="35" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Bromophenol Blue (BPB)</text>
+  <text x="250" y="52" font-size="12" fill="#64748b" text-anchor="middle">C₁₉H₁₀Br₄O₅S</text>
+
+  <!-- Central Carbon -->
+  <circle cx="250" cy="150" r="5" fill="#1e293b"/>
+
+  <!-- Ring 1 (Left Phenol) -->
+  <g stroke="#1e293b" stroke-width="2">
+    <line x1="250" y1="150" x2="190" y2="120"/>
+    <!-- Hexagon -->
+    <polygon points="190,120 160,135 130,120 130,90 160,75 190,90" fill="none"/>
+  </g>
+  <text x="100" y="95" font-size="12" font-weight="bold" fill="#2563eb">HO</text>
+  <text x="120" y="145" font-size="12" font-weight="bold" fill="#d97706">Br</text>
+  <text x="195" y="85" font-size="12" font-weight="bold" fill="#d97706">Br</text>
+
+  <!-- Ring 2 (Right Phenol) -->
+  <g stroke="#1e293b" stroke-width="2">
+    <line x1="250" y1="150" x2="310" y2="120"/>
+    <!-- Hexagon -->
+    <polygon points="310,120 340,135 370,120 370,90 340,75 310,90" fill="none"/>
+  </g>
+  <text x="375" y="95" font-size="12" font-weight="bold" fill="#2563eb">OH</text>
+  <text x="365" y="145" font-size="12" font-weight="bold" fill="#d97706">Br</text>
+  <text x="295" y="85" font-size="12" font-weight="bold" fill="#d97706">Br</text>
+
+  <!-- Ring 3 (Bottom Sultone Ring) -->
+  <g stroke="#1e293b" stroke-width="2">
+    <line x1="250" y1="150" x2="250" y2="200"/>
+    <polygon points="250,200 220,220 220,250 250,270 280,250 280,220" fill="none"/>
+  </g>
+  <text x="245" y="225" font-size="13" font-weight="bold" fill="#d97706">S</text>
+  <text x="270" y="225" font-size="12" font-weight="bold" fill="#dc2626">O₂</text>
+
+  <text x="250" y="295" font-size="11" fill="#0f766e" font-weight="bold" text-anchor="middle">Tracking Dye for Gel Electrophoresis</text>
+</svg>
+<p>Triphenylmethane core dye with bromine rings and sultone/sulfonate moiety</p>
+<svg viewBox="0 0 520 300" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+  <rect x="10" y="10" width="500" height="280" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="260" y="35" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Ethidium Bromide (EtBr)</text>
+  <text x="260" y="52" font-size="12" fill="#64748b" text-anchor="middle">C₂₁H₂₀BrN₃</text>
+
+  <!-- Phenanthridine Core (3 fused rings) -->
+  <g stroke="#1e293b" stroke-width="2" fill="none">
+    <!-- Ring A (Left) -->
+    <polygon points="120,130 150,110 180,130 180,170 150,190 120,170"/>
+    <!-- Ring B (Center with N+) -->
+    <polygon points="180,130 210,110 240,130 240,170 210,190 180,170"/>
+    <!-- Ring C (Right) -->
+    <polygon points="240,130 270,110 300,130 300,170 270,190 240,170"/>
+
+    <!-- Phenyl group hanging at bottom center -->
+    <line x1="210" y1="190" x2="210" y2="220"/>
+    <polygon points="210,220 190,235 190,260 210,270 230,260 230,235"/>
+  </g>
+
+  <!-- Functional Groups -->
+  <!-- Left NH2 -->
+  <text x="75" y="155" font-size="13" font-weight="bold" fill="#2563eb">H₂N</text>
+  <line x1="110" y1="150" x2="120" y2="150" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Right NH2 -->
+  <text x="305" y="155" font-size="13" font-weight="bold" fill="#2563eb">NH₂</text>
+  <line x1="300" y1="150" x2="305" y2="150" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Quaternary Nitrogen N+ with Ethyl chain -->
+  <circle cx="210" cy="190" r="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="205" y="195" font-size="14" font-weight="bold" fill="#2563eb">N⁺</text>
+  <text x="220" y="200" font-size="10" font-weight="bold" fill="#1e293b">C₂H₅</text>
+
+  <!-- Bromide Ion Counterpart -->
+  <rect x="380" y="120" width="80" height="50" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="420" y="150" font-size="16" font-weight="bold" fill="#dc2626" text-anchor="middle">Br⁻</text>
+
+  <text x="260" y="285" font-size="11" fill="#0f766e" font-weight="bold" text-anchor="middle">Fluorescent DNA Intercalating Agent</text>
+</svg>
+<p>Tricyclic phenanthridinium aromatic core with amino groups and Br⁻ counterion</p>
+<svg viewBox="0 0 620 280" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+  <rect x="10" y="10" width="600" height="260" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="310" y="35" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Agarose (Agarobiose Polymer Unit)</text>
+  <text x="310" y="52" font-size="12" fill="#64748b" text-anchor="middle">[C₁₂H₁₈O₉]ₙ</text>
+
+  <!-- Ring 1: β-D-galactopyranose -->
+  <g transform="translate(40,20)">
+    <g stroke="#1e293b" stroke-width="2" fill="none">
+      <polygon points="120,110 160,85 200,110 200,150 160,170 120,150"/>
+      <line x1="120" y1="110" x2="80" y2="110"/> <!-- Glycosidic O bond left -->
+      <line x1="160" y1="85" x2="160" y2="60"/>  <!-- CH2OH -->
+      <line x1="120" y1="150" x2="100" y2="170"/> <!-- OH -->
+    </g>
+    <text x="150" y="55" font-size="11" font-weight="bold" fill="#1e293b">CH₂OH</text>
+    <text x="80" y="180" font-size="11" font-weight="bold" fill="#0284c7">OH</text>
+    <text x="155" y="135" font-size="15" font-weight="bold" fill="#dc2626">O</text>
+    <text x="65" y="115" font-size="13" font-weight="bold" fill="#dc2626">O</text>
+  </g>
+
+  <!-- Glycosidic Linkage O -->
+  <line x1="240" y1="130" x2="270" y2="130" stroke="#1e293b" stroke-width="2"/>
+  <text x="250" y="125" font-size="13" font-weight="bold" fill="#dc2626">O</text>
+
+  <!-- Ring 2: 3,6-anhydro-α-L-galactopyranose (Bicyclic) -->
+  <g transform="translate(200,20)">
+    <g stroke="#1e293b" stroke-width="2" fill="none">
+      <polygon points="120,110 160,85 200,110 200,150 160,170 120,150"/>
+      <!-- Anhydro Ether Bridge -->
+      <path d="M 160 85 Q 210 60 200 150"/>
+      <line x1="200" y1="110" x2="240" y2="110"/> <!-- Glycosidic bond right -->
+    </g>
+    <text x="155" y="135" font-size="15" font-weight="bold" fill="#dc2626">O</text>
+    <text x="245" y="115" font-size="13" font-weight="bold" fill="#dc2626">O</text>
+  </g>
+
+  <!-- Brackets showing Repeating Unit -->
+  <path d="M 90,80 L 70,80 L 70,200 L 90,200" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <path d="M 500,80 L 520,80 L 520,200 L 500,200" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="530" y="200" font-size="18" font-weight="bold" fill="#0284c7">n</text>
+
+  <text x="310" y="245" font-size="11" fill="#0f766e" font-weight="bold" text-anchor="middle">Matrix Polymer for Gel Sieving</text>
+</svg>
+<p>Alternating β-D-galatopyranose and 3,6-anhydro-α-L-galactopyranose
+disaccharide structure</p>
+<svg viewBox="0 0 450 200" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+  <rect x="10" y="10" width="430" height="180" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="225" y="35" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Sodium Chloride (NaCl)</text>
+  <text x="225" y="52" font-size="12" fill="#64748b" text-anchor="middle">Ionic Salt Component</text>
+
+  <!-- Ionic Bond Representation -->
+  <g transform="translate(100, 70)">
+    <!-- Sodium Ion -->
+    <circle cx="50" cy="40" r="28" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+    <text x="50" y="45" font-size="16" font-weight="bold" fill="#0369a1" text-anchor="middle">Na⁺</text>
+
+    <!-- Electrostatic Interaction Line -->
+    <line x1="80" y1="40" x2="170" y2="40" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4"/>
+
+    <!-- Chloride Ion -->
+    <circle cx="200" cy="40" r="35" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="200" y="45" font-size="16" font-weight="bold" fill="#dc2626" text-anchor="middle">Cl⁻</text>
+  </g>
+
+  <text x="225" y="165" font-size="11" fill="#0f766e" font-weight="bold" text-anchor="middle">Helps in DNA Precipitation &amp; Charge Neutralization</text>
+</svg>
+<svg viewBox="0 0 450 240" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+  <rect x="10" y="10" width="430" height="220" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="225" y="35" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="middle">Boric Acid (TBE Component)</text>
+  <text x="225" y="52" font-size="12" fill="#64748b" text-anchor="middle">H₃BO₃</text>
+
+  <!-- Trigonal Planar Boric Acid Structure -->
+  <g stroke="#1e293b" stroke-width="2" stroke-linecap="round">
+    <!-- Central Boron to 3 OH groups -->
+    <line x1="225" y1="120" x2="225" y2="75"/>
+    <line x1="225" y1="120" x2="180" y2="145"/>
+    <line x1="225" y1="120" x2="270" y2="145"/>
+  </g>
+
+  <!-- Central Boron Atom -->
+  <circle cx="225" cy="120" r="14" fill="#0284c7"/>
+  <text x="225" y="125" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">B</text>
+
+  <!-- Hydroxyl Groups -->
+  <text x="225" y="65" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle">OH</text>
+  <text x="160" y="155" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle">HO</text>
+  <text x="290" y="155" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle">OH</text>
+
+  <text x="225" y="205" font-size="11" fill="#0f766e" font-weight="bold" text-anchor="middle">Provides Ions for Current Flow in Electrophoresis</text>
+</svg>
+
+     <div class="section">
+        <h2>Roles of Chemicals with the <em>E. coli</em> Cells</h2>
+        <ul>
+            <li>
+                <strong>GTE (Glucose, Tris Buffer, EDTA):</strong>
+                <ul>
+                    <li><em>Glucose:</em> It maintains the osmolarity of the cell.</li>
+                    <li><em>Tris Buffer:</em> It maintains the pH of the cell and surrounding.</li>
+                    <li><em>EDTA:</em> Acts as chelating agent & maintains integrity of cell membrane.</li>
+                </ul>
+            </li>
+            <svg viewBox="0 0 750 320" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Segoe UI', Arial, sans-serif;">
+  <!-- Main Header Label -->
+  <rect x="250" y="15" width="250" height="40" rx="8" fill="#0284c7" />
+  <text x="375" y="41" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">GTE BUFFER MIXTURE</text>
+
+  <!-- Connecting Lines -->
+  <path d="M 375 55 L 375 90 M 130 90 L 620 90 M 130 90 L 130 115 M 375 90 L 375 115 M 620 90 L 620 115" stroke="#0284c7" stroke-width="2" fill="none" />
+
+  <!-- 1. Glucose Card -->
+  <g transform="translate(30, 115)">
+    <rect x="0" y="0" width="200" height="170" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" />
+    <rect x="0" y="0" width="200" height="35" rx="10" fill="#e0f2fe" />
+    <!-- Fix rounded corner overlap at bottom of card header -->
+    <rect x="0" y="25" width="200" height="10" fill="#e0f2fe" />
+    <text x="100" y="23" font-size="15" font-weight="bold" fill="#0369a1" text-anchor="middle">GLUCOSE</text>
+    
+    <text x="100" y="60" font-size="12" font-weight="bold" fill="#0f766e" text-anchor="middle">Role: Osmotic Buffer</text>
+    <line x1="20" y1="70" x2="180" y2="70" stroke="#cbd5e1" stroke-width="1" />
+    
+    <text x="15" y="95" font-size="12" fill="#334155">• Maintains cell osmolarity</text>
+    <text x="15" y="120" font-size="12" fill="#334155">• Prevents bacterial cell</text>
+    <text x="25" y="138" font-size="12" fill="#334155">from bursting prematurely</text>
+  </g>
+
+  <!-- 2. Tris Buffer Card -->
+  <g transform="translate(275, 115)">
+    <rect x="0" y="0" width="200" height="170" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" />
+    <rect x="0" y="0" width="200" height="35" rx="10" fill="#e0f2fe" />
+    <rect x="0" y="25" width="200" height="10" fill="#e0f2fe" />
+    <text x="100" y="23" font-size="15" font-weight="bold" fill="#0369a1" text-anchor="middle">TRIS BUFFER</text>
+    
+    <text x="100" y="60" font-size="12" font-weight="bold" fill="#0f766e" text-anchor="middle">Role: pH Stabilizer</text>
+    <line x1="20" y1="70" x2="180" y2="70" stroke="#cbd5e1" stroke-width="1" />
+    
+    <text x="15" y="95" font-size="12" fill="#334155">• Maintains pH (~8.0)</text>
+    <text x="15" y="120" font-size="12" fill="#334155">• Protects DNA from</text>
+    <text x="25" y="138" font-size="12" fill="#334155">pH fluctuations</text>
+  </g>
+
+  <!-- 3. EDTA Card -->
+  <g transform="translate(520, 115)">
+    <rect x="0" y="0" width="200" height="170" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" />
+    <rect x="0" y="0" width="200" height="35" rx="10" fill="#e0f2fe" />
+    <rect x="0" y="25" width="200" height="10" fill="#e0f2fe" />
+    <text x="100" y="23" font-size="15" font-weight="bold" fill="#0369a1" text-anchor="middle">EDTA</text>
+    
+    <text x="100" y="60" font-size="12" font-weight="bold" fill="#0f766e" text-anchor="middle">Role: Chelating Agent</text>
+    <line x1="20" y1="70" x2="180" y2="70" stroke="#cbd5e1" stroke-width="1" />
+    
+    <text x="15" y="95" font-size="12" fill="#334155">• Binds Mg²⁺ ions</text>
+    <text x="15" y="120" font-size="12" fill="#334155">• Inhibits DNase activity</text>
+    <text x="15" y="145" font-size="12" fill="#334155">• Weakens cell membrane</text>
+  </g>
+</svg>
+
+            <li><strong>SDS:</strong> It helps for the cell lysis & solubilize the proteins of the cell membrane.</li>
+            <li><strong>NaCl:</strong> Provide salt to genomic DNA, coating of DNA and helps for precipitation of DNA.</li>
+            <li><strong>BPB Dyes:</strong> Helps to track the DNA during gel electrophoresis.</li>
+            <li><strong>Ethidium Bromide:</strong> EtBr binds with DNA molecule and illuminate under the UV light, the DNA banding pattern can be visualized. Ethidium bromide (also known as homidium bromide) is an intercalating agent commonly used as a fluorescent tag (nucleic acid stain) during agarose gel electrophoresis.</li>
+        </ul>
+    </div>
+    <div class="section">
+        <h2>Procedure: Extraction of gDNA from <em>E. coli</em></h2>
+        <div class="flowchart">
+            <div class="flow-step">Take 1.5 ml of overnight grown culture in a microfuge tube</div>
+            <div class="flow-step">Centrifuge at 8,000 rpm for 5 min</div>
+            <div class="flow-step">Discard the supernatant</div>
+            <div class="flow-step">Add 200 µl of GTE mix to the pellet</div>
+            <div class="flow-step">Break the pellet by knuckling</div>
+            <div class="flow-step">Incubate at room temperature for 5 min</div>
+            <div class="flow-step">Add 400 µl of 1% SDS</div>
+            <div class="flow-step">Keep on ice for 5 min</div>
+            <div class="flow-step">Add 60 µl of 10mM NaCl (1/10)</div>
+            <div class="flow-step">Add 700 µl of ice cold isopropanol (DNA visible) and invert mix</div>
+            <div class="flow-step">Centrifuge at 10,000 rpm for 20 min</div>
+            <div class="flow-step">Decant the alcohol and air dry the pellet</div>
+            <div class="flow-step">Dissolve in 50–100 µl distilled water (volume of water depends upon the thickness of the pellet)</div>
+            <div class="flow-step">Add 6 µl BPB dye and perform Agarose Gel Electrophoresis</div>
+        </div>
+    </div>
+    <!-- Agarose Gel Electrophoresis Setup Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/25NyXCtD/Agrose-gel-electrophoresis-of-isolated-g-DNA-from-E-Coli.png" alt="Agarose gel electrophoresis of isolated gDNA from E. coli" loading="lazy">
+    <figcaption>Fig: Agarose gel electrophoresis setup for isolated gDNA from <i>E. coli</i>.</figcaption>
+</figure>
+
+<!-- Sample Loading in Gel Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/QCYV652c/Sample-loading-in-gel.jpg" alt="Sample loading in agarose gel" loading="lazy">
+    <figcaption>Fig: Loading of gDNA samples into agarose gel wells.</figcaption>
+</figure>
+
+<!-- UV Transilluminator Setup Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/9fPM6s66/Uv-transilluminator.png" alt="UV Transilluminator" loading="lazy">
+    <figcaption>Fig: UV Transilluminator used for gel visualization.</figcaption>
+</figure>
+
+<!-- Result of Gel Electrophoresis Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/xdGCwWrr/Result-of-gel-electrophoresis.png" alt="Result of gel electrophoresis" loading="lazy">
+    <figcaption>Fig: Band visualization and result of agarose gel electrophoresis.</figcaption>
+</figure>
+
+<!-- Lab Experiment Image -->
+<figure class="report-image">
+    <img src="https://i.postimg.cc/dVbZP2L4/IMG-20260824-WA0008.jpg" alt="Agarose Gel Electrophoresis experiment step" loading="lazy">
+    <figcaption>Fig: Experimental observation and gel documentation.</figcaption>
+</figure>
+
+             <div class="section">
+        <h2>Precautions</h2>
+        <ul>
+            <li>Use caution when operating the centrifuge.</li>
+            <li>The laboratory surfaces should be very clean during all procedures used in this activity.</li>
+            <li>Use thoroughly clean instruments and glassware. Rinse all equipment with isopropanol alcohol or acetone.</li>
+        </ul>
+    </div>
+        </div>
+         <div id="p5" class="practical-block "> effeciency
+         <p style="color:#1a73e8; text-align: right;">
+           <strong>date :30/08/2024</strong>
+          </p>
+         <!-- ==================== PRACTICAL 04 (RESPONSIVE WRAPPER) ==================== -->
+<div style="width: 100%; max-width: 100%; overflow-x: hidden; box-sizing: border-box; padding: 10px; font-family: Arial, sans-serif; color: #1e293b;">
+
+    <h1 style="text-align: center; color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 8px; font-size: 22px;">PRACTICAL - 04</h1>
+
+    <!-- AIM -->
+    <div style="background-color: #f8fafc; padding: 12px; border-left: 4px solid #0284c7; margin-bottom: 20px; border-radius: 4px;">
+        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 16px;">Aim:</h3>
+        <p style="margin: 0; font-size: 14px;">Calculation of Transformation Efficiency from the data provided.</p>
+    </div>
+
+    <!-- THEORY SECTION -->
+    <div style="margin-bottom: 25px; font-size: 14px; line-height: 1.5;">
+        <h3 style="color: #0284c7; font-size: 16px;">Transformation:</h3>
+        <p>A bacterium takes up a piece of DNA from its environment is known as <strong>transformation</strong>.</p>
+
+        <h3 style="color: #0284c7; font-size: 16px;">Competence:</h3>
+        <ul style="padding-left: 20px;">
+            <li><strong>Transformation Efficiency</strong> is defined as the number of colony forming units (cfu) which would be produced by transforming 1 µg of plasmid into a given volume of competent cell.</li>
+            <li>Competent cells are ready to use bacterial cells that possess more easily altered cell walls by which foreign DNA can be passed through easily. Most types of cells cannot take up DNA efficiently unless they have been exposed to special chemical or electrical treatment to make them competent cells.</li>
+        </ul>
+
+        <h4 style="font-size: 15px;">There are two types of competence:</h4>
+        <ol style="padding-left: 20px;">
+            <li>Natural competence</li>
+            <li>Artificial competence</li>
+        </ol>
+
+        <h4 style="color: #0f172a; font-size: 15px;">(i) Natural competence:</h4>
+        <p>Bacteria are able to take up DNA from their environment by three ways: <em>conjugation, transformation, and transduction</em>. In transformation, the DNA is directly entered to cell. Uptake of transforming DNA requires the recipient cell to be in a specialized physiological state called <strong>competent state</strong>.</p>
+    </div>
+
+    <!-- RESPONSIVE DIAGRAM 1: PROCESS -->
+    <div style="width: 100%; overflow-x: auto; background-color: #ffffff; padding: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 25px; text-align: center;">
+        <svg viewBox="0 0 750 300" style="width: 100%; max-width: 750px; height: auto; display: block; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Natural Competence Methods -->
+            <g transform="translate(20, 20)">
+                <g transform="translate(20,20)">
+                    <rect x="10" y="20" width="70" height="35" rx="15" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <circle cx="90" cy="10" r="8" fill="none" stroke="#2563eb" stroke-width="2"/>
+                    <text x="45" y="75" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">Transformation</text>
+                </g>
+                <g transform="translate(140,20)">
+                    <rect x="10" y="20" width="70" height="35" rx="15" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <polygon points="45,0 52,10 38,10" fill="#dc2626"/>
+                    <line x1="45" y1="10" x2="45" y2="20" stroke="#dc2626" stroke-width="2"/>
+                    <text x="45" y="75" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">Transduction</text>
+                </g>
+                <g transform="translate(260,20)">
+                    <rect x="0" y="20" width="60" height="35" rx="15" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <rect x="70" y="20" width="60" height="35" rx="15" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <line x1="60" y1="37" x2="70" y2="37" stroke="#16a34a" stroke-width="3"/>
+                    <text x="65" y="75" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">Conjugation</text>
+                </g>
+                <g transform="translate(410,20)">
+                    <polygon points="45,5 55,20 35,20" fill="#eab308"/>
+                    <path d="M 15 25 Q 45 10 75 25 T 45 55 Z" fill="#fef3c7" stroke="#ca8a04" stroke-width="2" stroke-dasharray="3,3"/>
+                    <text x="45" y="75" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">Transfection</text>
+                </g>
+                <text x="250" y="115" font-size="14" font-weight="bold" fill="#0284c7" text-anchor="middle">Fig: Natural Competence & Uptake Pathways</text>
+            </g>
+
+            <!-- Artificial Transformation Process Flow -->
+            <g transform="translate(40, 150)">
+                <rect x="0" y="10" width="130" height="40" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+                <text x="65" y="34" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="middle">Competent Cell Prep</text>
+                <line x1="130" y1="30" x2="170" y2="30" stroke="#0284c7" stroke-width="2"/>
+
+                <rect x="170" y="10" width="120" height="40" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+                <text x="230" y="34" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="middle">Transformation</text>
+                <line x1="290" y1="30" x2="330" y2="30" stroke="#0284c7" stroke-width="2"/>
+
+                <rect x="330" y="10" width="110" height="40" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+                <text x="385" y="34" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="middle">Recovery</text>
+                <line x1="440" y1="30" x2="480" y2="30" stroke="#0284c7" stroke-width="2"/>
+
+                <rect x="480" y="10" width="110" height="40" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+                <text x="535" y="34" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="middle">Plating</text>
+
+                <text x="325" y="85" font-size="14" font-weight="bold" fill="#0284c7" text-anchor="middle">Fig: Bacterial Transformation Steps</text>
+            </g>
+        </svg>
+    </div>
+
+    <!-- ALGORITHM & FORMULA -->
+    <div style="margin-bottom: 25px; font-size: 14px;">
+        <h3 style="color: #0284c7; font-size: 16px;">Algorithm: Transformation Efficiency</h3>
+        <ul style="padding-left: 20px; line-height: 1.5;">
+            <li>Calculation of the number of colonies grown on culture medium.</li>
+            <li>Find the total number of colonies which may grow after culturing the whole volume of sample which is being transferred.</li>
+            <li>Calculate the amount of plasmid DNA which is used for transforming.</li>
+            <li>Calculate the transformation efficiency by calculating the number of colonies which can be transformed by 1 µg of plasmid DNA.</li>
+        </ul>
+
+        <!-- Formula Box with Overflow Safe Styling -->
+        <div style="background-color: #f1f5f9; padding: 12px; text-align: center; border-radius: 8px; margin: 15px 0; overflow-x: auto;">
+            <p style="font-size: 14px; font-weight: bold; margin: 0; color: #0f172a; white-space: nowrap;">
+                Transformation Efficiency = 
+                <span style="display: inline-block; vertical-align: middle; text-align: center; margin-left: 8px;">
+                    <span style="border-bottom: 2px solid #0f172a; display: block; padding-bottom: 2px;">No. of transformants or colonies</span>
+                    <span style="display: block; padding-top: 2px;">µg of plasmid DNA</span>
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <!-- GRID IMAGE & TABLE (FLEXBOX WITH AUTO-WRAP) -->
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center; margin-bottom: 25px;">
+        
+        <!-- SVG Grid Petri Dish (Constrained Max-Width) -->
+        <div style="width: 100%; max-width: 280px; text-align: center;">
+            <svg viewBox="0 0 300 300" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="150" cy="150" r="130" fill="#fef08a" fill-opacity="0.5" stroke="#ca8a04" stroke-width="4"/>
+                <circle cx="150" cy="150" r="120" fill="none" stroke="#eab308" stroke-width="1.5"/>
+                <g stroke="#0284c7" stroke-width="1.5" opacity="0.7">
+                    <line x1="150" y1="20" x2="150" y2="280"/>
+                    <line x1="20" y1="150" x2="280" y2="150"/>
+                    <line x1="58" y1="58" x2="242" y2="242"/>
+                    <line x1="242" y1="58" x2="58" y2="242"/>
+                </g>
+                <g font-size="14" font-weight="bold" fill="#0f172a">
+                    <text x="175" y="60">1</text>
+                    <text x="230" y="115">2</text>
+                    <text x="230" y="195">3</text>
+                    <text x="175" y="250">4</text>
+                    <text x="115" y="250">5</text>
+                    <text x="60" y="195">6</text>
+                    <text x="60" y="115">7</text>
+                    <text x="115" y="60">8</text>
+                </g>
+                <g fill="#ffffff" stroke="#ca8a04" stroke-width="1">
+                    <circle cx="165" cy="80" r="3"/><circle cx="180" cy="90" r="3"/>
+                    <circle cx="210" cy="130" r="3"/><circle cx="220" cy="145" r="3"/>
+                    <circle cx="190" cy="210" r="3"/><circle cx="200" cy="225" r="3"/>
+                    <circle cx="130" cy="210" r="3"/><circle cx="140" cy="230" r="3"/>
+                    <circle cx="80" cy="160" r="3"/><circle cx="95" cy="170" r="3"/>
+                    <circle cx="90" cy="90" r="3"/><circle cx="100" cy="100" r="3"/>
+                </g>
+            </svg>
+            <p style="font-size: 12px; font-weight: bold; color: #64748b; margin-top: 5px;">Fig: 8-Grid Colony Counting Plate</p>
+        </div>
+
+        <!-- Table 1 (Scroll Safe Container) -->
+        <div style="width: 100%; max-width: 320px; overflow-x: auto;">
+            <h4 style="margin-top: 0; color: #0284c7; font-size: 14px; text-align: center;">Total Number of colonies in eight Grids</h4>
+            <table border="1" style="width: 100%; border-collapse: collapse; text-anchor: middle; font-size: 13px; text-align: center;">
+                <thead>
+                    <tr style="background-color: #f1f5f9;">
+                        <th style="padding: 6px;">Sr. No.</th>
+                        <th style="padding: 6px;">No. of Colonies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>01</td><td>08</td></tr>
+                    <tr><td>02</td><td>22</td></tr>
+                    <tr><td>03</td><td>12</td></tr>
+                    <tr><td>04</td><td>30</td></tr>
+                    <tr><td>05</td><td>24</td></tr>
+                    <tr><td>06</td><td>50</td></tr>
+                    <tr><td>07</td><td>34</td></tr>
+                    <tr><td>08</td><td>12</td></tr>
+                    <tr style="font-weight: bold; background-color: #f8fafc;">
+                        <td>Total</td>
+                        <td>192</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CALCULATION SAMPLE 1 -->
+    <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 20px; font-size: 14px; box-sizing: border-box;">
+        <h3 style="color: #0284c7; margin-top: 0; font-size: 15px;">How to Calculate Transformation Efficiency</h3>
+        
+        <p style="margin: 4px 0;">Total volume of culture = 500 µl</p>
+        <p style="margin: 4px 0;">No. of colonies obtained in 50 µl = 192</p>
+        <p style="margin: 4px 0;">No. of colonies in 500 µl = (500 µl / 50 µl) × 192 = <strong>1920 CFU</strong></p>
+        
+        <p style="margin: 10px 0 4px 0;">Concentration of Plasmid DNA = 10 µg/ml</p>
+        <p style="margin: 4px 0;">Total volume of Plasmid DNA = 2 µl</p>
+        <p style="margin: 4px 0;">Amount of Plasmid DNA in 2 µl = (2 µl × 10 µg) / 1000 µl = <strong>2 × 10<sup>-2</sup> µg</strong></p>
+
+        <div style="margin-top: 12px; padding: 8px; background-color: #e0f2fe; border-left: 4px solid #0284c7; font-weight: bold; word-break: break-word;">
+            Transformation efficiency = 1920 CFU / (2 × 10<sup>-2</sup> µg) = <span style="color: #0369a1;">9.60 × 10<sup>4</sup> CFU/µg</span>
+        </div>
+    </div>
+
+    <!-- PRACTICAL PROBLEM / SAMPLE 2 -->
+    <div style="background-color: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; box-sizing: border-box;">
+        <h3 style="color: #0284c7; margin-top: 0; font-size: 15px;">Experiment Problem (pUC18 Plasmid)</h3>
+        <p style="font-style: italic; background-color: #f1f5f9; padding: 8px; border-radius: 4px; font-size: 13px;">
+            "In a transformation experiment a culture of E.coli was transformed by 2 µl stock solution of pUC18 by CaCl<sub>2</sub> method. The conc<sup>n</sup> of pUC18 in the stock solution was 10 µg/ml out of the 500 µl of the total solution transformed culture 50 µl was plated on LB Agar plates. Find transformation efficiency."
+        </p>
+
+        <h4 style="color: #0f172a; margin: 10px 0 6px 0; font-size: 14px;">Colony Count Grid Data:</h4>
+        
+        <!-- Table Horizontal Scroll Wrap for Mobile Screen -->
+        <div style="width: 100%; overflow-x: auto; margin-bottom: 12px;">
+            <table border="1" style="width: 100%; min-width: 380px; border-collapse: collapse; text-align: center; font-size: 12px;">
+                <thead>
+                    <tr style="background-color: #f1f5f9;">
+                        <th style="padding: 4px;">S.NO.</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th style="background-color: #e2e8f0;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: bold;">Colonies</td><td>34</td><td>22</td><td>20</td><td>45</td><td>30</td><td>40</td><td>26</td><td>30</td><td style="font-weight: bold; background-color: #f8fafc;">247</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p style="margin: 4px 0;">Total volume of culture = 500 µl</p>
+        <p style="margin: 4px 0;">No. of colonies in 50 µl = 247</p>
+        <p style="margin: 4px 0;">No. of colonies in 500 µl = (500 µl / 50 µl) × 247 = <strong>2470 CFU</strong></p>
+
+        <p style="margin: 10px 0 4px 0;">Conc. of pUC18 in stock = 10 µg/ml</p>
+        <p style="margin: 4px 0;">Amount of pUC18 in 2 µl = (2 µl × 10 µg) / 1000 µl = <strong>2 × 10<sup>-2</sup> µg</strong></p>
+
+        <div style="margin-top: 12px; padding: 10px; background-color: #dcfce7; border-left: 4px solid #16a34a; font-weight: bold; word-break: break-word;">
+            Transformation Efficiency = 2470 CFU / (2 × 10<sup>-2</sup> µg) = <span style="color: #15803d;">123.5 × 10<sup>3</sup> CFU/µg</span>
+        </div>
+    </div>
+
+</div>
+
+         
+         
+         
+         
+         </div>
+          <div id="p6" class="practical-block "> plasmid vector
+          <p style="color:#1a73e8; text-align: right;">
+           <strong>date :06/09/2024</strong>
+          </p>
+          
+
+    <main>
+        <!-- Aim Section -->
+        <section class="aim-section">
+            <h2>Aim:</h2>
+            <p><strong>Restriction Digestion of Plasmid DNA (pUC18)</strong></p>
+            <p><em>or</em></p>
+            <p><strong>Restriction Digestion of lambda D.N.A. with EcoR1 and Hind III enzyme.</strong></p>
+        </section>
+
+        <!-- Restriction Enzymes Section -->
+        <section class="theory-section">
+            <h2>Restriction Enzymes:</h2>
+            <p>These are D.N.A cutting enzyme found in Bacteria (and harvested from them for uses). Because they cut within the molecule, they are often called <strong>restriction endonucleases</strong>. A restriction enzyme recognizes and cut DNA only at particular sequence of nucleotide.</p>
+            <svg viewBox="0 0 750 680" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #ffffff;">
+
+  <!-- Main Plasmid Center Circle (Base Plasmid Ring) -->
+  <circle cx="320" cy="300" r="160" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+
+  <!-- Ampicillin Resistance Gene (Green Arrow Segment) -->
+  <path d="M 183 218 A 160 160 0 0 0 183 382" fill="none" stroke="#22c55e" stroke-width="22"/>
+  <!-- Amp Arrow Head -->
+  <path d="M 170 380 L 183 405 L 196 380 Z" fill="#22c55e"/>
+  <text x="140" y="305" font-size="18" font-weight="bold" fill="#15803d">Amp</text>
+
+  <!-- lacZ Gene (Purple Segment) -->
+  <path d="M 320 140 A 160 160 0 0 1 458 220" fill="none" stroke="#a855f7" stroke-width="22"/>
+  <!-- lacZ Arrow Head -->
+  <path d="M 305 130 L 330 140 L 315 152 Z" fill="#a855f7"/>
+  <text x="375" y="185" font-size="16" font-weight="bold" fill="#7e22ce">lacZ</text>
+
+  <!-- Multiple Cloning Site - MCS (Yellow Highlight Band) -->
+  <path d="M 458 220 A 160 160 0 0 1 468 238" fill="none" stroke="#eab308" stroke-width="26"/>
+  <text x="405" y="240" font-size="15" font-weight="bold" fill="#a16207">MCS</text>
+
+  <!-- LacR Binding Site (Orange Segment) -->
+  <path d="M 468 238 A 160 160 0 0 1 475 260" fill="none" stroke="#f97316" stroke-width="22"/>
+  <text x="365" y="265" font-size="13" font-weight="bold" fill="#c2410c">LacR binding site</text>
+
+  <!-- Plac Promoter (Pink Segment) -->
+  <path d="M 475 260 A 160 160 0 0 1 478 280" fill="none" stroke="#ec4899" stroke-width="22"/>
+  <text x="415" y="288" font-size="13" font-weight="bold" fill="#be185d">Plac</text>
+
+  <!-- pMB1 Origin of Replication - ori (Blue Segment) -->
+  <path d="M 230 432 A 160 160 0 0 0 390 432" fill="none" stroke="#38bdf8" stroke-width="22"/>
+  <text x="270" y="420" font-size="16" font-weight="bold" fill="#0284c7">pMB1 ori</text>
+
+  <!-- Center Text Information -->
+  <text x="320" y="295" font-size="32" font-weight="bold" fill="#0f172a" text-anchor="middle" font-style="italic">pUC18</text>
+  <text x="320" y="330" font-size="20" font-weight="bold" fill="#475569" text-anchor="middle">2686 bps</text>
+
+  <!-- Pointer Line from MCS to Restriction Enzyme List -->
+  <polyline points="470,225 515,225 550,225" fill="none" stroke="#334155" stroke-width="2"/>
+
+  <!-- Vertical Bracket for RE List -->
+  <line x1="550" y1="50" x2="550" y2="570" stroke="#334155" stroke-width="2"/>
+
+  <!-- MCS Restriction Enzymes List -->
+  <g font-size="16" font-weight="bold" fill="#1e293b" font-family="'Courier New', Courier, monospace">
+    <text x="565" y="60">Hind III</text>
+    <text x="565" y="88">Sph I</text>
+    <text x="565" y="116">Sbf I</text>
+    <text x="565" y="144">Pst I</text>
+    <text x="565" y="172">BspM I</text>
+    <text x="565" y="200">Acc I</text>
+    <text x="565" y="228">Hinc II</text>
+    <text x="565" y="256">Sal I</text>
+    <text x="565" y="284">Xba I</text>
+    <text x="565" y="312">BamH I</text>
+    <text x="565" y="340">Ava I</text>
+    <text x="565" y="368">Sma I</text>
+    <text x="565" y="396">Xma I</text>
+    <text x="565" y="424">Acc65 I</text>
+    <text x="565" y="452">Kpn I</text>
+    <text x="565" y="480">Ban II</text>
+    <text x="565" y="508">Eco53k I</text>
+    <text x="565" y="536">Sac I</text>
+    <text x="565" y="564">Apo I</text>
+    <text x="565" y="592">EcoR I</text>
+  </g>
+
+  <!-- Figure Label Bottom -->
+  <text x="320" y="640" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="middle" font-style="italic" font-family="Arial, sans-serif">
+    Fig: Restriction Map of pUC18/19
+  </text>
+
+</svg>
+
+
+            <article>
+                <h3>Who was the first one well understood?</h3>
+                <p>In 1970, <strong>Hamilton Smith</strong> isolated Hind II (1st restriction enzymes well characterized and used for DNA clonings), which comes from <em>Haemophilus influenzae</em>.</p>
+            </article>
+
+            <article>
+                <h3>How are they named?</h3>
+                <p>They are named based on genus and species of bacteria it was isolated from (<strong>EcoR1</strong> = <em>Escherichia coli</em>, Ry13).</p>
+            </article>
+
+            <article>
+                <h3>How do they work?</h3>
+                <p>They cut DNA by cleaving <strong>Phosphodiester bond</strong> (in sugar-phosphate backbone) that join adjacent nucleotides.</p>
+            </article>
+
+            <article>
+                <h3>Specificity:</h3>
+                <ul>
+                    <li>Restriction enzymes show specificity for certain substrates (DNA in this case).</li>
+                    <li>They recognize, bind to, and cut DNA at specific sites called <strong>restriction sites</strong> (recognition sites).</li>
+                    <li>Usually a 4-base pair or 6-base pair cutter.</li>
+                    <li>Restriction sites / sequences are <strong>Palindromes</strong> (read same forward and backwards on opposite strands).</li>
+                </ul>
+            </article>
+
+            <article>
+                <h3>Restriction cuts:</h3>
+                <ul>
+                    <li>Some cut on DNA to create fragments with overhanging single stranded end (sticky end or cohesive ends), while other create fragments with non-overhanging end (blunt ends).</li>
+                    <li>Enzymes that create sticky ends are favored for cloning experiments since the D.N.A. fragments can be easily joined together.</li>
+                    <li>(as long as DNA from any source can be digested as it has the specific restriction site).</li>
+                </ul>
+            </article>
+            <svg viewBox="0 0 750 620" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Courier New', Courier, monospace, sans-serif; background-color: #ffffff;">
+
+  <!-- ==================== TOP SECTION: EcoRI Digestion (Sticky Ends) ==================== -->
+  <g transform="translate(20, 20)">
+    <!-- Container Box -->
+    <rect x="0" y="0" width="710" height="240" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Left Panel: Enzyme Binding -->
+    <g transform="translate(20, 30)">
+      <!-- Enzyme Subunits (Orange & Yellow Blobs) -->
+      <path d="M 120 20 C 80 20 70 70 80 110 C 90 150 130 160 170 160 C 190 160 190 120 180 100 C 170 80 150 20 120 20 Z" fill="#f97316" fill-opacity="0.65" stroke="#ea580c" stroke-width="2"/>
+      <path d="M 170 20 C 200 20 220 50 220 90 C 220 130 200 160 160 160 C 140 160 140 120 150 100 C 160 80 150 20 170 20 Z" fill="#eab308" fill-opacity="0.65" stroke="#ca8a04" stroke-width="2"/>
+
+      <!-- DNA Strands Uncut -->
+      <text x="30" y="75" font-size="20" font-weight="bold" fill="#0f172a">5′-GAATTC-3′</text>
+      <text x="30" y="115" font-size="20" font-weight="bold" fill="#0f172a">3′-CTTAAG-5′</text>
+    </g>
+
+    <!-- Arrow -->
+    <g stroke="#0284c7" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="330" y1="120" x2="380" y2="120"/>
+      <polyline points="370,110 380,120 370,130"/>
+    </g>
+
+    <!-- Right Panel: Cut Sticky Ends -->
+    <g transform="translate(410, 30)">
+      <text x="20" y="75" font-size="20" font-weight="bold" fill="#0f172a">5′-G</text>
+      <text x="120" y="75" font-size="20" font-weight="bold" fill="#0f172a">AATTC-3′</text>
+      
+      <text x="20" y="115" font-size="20" font-weight="bold" fill="#0f172a">3′-CTTAA</text>
+      <text x="192" y="115" font-size="20" font-weight="bold" fill="#0f172a">G-5′</text>
+    </g>
+  </g>
+
+
+  <!-- ==================== MIDDLE SECTION: EcoRI Cut Pattern (Sticky Ends) ==================== -->
+  <g transform="translate(20, 280)">
+    <!-- Main Sequence -->
+    <text x="80" y="50" font-size="26" font-weight="bold" fill="#0f172a" letter-spacing="18">GAATTC</text>
+    <text x="80" y="100" font-size="26" font-weight="bold" fill="#0f172a" letter-spacing="18">CTTAAG</text>
+
+    <!-- Cut Line (Zig-zag / Staggered Cut) -->
+    <path d="M 112 25 L 112 68 L 290 68 L 290 115" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Label -->
+    <text x="80" y="150" font-size="18" font-style="italic" font-weight="bold" fill="#1e293b" font-family="Arial, sans-serif">Fig: Sticky end (EcoRI cut pattern)</text>
+  </g>
+
+
+  <!-- ==================== BOTTOM SECTION: SmaI Cut Pattern (Blunt Ends) ==================== -->
+  <g transform="translate(20, 460)">
+    <!-- Main Sequence -->
+    <text x="80" y="50" font-size="26" font-weight="bold" fill="#0f172a" letter-spacing="18">CCCGGG</text>
+    <text x="80" y="100" font-size="26" font-weight="bold" fill="#0f172a" letter-spacing="18">GGGCCC</text>
+
+    <!-- Cut Line (Straight / Straight Cut) -->
+    <line x1="202" y1="25" x2="202" y2="115" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Label -->
+    <text x="80" y="150" font-size="18" font-style="italic" font-weight="bold" fill="#1e293b" font-family="Arial, sans-serif">Fig: Blunt end (SmaI cut pattern)</text>
+  </g>
+
+</svg>
+
+
+         
+        </section>
+
+        <!-- Procedure Section -->
+        <section class="procedure-section">
+            <h2>Procedure for Restriction Digestion of lambda D.N.A.</h2>
+            <h3>Setting up the Restriction Digestion Reaction:</h3>
+
+            <ol>
+                <li>Place the vial containing restriction enzymes (EcoR1 and Hind III) on ice.</li>
+                <li>Thaw the vial containing substrate (lambda DNA) and 2x Assay Buffer.</li>
+                <li>Prepare 2 different reaction mixture in 1.5 ml vials using the following components:
+                    
+                    <div class="reaction-block">
+                        <h4>Reaction 1 (EcoR1 digestion)</h4>
+                        <ul>
+                            <li>λDNA: 20 µl</li>
+                            <li>2x Assay Buffer: 25 µl</li>
+                            <li>EcoR1: 3 µl</li>
+                        </ul>
+                    </div>
+
+                    <div class="reaction-block">
+                        <h4>Reaction 2 (Hind III digestion)</h4>
+                        <ul>
+                            <li>λDNA: 20 µl</li>
+                            <li>2x Assay Buffer: 25 µl</li>
+                            <li>Hind III: 3 µl</li>
+                        </ul>
+                    </div>
+                </li>
+                <li>Incubate both the vials at 37°C for 1 hour.</li>
+                <li>After an hour add 5 µl of Gel Loading Buffer to each of the vials to stop the digestion.</li>
+                <li>Meanwhile, prepare a 1% agarose gel for electrophoresis.</li>
+                <li>Load the digested sample, 10 µl of control DNA and 10 µl of λ/Hind III digest in different wells. Note down the order of loading.</li>
+                <li>Electrophorese the sample at 50-100V for 1-2 hours.</li>
+                <li>After electrophoresis, DNA sample can be visualized under UV transilluminator.</li>
+            </ol>
+            <svg viewBox="0 0 850 520" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: #ffffff;">
+
+  <!-- Header Banner -->
+  <rect x="0" y="0" width="850" height="60" fill="#38bdf8" fill-opacity="0.25"/>
+  <text x="425" y="40" font-size="28" font-weight="bold" fill="#0284c7" text-anchor="middle">Plasmid DNA Extraction</text>
+
+  <!-- Title Sub-Header -->
+  <text x="40" y="95" font-size="20" font-weight="bold" fill="#1e293b">Expected Results</text>
+
+  <!-- ================= LEFT SIDE: AGAROSE GEL ================= -->
+  <g transform="translate(180, 110)">
+    <!-- Gel Outer Frame -->
+    <rect x="0" y="0" width="180" height="280" fill="#0f172a" rx="6" stroke="#334155" stroke-width="2"/>
+    
+    <!-- Wells Box at Top -->
+    <g fill="#1e293b" stroke="#475569" stroke-width="1.5">
+      <rect x="15" y="10" width="22" height="10" rx="2"/>
+      <rect x="52" y="10" width="22" height="10" rx="2"/>
+      <rect x="90" y="10" width="22" height="10" rx="2"/>
+      <rect x="128" y="10" width="22" height="10" rx="2"/>
+    </g>
+
+    <!-- Lane 1: DNA Ladder (Leftmost Lane) -->
+    <g stroke="#ffffff" opacity="0.85" stroke-linecap="round">
+      <line x1="18" y1="35" x2="34" y2="35" stroke-width="3"/>  <!-- 21226 -->
+      <line x1="18" y1="65" x2="34" y2="65" stroke-width="2.5"/> <!-- 5148 -->
+      <line x1="18" y1="80" x2="34" y2="80" stroke-width="2.5"/> <!-- 4277 -->
+      <line x1="18" y1="95" x2="34" y2="95" stroke-width="2.5"/> <!-- 3530 -->
+      <line x1="18" y1="115" x2="34" y2="115" stroke-width="2"/>  <!-- 2027 -->
+      <line x1="18" y1="130" x2="34" y2="130" stroke-width="2"/>  <!-- 1904 -->
+      <line x1="18" y1="150" x2="34" y2="150" stroke-width="2"/>  <!-- 1548 -->
+      <line x1="18" y1="170" x2="34" y2="170" stroke-width="1.5"/> <!-- 1330 -->
+      <line x1="18" y1="195" x2="34" y2="195" stroke-width="1.5"/> <!-- 983 -->
+      <line x1="18" y1="215" x2="34" y2="215" stroke-width="1.5"/> <!-- 831 -->
+    </g>
+
+    <!-- Lanes 2, 3, 4: Plasmid Isolation Samples (Glow Bands & Smear) -->
+    <!-- Smear Gradient Background -->
+    <rect x="48" y="150" width="110" height="90" fill="url(#smearGradient)" opacity="0.4"/>
+
+    <!-- Bright Plasmid Bands -->
+    <!-- Open Circular / Linear / Supercoiled Bands -->
+    <g stroke="#ffffff" stroke-linecap="round" filter="drop-shadow(0px 0px 3px #ffffff)">
+      <!-- Lane 2 -->
+      <line x1="53" y1="130" x2="73" y2="130" stroke-width="4"/>
+      <line x1="53" y1="145" x2="73" y2="145" stroke-width="4.5"/>
+      <line x1="53" y1="160" x2="73" y2="160" stroke-width="5"/>
+
+      <!-- Lane 3 -->
+      <line x1="91" y1="130" x2="111" y2="130" stroke-width="4"/>
+      <line x1="91" y1="145" x2="111" y2="145" stroke-width="4.5"/>
+      <line x1="91" y1="160" x2="111" y2="160" stroke-width="5"/>
+
+      <!-- Lane 4 -->
+      <line x1="129" y1="130" x2="149" y2="130" stroke-width="4"/>
+      <line x1="129" y1="145" x2="149" y2="145" stroke-width="4.5"/>
+      <line x1="129" y1="160" x2="149" y2="160" stroke-width="5"/>
+    </g>
+  </g>
+
+  <!-- Gradient for RNA Smear -->
+  <defs>
+    <linearGradient id="smearGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Gel Pointer Lines & Labels Left -->
+  <text x="35" y="125" font-size="12" font-weight="bold" fill="#475569">λ DNA E/H digested</text>
+  <text x="35" y="140" font-size="11" fill="#64748b">(bp)</text>
+  <line x1="140" y1="130" x2="170" y2="130" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2,2"/>
+
+  <!-- BP Marker Text Left of Ladder -->
+  <g font-size="10" font-weight="bold" fill="#64748b" text-anchor="end">
+    <text x="170" y="148">21226</text>
+    <text x="170" y="178">5148</text>
+    <text x="170" y="193">4277</text>
+    <text x="170" y="208">3530</text>
+    <text x="170" y="228">2027</text>
+    <text x="170" y="243">1904</text>
+    <text x="170" y="263">1548</text>
+    <text x="170" y="283">1330</text>
+    <text x="170" y="308">983</text>
+    <text x="170" y="328">831</text>
+  </g>
+
+  <!-- Pointer Arrows to Right side -->
+  <g stroke="#334155" stroke-width="1.5" fill="none">
+    <!-- Well arrow -->
+    <path d="M 335,125 L 395,125"/>
+    <polygon points="395,122 402,125 395,128" fill="#334155"/>
+    <text x="410" y="125" font-size="12" font-weight="bold" fill="#0f172a">Well</text>
+
+    <!-- Band Arrows & Bracket -->
+    <path d="M 335,240 L 360,240"/>
+    <polygon points="360,237 367,240 360,243" fill="#334155"/>
+
+    <path d="M 335,255 L 360,255"/>
+    <polygon points="360,252 367,255 360,258" fill="#334155"/>
+
+    <path d="M 335,270 L 360,270"/>
+    <polygon points="360,267 367,270 360,273" fill="#334155"/>
+  </g>
+
+  <!-- Bracket for Linear/Open Circle/Supercoiled -->
+  <path d="M 372,235 L 380,235 L 380,275 L 372,275" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Text for Forms of Plasmid -->
+  <g font-size="13" font-weight="bold" fill="#1e293b">
+    <text x="390" y="242">Linear</text>
+    <text x="390" y="257">Open circle</text>
+    <text x="390" y="272">Supercoiled</text>
+
+    <text x="500" y="252" font-size="14" fill="#0284c7">Forms of</text>
+    <text x="500" y="270" font-size="14" fill="#0284c7">plasmid</text>
+  </g>
+
+
+  <!-- ================= RIGHT SIDE: PLASMID CONFORMATIONS ================= -->
+  
+  <!-- 1. LINEAR PLASMID (L) -->
+  <g transform="translate(580, 125)">
+    <!-- Arrow Left -->
+    <line x1="30" y1="0" x2="0" y2="0" stroke="#334155" stroke-width="2"/>
+    <polygon points="5,-4 0,0 5,4" fill="#334155"/>
+
+    <!-- Wave/Wavy Linear DNA Line -->
+    <path d="M 40,0 Q 50,-10 60,0 T 80,0 T 100,0 T 120,0" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+    
+    <text x="135" y="4" font-size="16" font-weight="bold" fill="#0f172a">L</text>
+  </g>
+
+  <!-- 2. OPEN CIRCLE PLASMID (Nicked Circle) -->
+  <g transform="translate(630, 240)">
+    <!-- Circle with Nick -->
+    <path d="M 10,-20 A 25 25 0 1 1 -15,-10" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+    <!-- Pointer Line -->
+    <line x1="-15" y1="-10" x2="-35" y2="10" stroke="#334155" stroke-width="1.5"/>
+  </g>
+
+  <!-- 3. SUPERCOILED PLASMID (SC) -->
+  <g transform="translate(580, 310)">
+    <!-- Arrow Left -->
+    <line x1="30" y1="0" x2="0" y2="0" stroke="#334155" stroke-width="2"/>
+    <polygon points="5,-4 0,0 5,4" fill="#334155"/>
+
+    <!-- Twisted/Supercoiled Figure-8 Loop Structure -->
+    <g transform="translate(40, -10)" stroke="#64748b" stroke-width="2.5" fill="none" stroke-linecap="round">
+      <ellipse cx="12" cy="10" rx="10" ry="6"/>
+      <ellipse cx="28" cy="10" rx="10" ry="6"/>
+      <ellipse cx="44" cy="10" rx="10" ry="6"/>
+      <ellipse cx="60" cy="10" rx="10" ry="6"/>
+    </g>
+
+    <text x="135" y="4" font-size="16" font-weight="bold" fill="#0f172a">SC</text>
+  </g>
+
+  <!-- Bottom Captions -->
+  <text x="350" y="425" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">
+    Agarose gel electrophoresis of the plasmid DNA isolated
+  </text>
+  
+  <text x="350" y="465" font-size="16" font-style="italic" font-weight="bold" fill="#0284c7" text-anchor="middle">
+    Fig: Agarose gel electrophoresis for plasmid DNA isolation
+  </text>
+
+</svg>
+
+            <!-- ==================== RESULTS SECTION ==================== -->
+<section class="results-section">
+    <h2>Results of Lambda Restriction</h2>
+
+    <div class="results-container" style="display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 30px;">
+        
+        <!-- Gel Visual Representation (SVG) -->
+        <div class="gel-image-wrapper" style="flex: 1; min-width: 280px; max-width: 320px;">
+            <svg viewBox="0 0 300 420" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="background-color: #111827; border-radius: 8px; border: 2px solid #374151;">
+                <!-- Gel Header / Lanes -->
+                <rect x="0" y="0" width="300" height="40" fill="#1f2937"/>
+                <text x="50" y="25" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">Lane 1</text>
+                <text x="115" y="25" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">Lane 2</text>
+                <text x="180" y="25" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">Lane 3</text>
+                <text x="245" y="25" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">Lane 4</text>
+
+                <!-- Wells -->
+                <rect x="35" y="45" width="30" height="10" fill="#000000" rx="2"/>
+                <rect x="100" y="45" width="30" height="10" fill="#000000" rx="2"/>
+                <rect x="165" y="45" width="30" height="10" fill="#000000" rx="2"/>
+                <rect x="230" y="45" width="30" height="10" fill="#000000" rx="2"/>
+
+                <!-- UV Gel Glow Background Effect -->
+                <rect x="15" y="65" width="270" height="340" fill="#ff4500" fill-opacity="0.05" rx="4"/>
+
+                <!-- Lane 1: Control (Uncut Lambda DNA - Single Heavy Band near top) -->
+                <ellipse cx="50" cy="110" rx="14" ry="5" fill="#ff5722" filter="drop-shadow(0px 0px 4px #ff5722)"/>
+
+                <!-- Lane 2: EcoRI Digestion Bands -->
+                <ellipse cx="115" cy="120" rx="13" ry="4" fill="#ff5722" filter="drop-shadow(0px 0px 4px #ff5722)"/>
+                <ellipse cx="115" cy="140" rx="12" ry="3.5" fill="#ff5722" filter="drop-shadow(0px 0px 4px #ff5722)"/>
+                <ellipse cx="115" cy="155" rx="12" ry="3.5" fill="#ff5722" filter="drop-shadow(0px 0px 4px #ff5722)"/>
+                <ellipse cx="115" cy="170" rx="11" ry="3" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+
+                <!-- Lane 3: Hind III Digestion Bands -->
+                <ellipse cx="180" cy="120" rx="13" ry="4" fill="#ff5722" filter="drop-shadow(0px 0px 4px #ff5722)"/>
+                <ellipse cx="180" cy="145" rx="12" ry="3.5" fill="#ff5722" filter="drop-shadow(0px 0px 4px #ff5722)"/>
+
+                <!-- Lane 4: DNA Ladder (Standard DNA Marker) -->
+                <ellipse cx="245" cy="110" rx="10" ry="3" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+                <ellipse cx="245" cy="140" rx="10" ry="3" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+                <ellipse cx="245" cy="180" rx="10" ry="3" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+                <ellipse cx="245" cy="220" rx="10" ry="3" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+                <ellipse cx="245" cy="270" rx="10" ry="3" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+                <ellipse cx="245" cy="330" rx="10" ry="2.5" fill="#ff5722" filter="drop-shadow(0px 0px 3px #ff5722)"/>
+            </svg>
+        </div>
+
+        <!-- Lane Descriptions Text -->
+        <div class="lane-legend" style="flex: 1; min-width: 250px;">
+            <ul style="list-style-type: none; padding: 0; line-height: 2;">
+                <li><strong>Lane 1:</strong> Control (Uncut λ DNA)</li>
+                <li><strong>Lane 2:</strong> Lambda DNA digested with <em>EcoRI</em> RE</li>
+                <li><strong>Lane 3:</strong> Lambda DNA digested with <em>Hind III</em> RE</li>
+                <li><strong>Lane 4:</strong> DNA Ladder</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Observation Table -->
+    <div class="table-container" style="overflow-x: auto;">
+        <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px;">
+            <thead>
+                <tr style="background-color: #f1f5f9;">
+                    <th style="padding: 10px;">Enzyme</th>
+                    <th style="padding: 10px;">Recognition site on λ</th>
+                    <th style="padding: 10px;">Fragment size (in bp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px;"><strong>EcoRI</strong></td>
+                    <td style="padding: 10px;">21226, 26104, 31747, 39168, 44972</td>
+                    <td style="padding: 10px;">21226, 7421, 5804, 5643, 4878, 3530</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;"><strong>Hind III</strong></td>
+                    <td style="padding: 10px;">23130, 25157, 27479, 36895, 37459, 37584, 44141</td>
+                    <td style="padding: 10px;">23130, 9416, 6557, 4361, 2322, 2027, 564, 125</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- ==================== ADDITIONAL EXPERIMENTAL ANALYSIS ==================== -->
+<section class="analysis-section" style="margin-top: 40px; font-family: Arial, sans-serif;">
+
+    <!-- 1. GEL ELECTROPHORESIS WITH BP MARKERS -->
+    <div class="analysis-block" style="background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1; margin-bottom: 30px;">
+        <h3 style="color: #0284c7; margin-top: 0;">Restriction Digestion of Lambda DNA with EcoRI and HindIII</h3>
+        
+        <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;">
+            <!-- Gel SVG with BP Markers -->
+            <div style="flex: 1; min-width: 300px; max-width: 400px;">
+                <svg viewBox="0 0 420 380" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8fafc; border-radius: 8px; border: 1.5px solid #cbd5e1;">
+                    <!-- Gel Box background -->
+                    <rect x="30" y="20" width="180" height="340" fill="#e2e8f0" rx="4" stroke="#94a3b8" stroke-width="1.5"/>
+
+                    <!-- Lane Labels Top -->
+                    <text x="50" y="40" font-size="14" font-weight="bold" fill="#0f172a">1</text>
+                    <text x="90" y="40" font-size="14" font-weight="bold" fill="#0f172a">2</text>
+                    <text x="130" y="40" font-size="14" font-weight="bold" fill="#0f172a">3</text>
+                    <text x="170" y="40" font-size="14" font-weight="bold" fill="#0f172a">4</text>
+
+                    <!-- DNA Bands (Black/Dark Slate) -->
+                    <!-- Lane 1: Lambda / Hind III Digest -->
+                    <line x1="40" y1="70" x2="60" y2="70" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round"/>
+                    <line x1="40" y1="95" x2="60" y2="95" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="40" y1="125" x2="60" y2="125" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="40" y1="180" x2="60" y2="180" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="40" y1="195" x2="60" y2="195" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="40" y1="240" x2="60" y2="240" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="40" y1="270" x2="60" y2="270" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
+
+                    <!-- Lane 2: Lambda / EcoRI Digest -->
+                    <line x1="80" y1="70" x2="100" y2="70" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round"/>
+                    <line x1="80" y1="105" x2="100" y2="105" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="80" y1="125" x2="100" y2="125" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+
+                    <!-- Lane 3: Control Lambda DNA (Uncut - Single top band) -->
+                    <line x1="120" y1="65" x2="140" y2="65" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+
+                    <!-- Lane 4: Lambda / MluI Digest -->
+                    <line x1="160" y1="70" x2="180" y2="70" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round"/>
+                    <line x1="160" y1="110" x2="180" y2="110" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="160" y1="185" x2="180" y2="185" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
+
+                    <!-- Base Pair Marker Pointer Lines & Text -->
+                    <g stroke="#64748b" stroke-width="1" stroke-dasharray="2,2">
+                        <line x1="60" y1="70" x2="230" y2="70"/>
+                        <line x1="60" y1="95" x2="230" y2="95"/>
+                        <line x1="60" y1="125" x2="230" y2="125"/>
+                        <line x1="60" y1="180" x2="230" y2="180"/>
+                        <line x1="60" y1="195" x2="230" y2="195"/>
+                        <line x1="60" y1="240" x2="230" y2="240"/>
+                        <line x1="60" y1="270" x2="230" y2="270"/>
+                    </g>
+
+                    <!-- BP Marker Values -->
+                    <text x="240" y="74" font-size="12" font-weight="bold" fill="#2563eb">26,282 bp</text>
+                    <text x="240" y="99" font-size="12" font-weight="bold" fill="#2563eb">9,824 bp</text>
+                    <text x="240" y="129" font-size="12" font-weight="bold" fill="#2563eb">5,090 bp</text>
+                    <text x="240" y="184" font-size="12" font-weight="bold" fill="#2563eb">2,419 bp</text>
+                    <text x="240" y="199" font-size="12" font-weight="bold" fill="#2563eb">2,205 bp</text>
+                    <text x="240" y="244" font-size="12" font-weight="bold" fill="#2563eb">1,268 bp</text>
+                    <text x="240" y="274" font-size="12" font-weight="bold" fill="#2563eb">956 bp</text>
+                </svg>
+            </div>
+
+            <!-- Lane Legend -->
+            <div style="flex: 1; min-width: 250px;">
+                <ul style="list-style-type: none; padding: 0; line-height: 2; font-size: 15px; color: #1e293b;">
+                    <li><strong>Lane 1:</strong> λ / Hind III Digest</li>
+                    <li><strong>Lane 2:</strong> λ / EcoRI Digest</li>
+                    <li><strong>Lane 3:</strong> Control λ DNA</li>
+                    <li><strong>Lane 4:</strong> λ / Mlu I Digest</li>
+                </ul>
+                <p style="font-style: italic; font-size: 13px; color: #64748b; margin-top: 15px;">
+                    <strong>Fig:</strong> λ DNA digested with EcoRI and Hind III, electrophoresed on 1% Agarose gel (stained with EtBr).
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 2. BACTERIOPHAGE LAMBDA STRUCTURE & DIGESTION FLOW CHART -->
+    <div class="analysis-block" style="background-color: #ffffff; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1;">
+        <h3 style="color: #0284c7; margin-top: 0; text-align: center;">RESTRICTION DIGESTION AND ANALYSIS OF LAMBDA DNA</h3>
+        
+        <svg viewBox="0 0 700 360" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8fafc; border-radius: 8px; border: 1.5px solid #cbd5e1; margin-top: 10px;">
+            
+            <!-- Left Diagram: Bacteriophage Lambda Anatomy -->
+            <g transform="translate(20, 20)">
+                <!-- Scissors & DNA Icon Top Left -->
+                <g stroke="#dc2626" stroke-width="2" fill="none">
+                    <path d="M 20 40 Q 40 10 60 40 T 100 40"/>
+                    <path d="M 20 20 Q 40 50 60 20 T 100 20" stroke="#16a34a"/>
+                    <!-- Scissors -->
+                    <circle cx="30" cy="50" r="6" stroke="#1e293b"/>
+                    <circle cx="45" cy="55" r="6" stroke="#1e293b"/>
+                    <line x1="34" y1="45" x2="60" y2="25" stroke="#1e293b"/>
+                    <line x1="47" y1="50" x2="30" y2="25" stroke="#1e293b"/>
+                </g>
+
+                <!-- Icosahedral Head -->
+                <polygon points="120,80 150,60 180,80 180,120 150,140 120,120" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                <!-- Internal Coiled DNA -->
+                <path d="M 135,80 Q 165,90 135,100 T 165,120" fill="none" stroke="#ea580c" stroke-width="2"/>
+
+                <!-- Connector & Collar -->
+                <rect x="142" y="140" width="16" height="10" fill="#94a3b8" stroke="#475569"/>
+
+                <!-- Tail Tube -->
+                <rect x="145" y="150" width="10" height="90" fill="#cbd5e1" stroke="#475569"/>
+                <!-- Tail Striations -->
+                <line x1="145" y1="160" x2="155" y2="160" stroke="#475569"/>
+                <line x1="145" y1="175" x2="155" y2="175" stroke="#475569"/>
+                <line x1="145" y1="190" x2="155" y2="190" stroke="#475569"/>
+                <line x1="145" y1="205" x2="155" y2="205" stroke="#475569"/>
+                <line x1="145" y1="220" x2="155" y2="220" stroke="#475569"/>
+
+                <!-- Tail Fibers (Baseplate) -->
+                <polyline points="145,240 125,270 115,290" fill="none" stroke="#475569" stroke-width="2"/>
+                <polyline points="155,240 175,270 185,290" fill="none" stroke="#475569" stroke-width="2"/>
+                <polyline points="150,240 140,280" fill="none" stroke="#475569" stroke-width="2"/>
+                <polyline points="150,240 160,280" fill="none" stroke="#475569" stroke-width="2"/>
+
+                <!-- Labels with lines -->
+                <text x="195" y="75" font-size="11" font-weight="bold" fill="#1e293b">D (405)</text>
+                <text x="195" y="95" font-size="11" font-weight="bold" fill="#1e293b">E (405)</text>
+                <text x="195" y="115" font-size="11" font-weight="bold" fill="#ea580c">DNA (1)</text>
+
+                <text x="40" y="100" font-size="11" font-weight="bold" fill="#1e293b">C (protease)</text>
+                <text x="40" y="160" font-size="11" font-weight="bold" fill="#1e293b">head</text>
+                <text x="40" y="180" font-size="11" font-weight="bold" fill="#1e293b">tail</text>
+
+                <text x="25" y="215" font-size="10" font-weight="bold" fill="#64748b">V (32x6=192)</text>
+                <text x="210" y="240" font-size="10" font-weight="bold" fill="#64748b">tfa(12)</text>
+                <text x="210" y="255" font-size="10" font-weight="bold" fill="#64748b">stf(12)</text>
+            </g>
+
+            <!-- Arrow from Phage to Gel -->
+            <g stroke="#ef4444" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 230,110 L 310,110 L 310,180 L 340,180"/>
+                <polyline points="330,170 345,180 330,190" fill="#ef4444"/>
+            </g>
+
+            <!-- Right Diagram: 3D Perspective Agarose Gel Tray -->
+            <g transform="translate(360, 60)">
+                <!-- 3D Perspective Gel Block (Blue Tint) -->
+                <polygon points="40,80 180,20 280,120 140,180" fill="#38bdf8" fill-opacity="0.75" stroke="#0284c7" stroke-width="2"/>
+                <polygon points="140,180 280,120 280,135 140,195" fill="#0284c7" stroke="#0369a1"/>
+                <polygon points="40,80 140,180 140,195 40,95" fill="#0369a1" stroke="#075985"/>
+
+                <!-- Bands on 3D Gel (Slanted Lines) -->
+                <g stroke="#0f172a" stroke-width="3" stroke-linecap="round" opacity="0.8">
+                    <!-- Lane 1 -->
+                    <line x1="80" y1="85" x2="100" y2="76"/>
+                    <line x1="95" y1="98" x2="115" y2="89"/>
+                    <line x1="110" y1="110" x2="130" y2="101"/>
+                    <line x1="130" y1="126" x2="150" y2="117"/>
+
+                    <!-- Lane 2 -->
+                    <line x1="110" y1="72" x2="130" y2="63"/>
+                    <line x1="130" y1="88" x2="150" y2="79"/>
+                    <line x1="150" y1="104" x2="170" y2="95"/>
+
+                    <!-- Lane 3 -->
+                    <line x1="140" y1="59" x2="160" y2="50"/>
+                    <line x1="165" y1="79" x2="185" y2="70"/>
+                    
+                    <!-- Lane 4 -->
+                    <line x1="170" y1="46" x2="190" y2="37"/>
+                    <line x1="185" y1="58" x2="205" y2="49"/>
+                    <line x1="200" y1="70" x2="220" y2="61"/>
+                    <line x1="215" y1="82" x2="235" y2="73"/>
+                </g>
+            </g>
+        </svg>
+    </div>
+
+</section>
+<!-- ==================== PLASMID DIGESTION ANALYSIS ==================== -->
+<section class="plasmid-section" style="margin-top: 40px; font-family: Arial, sans-serif;">
+    
+    <div class="analysis-block" style="background-color: #ffffff; padding: 25px; border-radius: 10px; border: 1px solid #cbd5e1;">
+        <h3 style="color: #0284c7; margin-top: 0; text-anchor: middle; text-align: center;">Result of Digested Plasmid DNA on Gel Electrophoresis</h3>
+
+        <div style="display: flex; gap: 30px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+            
+            <!-- Plasmid Map & Gel Combined SVG -->
+            <div style="flex: 1; min-width: 320px; max-width: 500px;">
+                <svg viewBox="0 0 520 420" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8fafc; border-radius: 8px; border: 1.5px solid #cbd5e1;">
+                    
+                    <!-- ================= TOP: CIRCULAR PLASMID MAP ================= -->
+                    <g transform="translate(260, 110)">
+                        <!-- Outer Plasmid Circle Ring -->
+                        <circle cx="0" cy="0" r="65" fill="none" stroke="#f97316" stroke-width="12" opacity="0.85"/>
+                        <!-- Insert Gene Region (EcoRI to EcoRI Segment) -->
+                        <path d="M 46,-46 A 65 65 0 0 1 46,46" fill="none" stroke="#0284c7" stroke-width="12"/>
+
+                        <!-- EcoRI Cut Sites -->
+                        <line x1="40" y1="-40" x2="65" y2="-65" stroke="#dc2626" stroke-width="3"/>
+                        <text x="70" y="-60" font-size="11" font-weight="bold" fill="#dc2626">EcoRI</text>
+
+                        <line x1="40" y1="40" x2="65" y2="65" stroke="#dc2626" stroke-width="3"/>
+                        <text x="70" y="70" font-size="11" font-weight="bold" fill="#dc2626">EcoRI</text>
+
+                        <!-- Labels -->
+                        <text x="-75" y="0" font-size="11" font-weight="bold" fill="#475569" text-anchor="end">Backbone (2670 bps)</text>
+                        <text x="80" y="5" font-size="11" font-weight="bold" fill="#0284c7">Gene/Insert (1200 bps)</text>
+
+                        <!-- Center Text -->
+                        <text x="0" y="5" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">Plasmid</text>
+                    </g>
+
+                    <!-- ================= BOTTOM: GEL ELECTROPHORESIS ================= -->
+                    <g transform="translate(60, 210)">
+                        <!-- Blue Gel Background -->
+                        <rect x="100" y="10" width="160" height="180" fill="#2563eb" rx="4"/>
+
+                        <!-- Column Headers -->
+                        <text x="125" y="25" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">DNA Ladder</text>
+                        <text x="175" y="25" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">Uncut</text>
+                        <text x="230" y="25" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">Cut</text>
+
+                        <!-- Lane 1: DNA Ladder Bands & Labels -->
+                        <g stroke="#93c5fd" stroke-width="2">
+                            <!-- 10,000 bp -->
+                            <line x1="115" y1="35" x2="135" y2="35"/>
+                            <!-- 8,000 bp -->
+                            <line x1="115" y1="45" x2="135" y2="45"/>
+                            <!-- 6,000 bp -->
+                            <line x1="115" y1="58" x2="135" y2="58"/>
+                            <!-- 4,000 bp -->
+                            <line x1="115" y1="72" x2="135" y2="72"/>
+                            <!-- 3,000 bp -->
+                            <line x1="115" y1="90" x2="135" y2="90"/>
+                            <!-- 2,000 bp -->
+                            <line x1="115" y1="115" x2="135" y2="115"/>
+                            <!-- 1,000 bp -->
+                            <line x1="115" y1="130" x2="135" y2="130"/>
+                            <!-- 700 bp -->
+                            <line x1="115" y1="145" x2="135" y2="145"/>
+                            <!-- 500 bp -->
+                            <line x1="115" y1="158" x2="135" y2="158"/>
+                            <!-- 200 bp -->
+                            <line x1="115" y1="172" x2="135" y2="172"/>
+                        </g>
+
+                        <!-- Ladder Base Pair Labels (Left Side) -->
+                        <g font-size="8" fill="#475569" text-anchor="end">
+                            <text x="92" y="38">10,000</text>
+                            <text x="92" y="48">8,000</text>
+                            <text x="92" y="61">6,000</text>
+                            <text x="92" y="75">4,000</text>
+                            <text x="92" y="93">3,000</text>
+                            <text x="92" y="118">2,000</text>
+                            <text x="92" y="133">1,000</text>
+                            <text x="92" y="148">700</text>
+                            <text x="92" y="161">500</text>
+                            <text x="92" y="175">200</text>
+                            <text x="92" y="22" font-weight="bold" fill="#0f172a">Base Pairs</text>
+                        </g>
+
+                        <!-- Lane 2: Uncut Plasmid (Supercoiled ~3870 bp total) -->
+                        <line x1="165" y1="73" x2="185" y2="73" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                        <text x="175" y="68" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">3870 bps</text>
+
+                        <!-- Lane 3: Cut Plasmid (2 Fragments: 2670 bp Backbone + 1200 bp Insert) -->
+                        <line x1="220" y1="98" x2="240" y2="98" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                        <text x="230" y="93" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">2670 bps</text>
+
+                        <line x1="220" y1="125" x2="240" y2="125" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                        <text x="230" y="120" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">1200 bps</text>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Side Legend / Explanation Text -->
+            <div style="flex: 1; min-width: 240px; max-width: 320px;">
+                <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; border-left: 4px solid #0284c7;">
+                    <p style="margin: 0 0 10px 0; font-size: 14px; color: #1e293b;">
+                        <strong>Uncut:</strong> Undigested circular plasmid DNA (appears as single heavy band ~3870 bp).
+                    </p>
+                    <p style="margin: 0; font-size: 14px; color: #1e293b;">
+                        <strong>Cut:</strong> Digested plasmid DNA with <em>EcoRI</em> enzyme (cleaves into 2 fragments: <strong>2670 bp</strong> backbone + <strong>1200 bp</strong> gene insert).
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+</section>
+
+        </section>
+           <article>
+                <h3>Nobel Prize and usage:</h3>
+                <ul>
+                    <li>In 1978, the Nobel Prize for Medicine was awarded to <strong>Werner Arber, Daniel Nathans, and Hamilton Smith</strong> for their discovery of restriction endonucleases, which led to the development of recombinant DNA technology.</li>
+                    <li>The first practical use of restriction enzymes in science and medicine was the manipulation of <em>E. coli</em> bacteria to express recombinant human insulin for the treatment of diabetics.</li>
+                    <li>The restriction enzymes have been discovered in many different bacteria and other unicellular organisms. These restriction enzymes are able to scan along a length of DNA looking for a particular sequence of bases that they recognize.</li>
+                </ul>
+            </article>
+    </main>
+
+          
+          
+          
+          </div>
+        <!-- =================================================
+             FUTURE PRACTICALS
+
+             Example:
+
+             <div id="p3" class="practical-block">
+                 Practical 3 content
+             </div>
+
+        ================================================== -->
+
+
+    </div>
+
+
+    <!-- =====================================================
+         MASTER JAVASCRIPT
+         
+         This section controls the whole database.
+         Do not put practical-specific code here unless needed.
+    ====================================================== -->
+
+    <script>
+
+        function openTab(tabId) {
+
+            /* Hide all practicals */
+
+            document
+                .querySelectorAll('.practical-block')
+                .forEach(function(block) {
+
+                    block.classList.remove('active');
+
+                });
+
+
+            /* Remove active state from all buttons */
+
+            document
+                .querySelectorAll('.cat-btn')
+                .forEach(function(button) {
+
+                    button.classList.remove('active');
+
+                });
+
+
+            /* Show selected practical */
+
+            const activeBlock =
+                document.getElementById(tabId);
+
+            if (!activeBlock) {
+                return;
+            }
+
+            activeBlock.classList.add('active');
+
+
+            /* Activate corresponding button */
+
+            document
+                .querySelectorAll('.cat-btn')
+                .forEach(function(button) {
+
+                    const onclickValue =
+                        button.getAttribute('onclick');
+
+                    if (
+                        onclickValue &&
+                        onclickValue.includes("'" + tabId + "'")
+                    ) {
+
+                        button.classList.add('active');
+
+                    }
+
+                });
+
+
+            /* Re-render MathJax */
+
+            if (
+                window.MathJax &&
+                typeof MathJax.typesetPromise === 'function'
+            ) {
+
+                MathJax.typesetPromise([activeBlock]);
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
