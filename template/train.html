@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Railways WDM-3A Diesel Loco - Ultimate NextGen Simulator</title>
+<style>
+  :root {
+    --sky-top: #87ceeb;
+    --sky-mid: #e0f2fe;
+    --sky-bottom: #d9caad;
+    --ground: #c2b280;
+    --ballast: #787878;
+    --panel-bg: rgba(18, 24, 38, 0.85);
+  }
+
+  body.night {
+    --sky-top: #050811;
+    --sky-mid: #0d1527;
+    --sky-bottom: #182232;
+    --ground: #121811;
+    --ballast: #222222;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 60%, var(--sky-bottom) 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    transition: background 1.2s ease;
+    user-select: none;
+  }
+
+  /* Canvas Overlay for Rain & Lightning */
+  #weatherCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .scene {
+    width: 980px;
+    max-width: 96vw;
+    position: relative;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+  }
+
+  /* Speedometer HUD */
+  .speed-hud {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(10, 15, 20, 0.85);
+    border: 2px solid #334;
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 5;
+    transition: color 0.3s ease;
+  }
+  .speed-hud .val { font-size: 32px; letter-spacing: 2px; }
+  .speed-hud .unit { font-size: 14px; color: #88a; margin-left: 4px; }
+  .speed-hud.braking { color: #f44; }
+
+  /* Stars Background for Night */
+  .stars {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 90px 40px, #ddd, rgba(0,0,0,0)),
+      radial-gradient(1.5px 1.5px at 160px 120px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    z-index: -1;
+  }
+  body.night .stars { opacity: 0.6; }
+
+  /* Parallax Animations */
+  @keyframes track-move {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-120px); }
+  }
+  .moving-track { animation: track-move 0.8s linear infinite; }
+
+  @keyframes bg-move-far {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-600px); }
+  }
+  @keyframes bg-move-near {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-1200px); }
+  }
+  .scrolling-bg-far { animation: bg-move-far 25s linear infinite; }
+  .scrolling-bg-near { animation: bg-move-near 8s linear infinite; }
+
+  /* Control Panel Styling */
+  .dashboard {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel-bg);
+    padding: 16px 28px;
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 20;
+    max-width: 95vw;
+  }
+
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button {
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f0f4f8;
+    background: linear-gradient(135deg, #2b584c, #1a3c34);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #387062, #234e43);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  }
+
+  button:active { transform: translateY(0); }
+  button.active {
+    background: linear-gradient(135deg, #cc4433, #882211);
+    border-color: #ff8877;
+  }
+  button.toggle-on {
+    background: linear-gradient(135deg, #2b8256, #1c5236);
+    border-color: #55cc88;
+  }
+
+  .slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #e2e8f0;
+    background: rgba(255,255,255,0.08);
+    padding: 6px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .notch-display {
+    min-width: 70px;
+    color: #f59e0b;
+    font-family: monospace;
+    font-size: 14px;
+  }
+
+  input[type="range"] {
+    accent-color: #f59e0b;
+    cursor: pointer;
+  }
+
+  /* Animations */
+  @keyframes wheel-turn {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .rotating-wheel {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: wheel-turn 0.8s linear infinite;
+  }
+
+  @keyframes smoke-float {
+    0% { transform: translate(0, 0) scale(0.8); opacity: 0.8; }
+    100% { transform: translate(-180px, -130px) scale(4.5); opacity: 0; }
+  }
+  .smoke-puff {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: smoke-float 1.8s ease-out infinite;
+    fill: #444;
+    transition: fill 0.5s ease;
+  }
+  .smoke-puff.heavy { fill: #111; }
+  .smoke-2 { animation-delay: 0.5s; }
+  .smoke-3 { animation-delay: 1.1s; }
+
+  @keyframes train-bounce {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-2px); }
+  }
+  .bouncing-body { animation: train-bounce 0.3s ease-in-out infinite; }
+
+  /* Headlight & Cab Lights */
+  .light-beam {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .light-beam.on { opacity: 1; }
+
+  .cab-glow {
+    opacity: 0;
+    transition: opacity 0.4s;
+    fill: #ffcc44;
+  }
+  body.night .cab-glow { opacity: 0.4; }
+  .cab-glow.manual-on { opacity: 0.8 !important; fill: #fff0a0; }
+
+  /* Sparks Animation */
+  @keyframes spark-fly {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(-40px, -10px) scale(0); opacity: 0; }
+  }
+  .sparks-group { opacity: 0; transition: opacity 0.2s; }
+  .sparks-group.active { opacity: 1; }
+  .spark {
+    transform-origin: center;
+    animation: spark-fly 0.3s infinite linear;
+    fill: #ffa500;
+  }
+  .spark:nth-child(2) { animation-duration: 0.2s; animation-delay: 0.1s; }
+  .spark:nth-child(3) { animation-duration: 0.4s; animation-delay: 0.2s; }
+
+  /* Flasher Animation */
+  @keyframes flasher-blink {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+  .flasher-on { animation: flasher-blink 0.5s infinite; }
+</style>
+</head>
+<body>
+
+<canvas id="weatherCanvas"></canvas>
+
+<div class="scene">
+  <div class="stars"></div>
+  
+  <!-- Speed HUD -->
+  <div class="speed-hud" id="speedHud">
+    <span class="val" id="speedValue">0</span><span class="unit">km/h</span>
+  </div>
+
+  <svg id="locoSvg" viewBox="0 0 950 420" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Light Beam Gradients -->
+      <linearGradient id="beam-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ffffd0" stop-opacity="0.95"/>
+        <stop offset="30%" stop-color="#ffffaa" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#ffffaa" stop-opacity="0"/>
+      </linearGradient>
+
+      <!-- Metallic Loco Shading -->
+      <linearGradient id="body-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#3a8273"/>
+        <stop offset="50%" stop-color="#2f6b5e"/>
+        <stop offset="100%" stop-color="#1f4d43"/>
+      </linearGradient>
+
+      <linearGradient id="roof-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#2b6155"/>
+        <stop offset="100%" stop-color="#173a32"/>
+      </linearGradient>
+
+      <linearGradient id="mountain-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#5a738e" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#a3b8cc" stop-opacity="0.2"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Far Background Mountains -->
+    <g class="scrolling-bg-far">
+      <path d="M 0 330 L 80 230 L 180 330 L 260 210 L 380 330 L 500 240 L 620 330 L 740 200 L 880 330 L 1000 230 L 1100 330 L 1180 210 L 1300 330 M 1200 330" fill="url(#mountain-grad)"/>
+    </g>
+
+    <!-- Near Scenery Trees & Telegraph Poles -->
+    <g class="scrolling-bg-near">
+      <!-- Distant Trees -->
+      <path d="M 0 330 L 30 280 L 60 330 L 90 275 L 120 330 L 220 330 L 250 280 L 280 330 L 450 330 L 490 265 L 530 330 L 650 330 L 690 270 L 730 330 L 950 330 L 980 280 L 1010 330 L 1140 330 L 1180 265 L 1220 330" fill="#2d5a3f" opacity="0.6"/>
+      
+      <!-- Telegraph / Catenary Poles -->
+      <g stroke="#3a3a3a" stroke-width="3">
+        <line x1="100" y1="330" x2="100" y2="160"/> <line x1="85" y1="170" x2="115" y2="170"/>
+        <line x1="500" y1="330" x2="500" y2="160"/> <line x1="485" y1="170" x2="515" y2="170"/>
+        <line x1="900" y1="330" x2="900" y2="160"/> <line x1="885" y1="170" x2="915" y2="170"/>
+        <line x1="1300" y1="330" x2="1300" y2="160"/> <line x1="1285" y1="170" x2="1315" y2="170"/>
+      </g>
+    </g>
+
+    <!-- Track Ground Base -->
+    <rect x="0" y="330" width="950" height="90" fill="var(--ground)"/>
+    <rect x="0" y="360" width="950" height="60" fill="var(--ballast)"/>
+
+    <!-- Infinite Track Group (Sleeper & Ballast Animation) -->
+    <g class="moving-track">
+      <g fill="#4a3622">
+        <rect x="-60" y="366" width="16" height="42"/><rect x="0" y="366" width="16" height="42"/>
+        <rect x="60" y="366" width="16" height="42"/><rect x="120" y="366" width="16" height="42"/>
+        <rect x="180" y="366" width="16" height="42"/><rect x="240" y="366" width="16" height="42"/>
+        <rect x="300" y="366" width="16" height="42"/><rect x="360" y="366" width="16" height="42"/>
+        <rect x="420" y="366" width="16" height="42"/><rect x="480" y="366" width="16" height="42"/>
+        <rect x="540" y="366" width="16" height="42"/><rect x="600" y="366" width="16" height="42"/>
+        <rect x="660" y="366" width="16" height="42"/><rect x="720" y="366" width="16" height="42"/>
+        <rect x="780" y="366" width="16" height="42"/><rect x="840" y="366" width="16" height="42"/>
+        <rect x="900" y="366" width="16" height="42"/><rect x="960" y="366" width="16" height="42"/>
+        <rect x="1020" y="366" width="16" height="42"/>
+      </g>
+    </g>
+
+    <!-- Fixed Steel Rails -->
+    <rect x="0" y="368" width="950" height="6" fill="#7d7d7d"/>
+    <rect x="0" y="368" width="950" height="2" fill="#fff" opacity="0.8"/>
+    <rect x="0" y="400" width="950" height="6" fill="#7d7d7d"/>
+    <rect x="0" y="400" width="950" height="2" fill="#fff" opacity="0.8"/>
+
+    <!-- ===================== LOCOMOTIVE ===================== -->
+    <g id="locomotive" class="bouncing-body">
+      
+      <!-- Light Beam Effect -->
+      <polygon id="lightBeam" class="light-beam" points="843,240 1250,80 1250,470 843,275" fill="url(#beam-gradient)"/>
+
+      <!-- Underframe / Chassis -->
+      <rect x="90" y="300" width="700" height="20" rx="4" fill="#1b1b1b"/>
+      <rect x="85" y="302" width="710" height="4" fill="#444"/>
+
+      <!-- Bogies -->
+      <g fill="#1f1f1f">
+        <rect x="120" y="312" width="160" height="18" rx="4"/>
+        <rect x="580" y="312" width="160" height="18" rx="4"/>
+      </g>
+      
+      <!-- Wheels & Braking Sparks -->
+      <g class="sparks-group" id="brakeSparks">
+        <circle cx="150" cy="358" r="4" class="spark"/><circle cx="150" cy="358" r="2" class="spark"/><circle cx="150" cy="358" r="3" class="spark"/>
+        <circle cx="210" cy="358" r="4" class="spark"/><circle cx="210" cy="358" r="2" class="spark"/><circle cx="210" cy="358" r="3" class="spark"/>
+        <circle cx="610" cy="358" r="4" class="spark"/><circle cx="610" cy="358" r="2" class="spark"/><circle cx="610" cy="358" r="3" class="spark"/>
+        <circle cx="670" cy="358" r="4" class="spark"/><circle cx="670" cy="358" r="2" class="spark"/><circle cx="670" cy="358" r="3" class="spark"/>
+      </g>
+
+      <g fill="#161616" stroke="#444" stroke-width="2">
+        <circle cx="150" cy="340" r="22"/><circle cx="210" cy="340" r="22"/><circle cx="270" cy="340" r="22"/>
+        <circle cx="610" cy="340" r="22"/><circle cx="670" cy="340" r="22"/><circle cx="730" cy="340" r="22"/>
+      </g>
+
+      <!-- Rotating Wheel Spokes -->
+      <g stroke="#aaa" stroke-width="2">
+        <line class="rotating-wheel" x1="150" y1="318" x2="150" y2="362"/><line class="rotating-wheel" x1="128" y1="340" x2="172" y2="340"/>
+        <line class="rotating-wheel" x1="210" y1="318" x2="210" y2="362"/><line class="rotating-wheel" x1="188" y1="340" x2="232" y2="340"/>
+        <line class="rotating-wheel" x1="270" y1="318" x2="270" y2="362"/><line class="rotating-wheel" x1="248" y1="340" x2="292" y2="340"/>
+        <line class="rotating-wheel" x1="610" y1="318" x2="610" y2="362"/><line class="rotating-wheel" x1="588" y1="340" x2="632" y2="340"/>
+        <line class="rotating-wheel" x1="670" y1="318" x2="670" y2="362"/><line class="rotating-wheel" x1="648" y1="340" x2="692" y2="340"/>
+        <line class="rotating-wheel" x1="730" y1="318" x2="730" y2="362"/><line class="rotating-wheel" x1="708" y1="340" x2="752" y2="340"/>
+      </g>
+
+      <!-- Wheel Hubs -->
+      <g fill="#888">
+        <circle cx="150" cy="340" r="6"/><circle cx="210" cy="340" r="6"/><circle cx="270" cy="340" r="6"/>
+        <circle cx="610" cy="340" r="6"/><circle cx="670" cy="340" r="6"/><circle cx="730" cy="340" r="6"/>
+      </g>
+
+      <!-- Main Body Base -->
+      <rect x="80" y="150" width="720" height="150" rx="10" fill="url(#body-gradient)"/>
+
+      <!-- Roof Structure -->
+      <rect x="80" y="150" width="720" height="26" rx="8" fill="url(#roof-gradient)"/>
+      <g fill="#173a32">
+        <rect x="140" y="152" width="40" height="16" rx="3"/>
+        <rect x="200" y="152" width="40" height="16" rx="3"/>
+        <rect x="260" y="152" width="40" height="16" rx="3"/>
+      </g>
+
+      <!-- Emergency Flasher Light on Roof -->
+      <circle id="flasherLight" cx="818" cy="168" r="5" fill="#ff2200" opacity="0.3"/>
+
+      <!-- Nose / Cab Front Profile -->
+      <path d="M 800 176 L 850 190 L 850 300 L 800 300 Z" fill="url(#body-gradient)"/>
+      <path d="M 800 176 L 850 190 L 850 210 L 800 200 Z" fill="url(#roof-gradient)"/>
+      
+      <!-- Cab Glass & Interior Light Layer -->
+      <rect x="805" y="205" width="34" height="26" rx="3" fill="#9fd6e8" stroke="#123" stroke-width="1.5"/>
+      <rect id="cabGlow" class="cab-glow" x="806" y="206" width="32" height="24" rx="2" />
+      
+      <!-- Driver Silhouette -->
+      <circle cx="820" cy="216" r="4" fill="#111"/>
+      <path d="M 814 228 C 814 222, 826 222, 826 228 Z" fill="#111"/>
+
+      <!-- Headlights -->
+      <circle id="headlight1" cx="843" cy="245" r="7" fill="#fdf6b0" stroke="#8a7a2a" stroke-width="1.5"/>
+      <circle id="headlight2" cx="843" cy="268" r="7" fill="#fdf6b0" stroke="#8a7a2a" stroke-width="1.5"/>
+
+      <!-- Front Buffer Beam -->
+      <rect x="840" y="292" width="20" height="14" fill="#c98a2c"/>
+      <circle cx="850" cy="299" r="7" fill="#2b2b2b"/>
+
+      <!-- Body Accent Stripes -->
+      <rect x="80" y="176" width="720" height="4" fill="#1f4d43"/>
+      <rect x="80" y="255" width="720" height="10" fill="#e07b1c"/>
+      <rect x="80" y="266" width="720" height="4" fill="#f2c14e"/>
+
+      <!-- Loco Number Plate -->
+      <rect x="700" y="182" width="66" height="22" rx="3" fill="#f4d35e" stroke="#8a6d1a" stroke-width="1"/>
+      <text x="733" y="198" font-size="13" text-anchor="middle" fill="#7a3b12" font-weight="bold">WDM-3A</text>
+
+      <!-- Branding Text -->
+      <text x="260" y="235" font-size="26" fill="#f4e9c9" font-weight="bold" letter-spacing="2">INDIAN RAILWAYS</text>
+
+      <!-- Side Grilles & Vents -->
+      <g id="grille-section">
+        <rect x="470" y="186" width="150" height="66" rx="4" fill="#1a352e" stroke="#123" stroke-width="1"/>
+        <g stroke="#0f221d" stroke-width="4">
+          <line x1="480" y1="190" x2="480" y2="248"/><line x1="492" y1="190" x2="492" y2="248"/>
+          <line x1="504" y1="190" x2="504" y2="248"/><line x1="516" y1="190" x2="516" y2="248"/>
+          <line x1="528" y1="190" x2="528" y2="248"/><line x1="540" y1="190" x2="540" y2="248"/>
+          <line x1="552" y1="190" x2="552" y2="248"/><line x1="564" y1="190" x2="564" y2="248"/>
+          <line x1="576" y1="190" x2="576" y2="248"/><line x1="588" y1="190" x2="588" y2="248"/>
+          <line x1="600" y1="190" x2="600" y2="248"/><line x1="612" y1="190" x2="612" y2="248"/>
+        </g>
+      </g>
+
+      <!-- Side Door -->
+      <rect x="650" y="182" width="30" height="76" rx="3" fill="#255a4e" stroke="#123" stroke-width="1.5"/>
+      <circle cx="675" cy="220" r="2.5" fill="#ddd"/>
+
+      <!-- Animated Exhaust Smoke -->
+      <g opacity="0.8" id="smokeGroup">
+        <circle class="smoke-puff smoke-1" cx="160" cy="140" r="12"/>
+        <circle class="smoke-puff smoke-2" cx="160" cy="140" r="15"/>
+        <circle class="smoke-puff smoke-3" cx="160" cy="140" r="11"/>
+      </g>
+    </g>
+  </svg>
+</div>
+
+<!-- Dashboard Controls -->
+<div class="dashboard">
+  <div class="controls-row">
+    <button id="toggleBtn">⏸️ Pause</button>
+    <button id="brakeBtn">🛑 Apply Brakes</button>
+    <button id="lightBtn">💡 Headlight</button>
+    <button id="cabLightBtn">🛋️ Cab Light</button>
+    <button id="flasherBtn">🚨 Flasher</button>
+    <button id="hornBtn">📢 Blow Horn</button>
+    <button id="whistleBtn">😙 Guard Whistle</button>
+    <button id="engineSoundBtn">🔊 Engine Sound</button>
+    <button id="nightBtn">🌙 Night Mode</button>
+    <button id="rainBtn">🌧️ Rain</button>
+  </div>
+  
+  <div class="controls-row">
+    <div class="slider-container">
+      <label for="notchRange">Throttle Notch:</label>
+      <input type="range" id="notchRange" min="0" max="8" step="1" value="3">
+      <span id="notchDisplay" class="notch-display">Notch 3</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // DOM Elements
+  const toggleBtn = document.getElementById('toggleBtn');
+  const brakeBtn = document.getElementById('brakeBtn');
+  const lightBtn = document.getElementById('lightBtn');
+  const cabLightBtn = document.getElementById('cabLightBtn');
+  const flasherBtn = document.getElementById('flasherBtn');
+  const hornBtn = document.getElementById('hornBtn');
+  const whistleBtn = document.getElementById('whistleBtn');
+  const engineSoundBtn = document.getElementById('engineSoundBtn');
+  const nightBtn = document.getElementById('nightBtn');
+  const rainBtn = document.getElementById('rainBtn');
+  const notchRange = document.getElementById('notchRange');
+  const notchDisplay = document.getElementById('notchDisplay');
+  const speedValueDisplay = document.getElementById('speedValue');
+  const speedHud = document.getElementById('speedHud');
+  
+  const lightBeam = document.getElementById('lightBeam');
+  const cabGlow = document.getElementById('cabGlow');
+  const flasherLight = document.getElementById('flasherLight');
+  const brakeSparks = document.getElementById('brakeSparks');
+  
+  const wheels = document.querySelectorAll('.rotating-wheel');
+  const smokePuffs = document.querySelectorAll('.smoke-puff');
+  const bouncingBody = document.querySelector('.bouncing-body');
+  const movingTrack = document.querySelector('.moving-track');
+  const scrollingBgFar = document.querySelector('.scrolling-bg-far');
+  const scrollingBgNear = document.querySelector('.scrolling-bg-near');
+
+  // Simulator States
+  let isMoving = true;
+  let isLightOn = false;
+  let isCabLightOn = false;
+  let isFlasherOn = false;
+  let isNight = false;
+  let isRaining = false;
+  let isEngineAudioOn = false;
+  let isBraking = false;
+  let currentNotch = 3;
+  let effectiveSpeed = 1.0; 
+  const MAX_SPEED_KMH = 120;
+  const MAX_EFFECTIVE_SPEED = 0.3 + (8 * 0.28); // based on notch math
+
+  // Web Audio Context
+  let audioCtx = null;
+  let engineOsc = null;
+  let engineGain = null;
+  let trackTimer = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  // Calculate speed factor based on notch
+  function calculateTargetSpeed() {
+    if (!isMoving) return 0;
+    if (isBraking) return 0;
+    if (currentNotch === 0) return 0.1; // Idle coasting
+    return 0.3 + (currentNotch * 0.28);
+  }
+
+  function updateVisualsAndHUD() {
+    const val = Math.max(0.05, effectiveSpeed);
+    const runState = (isMoving && effectiveSpeed > 0.05) ? 'running' : 'paused';
+    
+    // Animate DOM Elements
+    wheels.forEach(w => {
+      w.style.animationPlayState = runState;
+      w.style.animationDuration = (0.8 / val).toFixed(2) + 's';
+    });
+    movingTrack.style.animationPlayState = runState;
+    movingTrack.style.animationDuration = (0.8 / val).toFixed(2) + 's';
+    scrollingBgFar.style.animationPlayState = runState;
+    scrollingBgFar.style.animationDuration = (25 / val).toFixed(2) + 's';
+    scrollingBgNear.style.animationPlayState = runState;
+    scrollingBgNear.style.animationDuration = (8 / val).toFixed(2) + 's';
+    bouncingBody.style.animationPlayState = runState;
+
+    smokePuffs.forEach(s => {
+      s.style.animationDuration = (2.0 / Math.max(0.4, val)).toFixed(2) + 's';
+      if(currentNotch >= 6) s.classList.add('heavy');
+      else s.classList.remove('heavy');
+    });
+
+    // Speedometer Update
+    let currentKmh = Math.round((effectiveSpeed / MAX_EFFECTIVE_SPEED) * MAX_SPEED_KMH);
+    if(currentKmh < 0) currentKmh = 0;
+    if(!isMoving && effectiveSpeed < 0.1) currentKmh = 0;
+    speedValueDisplay.textContent = currentKmh;
+
+    // Sparks Logic
+    if (isBraking && effectiveSpeed > 0.15) {
+      brakeSparks.classList.add('active');
+      speedHud.classList.add('braking');
+    } else {
+      brakeSparks.classList.remove('active');
+      speedHud.classList.remove('braking');
+    }
+
+    // Sound logic update
+    if (engineOsc && audioCtx) {
+      const baseFreq = currentNotch === 0 ? 30 : 35 + (currentNotch * 8);
+      engineOsc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+    }
+  }
+
+  // Smooth Speed Interpolation Loop
+  function physicsLoop() {
+    const target = calculateTargetSpeed();
+    if (Math.abs(effectiveSpeed - target) > 0.005) {
+      // Brake faster than accelerate
+      const accelFactor = isBraking ? 0.08 : 0.03; 
+      effectiveSpeed += (target - effectiveSpeed) * accelFactor;
+      updateVisualsAndHUD();
+    } else if (effectiveSpeed !== target) {
+      effectiveSpeed = target;
+      updateVisualsAndHUD();
+    }
+    requestAnimationFrame(physicsLoop);
+  }
+  physicsLoop();
+
+  // Engine Throttle Sound Synthesizer
+  function toggleEngineSound() {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    if (!isEngineAudioOn) {
+      engineOsc = audioCtx.createOscillator();
+      engineGain = audioCtx.createGain();
+
+      engineOsc.type = 'sawtooth';
+      engineOsc.frequency.value = 35 + (currentNotch * 8);
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 220;
+
+      engineGain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+
+      engineOsc.connect(filter);
+      filter.connect(engineGain);
+      engineGain.connect(audioCtx.destination);
+
+      engineOsc.start();
+      isEngineAudioOn = true;
+      engineSoundBtn.classList.add('toggle-on');
+      startTrackRumble();
+    } else {
+      stopEngineSound();
+    }
+  }
+
+  function stopEngineSound() {
+    if (engineOsc) {
+      engineOsc.stop();
+      engineOsc.disconnect();
+      engineOsc = null;
+    }
+    isEngineAudioOn = false;
+    engineSoundBtn.classList.remove('toggle-on');
+    clearInterval(trackTimer);
+  }
+
+  // Track Rumble
+  function startTrackRumble() {
+    clearInterval(trackTimer);
+    if (!isEngineAudioOn || effectiveSpeed < 0.1) return;
+
+    const interval = Math.max(120, 600 / effectiveSpeed);
+    trackTimer = setInterval(() => {
+      if (!isEngineAudioOn || effectiveSpeed < 0.1) return;
+      
+      const bufferSize = audioCtx.sampleRate * 0.03;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 750;
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      noise.start();
+    }, interval);
+  }
+
+  // Brake Hiss Sound
+  function playBrakeHiss() {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const bufferSize = audioCtx.sampleRate * 0.8;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 1200;
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.75);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start();
+  }
+
+  // UI Listeners
+  toggleBtn.addEventListener('click', () => {
+    isMoving = !isMoving;
+    toggleBtn.textContent = isMoving ? '⏸️ Pause' : '▶️ Start';
+    toggleBtn.classList.toggle('active', !isMoving);
+    if (isEngineAudioOn) startTrackRumble();
+  });
+
+  brakeBtn.addEventListener('click', () => {
+    isBraking = !isBraking;
+    brakeBtn.classList.toggle('active', isBraking);
+    brakeBtn.textContent = isBraking ? '🛑 Release Brake' : '🛑 Apply Brakes';
+    playBrakeHiss();
+  });
+
+  notchRange.addEventListener('input', (e) => {
+    currentNotch = parseInt(e.target.value);
+    notchDisplay.textContent = currentNotch === 0 ? 'Idle' : `Notch ${currentNotch}`;
+  });
+
+  lightBtn.addEventListener('click', () => {
+    isLightOn = !isLightOn;
+    lightBeam.classList.toggle('on', isLightOn);
+    lightBtn.classList.toggle('toggle-on', isLightOn);
+  });
+
+  cabLightBtn.addEventListener('click', () => {
+    isCabLightOn = !isCabLightOn;
+    cabGlow.classList.toggle('manual-on', isCabLightOn);
+    cabLightBtn.classList.toggle('toggle-on', isCabLightOn);
+  });
+
+  flasherBtn.addEventListener('click', () => {
+    isFlasherOn = !isFlasherOn;
+    flasherLight.classList.toggle('flasher-on', isFlasherOn);
+    flasherBtn.classList.toggle('toggle-on', isFlasherOn);
+  });
+
+  nightBtn.addEventListener('click', () => {
+    isNight = !isNight;
+    document.body.classList.toggle('night', isNight);
+    nightBtn.textContent = isNight ? '☀️ Day Mode' : '🌙 Night Mode';
+    nightBtn.classList.toggle('toggle-on', isNight);
+  });
+
+  // Horn
+  hornBtn.addEventListener('click', () => {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc2.type = 'sawtooth';
+    osc1.frequency.value = 311; // Eb4
+    osc2.frequency.value = 370; // F#4
+
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.08);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.8);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    osc1.start(); osc2.start();
+    osc1.stop(audioCtx.currentTime + 1.8); osc2.stop(audioCtx.currentTime + 1.8);
+  });
+
+  // Whistle
+  whistleBtn.addEventListener('click', () => {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.value = 2400;
+
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(); osc.stop(audioCtx.currentTime + 1.2);
+  });
+
+  engineSoundBtn.addEventListener('click', toggleEngineSound);
+
+  // Weather System
+  const canvas = document.getElementById('weatherCanvas');
+  const ctx = canvas.getContext('2d');
+  let raindrops = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Raindrop {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * -canvas.height;
+      this.speed = 10 + Math.random() * 8;
+      this.length = 18 + Math.random() * 12;
+    }
+    update() {
+      this.y += this.speed;
+      if (this.y > canvas.height) this.reset();
+    }
+    draw() {
+      ctx.strokeStyle = 'rgba(200, 225, 255, 0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x - 3, this.y + this.length);
+      ctx.stroke();
+    }
+  }
+
+  rainBtn.addEventListener('click', () => {
+    isRaining = !isRaining;
+    rainBtn.classList.toggle('toggle-on', isRaining);
+    raindrops = isRaining ? Array.from({ length: 180 }, () => new Raindrop()) : [];
+  });
+
+  function renderWeather() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (isRaining) {
+      raindrops.forEach(drop => {
+        drop.update();
+        drop.draw();
+      });
+      if (isNight && Math.random() < 0.004) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    requestAnimationFrame(renderWeather);
+  }
+  renderWeather();
+</script>
+
+</body>
+</html>
