@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Exploring Mixtures and Their Separation</title>
+    <!-- D3.js Library -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Glassmorphism Title Header */
+        .header {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            text-align: center;
+            z-index: 10;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            color: #66fcf1;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-size: 0.75rem;
+            color: #45a29e;
+            margin-top: 2px;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Node Styling */
+        .node circle {
+            cursor: pointer;
+            stroke-width: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .node text {
+            font-size: 11px;
+            fill: #ffffff;
+            cursor: pointer;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            font-weight: 500;
+        }
+
+        .node text.hi {
+            fill: #ffbd59;
+            font-weight: 600;
+        }
+
+        /* Glowing Links */
+        .link {
+            fill: none;
+            stroke: #1f2833;
+            stroke-width: 2px;
+            transition: stroke 0.5s ease;
+        }
+
+        .link.active {
+            stroke: #45a29e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🧪 CHAPTER 5: EXPLORING MIXTURES AND THEIR SEPARATION</h1>
+        <p>💡 Tap nodes to expand • Drag/Pinch to Pan & Zoom</p>
+    </div>
+
+    <div id="canvas-container">
+        <svg id="mindmap" width="100%" height="100%"></svg>
+    </div>
+
+    <script>
+        // Data populated directly from the Mind Map image
+        const treeData = {
+            name: "CHAPTER 5", hi: "MIXTURES & SEPARATION",
+            children: [
+                {
+                    name: "1. CLASSIFY MIXTURES?", hi: "मिश्रणों का वर्गीकरण",
+                    children: [
+                        {
+                            name: "Homogeneous Mixture", hi: "समांगी मिश्रण (Solution)",
+                            children: [
+                                { name: "Uniform composition throughout", hi: "समान संगठन" },
+                                { name: "Components not visible", hi: "घटक दिखाई नहीं देते" },
+                                { name: "Do not settle on standing", hi: "स्थिर रखने पर बैठते नहीं" },
+                                { name: "Examples", hi: "Sugar soln, Salt soln, Brass, 14K Gold" }
+                            ]
+                        },
+                        {
+                            name: "Heterogeneous Mixture", hi: "विषमांगी मिश्रण",
+                            children: [
+                                { name: "Non-uniform composition", hi: "असमान संगठन" },
+                                { name: "Components visible", hi: "घटक दिखाई देते हैं" },
+                                { name: "Particles may settle", hi: "कण नीचे बैठ सकते हैं" },
+                                { name: "Examples", hi: "Sand+water, Oil+water, Blood" }
+                            ]
+                        },
+                        {
+                            name: "Activity 5.1 (Group Activity)", hi: "क्रियाकलाप 5.1",
+                            children: [
+                                { name: "Salt + Water", hi: "Homogeneous (No scattering)" },
+                                { name: "Chalk + Water", hi: "Heterogeneous (Light scatters)" },
+                                { name: "Milk + Water", hi: "Colloid (Appears homo, actually hetero)" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "2. SOLUTIONS", hi: "विलयन",
+                    children: [
+                        { name: "Solute", hi: "विलेय (Dissolves in smaller amt)" },
+                        { name: "Solvent", hi: "विलायक (Dissolves solute in larger amt)" },
+                        {
+                            name: "Examples", hi: "उदाहरण",
+                            children: [
+                                { name: "Sugar + Water", hi: "शर्करा + जल" },
+                                { name: "Acetic acid + Water", hi: "Vinegar (सिरका)" },
+                                { name: "CO2 + Water", hi: "Aerated drinks (सोडा)" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "3. CONCENTRATION", hi: "विलयन की सांद्रता",
+                    children: [
+                        {
+                            name: "(i) Mass by Mass %", hi: "(w/w %)",
+                            children: [
+                                { name: "Formula: (m_solute / m_soln) × 100", hi: "द्रव्यमान %" },
+                                { name: "Example: 10g salt in 90g water", hi: "Concentration = 10%" }
+                            ]
+                        },
+                        {
+                            name: "(ii) Volume by Volume %", hi: "(v/v %)",
+                            children: [
+                                { name: "Formula: (v_solute / v_soln) × 100", hi: "आयतन %" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "4. SOLUBILITY", hi: "विलेयता",
+                    children: [
+                        { name: "Unsaturated Solution", hi: "असंतृप्त (More solute can dissolve)" },
+                        { name: "Saturated Solution", hi: "संतृप्त (No more solute dissolves)" },
+                        { name: "Supersaturated Solution", hi: "अतिसंतृप्त (Unstable, extra solute separates)" },
+                        {
+                            name: "Temp Effect (Solids)", hi: "तापमान प्रभाव (ठोस)",
+                            children: [
+                                { name: "Temp ↑ = Solubility ↑", hi: "तापमान बढ़ने पर विलेयता बढ़ती है" },
+                                { name: "Temp ↓ = Solubility ↓", hi: "तापमान घटने पर विलेयता घटती है" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "5. GASES IN LIQUIDS", hi: "द्रवों में गैसों की विलेयता",
+                    children: [
+                        { name: "Solubility of Gases", hi: "Temp ↑ = Solubility ↓" },
+                        { name: "Example", hi: "Cold drink opened → CO2 escapes as bubbles" }
+                    ]
+                },
+                {
+                    name: "6. NATURE & INDUSTRY", hi: "प्रकृति और उद्योग में उपयोग",
+                    children: [
+                        {
+                            name: "In Nature", hi: "प्रकृति में",
+                            children: [
+                                { name: "Air", hi: "Mixture of gases (N2, O2, CO2)" },
+                                { name: "Sea Water", hi: "Salt dissolved in water" },
+                                { name: "Blood & Soil", hi: "Plasma & minerals dissolved" }
+                            ]
+                        },
+                        {
+                            name: "In Industry", hi: "उद्योग में",
+                            children: [
+                                { name: "Sugar Industry", hi: "Sugarcane juice separation" },
+                                { name: "Dyeing & Electroplating", hi: "Dyes & Metal salts in solution" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "7. SEPARATION METHODS", hi: "पृथक्करण की विधियाँ",
+                    children: [
+                        { name: "Evaporation", hi: "वाष्पीकरण (e.g., Salt from sea water)" },
+                        { name: "Crystallisation", hi: "क्रिस्टलीकरण (e.g., Pure sugar/alum crystals)" },
+                        { name: "Distillation", hi: "आसवन (Diff. boiling points, e.g., Pure water)" }
+                    ]
+                },
+                {
+                    name: "8. DAILY LIFE APPLICATIONS", hi: "दैनिक जीवन में उपयोग",
+                    children: [
+                        { name: "ORS Solution", hi: "Proper salt & sugar balance for rehydration" },
+                        { name: "Medicines & Pesticides", hi: "Correct concentration for dosage/crops" },
+                        { name: "Aerated Drinks & Medical Tests", hi: "CO2 under pressure & Blood analysis" }
+                    ]
+                },
+                {
+                    name: "9. KEY POINTS", hi: "मुख्य बिंदु (Summary)",
+                    children: [
+                        { name: "Mixtures: Homo or Hetero", hi: "समांगी या विषमांगी" },
+                        { name: "Concentration expresses solute amt", hi: "w/w % ya v/v %" },
+                        { name: "Separation: Evaporation, Distillation, Crystallisation", hi: "पृथक्करण विधियाँ" }
+                    ]
+                }
+            ]
+        };
+
+        const container = document.getElementById('canvas-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        let i = 0, duration = 400, root;
+
+        const treeWidth = 2200; 
+        const treemap = d3.tree().size([treeWidth, height - 250]);
+
+        const svg = d3.select("#mindmap");
+        const g = svg.append("g");
+
+        const zoom = d3.zoom()
+            .scaleExtent([0.15, 3])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        root = d3.hierarchy(treeData, d => d.children);
+        root.x0 = treeWidth / 2;
+        root.y0 = 0;
+
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+        
+        if (root.children) {
+            root.children.forEach(collapse);
+        }
+
+        svg.call(zoom.transform, d3.zoomIdentity.translate((width - treeWidth) / 2, 90).scale(0.65));
+
+        update(root);
+
+        function update(source) {
+            const treeData = treemap(root);
+            const nodes = treeData.descendants();
+            const links = treeData.descendants().slice(1);
+
+            nodes.forEach(d => { d.y = d.depth * 140; });
+
+            const node = g.selectAll('g.node')
+                .data(nodes, d => d.id || (d.id = ++i));
+
+            const nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr("transform", d => `translate(${source.x0},${source.y0})`)
+                .on('click', click);
+
+            nodeEnter.append('circle')
+                .attr('class', 'node-circle')
+                .attr('r', 1e-6)
+                .style("fill", d => d._children ? "#ff007f" : "#00f2fe")
+                .style("stroke", "#fff")
+                .style("filter", "drop-shadow(0px 0px 8px #00f2fe)");
+
+            nodeEnter.append('text')
+                .attr("dy", "-0.8em")
+                .attr("text-anchor", "middle")
+                .text(d => d.data.name);
+
+            nodeEnter.append('text')
+                .attr("class", "hi")
+                .attr("dy", "1.4em")
+                .attr("text-anchor", "middle")
+                .text(d => d.data.hi);
+
+            const nodeUpdate = nodeEnter.merge(node);
+
+            nodeUpdate.transition()
+                .duration(duration)
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+
+            nodeUpdate.select('circle.node-circle')
+                .attr('r', 8)
+                .style("fill", d => d._children ? "#ff007f" : "#00f2fe")
+                .style("filter", d => d._children ? "drop-shadow(0px 0px 10px #ff007f)" : "drop-shadow(0px 0px 8px #00f2fe)");
+
+            const nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("transform", d => `translate(${source.x},${source.y})`)
+                .remove();
+
+            nodeExit.select('circle').attr('r', 1e-6);
+
+            const link = g.selectAll('path.link')
+                .data(links, d => d.id);
+
+            const linkEnter = link.enter().insert('path', "g")
+                .attr("class", "link")
+                .attr('d', d => {
+                    const o = { x: source.x0, y: source.y0 };
+                    return verticalDiagonal(o, o);
+                });
+
+            const linkUpdate = linkEnter.merge(link);
+
+            linkUpdate.transition()
+                .duration(duration)
+                .attr('d', d => verticalDiagonal(d, d.parent))
+                .attr("class", "link active");
+
+            link.exit().transition()
+                .duration(duration)
+                .attr('d', d => {
+                    const o = { x: source.x, y: source.y };
+                    return verticalDiagonal(o, o);
+                })
+                .remove();
+
+            nodes.forEach(d => {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+
+            function verticalDiagonal(s, d) {
+                return `M ${s.x} ${s.y}
+                        C ${s.x} ${(s.y + d.y) / 2},
+                          ${d.x} ${(s.y + d.y) / 2},
+                          ${d.x} ${d.y}`;
+            }
+
+            function click(event, d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                update(d);
+            }
+        }
+    </script>
+</body>
+</html>
