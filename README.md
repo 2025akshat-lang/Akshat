@@ -14,3 +14,7 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
 5. HPLC
 
    https://2025akshat-lang.github.io/Akshat/analytical_simulation/hplc.html
+
+6. animation
+   
+   https://2025akshat-lang.github.io/Akshat/animation/animation_gallery.html
