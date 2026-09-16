@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Auto Lamp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #121820;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* Container */
+        .lamp-container {
+            position: relative;
+            width: 320px;
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Light Beam Cone Effect */
+        .light-beam {
+            position: absolute;
+            top: 175px;
+            width: 0px;
+            height: 0px;
+            border-left: 110px solid transparent;
+            border-right: 110px solid transparent;
+            border-bottom: 260px solid rgba(255, 255, 230, 0.15);
+            filter: blur(12px);
+            opacity: 0;
+            transform-origin: top center;
+            animation: lightCycle 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Lamp Shade Top */
+        .shade {
+            position: relative;
+            width: 170px;
+            height: 140px;
+            background: #2c333e;
+            border-radius: 40px 40px 15px 15px;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 -10px 15px rgba(0,0,0,0.4);
+            animation: shadeGlowCycle 4s ease-in-out infinite;
+        }
+
+        /* Lamp Face */
+        .face {
+            position: relative;
+            width: 80px;
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .eyes {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .eye {
+            width: 14px;
+            height: 8px;
+            border-top: 3.5px solid #111;
+            border-radius: 10px 10px 0 0;
+        }
+
+        /* Happy Mouth Morph Animation */
+        .mouth {
+            width: 22px;
+            height: 0px;
+            background: #e74c3c;
+            border-radius: 0 0 15px 15px;
+            animation: mouthCycle 4s ease-in-out infinite;
+        }
+
+        /* Pull Cord String */
+        .cord-wrapper {
+            position: absolute;
+            left: 95px;
+            top: 130px;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: pullCordCycle 4s ease-in-out infinite;
+        }
+
+        .string {
+            width: 3px;
+            height: 60px;
+            background: #aaa;
+        }
+
+        .handle {
+            width: 10px;
+            height: 10px;
+            background: #ccc;
+            border-radius: 50%;
+        }
+
+        /* Lamp Stand & Base */
+        .stand {
+            width: 16px;
+            height: 120px;
+            background: linear-gradient(90deg, #777, #ccc, #666);
+            z-index: 2;
+        }
+
+        .base {
+            width: 140px;
+            height: 22px;
+            background: linear-gradient(180deg, #aaa, #444);
+            border-radius: 15px 15px 5px 5px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            z-index: 2;
+        }
+
+        /* Floor Glow */
+        .floor-glow {
+            position: absolute;
+            bottom: 40px;
+            width: 240px;
+            height: 25px;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 210, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            animation: floorLightCycle 4s ease-in-out infinite;
+        }
+
+        /* --- Infinite Keyframe Animations (4 Seconds Loop) --- */
+
+        /* 1. Pull Cord Animation (Pulls at 10% & 60% time) */
+        @keyframes pullCordCycle {
+            0%, 100% { transform: translateY(0); }
+            10%, 15% { transform: translateY(25px); }
+            25% { transform: translateY(0); }
+            60%, 65% { transform: translateY(25px); }
+            75% { transform: translateY(0); }
+        }
+
+        /* 2. Light Beam ON/OFF Cycle */
+        @keyframes lightCycle {
+            0%, 15% { opacity: 0; transform: scaleY(0); }
+            25%, 55% { opacity: 1; transform: scaleY(1); }
+            65%, 100% { opacity: 0; transform: scaleY(0); }
+        }
+
+        /* 3. Shade Glowing Color Cycle */
+        @keyframes shadeGlowCycle {
+            0%, 15% {
+                background: #2c333e;
+                box-shadow: inset 0 -10px 15px rgba(0,0,0,0.4);
+            }
+            25%, 55% {
+                background: #5b8e72;
+                box-shadow: inset 0 -15px 20px rgba(255, 255, 200, 0.4), 0 0 30px rgba(91, 142, 114, 0.6);
+            }
+            65%, 100% {
+                background: #2c333e;
+                box-shadow: inset 0 -10px 15px rgba(0,0,0,0.4);
+            }
+        }
+
+        /* 4. Cute Smile ON/OFF Cycle */
+        @keyframes mouthCycle {
+            0%, 15% {
+                height: 0px;
+                border: none;
+            }
+            25%, 55% {
+                height: 14px;
+                border: 2px solid #111;
+                border-top: none;
+            }
+            65%, 100% {
+                height: 0px;
+                border: none;
+            }
+        }
+
+        /* 5. Floor Light Cycle */
+        @keyframes floorLightCycle {
+            0%, 15% { opacity: 0; }
+            25%, 55% { opacity: 1; }
+            65%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lamp-container">
+        <div class="light-beam"></div>
+
+        <div class="shade">
+            <div class="face">
+                <div class="eyes">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+                <div class="mouth"></div>
+            </div>
+        </div>
+
+        <div class="cord-wrapper">
+            <div class="string"></div>
+            <div class="handle"></div>
+        </div>
+
+        <div class="stand"></div>
+        <div class="base"></div>
+
+        <div class="floor-glow"></div>
+    </div>
+
+</body>
+</html>
