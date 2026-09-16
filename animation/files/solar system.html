@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Solar System Background</title>
+    <style>
+        /* पूरे पेज और बैकग्राउंड को सेट करना */
+        body {
+            margin: 0;
+            height: 100vh;
+            background: radial-gradient(circle, #0c102b, #030511);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* सोलर सिस्टम का मुख्य कंटेनर जो बैकग्राउंड में रहेगा */
+        .solar-system {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* यह इसे कंटेंट के पीछे रखेगा */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* सूरज (Sun) */
+        .sun {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ffea00, #ff6a00);
+            border-radius: 50%;
+            box-shadow: 0 0 40px #ffaa00;
+            position: absolute;
+        }
+
+        /* ग्रहों की कक्षा (Orbit Common Styles) */
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: rotate linear infinite; /* अनंत घूमने के लिए */
+        }
+
+        /* ग्रह (Planet Common Styles) */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 1. बुध (Mercury) */
+        .mercury-orbit {
+            width: 120px;
+            height: 120px;
+            animation-duration: 4s; /* घूमने की स्पीड */
+        }
+        .mercury {
+            width: 10px;
+            height: 10px;
+            background: #9e9e9e;
+        }
+
+        /* 2. शुक्र (Venus) */
+        .venus-orbit {
+            width: 180px;
+            height: 180px;
+            animation-duration: 7s;
+        }
+        .venus {
+            width: 14px;
+            height: 14px;
+            background: #e3bb76;
+        }
+
+        /* 3. पृथ्वी (Earth) */
+        .earth-orbit {
+            width: 260px;
+            height: 260px;
+            animation-duration: 12s;
+        }
+        .earth {
+            width: 18px;
+            height: 18px;
+            background: #2b82c9;
+            box-shadow: 0 0 10px rgba(43, 130, 201, 0.5);
+        }
+
+        /* 4. मंगल (Mars) */
+        .mars-orbit {
+            width: 34px0px;
+            width: 340px;
+            height: 340px;
+            animation-duration: 18s;
+        }
+        .mars {
+            width: 14px;
+            height: 14px;
+            background: #c1440e;
+        }
+
+        /* घूमने का एनिमेशन */
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* आपके पेज का असली कंटेंट यहाँ आएगा */
+        .content {
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            pointer-events: none; /* ताकि बैकग्राउंड क्लिक में रुकावट न बने */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- बैकग्राउंड सोलर सिस्टम -->
+    <div class="solar-system">
+        <div class="sun"></div>
+
+        <!-- Mercury -->
+        <div class="orbit mercury-orbit">
+            <div class="planet mercury"></div>
+        </div>
+
+        <!-- Venus -->
+        <div class="orbit venus-orbit">
+            <div class="planet venus"></div>
+        </div>
+
+        <!-- Earth -->
+        <div class="orbit earth-orbit">
+            <div class="planet earth"></div>
+        </div>
+
+        <!-- Mars -->
+        <div class="orbit mars-orbit">
+            <div class="planet mars"></div>
+        </div>
+    </div>
+
+    <!-- मुख्य वेबसाइट कंटेंट -->
+    <div class="content">
+        <h1>Welcome to My Website</h1>
+        <p>This is an infinite solar system background.</p>
+    </div>
+
+</body>
+</html>

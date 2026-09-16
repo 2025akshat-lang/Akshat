@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Separation Procedure (Interactive Left/Right Nav)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .main-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        h2 {
+            margin: 5px 0 2px 0;
+            color: #1e293b;
+            font-size: 1.2rem;
+        }
+
+        .phase-header {
+            font-size: 0.85rem;
+            color: #2563eb;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .instruction-badge {
+            display: inline-block;
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .step-info {
+            font-size: 0.9rem;
+            color: #c2410c;
+            font-weight: bold;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-bottom: 10px;
+        }
+
+        .svg-container {
+            width: 100%;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px dashed #94a3b8;
+            padding: 4px;
+            position: relative;
+        }
+
+        /* Touch Control Overlay Zone */
+        .touch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            z-index: 10;
+        }
+        .touch-left {
+            width: 50%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .touch-right {
+            width: 50%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .component {
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.4s ease-in-out;
+        }
+
+        .component.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .label-text {
+            font-size: 11px;
+            font-weight: bold;
+            fill: #0f172a;
+            font-family: sans-serif;
+        }
+
+        .label-sub {
+            font-size: 10px;
+            fill: #64748b;
+            font-family: sans-serif;
+        }
+
+        .label-line {
+            stroke: #94a3b8;
+            stroke-width: 1.2;
+            stroke-dasharray: 2 2;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.08); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.85; }
+        }
+        .animated-flame {
+            transform-origin: center bottom;
+            animation: flicker 0.5s infinite alternate ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h2>Separation of Sand, Salt & Naphthalene</h2>
+    <div class="phase-header" id="phaseTitle">PHASE 1: SUBLIMATION</div>
+    
+    <div class="instruction-badge" id="badgeText">◀ Tap Left: Back | Tap Right: Next ▶</div>
+    
+    <div class="step-info" id="stepText">
+        Tap Right to start Phase 1!
+    </div>
+
+    <div class="svg-container">
+        <!-- Invisible Touch Zone Overlay -->
+        <div class="touch-overlay">
+            <div class="touch-left" id="btnBack" title="Previous Step"></div>
+            <div class="touch-right" id="btnNext" title="Next Step"></div>
+        </div>
+
+        <svg viewBox="0 0 380 390" width="100%" height="100%">
+            
+            <!-- PHASE 1: SUBLIMATION -->
+            <g id="phase1Group">
+                <g id="p1_step1" class="component">
+                    <ellipse cx="190" cy="240" rx="65" ry="10" fill="none" stroke="#334155" stroke-width="5"/>
+                    <path d="M 130 242 L 105 340 M 250 242 L 275 340 M 190 248 L 190 330" stroke="#334155" stroke-width="5" stroke-linecap="round"/>
+                    <line x1="120" y1="285" x2="10" y2="285" class="label-line"/>
+                    <text x="12" y="278" class="label-text">1. Tripod Stand</text>
+                </g>
+
+                <g id="p1_step2" class="component">
+                    <rect x="165" y="325" width="50" height="12" fill="#475569" rx="3"/>
+                    <rect x="183" y="280" width="14" height="45" fill="#64748b"/>
+                    <ellipse cx="190" cy="280" rx="7" ry="2" fill="#334155"/>
+                    <path class="animated-flame" d="M 190 280 Q 178 250 190 232 Q 202 250 190 280 Z" fill="#ef4444"/>
+                    <path class="animated-flame" d="M 190 280 Q 183 258 190 245 Q 197 258 190 280 Z" fill="#f59e0b"/>
+                    <line x1="210" y1="300" x2="280" y2="300" class="label-line"/>
+                    <text x="285" y="300" class="label-text">2. Burner</text>
+                </g>
+
+                <g id="p1_step3" class="component">
+                    <ellipse cx="190" cy="235" rx="75" ry="12" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>
+                    <ellipse cx="190" cy="235" rx="35" ry="6" fill="#94a3b8"/>
+                    <line x1="265" y1="235" x2="280" y2="235" class="label-line"/>
+                    <text x="285" y="236" class="label-text">3. Wire Gauze</text>
+                </g>
+
+                <g id="p1_step4" class="component">
+                    <path d="M 130 230 Q 190 262 250 230 C 255 224 250 220 240 222 Q 190 230 140 222 C 130 220 125 224 130 230 Z" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+                    <path d="M 145 228 Q 190 248 235 228 Q 190 235 145 228 Z" fill="#d97724"/>
+                    <line x1="135" y1="235" x2="10" y2="235" class="label-line"/>
+                    <text x="12" y="230" class="label-text">4. Dish + Mixture</text>
+                </g>
+
+                <g id="p1_step5" class="component">
+                    <path d="M 184 60 L 184 130 Q 185 155 138 220 Q 190 228 242 220 Q 195 155 196 130 L 196 60 Z" fill="rgba(186, 230, 253, 0.45)" stroke="#0284c7" stroke-width="2"/>
+                    <ellipse cx="190" cy="58" rx="8" ry="6" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+                    <path d="M 160 190 Q 175 160 186 110" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M 220 190 Q 205 160 194 110" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                    <line x1="210" y1="125" x2="280" y2="100" class="label-line"/>
+                    <text x="285" y="98" class="label-text">5. Naphthalene Separated!</text>
+                </g>
+            </g>
+
+            <!-- PHASE 2: FILTRATION -->
+            <g id="phase2Group" style="display:none;">
+                <g id="p2_step1" class="component">
+                    <rect x="120" y="330" width="140" height="15" fill="#475569" rx="3"/>
+                    <rect x="135" y="90" width="10" height="240" fill="#64748b"/>
+                    <rect x="160" y="250" width="60" height="80" fill="rgba(224, 242, 254, 0.5)" stroke="#0284c7" stroke-width="2" rx="4"/>
+                    <line x1="135" y1="200" x2="10" y2="200" class="label-line"/>
+                    <text x="12" y="195" class="label-text">1. Filter Stand & Beaker</text>
+                </g>
+
+                <g id="p2_step2" class="component">
+                    <path d="M 186 160 L 186 230 L 150 160 L 230 160 L 194 230 L 194 160 Z" fill="rgba(186, 230, 253, 0.5)" stroke="#0284c7" stroke-width="2"/>
+                    <path d="M 155 162 L 190 220 L 225 162 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                    <line x1="225" y1="170" x2="280" y2="170" class="label-line"/>
+                    <text x="285" y="168" class="label-text">2. Funnel + Filter Paper</text>
+                </g>
+
+                <g id="p2_step3" class="component">
+                    <path d="M 170 190 Q 190 215 210 190 Z" fill="#d97724"/>
+                    <rect x="162" y="280" width="56" height="48" fill="#7dd3fc" opacity="0.7" rx="2"/>
+                    <line x1="180" y1="200" x2="10" y2="150" class="label-line"/>
+                    <text x="12" y="145" class="label-text">Sand Left (Residue)</text>
+                    <line x1="210" y1="300" x2="280" y2="300" class="label-line"/>
+                    <text x="285" y="295" class="label-text">3. Sand Separated!</text>
+                </g>
+            </g>
+
+            <!-- PHASE 3: EVAPORATION -->
+            <g id="phase3Group" style="display:none;">
+                <g id="p3_step1" class="component">
+                    <ellipse cx="190" cy="240" rx="65" ry="10" fill="none" stroke="#334155" stroke-width="5"/>
+                    <path d="M 130 242 L 105 340 M 250 242 L 275 340 M 190 248 L 190 330" stroke="#334155" stroke-width="5" stroke-linecap="round"/>
+                    <rect x="165" y="325" width="50" height="12" fill="#475569" rx="3"/>
+                    <rect x="183" y="280" width="14" height="45" fill="#64748b"/>
+                    <path class="animated-flame" d="M 190 280 Q 178 250 190 232 Q 202 250 190 280 Z" fill="#ef4444"/>
+                    <ellipse cx="190" cy="235" rx="75" ry="12" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>
+                    <line x1="120" y1="285" x2="10" y2="285" class="label-line"/>
+                    <text x="12" y="282" class="label-text">1. Heat Setup</text>
+                </g>
+
+                <g id="p3_step2" class="component">
+                    <path d="M 130 230 Q 190 262 250 230 C 255 224 250 220 240 222 Q 190 230 140 222 C 130 220 125 224 130 230 Z" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+                    <path d="M 145 228 Q 190 248 235 228 Q 190 235 145 228 Z" fill="#38bdf8" opacity="0.8"/>
+                    <path d="M 170 210 Q 165 180 175 160 M 190 210 Q 195 180 185 160 M 210 210 Q 205 180 215 160" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 2" fill="none"/>
+                    <line x1="240" y1="180" x2="280" y2="180" class="label-line"/>
+                    <text x="285" y="178" class="label-text">2. Evaporating Water</text>
+                </g>
+
+                <g id="p3_step3" class="component">
+                    <path d="M 150 232 Q 190 246 230 232 Q 190 236 150 232 Z" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="170" cy="235" r="2" fill="#cbd5e1"/>
+                    <circle cx="190" cy="237" r="2.5" fill="#cbd5e1"/>
+                    <circle cx="210" cy="235" r="2" fill="#cbd5e1"/>
+                    <line x1="160" y1="235" x2="10" y2="190" class="label-line"/>
+                    <text x="12" y="185" class="label-text">3. Salt Crystals Separated!</text>
+                </g>
+            </g>
+
+        </svg>
+    </div>
+</div>
+
+<script>
+    const masterSteps = [
+        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step1", text: "Step 1: Tripod Stand rakha support ke liye." },
+        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step2", text: "Step 2: Burner flame on ki." },
+        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step3", text: "Step 3: Wire Gauze rakhi." },
+        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step4", text: "Step 4: China dish me 3-mixture dala." },
+        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step5", text: "Step 5: Naphthalene sublime ho kar alag hua!" },
+        { phase: "PHASE 2: FILTRATION", pGroup: 2, cId: "p2_step1", text: "Step 6: Sand + Salt me paani milayein, Stand ready karein." },
+        { phase: "PHASE 2: FILTRATION", pGroup: 2, cId: "p2_step2", text: "Step 7: Funnel me Filter Paper lagayein." },
+        { phase: "PHASE 2: FILTRATION", pGroup: 2, cId: "p2_step3", text: "Step 8: Chhana: Sand alag aur Salt Water beaker me aaya!" },
+        { phase: "PHASE 3: EVAPORATION", pGroup: 3, cId: "p3_step1", text: "Step 9: Salt Water ko heat karne ki taiyari." },
+        { phase: "PHASE 3: EVAPORATION", pGroup: 3, cId: "p3_step2", text: "Step 10: Solution boil hone laga, paani steam bana." },
+        { phase: "PHASE 3: EVAPORATION", pGroup: 3, cId: "p3_step3", text: "Step 11: Pure Salt crystals Dish me bach gaye! 🎉" }
+    ];
+
+    let currentStepIndex = -1;
+    const phaseTitle = document.getElementById('phaseTitle');
+    const stepText = document.getElementById('stepText');
+    const badgeText = document.getElementById('badgeText');
+
+    function updateUI() {
+        if (currentStepIndex === -1) {
+            // Initial State
+            document.getElementById('phase1Group').style.display = 'block';
+            document.getElementById('phase2Group').style.display = 'none';
+            document.getElementById('phase3Group').style.display = 'none';
+            
+            document.querySelectorAll('.component').forEach(el => el.classList.remove('visible'));
+            
+            phaseTitle.innerText = "PHASE 1: SUBLIMATION";
+            stepText.innerText = "Tap Right to start Phase 1!";
+            badgeText.innerText = "◀ Tap Left: Back | Tap Right: Next ▶";
+            return;
+        }
+
+        const currentData = masterSteps[currentStepIndex];
+
+        // Group visibility toggle
+        document.getElementById('phase1Group').style.display = currentData.pGroup === 1 ? 'block' : 'none';
+        document.getElementById('phase2Group').style.display = currentData.pGroup === 2 ? 'block' : 'none';
+        document.getElementById('phase3Group').style.display = currentData.pGroup === 3 ? 'block' : 'none';
+
+        // Visibility adjustments up to currentStepIndex
+        masterSteps.forEach((step, idx) => {
+            const element = document.getElementById(step.cId);
+            if (step.pGroup === currentData.pGroup) {
+                if (idx <= currentStepIndex) {
+                    element.classList.add('visible');
+                } else {
+                    element.classList.remove('visible');
+                }
+            } else {
+                element.classList.remove('visible');
+            }
+        });
+
+        // Text Updates
+        phaseTitle.innerText = currentData.phase;
+        stepText.innerText = currentData.text;
+        badgeText.innerText = `Step ${currentStepIndex + 1} of ${masterSteps.length} (Tap Left: Back | Tap Right: Next)`;
+    }
+
+    // Right Touch Area: Forward
+    document.getElementById('btnNext').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentStepIndex < masterSteps.length - 1) {
+            currentStepIndex++;
+        } else {
+            currentStepIndex = -1; // Reset to start
+        }
+        updateUI();
+    });
+
+    // Left Touch Area: Backward
+    document.getElementById('btnBack').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentStepIndex > -1) {
+            currentStepIndex--;
+        }
+        updateUI();
+    });
+</script>
+
+</body>
+</html>

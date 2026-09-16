@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solubility Lab Simulation</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --compound-a: #ff4757;
+            --compound-b: #2ed573;
+            --accent-yellow: #ffa502;
+            --text-light: #f1f2f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #38bdf8;
+            font-size: 20px;
+            margin: 0 0 5px 0;
+            text-align: center;
+        }
+
+        p.quick-tip {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin: 0 0 15px 0;
+        }
+
+        /* SIMULATION SECTION: BEAKERS + GRAPH */
+        .simulation-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .simulation-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* BEAKER VISUALS */
+        .beaker-card {
+            background: #020617;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .beaker-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .beakers-wrapper {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            position: relative;
+        }
+
+        .beaker-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 45%;
+        }
+
+        .beaker-svg {
+            width: 90px;
+            height: 110px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #cbd5e1;
+            border-right: 3px solid #cbd5e1;
+            border-bottom: 3px solid #cbd5e1;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            transition: background-color 0.3s;
+        }
+
+        .liquid-a { background: rgba(255, 71, 87, 0.25); }
+        .liquid-b { background: rgba(46, 213, 115, 0.25); }
+
+        .flame {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffbe76 20%, #ff4757 80%);
+            border-radius: 50% 50% 20% 50%;
+            transform: rotate(-45deg);
+            margin-top: 5px;
+            opacity: 0.2;
+            transition: all 0.2s ease;
+        }
+
+        /* GRAPH VISUALS */
+        .graph-card {
+            background: #020617;
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .dot-a { width: 10px; height: 10px; background: var(--compound-a); border-radius: 50%; }
+        .dot-b { width: 10px; height: 10px; background: var(--compound-b); border-radius: 50%; }
+
+        .graph-wrapper {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+        }
+
+        svg.graph-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* CONTROLS & READOUTS */
+        .controls-card {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid #334155;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider-group label {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--accent-yellow);
+            white-space: nowrap;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            border-radius: 5px;
+            accent-color: var(--accent-yellow);
+            cursor: pointer;
+        }
+
+        .readout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .badge-a { background: rgba(255, 71, 87, 0.15); color: var(--compound-a); border: 1px solid var(--compound-a); }
+        .badge-b { background: rgba(46, 213, 115, 0.15); color: var(--compound-b); border: 1px solid var(--compound-b); }
+
+        /* QUIZ SECTION */
+        .quiz-card {
+            background: #111827;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border-left: 4px solid #38bdf8;
+        }
+
+        .quiz-card h2 {
+            font-size: 15px;
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+        }
+
+        .q-item {
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        select {
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #475569;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .feedback {
+            font-weight: bold;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        .correct { color: #2ed573; }
+        .incorrect { color: #ff4757; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🧪 Interactive Solubility Lab</h1>
+    <p class="quick-tip">Move the temperature slider to heat the solution & watch particles dissolve!</p>
+
+    <div class="simulation-grid">
+        <!-- REAL-TIME BEAKER VISUALIZER -->
+        <div class="beaker-card">
+            <div class="beaker-title">🔬 Lab Observation (100g Water)</div>
+            <div class="beakers-wrapper">
+                <div class="beaker-box">
+                    <span style="color: var(--compound-a); font-size: 12px; font-weight: bold;">Compound 'A'</span>
+                    <div class="beaker-svg">
+                        <div class="liquid liquid-a"></div>
+                        <canvas id="canvasA" width="90" height="110"></canvas>
+                    </div>
+                    <div class="flame" id="flameA"></div>
+                </div>
+
+                <div class="beaker-box">
+                    <span style="color: var(--compound-b); font-size: 12px; font-weight: bold;">Compound 'B'</span>
+                    <div class="beaker-svg">
+                        <div class="liquid liquid-b"></div>
+                        <canvas id="canvasB" width="90" height="110"></canvas>
+                    </div>
+                    <div class="flame" id="flameB"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRAPH VISUALIZER -->
+        <div class="graph-card">
+            <div class="legend">
+                <div class="legend-item"><div class="dot-a"></div> Compound 'A'</div>
+                <div class="legend-item"><div class="dot-b"></div> Compound 'B'</div>
+            </div>
+            <div class="graph-wrapper">
+                <svg class="graph-svg" viewBox="0 0 600 450">
+                    <defs>
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#1e293b" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect x="60" y="20" width="500" height="360" fill="url(#grid)" />
+                    <rect x="60" y="20" width="500" height="360" fill="none" stroke="#475569" stroke-width="1.5" />
+
+                    <!-- Y-Axis Labels -->
+                    <g fill="#94a3b8" font-size="12" text-anchor="end">
+                        <text x="50" y="385">0</text>
+                        <text x="50" y="295">100</text>
+                        <text x="50" y="205">200</text>
+                        <text x="50" y="115">300</text>
+                        <text x="50" y="25">400</text>
+                    </g>
+
+                    <!-- X-Axis Labels -->
+                    <g fill="#94a3b8" font-size="12" text-anchor="middle">
+                        <text x="60" y="405">0°C</text>
+                        <text x="185" y="405">20°C</text>
+                        <text x="310" y="405">40°C</text>
+                        <text x="435" y="405">60°C</text>
+                        <text x="560" y="405">80°C</text>
+                    </g>
+
+                    <!-- Curves -->
+                    <path d="M 60 340 Q 310 326 560 320" fill="none" stroke="#ff4757" stroke-width="3.5" />
+                    <path d="M 60 340 Q 220 250 560 65" fill="none" stroke="#2ed573" stroke-width="3.5" />
+
+                    <!-- Dynamic Tracker -->
+                    <line id="trackerLine" x1="185" y1="20" x2="185" y2="380" stroke="#ffa502" stroke-width="2" stroke-dasharray="4" />
+                    <circle id="dotA" cx="185" cy="336" r="7" fill="#ff4757" stroke="#fff" stroke-width="2" />
+                    <circle id="dotB" cx="185" cy="275" r="7" fill="#2ed573" stroke="#fff" stroke-width="2" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTROLS & READOUTS -->
+    <div class="controls-card">
+        <div class="slider-group">
+            <label for="tempSlider">🔥 Temp: <span id="tempValue">20 °C</span></label>
+            <input type="range" id="tempSlider" min="0" max="80" value="20" step="1">
+        </div>
+        <div class="readout-grid">
+            <div class="badge badge-a">Solubility A: <span id="valA">54</span>g</div>
+            <div class="badge badge-b">Solubility B: <span id="valB">96</span>g</div>
+        </div>
+    </div>
+
+    <!-- MINI QUIZ -->
+    <div class="quiz-card">
+        <h2>⚡ Quick Check</h2>
+        <div class="q-item">
+            (i) Solubility of 'A' at 20°C is 
+            <select id="q1" onchange="checkAnswer('q1', 'less than')">
+                <option value="">-- select --</option>
+                <option value="less than">less than</option>
+                <option value="more than">more than</option>
+            </select> its solubility at 60°C.
+            <span id="q1-feedback" class="feedback"></span>
+        </div>
+
+        <div class="q-item">
+            (ii) With increase in temperature, solubility of 
+            <select id="q3a" onchange="checkAnswer3()">
+                <option value="">-- select --</option>
+                <option value="A">Compound A</option>
+                <option value="B">Compound B</option>
+            </select> 
+            increases much faster!
+            <span id="q3-feedback" class="feedback"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const slider = document.getElementById('tempSlider');
+    const tempValue = document.getElementById('tempValue');
+    const trackerLine = document.getElementById('trackerLine');
+    const dotA = document.getElementById('dotA');
+    const dotB = document.getElementById('dotB');
+    const valA = document.getElementById('valA');
+    const valB = document.getElementById('valB');
+    const flameA = document.getElementById('flameA');
+    const flameB = document.getElementById('flameB');
+
+    const canvasA = document.getElementById('canvasA');
+    const ctxA = canvasA.getContext('2d');
+    const canvasB = document.getElementById('canvasB');
+    const ctxB = canvasB.getContext('2d');
+
+    // Generate random particle positions
+    let particlesA = Array.from({length: 40}, () => ({x: Math.random()*80 + 5, y: Math.random()*60 + 40}));
+    let particlesB = Array.from({length: 40}, () => ({x: Math.random()*80 + 5, y: Math.random()*60 + 40}));
+
+    function drawParticles(ctx, particles, dissolvedCount, color) {
+        ctx.clearRect(0, 0, 90, 110);
+        
+        particles.forEach((p, idx) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            
+            if (idx < dissolvedCount) {
+                // Floating dissolved particles
+                let py = p.y + Math.sin(Date.now()*0.003 + idx)*3;
+                ctx.arc(p.x, py, 2.5, 0, Math.PI*2);
+            } else {
+                // Precipitate at bottom
+                let bx = (idx * 2) % 80 + 5;
+                let by = 100 - (Math.floor(idx/20)*4);
+                ctx.arc(bx, by, 2.5, 0, Math.PI*2);
+            }
+            ctx.fill();
+        });
+    }
+
+    function updateGraph(temp) {
+        temp = parseFloat(temp);
+        tempValue.innerText = temp + " °C";
+
+        // Flame effect intensity
+        let flameScale = 0.2 + (temp / 80) * 1.1;
+        flameA.style.transform = `scale(${flameScale}) rotate(-45deg)`;
+        flameB.style.transform = `scale(${flameScale}) rotate(-45deg)`;
+        flameA.style.opacity = 0.2 + (temp / 80) * 0.8;
+        flameB.style.opacity = 0.2 + (temp / 80) * 0.8;
+
+        const xPos = 60 + (temp * 6.25);
+        trackerLine.setAttribute('x1', xPos);
+        trackerLine.setAttribute('x2', xPos);
+
+        const solubilityA = 50 + (0.23 * temp) - (0.0005 * temp * temp);
+        const solubilityB = 50 + (1.2 * temp) + (0.032 * temp * temp);
+
+        valA.innerText = Math.round(solubilityA);
+        valB.innerText = Math.round(solubilityB);
+
+        const yPosA = 380 - (solubilityA * 0.9);
+        const yPosB = 380 - (solubilityB * 0.9);
+
+        dotA.setAttribute('cx', xPos);
+        dotA.setAttribute('cy', yPosA);
+        dotB.setAttribute('cx', xPos);
+        dotB.setAttribute('cy', yPosB);
+
+        // Particle dissolution counts (out of 40)
+        let countA = Math.floor((solubilityA / 400) * 40);
+        let countB = Math.floor((solubilityB / 400) * 40);
+
+        drawParticles(ctxA, particlesA, countA, '#ff4757');
+        drawParticles(ctxB, particlesB, countB, '#2ed573');
+    }
+
+    slider.addEventListener('input', (e) => {
+        updateGraph(e.target.value);
+    });
+
+    // Particle Animation Loop
+    setInterval(() => {
+        updateGraph(slider.value);
+    }, 50);
+
+    function checkAnswer(id, correctValue) {
+        const select = document.getElementById(id);
+        const feedback = document.getElementById(id + '-feedback');
+        if (select.value === correctValue) {
+            feedback.innerHTML = "✓ Correct!";
+            feedback.className = "feedback correct";
+        } else if(select.value !== "") {
+            feedback.innerHTML = "✗ Try again";
+            feedback.className = "feedback incorrect";
+        }
+    }
+
+    function checkAnswer3() {
+        const a = document.getElementById('q3a').value;
+        const feedback = document.getElementById('q3-feedback');
+        if (a === 'B') {
+            feedback.innerHTML = "✓ Correct!";
+            feedback.className = "feedback correct";
+        } else if(a !== "") {
+            feedback.innerHTML = "✗ Try again";
+            feedback.className = "feedback incorrect";
+        }
+    }
+
+    updateGraph(20);
+</script>
+</body>
+</html>
