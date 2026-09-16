@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Juice Landing Page</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e52d27, #b31217);
+            --transition-speed: 0.8s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            width: 100vw;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            transition: background var(--transition-speed) ease-in-out;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Responsive Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            z-index: 10;
+            position: relative;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn-shop {
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Hero Container (Responsive Grid/Flex) */
+        .hero {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            padding: 20px 80px 40px 80px;
+            position: relative;
+            gap: 40px;
+        }
+
+        /* Content Left */
+        .content {
+            flex: 1;
+            z-index: 5;
+            max-width: 550px;
+        }
+
+        .content h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        }
+
+        .content p {
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        /* Selector Thumbnails */
+        .selectors {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .thumb-item {
+            width: 45px;
+            height: 85px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .thumb-item img {
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+        }
+
+        .thumb-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .thumb-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 100%;
+            height: 3px;
+            background: #fff;
+            border-radius: 2px;
+            box-shadow: 0 0 8px #fff;
+        }
+
+        /* Bottle Visual Container Right */
+        .visual-container {
+            flex: 1;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 4;
+            position: relative;
+        }
+
+        .main-bottle {
+            max-height: 85%;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.35));
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), opacity var(--transition-speed) ease;
+            transform: rotate(-12deg);
+        }
+
+        .bottle-animating {
+            transform: rotate(20deg) scale(0.6) translateY(-40px);
+            opacity: 0;
+        }
+
+        /* Dynamic Floating Background Elements */
+        .bg-fruits-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .bg-fruit {
+            position: absolute;
+            font-size: clamp(40px, 8vw, 80px);
+            filter: blur(3px);
+            opacity: 0.3;
+            transition: all var(--transition-speed) ease-in-out;
+            user-select: none;
+        }
+
+        .bg-fruit:nth-child(1) { top: 10%; left: 5%; transform: rotate(-20deg); }
+        .bg-fruit:nth-child(2) { top: 50%; left: 2%; transform: rotate(15deg); }
+        .bg-fruit:nth-child(3) { top: 75%; left: 40%; transform: rotate(-10deg); }
+        .bg-fruit:nth-child(4) { top: 15%; right: 5%; transform: rotate(35deg); }
+
+        /* ========================================================
+           MOBILE & TABLET RESPONSIVE BREAKPOINTS (MEDIA QUERIES)
+           ======================================================== */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none; /* Mobile pe header clean rakha hai */
+            }
+
+            .hero {
+                flex-direction: column-reverse; /* Bottle text ke upar chali jayegi */
+                justify-content: flex-end;
+                padding: 10px 20px 30px 20px;
+                min-height: auto;
+                gap: 20px;
+            }
+
+            .visual-container {
+                width: 100%;
+                height: 38vh; /* Reduced height for mobile screens */
+            }
+
+            .main-bottle {
+                max-height: 100%;
+            }
+
+            .content {
+                width: 100%;
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .content p {
+                margin-bottom: 25px;
+            }
+
+            .selectors {
+                justify-content: center; /* Thumbnails screen ke center me aayenge */
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .thumb-item {
+                width: 38px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav>
+        <div class="logo">JUICE</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Flavor</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+        <a href="#" class="btn-shop">Shop online</a>
+    </nav>
+
+    <!-- Floating Background Fruits -->
+    <div class="bg-fruits-container">
+        <div class="bg-fruit f1">🍓</div>
+        <div class="bg-fruit f2">🍓</div>
+        <div class="bg-fruit f3">🍓</div>
+        <div class="bg-fruit f4">🍓</div>
+    </div>
+
+    <!-- Main Mobile Responsive Hero Section -->
+    <main class="hero">
+        <div class="content">
+            <h1 id="title">Strawberry Juice</h1>
+            <p id="description">
+                Strawberry Juice is a refreshing fresh fruit juice that is full of vitamin C and antioxidants and lot of invigorating flavor. Apart from fresh and ripe strawberries, this recipe also uses lime juice to make it tantalizing.
+            </p>
+
+            <!-- Bottom Thumbnails Selector -->
+            <div class="selectors" id="selectors-container"></div>
+        </div>
+
+        <!-- Bottle Visual -->
+        <div class="visual-container">
+            <img src="" id="main-bottle" class="main-bottle" alt="Juice Bottle">
+        </div>
+    </main>
+
+    <script>
+        const juiceData = [
+            {
+                name: "Strawberry Juice",
+                description: "Strawberry Juice is a refreshing fresh fruit juice that is full of vitamin C and antioxidants and lot of invigorating flavor. Apart from fresh and ripe strawberries, this recipe also uses lime juice to make it tantalizing.",
+                bgGradient: "linear-gradient(135deg, #e52d27, #b31217)",
+                fruitEmoji: "🍓",
+                bottleImg: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 250'><rect x='30' y='10' width='40' height='15' rx='3' fill='%23d4af37'/><path d='M35,25 L65,25 L75,70 L75,220 C75,230 65,240 50,240 C35,240 25,230 25,220 L25,70 Z' fill='%23e60039' opacity='0.95'/><text x='50' y='140' font-size='10' fill='white' font-family='sans-serif' text-anchor='middle' font-weight='bold'>STRAWBERRY</text></svg>"
+            },
+            {
+                name: "Plum Juice",
+                description: "A luscious elixir extracted from ripe plums. Bursting with rich flavor and natural sweetness, it delivers a refreshing and satisfying experience. Indulge in the succulent essence of plums while enjoying health benefits.",
+                bgGradient: "linear-gradient(135deg, #614385, #516395)",
+                fruitEmoji: "🫐",
+                bottleImg: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 250'><rect x='30' y='10' width='40' height='15' rx='3' fill='%23d4af37'/><path d='M35,25 L65,25 L75,70 L75,220 C75,230 65,240 50,240 C35,240 25,230 25,220 L25,70 Z' fill='%23512da8' opacity='0.95'/><text x='50' y='140' font-size='11' fill='white' font-family='sans-serif' text-anchor='middle' font-weight='bold'>PLUM</text></svg>"
+            },
+            {
+                name: "Kiwi Juice",
+                description: "A vibrant and tangy elixir extracted from ripe kiwis. Packed with essential nutrients, it offers a refreshing and invigorating experience. The perfect balance of sweetness and tanginess makes it a popular choice.",
+                bgGradient: "linear-gradient(135deg, #11998e, #38ef7d)",
+                fruitEmoji: "🥝",
+                bottleImg: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 250'><rect x='30' y='10' width='40' height='15' rx='3' fill='%23d4af37'/><path d='M35,25 L65,25 L75,70 L75,220 C75,230 65,240 50,240 C35,240 25,230 25,220 L25,70 Z' fill='%232e7d32' opacity='0.95'/><text x='50' y='140' font-size='11' fill='white' font-family='sans-serif' text-anchor='middle' font-weight='bold'>KIWI</text></svg>"
+            },
+            {
+                name: "Orange Juice",
+                description: "Pure citrus goodness extracted from sun-ripened oranges. Rich in vitamin C, tangy sweetness, and instant energy boost. Experience the classic tropical sunshine taste in every drop.",
+                bgGradient: "linear-gradient(135deg, #fc4a1a, #f7b733)",
+                fruitEmoji: "🍊",
+                bottleImg: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 250'><rect x='30' y='10' width='40' height='15' rx='3' fill='%23d4af37'/><path d='M35,25 L65,25 L75,70 L75,220 C75,230 65,240 50,240 C35,240 25,230 25,220 L25,70 Z' fill='%23ef6c00' opacity='0.95'/><text x='50' y='140' font-size='11' fill='white' font-family='sans-serif' text-anchor='middle' font-weight='bold'>ORANGE</text></svg>"
+            }
+        ];
+
+        const titleEl = document.getElementById('title');
+        const descEl = document.getElementById('description');
+        const mainBottle = document.getElementById('main-bottle');
+        const selectorsContainer = document.getElementById('selectors-container');
+        const bgFruits = document.querySelectorAll('.bg-fruit');
+
+        let currentIndex = 0;
+
+        function initSelectors() {
+            selectorsContainer.innerHTML = '';
+            juiceData.forEach((item, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = `thumb-item ${index === currentIndex ? 'active' : ''}`;
+                thumb.innerHTML = `<img src="${item.bottleImg}" alt="${item.name}">`;
+                
+                thumb.addEventListener('click', () => {
+                    if (index !== currentIndex) {
+                        changeFlavor(index);
+                    }
+                });
+                selectorsContainer.appendChild(thumb);
+            });
+        }
+
+        function changeFlavor(index) {
+            currentIndex = index;
+            const data = juiceData[index];
+
+            document.querySelectorAll('.thumb-item').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+
+            document.documentElement.style.setProperty('--bg-gradient', data.bgGradient);
+
+            titleEl.classList.add('fade-out');
+            descEl.classList.add('fade-out');
+            mainBottle.classList.add('bottle-animating');
+
+            bgFruits.forEach(fruit => {
+                fruit.style.opacity = '0';
+                fruit.style.transform = 'scale(0.2)';
+            });
+
+            setTimeout(() => {
+                titleEl.textContent = data.name;
+                descEl.textContent = data.description;
+                mainBottle.src = data.bottleImg;
+
+                bgFruits.forEach(fruit => {
+                    fruit.textContent = data.fruitEmoji;
+                    fruit.style.opacity = '0.3';
+                    fruit.style.transform = '';
+                });
+
+                titleEl.classList.remove('fade-out');
+                descEl.classList.remove('fade-out');
+                mainBottle.classList.remove('bottle-animating');
+            }, 400);
+        }
+
+        initSelectors();
+        mainBottle.src = juiceData[0].bottleImg;
+    </script>
+</body>
+</html>
