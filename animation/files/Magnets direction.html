@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title> 3D Magnet Simulation</title>
+<style>
+    * { 
+        box-sizing: border-box; 
+        font-family: 'Comic Sans MS', 'Chalkboard SE', system-ui, sans-serif; 
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    
+    body { 
+        background: radial-gradient(circle at center, #0288d1, #01579b, #002f6c); 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        min-height: 100vh; 
+        margin: 0; 
+        padding: 10px; 
+    }
+
+    .card { 
+        background: rgba(255, 255, 255, 0.98); 
+        border-radius: 24px; 
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(3, 169, 244, 0.6); 
+        width: 100%; 
+        max-width: 650px; 
+        padding: 18px; 
+        text-align: center; 
+        border: 4px solid #00e5ff; 
+    }
+
+    h1 { 
+        color: #01579b; 
+        margin: 0 0 6px 0; 
+        font-size: clamp(22px, 5vw, 28px); 
+    }
+
+    .sub-title { 
+        color: #37474f; 
+        font-size: clamp(13px, 3vw, 16px); 
+        margin: 0 0 14px 0; 
+        font-weight: 700;
+    }
+    
+    .stage { 
+        position: relative; 
+        width: 100%; 
+        height: min(52vh, 370px); 
+        background: linear-gradient(to bottom, #81d4fa 0%, #e0f7fa 50%, #81c784 50%, #2e7d32 100%); 
+        border-radius: 20px; 
+        border: 3px solid #00bcd4; 
+        overflow: hidden; 
+        box-shadow: inset 0 8px 20px rgba(0,0,0,0.25);
+        margin-bottom: 12px; 
+        touch-action: none;
+        perspective: 1000px;
+    }
+    
+    /* Sun Locked In Sky Background (z-index: 0) */
+    .sky-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .sun-vector-container { 
+        position: absolute; 
+        width: 65px; 
+        height: 65px; 
+        animation: sunSkyArc 14s infinite linear;
+    }
+
+    .sun-svg-body {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 0 15px #ffeb3b);
+    }
+
+    .sun-direction-tag {
+        position: absolute;
+        bottom: -16px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        font-weight: 900;
+        color: #d84315;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 1px 6px;
+        border-radius: 8px;
+        border: 1px solid #ff9800;
+    }
+
+    /* East to West Sky Arc */
+    @keyframes sunSkyArc {
+        0% {
+            top: 70px;
+            right: -20px;
+        }
+        25% {
+            top: 15px;
+            right: 25%;
+        }
+        50% {
+            top: 5px;
+            right: 50%;
+            transform: translateX(50%);
+        }
+        75% {
+            top: 15px;
+            right: 75%;
+        }
+        100% {
+            top: 70px;
+            right: calc(100% - 40px);
+        }
+    }
+
+    /* Ground Compass Oval Fitted Cleanly inside Frame */
+    .compass-ground-3d {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%) rotateX(68deg);
+        width: 220px;
+        height: 220px;
+        border: 5px dashed #1b5e20;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.65);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        z-index: 1;
+    }
+
+    .compass-label {
+        position: absolute;
+        font-weight: 900;
+        text-shadow: 0 2px 4px rgba(255,255,255,0.9);
+    }
+
+    /* Clean Visibility for N, S, E, W */
+    .lbl-n { top: 35px; left: 50%; transform: translateX(-50%); color: #d50000; font-size: 26px; }
+    .lbl-s { bottom: 15px; left: 50%; transform: translateX(-50%); color: #0d47a1; font-size: 26px; }
+    .lbl-e { right: 18px; top: 50%; transform: translateY(-50%); color: #e65100; font-size: 22px; }
+    .lbl-w { left: 18px; top: 50%; transform: translateY(-50%); color: #1b5e20; font-size: 22px; }
+
+    /* Foreground Elements (z-index: 2+) */
+    .wooden-stand {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .stand-base-3d {
+        position: absolute;
+        bottom: 25px;
+        left: 20px;
+        width: 95px;
+        height: 16px;
+        background: linear-gradient(90deg, #3e2723, #8d6e63, #271c19);
+        border-radius: 8px;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+
+    .stand-pillar-3d {
+        position: absolute;
+        bottom: 38px;
+        left: 60px;
+        width: 14px;
+        height: 280px;
+        background: linear-gradient(to right, #271c19, #8d6e63, #271c19);
+        border-radius: 5px;
+    }
+
+    .stand-arm-3d {
+        position: absolute;
+        top: 30px;
+        left: 60px;
+        width: calc(50% - 60px + 7px);
+        height: 14px;
+        background: linear-gradient(to bottom, #8d6e63, #271c19);
+        border-radius: 5px;
+    }
+
+    /* Adjusted Thread length to connect perfectly to center top of elevated magnet */
+    .string-3d { 
+        position: absolute; 
+        top: 42px; 
+        left: 50%; 
+        width: 3px; 
+        height: 58px; 
+        background: linear-gradient(to bottom, #d7ccc8, #5d4037); 
+        transform: translateX(-50%); 
+        z-index: 3;
+    }
+    
+    /* Magnet Wrapper shifted UP (top: 100px instead of 142px) */
+    .magnet-wrapper { 
+        position: absolute; 
+        top: 100px; 
+        left: 50%; 
+        width: 0; 
+        height: 0; 
+        z-index: 4;
+        cursor: grab;
+        transform-style: preserve-3d;
+    }
+
+    /* Magnet Positioned centered under the thread */
+    .magnet-3d { 
+        position: absolute; 
+        left: -20px; 
+        top: 0; 
+        width: 40px; 
+        height: 140px; 
+        border-radius: 10px; 
+        display: flex; 
+        flex-direction: column;
+        font-weight: 900; 
+        font-size: 22px; 
+        color: white; 
+        box-shadow: 0 15px 30px rgba(0,0,0,0.45), inset 0 3px 6px rgba(255,255,255,0.8); 
+    }
+
+    /* Thread knot dot right at the center top of magnet */
+    .magnet-3d::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 8px;
+        height: 8px;
+        background: #3e2723;
+        border-radius: 50%;
+        z-index: 5;
+    }
+
+    .north-3d { 
+        height: 50%; 
+        background: linear-gradient(to right, #ff1744, #d50000, #8e0000); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border-radius: 10px 10px 0 0; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        border-bottom: 2px solid rgba(0,0,0,0.3);
+    }
+
+    .south-3d { 
+        height: 50%; 
+        background: linear-gradient(to right, #2979ff, #2962ff, #0039cb); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border-radius: 0 0 10px 10px; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    .magnet-shadow-3d {
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        width: 35px;
+        height: 120px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 20px;
+        filter: blur(8px);
+        transform: translateX(-50%) rotateX(68deg);
+        z-index: 1;
+    }
+    
+    .btn-group { 
+        display: flex; 
+        gap: 12px; 
+        justify-content: center; 
+        flex-wrap: wrap; 
+    }
+
+    button { 
+        background: linear-gradient(to bottom, #ff9800, #e65100); 
+        color: white; 
+        border: none; 
+        padding: 12px 22px; 
+        font-size: clamp(13px, 2.8vw, 15px); 
+        font-weight: 900; 
+        border-radius: 30px; 
+        cursor: pointer; 
+        box-shadow: 0 6px 15px rgba(230, 81, 0, 0.4); 
+        transition: all 0.2s; 
+        flex: 1 1 140px;
+        max-width: 210px;
+    }
+
+    button:hover { transform: translateY(-3px); }
+    button.reset { background: linear-gradient(to bottom, #607d8b, #37474f); }
+
+    .info-box { 
+        margin-top: 12px; 
+        background: #e8f5e9; 
+        color: #1b5e20; 
+        padding: 12px; 
+        border-radius: 14px; 
+        font-size: clamp(12px, 2.5vw, 15px); 
+        font-weight: 800; 
+        border: 2px solid #66bb6a; 
+        min-height: 48px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🧲 Activity 4.3: Freely Suspended Magnet</h1>
+    
+    
+    <div class="stage" id="stage">
+        <!-- Sky Background with SVG Sun -->
+        <div class="sky-bg">
+            <div class="sun-vector-container" id="sunContainer">
+                <svg class="sun-svg-body" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="35" fill="#ffb74d" />
+                    <circle cx="50" cy="50" r="28" fill="#ffe082" />
+                    <circle cx="40" cy="42" r="4" fill="#3e2723" />
+                    <circle cx="60" cy="42" r="4" fill="#3e2723" />
+                    <path id="sunMouth" d="M 35 55 Q 50 70 65 55" stroke="#3e2723" stroke-width="4" fill="none" stroke-linecap="round" />
+                </svg>
+                <div class="sun-direction-tag" id="sunTag">EAST</div>
+            </div>
+        </div>
+        
+        <!-- Ground Compass Oval -->
+        <div class="compass-ground-3d">
+            <span class="compass-label lbl-n">N</span>
+            <span class="compass-label lbl-s">S</span>
+            <span class="compass-label lbl-e">E</span>
+            <span class="compass-label lbl-w">W</span>
+        </div>
+        
+        <div class="magnet-shadow-3d" id="magnetShadow"></div>
+
+        <div class="wooden-stand">
+            <div class="stand-base-3d"></div>
+            <div class="stand-pillar-3d"></div>
+            <div class="stand-arm-3d"></div>
+        </div>
+        
+        <div class="string-3d"></div>
+        
+        <!-- Magnet Pulled Up & Connected to Center Thread -->
+        <div class="magnet-wrapper" id="magnetWrapper" style="transform: rotate(0deg);">
+            <div class="magnet-3d">
+                <div class="north-3d">N</div>
+                <div class="south-3d">S</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="btn-group">
+        <button onclick="physicsSpin()">🔄 Gentle Push</button>
+        <button class="reset" onclick="resetMagnet()">⏹️ Reset Alignment</button>
+    </div>
+    
+    <div class="info-box" id="infoBox">
+        
+    </div>
+</div>
+
+<script>
+    let currentAngle = 0; 
+    let restAngle = 0;
+    let velocity = 0;
+    let animationFrame = null;
+    let isDragging = false;
+    let lastX = 0;
+    
+    const magnetWrapper = document.getElementById('magnetWrapper');
+    const magnetShadow = document.getElementById('magnetShadow');
+    const stage = document.getElementById('stage');
+    const infoBox = document.getElementById('infoBox');
+    const sunContainer = document.getElementById('sunContainer');
+    const sunMouth = document.getElementById('sunMouth');
+    const sunTag = document.getElementById('sunTag');
+
+    setInterval(() => {
+        const rect = sunContainer.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const relativeX = rect.left - stageRect.left;
+
+        if (relativeX > stageRect.width * 0.45) {
+            sunMouth.setAttribute("d", "M 35 55 Q 50 70 65 55");
+            sunTag.innerHTML = "EAST";
+        } else {
+            sunMouth.setAttribute("d", "M 35 62 Q 50 48 65 62");
+            sunTag.innerHTML = "WEST";
+        }
+    }, 150);
+
+    function physicsSpin(initialVelocity = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 25 + 25)) {
+        cancelAnimationFrame(animationFrame);
+        velocity = initialVelocity;
+        
+        infoBox.innerHTML = "🌀 Spinning freely in all directions...";
+        infoBox.style.color = "#d50000";
+        infoBox.style.backgroundColor = "#ffebee";
+        infoBox.style.borderColor = "#ff8a80";
+
+        function updatePhysics() {
+            let diff = (currentAngle - restAngle) % 360;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+
+            let restoringForce = -0.05 * diff; 
+            velocity += restoringForce;
+            velocity *= 0.965;
+
+            currentAngle += velocity;
+
+            magnetWrapper.style.transform = `rotate(${currentAngle}deg)`;
+            magnetShadow.style.transform = `translateX(-50%) rotateX(68deg) rotate(${currentAngle}deg)`;
+
+            if (Math.abs(velocity) > 0.05 || Math.abs(diff) > 0.5) {
+                animationFrame = requestAnimationFrame(updatePhysics);
+            } else {
+                currentAngle = restAngle;
+                magnetWrapper.style.transform = `rotate(${currentAngle}deg)`;
+                magnetShadow.style.transform = `translateX(-50%) rotateX(68deg) rotate(0deg)`;
+
+                infoBox.innerHTML = "✨  <b>North-South</b>!";
+                infoBox.style.color = "#1b5e20";
+                infoBox.style.backgroundColor = "#e8f5e9";
+                infoBox.style.borderColor = "#66bb6a";
+            }
+        }
+        updatePhysics();
+    }
+
+    function resetMagnet() {
+        cancelAnimationFrame(animationFrame);
+        currentAngle = restAngle;
+        magnetWrapper.style.transition = "transform 0.8s ease-out";
+        magnetWrapper.style.transform = `rotate(${restAngle}deg)`;
+        magnetShadow.style.transform = `translateX(-50%) rotateX(68deg) rotate(0deg)`;
+        
+        setTimeout(() => { magnetWrapper.style.transition = "none"; }, 800);
+
+        infoBox.innerHTML = "Observation: Freely suspended magnet ALWAYS settles in North-South!";
+        infoBox.style.color = "#1b5e20";
+        infoBox.style.backgroundColor = "#e8f5e9";
+        infoBox.style.borderColor = "#66bb6a";
+    }
+
+    stage.addEventListener('mousedown', startDrag);
+    stage.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
+
+    window.addEventListener('mousemove', drag);
+    window.addEventListener('touchmove', (e) => { if(isDragging) drag(e.touches[0]); });
+
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('touchend', endDrag);
+
+    function startDrag(e) {
+        cancelAnimationFrame(animationFrame);
+        isDragging = true;
+        lastX = e.clientX;
+        magnetWrapper.style.transition = "none";
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+        let deltaX = e.clientX - lastX;
+        currentAngle += deltaX * 1.2;
+        velocity = deltaX * 0.8;
+        lastX = e.clientX;
+
+        magnetWrapper.style.transform = `rotate(${currentAngle}deg)`;
+        magnetShadow.style.transform = `translateX(-50%) rotateX(68deg) rotate(${currentAngle}deg)`;
+    }
+
+    function endDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        physicsSpin(velocity * 1.4);
+    }
+</script>
+
+</body>
+</html>
