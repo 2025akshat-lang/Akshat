@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akshat Raj - Interactive Portfolio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #0f17a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px 16px;
+      color: #f8fafc;
+    }
+
+    /* TOP TOGGLE BUTTONS (3 TABS) */
+    .tab-container {
+      display: flex;
+      background: #1e293b;
+      padding: 4px;
+      border-radius: 30px;
+      border: 1px solid #334155;
+      margin-bottom: 28px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 12px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: #38bdf8;
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    /* SECTION VISIBILITY */
+    .view-section {
+      display: none;
+      width: 100%;
+      max-width: 340px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .view-section.active {
+      display: flex;
+    }
+
+    /* ----------------------------------
+       COMMON 3D FLIP CARD STYLES
+    ---------------------------------- */
+    .flip-card {
+      width: 340px;
+      height: 210px;
+      position: relative;
+      cursor: pointer;
+      perspective: 1000px;
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.25);
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                  height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* HOVER & FLIP EXPAND HEIGHTS */
+    @media (hover: hover) {
+      #academicCard:hover .card-inner {
+        transform: rotateX(180deg);
+        height: 440px;
+      }
+      #certCard:hover .card-inner {
+        transform: rotateX(180deg);
+        height: 230px;
+      }
+      #expCard:hover .card-inner {
+        transform: rotateX(180deg);
+        height: 640px;
+      }
+    }
+
+    #academicCard.is-flipped .card-inner {
+      transform: rotateX(180deg);
+      height: 440px;
+    }
+
+    #certCard.is-flipped .card-inner {
+      transform: rotateX(180deg);
+      height: 230px;
+    }
+
+    #expCard.is-flipped .card-inner {
+      transform: rotateX(180deg);
+      height: 640px;
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      backface-visibility: hidden;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* FRONT FACES */
+    .card-front {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid #334155;
+    }
+
+    .cert-front-bg {
+      background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+      border: 1px solid #38bdf8;
+    }
+
+    .exp-front-bg {
+      background: linear-gradient(135deg, #0f766e 0%, #0f172a 100%);
+      border: 1px solid #2dd4bf;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* METALLIC CHIP FOR CERTIFICATION / EXP CARD */
+    .card-chip {
+      width: 38px;
+      height: 28px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-radius: 6px;
+      position: relative;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+      border: 1px solid #b45309;
+    }
+
+    .card-chip::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .status-badge {
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .cert-status-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.8px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    .exp-status-badge {
+      background: rgba(45, 212, 191, 0.15);
+      color: #2dd4bf;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.8px;
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    .front-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: 0.5px;
+      margin-top: 10px;
+    }
+
+    .front-subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-top: 1px solid #334155;
+      padding-top: 12px;
+    }
+
+    .student-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #38bdf8;
+    }
+
+    .hover-prompt {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    /* BACK FACES */
+    .card-back {
+      background: #020617;
+      color: #ffffff;
+      padding: 20px;
+      transform: rotateX(180deg);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #1e293b;
+      overflow-y: auto;
+    }
+
+    .back-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #38bdf8;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* LINKEDIN TIMELINE STYLES FOR EDUCATION & EXP */
+    .linkedin-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .timeline-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .timeline-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 24px;
+      flex-shrink: 0;
+    }
+
+    .timeline-circle {
+      width: 12px;
+      height: 12px;
+      background: #2dd4bf;
+      border-radius: 50%;
+      margin-top: 4px;
+      box-shadow: 0 0 8px rgba(45, 212, 191, 0.6);
+    }
+
+    .connector-line {
+      width: 2px;
+      background: #334155;
+      flex-grow: 1;
+      margin-top: 6px;
+      margin-bottom: -12px;
+    }
+
+    .timeline-right {
+      flex-grow: 1;
+    }
+
+    .exp-item {
+      background: #0f172a;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+
+    .exp-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 2px;
+    }
+
+    .exp-desc {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* TEACHING SKILLS CHIPS */
+    .skills-chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .skill-chip {
+      
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      font-size: 11px;
+      font-weight: 400;
+      padding: 4px 8px;
+      border-radius: 6px;
+      line-height: 1.2;
+    }
+
+    /* EDUCATION BACK STYLES */
+    .main-logo {
+      width: 32px;
+      height: 32px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+    }
+
+    .degree-item {
+      background: #0f172a;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+
+    .degree-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .degree-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .score-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .focus-text {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .portfolio-btn {
+      margin-top: auto;
+      background: #0284c7;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    /* CERTIFICATION DROPDOWN */
+    .nested-select-wrapper {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .select-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .cert-select-dropdown {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      border: 1px solid #334155;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+    }
+
+    .cert-action-btn {
+      margin-top: 14px;
+      width: 100%;
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* FOOTER & DISCLAIMER */
+    .portfolio-footer {
+      margin-top: 40px;
+      width: 100%;
+      max-width: 340px;
+      border-top: 1px solid #334155;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .social-links a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .disclaimer-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px dashed #334155;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 10px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .disclaimer-card a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    .copyright-text {
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    /* LIGHTBOX MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 85vh;
+    }
+
+    .modal-image {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      object-fit: contain;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP TOGGLE BUTTONS -->
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="switchTab('education')">Education</button>
+    <button class="tab-btn" onclick="switchTab('experience')">Lab & Skills</button>
+    <button class="tab-btn" onclick="switchTab('certifications')">Certificates</button>
+  </div>
+
+  <!-- SECTION 1: EDUCATION CARD -->
+  <div id="education" class="view-section active">
+    <div class="flip-card" id="academicCard">
+      <div class="card-inner">
+        <div class="card-face card-front">
+          <div class="card-top">
+            <div style="font-size:28px;">🎓</div>
+            <div class="status-badge">ACADEMIC PROFILE</div>
+          </div>
+          <div>
+            <div class="front-title">Education Overview</div>
+            <div class="front-subtitle">Science Pedagogy & Industrial Chemistry</div>
+          </div>
+          <div class="card-bottom">
+            <div class="student-name">Akshat Raj</div>
+            <div class="hover-prompt">Hover / Tap to Expand ↕</div>
+          </div>
+        </div>
+
+        <div class="card-face card-back">
+          <div class="back-title">Qualifications & Focus</div>
+          <div class="linkedin-timeline">
+            <div class="timeline-group">
+              <div class="timeline-left" style="width:32px;">
+                <div class="main-logo">🏫</div>
+                <div class="connector-line"></div>
+              </div>
+              <div class="timeline-right">
+                <div class="degree-item">
+                  <div class="degree-header">
+                    <div class="degree-title">B.Ed. in Science</div>
+                    <span class="score-tag">Pursuing</span>
+                  </div>
+                  <p class="focus-text"><strong>Focus:</strong> Pedagogy of Science, Educational Psychology, & Teaching Methods.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-group">
+              <div class="timeline-left" style="width:32px;">
+                <div class="main-logo">🧪</div>
+              </div>
+              <div class="timeline-right">
+                <div class="degree-item">
+                  <div class="degree-header">
+                    <div class="degree-title">B.Sc. Industrial Chemistry</div>
+                    <span class="score-tag">7.89 CGPA</span>
+                  </div>
+                  <p class="focus-text"><strong>Core:</strong> Green Chemistry, Analytical Methods, & Computational Chemistry.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="portfolio-btn">View Verified Documents</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 2: LAB EXPERIENCES & TEACHING SKILLS CARD -->
+  <div id="experience" class="view-section">
+    <div class="flip-card" id="expCard">
+      <div class="card-inner">
+        
+        <!-- FRONT FACE -->
+        <div class="card-face card-front exp-front-bg">
+          <div class="card-top">
+            <div class="card-chip"></div>
+            <div class="exp-status-badge">SKILLS & EXPERIENCES</div>
+          </div>
+          <div>
+            <div class="front-title">Lab Work & Pedagogy</div>
+            <div class="front-subtitle">Analytical Instrumentation & Teaching Expertise</div>
+          </div>
+          <div class="card-bottom">
+            <div class="student-name" style="color: #2dd4bf;">Akshat Raj</div>
+            <div class="hover-prompt">Hover / Tap to Expand ↕</div>
+          </div>
+        </div>
+
+        <!-- BACK FACE (LINKEDIN TIMELINE STYLE) -->
+        <div class="card-face card-back" onclick="event.stopPropagation()">
+          <div class="back-title" style="color: #2dd4bf;">Skills & Practical Experience</div>
+          
+          <div class="linkedin-timeline">
+            
+            <!-- TEACHING SKILLS SECTION -->
+            <div class="timeline-group">
+              <div class="timeline-left">
+                <div class="timeline-circle"></div>
+                <div class="connector-line"></div>
+              </div>
+              <div class="timeline-right">
+                <div class="exp-item">
+                  <div class="exp-title">Teaching & Pedagogical Skills</div>
+                  <div class="skills-chip-container">
+                    <span class="skill-chip">Innovative Science Teaching</span>
+                    <span class="skill-chip">CCE</span>
+                    <span class="skill-chip">Child-Centered Pedagogy</span>
+                    <span class="skill-chip">Laboratory & Safety Skills</span>
+                    <span class="skill-chip">Scientific Method Proficiency</span>
+                    <span class="skill-chip">Differentiated Instruction</span>
+                    <span class="skill-chip">Educational Technology</span>
+                    <span class="skill-chip">Assessment & Evaluation</span>
+                    <span class="skill-chip">Fostering Curiosity</span>
+                    <span class="skill-chip">Classroom Management</span>
+                    <span class="skill-chip">6E Model</span>
+                    <span class="skill-chip">Patience & Empathy</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LAB ITEM 1 -->
+            <div class="timeline-group">
+              <div class="timeline-left">
+                <div class="timeline-circle"></div>
+                <div class="connector-line"></div>
+              </div>
+              <div class="timeline-right">
+                <div class="exp-item">
+                  <div class="exp-title">Qualitative Analysis</div>
+                  <p class="exp-desc">• Titrations: Salinity, Complexometric (Zn²⁺, Mg²⁺, Ca²⁺), Double Titration (Fertilizer), Soil pH<br>• Radical Detection: Sulphate, Phosphate, Acetate</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- LAB ITEM 2 -->
+            <div class="timeline-group">
+              <div class="timeline-left">
+                <div class="timeline-circle"></div>
+                <div class="connector-line"></div>
+              </div>
+              <div class="timeline-right">
+                <div class="exp-item">
+                  <div class="exp-title">Chromatography & Separation</div>
+                  <p class="exp-desc">• Thin Layer Chromatography (TLC)<br>• Paper & Radial Paper Chromatography<br>• Recrystallization Methods</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- LAB ITEM 3 -->
+            <div class="timeline-group">
+              <div class="timeline-left">
+                <div class="timeline-circle"></div>
+              </div>
+              <div class="timeline-right">
+                <div class="exp-item">
+                  <div class="exp-title">Instruments Handled</div>
+                  <p class="exp-desc">• Digital pH Meter & Viscometer<br>• Colorimeter & Capillary Melting Point<br>• Hot Air Oven, Centrifuge & Vacuum Pump</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 3: CERTIFICATIONS CARD -->
+  <div id="certifications" class="view-section">
+    <div class="flip-card" id="certCard">
+      <div class="card-inner">
+        <div class="card-face card-front cert-front-bg">
+          <div class="card-top">
+            <div class="card-chip"></div>
+            <div class="cert-status-badge">VERIFIED CREDENTIALS</div>
+          </div>
+          <div>
+            <div class="front-title">Certifications</div>
+            <div class="front-subtitle">Pedagogy, Psychology & Educational Philosophy</div>
+          </div>
+          <div class="card-bottom">
+            <div class="student-name">Akshat Raj</div>
+            <div class="hover-prompt">Hover / Tap to Expand ↕</div>
+          </div>
+        </div>
+
+        <div class="card-face card-back" onclick="event.stopPropagation()">
+          <div class="card-top" style="margin-bottom: 8px;">
+            <div class="card-chip"></div>
+            <div class="cert-status-badge">VERIFIED CREDENTIALS</div>
+          </div>
+          
+          <div class="nested-select-wrapper">
+            <label class="select-label">Select Certificate</label>
+            <select class="cert-select-dropdown" id="certSelector">
+              <option value="https://i.postimg.cc/7ZKgmVT3/Screenshot-20260829-095411-Drive.jpg">Teacher Readiness for School</option>
+              <option value="https://i.postimg.cc/RZgcXRnH/DOC-20260829-WA0007-page-0001.jpg">Growth Mindset</option>
+              <option value="https://i.postimg.cc/dV584BT8/DOC-20260829-WA0006-page-0001.jpg">Pramanas</option>
+              <option value="https://i.postimg.cc/L89tt7hZ/Screenshot-20260829-095314-Drive.jpg">Maslow Hierarchy</option>
+              <option value="https://i.postimg.cc/Przb8hX7/Screenshot-20260829-095346-Drive.jpg">Panchkosha</option>
+            </select>
+          </div>
+
+          <button class="cert-action-btn" onclick="openSelectedCertificate()">View Selected Document ↗</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="modal-overlay" id="certModal" onclick="closeCertificate()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="closeCertificate()">✕</button>
+      <img id="modalImg" class="modal-image" src="" alt="Certificate View">
+    </div>
+  </div>
+
+
+  <script>
+    // 1. SWITCH BETWEEN TABS (3 TABS)
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      
+      if(tabId === 'education') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('education').classList.add('active');
+      } else if(tabId === 'experience') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('experience').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('certifications').classList.add('active');
+      }
+    }
+
+    // 2. TOGGLE FLIP CARDS ON CLICK
+    const academicCard = document.getElementById('academicCard');
+    academicCard.addEventListener('click', (e) => {
+      e.stopPropagation();
+      academicCard.classList.toggle('is-flipped');
+    });
+
+    const expCard = document.getElementById('expCard');
+    expCard.addEventListener('click', (e) => {
+      e.stopPropagation();
+      expCard.classList.toggle('is-flipped');
+    });
+
+    const certCard = document.getElementById('certCard');
+    certCard.addEventListener('click', (e) => {
+      e.stopPropagation();
+      certCard.classList.toggle('is-flipped');
+    });
+
+    // CLOSE CARDS ON CLICK OUTSIDE
+    document.addEventListener('click', () => {
+      academicCard.classList.remove('is-flipped');
+      expCard.classList.remove('is-flipped');
+      certCard.classList.remove('is-flipped');
+    });
+
+    // 3. OPEN CERTIFICATE LIGHTBOX
+    function openSelectedCertificate() {
+      const selectedUrl = document.getElementById('certSelector').value;
+      const modal = document.getElementById('certModal');
+      const img = document.getElementById('modalImg');
+      
+      img.src = selectedUrl;
+      modal.classList.add('active');
+    }
+
+    function closeCertificate() {
+      document.getElementById('certModal').classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>
