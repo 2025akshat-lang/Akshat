@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Learning Animation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #e0f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* सीखने का मुख्य कंटेनर */
+        .stage {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        /* स्पीच बबल (बोलने वाला बॉक्स) */
+        .speech-bubble {
+            background: #ffffff;
+            border-top: 4px solid #ff4081;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            min-height: 80px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* स्पीच बबल की पूँछ */
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: #ffffff transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* कार्टून कैरेक्टर */
+        .cartoon-character {
+            font-size: 100px;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px auto;
+            cursor: pointer;
+            user-select: none;
+            /* तैरने का एनिमेशन */
+            animation: float-anim 3s ease-in-out infinite;
+        }
+
+        /* तैरने का इफेक्ट (CSS Animation) */
+        @keyframes float-anim {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* बोलने पर हिलने का इफेक्ट */
+        .talking {
+            animation: talk-anim 0.3s ease-in-out infinite;
+        }
+
+        @keyframes talk-anim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* बटन */
+        .btn-next {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-next:hover {
+            background-color: #f50057;
+            transform: scale(1.05);
+        }
+
+        .btn-next:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stage">
+        <!-- बच्चों के लिए संदेश -->
+        <div class="speech-bubble" id="bubble">नमस्ते बच्चों! आज हम कुछ नया सीखेंगे! 👋</div>
+        
+        <!-- प्यारा कार्टून (Emoji) -->
+        <div class="cartoon-character" id="cartoon">🤖</div>
+        
+        <!-- अगला पाठ देखने के लिए बटन -->
+        <button class="btn-next" onclick="nextLesson()">अगली बात सुनो! ➡️</button>
+    </div>
+
+    <script>
+        // टीचिंग-लर्निंग डायलॉग्स और कैरेक्टर के रूप (Expressions)
+        const lessons = [
+            { text: "क्या आपको पता है? सूरज हमेशा पूर्व (East) से उगता है! ☀️", emoji: "🤖" },
+            { text: "चलो मेरे साथ गिनो: 1... 2... 3! बहुत बढ़िया! 🔢", emoji: "🤓" },
+            { text: "हमेशा खाने से पहले अपने हाथ अच्छी तरह धोना चाहिए! 🧼", emoji: "🧼" },
+            { text: "पेड़-पौधे हमारे दोस्त हैं, वे हमें शुद्ध हवा देते हैं! 🌳", emoji: "🌱" },
+            { text: "आज का पाठ खत्म! आपने बहुत अच्छा सीखा! शाबाश! 🌟", emoji: "🥳" }
+        ];
+
+        let currentIdx = 0;
+        const bubble = document.getElementById('bubble');
+        const cartoon = document.getElementById('cartoon');
+
+        function nextLesson() {
+            if (currentIdx >= lessons.length) {
+                currentIdx = 0; // दोबारा शुरू करने के लिए
+            }
+
+            const currentData = lessons[currentIdx];
+
+            // टेक्स्ट और कैरेक्टर बदलना
+            bubble.textContent = currentData.text;
+            cartoon.textContent = currentData.emoji;
+
+            // बोलने का शॉर्ट एनिमेशन ट्रिगर करना
+            cartoon.classList.add('talking');
+            setTimeout(() => {
+                cartoon.classList.remove('talking');
+            }, 600);
+
+            currentIdx++;
+        }
+    </script>
+
+</body>
+</html>
