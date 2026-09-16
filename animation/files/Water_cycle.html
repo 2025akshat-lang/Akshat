@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Class 9 - Complete 3D Water Cycle</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 10px; }
+        
+        h1 { font-size: 20px; color: #38bdf8; text-align: center; margin-top: 5px; font-weight: 700; }
+        p.subtitle { color: #94a3b8; font-size: 12px; margin-bottom: 10px; text-align: center; }
+
+        .canvas-card { width: 100%; max-width: 500px; background: #1e293b; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; position: relative; }
+        canvas { width: 100%; height: 320px; display: block; touch-action: none; }
+
+        .controls-grid { width: 100%; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        
+        .btn { background: #0284c7; color: white; border: none; padding: 10px 8px; border-radius: 10px; font-weight: 600; font-size: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-loop { background: #8b5cf6; grid-column: span 2; font-size: 14px; font-weight: 700; }
+        .btn-active { background: #e11d48 !important; }
+
+        .info-box { width: 100%; max-width: 500px; background: #1e293b; margin-top: 10px; padding: 12px 15px; border-radius: 12px; border-left: 4px solid #38bdf8; }
+        .info-box h3 { color: #38bdf8; font-size: 15px; margin-bottom: 4px; }
+        .info-box p { color: #cbd5e1; font-size: 12px; line-height: 1.4; margin: 0; }
+        
+        .stage-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; background: #334155; color: #38bdf8; font-size: 11px; font-weight: bold; margin-bottom: 5px;}
+    </style>
+</head>
+<body>
+
+    <h1>Interconnected Water Cycle</h1>
+    <p class="subtitle">Class 9th Visualizer | Made by akshat</p>
+
+    <div class="canvas-card">
+        <canvas id="stageCanvas"></canvas>
+    </div>
+
+    <div class="controls-grid">
+        <button class="btn btn-loop btn-active" id="loopBtn" onclick="toggleLoop()">🔄 Continuous Cycle Mode (Active)</button>
+        <button class="btn" onclick="setMode('evap')">1. Evaporation</button>
+        <button class="btn" onclick="setMode('transp')">2. Transpiration</button>
+        <button class="btn" onclick="setMode('cond')">3. Condensation</button>
+        <button class="btn" onclick="setMode('rain')">4. Precipitation</button>
+        <button class="btn btn-rain" style="grid-column: span 2; background: #059669;" onclick="setMode('infil')">5. Infiltration & Groundwater</button>
+    </div>
+
+    <div class="info-box">
+        <span class="stage-badge" id="stageBadge">LOOP MODE</span>
+        <h3 id="stageTitle">Continuous Water Cycle</h3>
+        <p id="stageDesc">Watch how water seamlessly changes states and travels from ocean/plants to sky, to soil, and back!</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('stageCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 320;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        let autoLoop = true;
+        let activeStage = 'loop';
+        let cycleTimer = 0;
+
+        // Particle Pools
+        let vaporParticles = [];
+        let transpParticles = [];
+        let rainParticles = [];
+        let condensationParticles = [];
+        let infiltrationParticles = [];
+        let groundwaterFlow = [];
+
+        // 1. Evaporation Particles (Ocean -> Cloud)
+        for(let i=0; i<30; i++) {
+            vaporParticles.push({
+                x: 30 + Math.random() * 90,
+                y: 210 + Math.random() * 30,
+                speed: 0.5 + Math.random() * 0.5,
+                opacity: Math.random()
+            });
+        }
+
+        // 2. Transpiration Particles (Plant -> Cloud)
+        for(let i=0; i<20; i++) {
+            transpParticles.push({
+                x: 175 + Math.random() * 12,
+                y: 195 + Math.random() * 15,
+                speed: 0.4 + Math.random() * 0.4,
+                opacity: Math.random()
+            });
+        }
+
+        // 3. Condensation Particles
+        for(let i=0; i<30; i++) {
+            condensationParticles.push({
+                x: 170 + Math.random() * 120,
+                y: 40 + Math.random() * 40,
+                radius: 1 + Math.random() * 2,
+                alpha: Math.random()
+            });
+        }
+
+        // 4. Rain Particles
+        for(let i=0; i<45; i++) {
+            rainParticles.push({
+                x: 180 + Math.random() * 110,
+                y: 70 + Math.random() * 100,
+                speed: 2.5 + Math.random() * 2 // Slower rain drop speed
+            });
+        }
+
+        // 5. Infiltration Particles
+        for(let i=0; i<25; i++) {
+            infiltrationParticles.push({
+                x: 160 + Math.random() * 120,
+                y: 220 + Math.random() * 10,
+                speed: 0.3 + Math.random() * 0.3
+            });
+        }
+
+        // 6. Underground Stream Flowing Back to Ocean
+        for(let i=0; i<20; i++) {
+            groundwaterFlow.push({
+                x: 140 + Math.random() * 140,
+                y: 285 + Math.random() * 10,
+                speed: 0.4 + Math.random() * 0.4
+            });
+        }
+
+        let cloudPulse = 0;
+
+        function drawTerrain() {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Sky
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+            skyGrad.addColorStop(0, '#0f172a');
+            skyGrad.addColorStop(1, '#1e293b');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Sun
+            ctx.fillStyle = '#f59e0b';
+            ctx.shadowColor = '#f59e0b';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.arc(45, 45, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Ocean
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(10, 220, 130, 50);
+
+            // Soil
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(140, 220, w - 150, 50);
+
+            // Soil Deep Layer
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(140, 240, w - 150, 30);
+
+            // Tree (Transpiration Source)
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.arc(180, 195, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(178, 205, 4, 15);
+
+            // Groundwater Reservoir
+            ctx.fillStyle = '#0369a1';
+            ctx.fillRect(10, 270, w - 20, 30);
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = '10px Segoe UI';
+            ctx.fillText('Underground Aquifer / Return Flow ➔', 120, 288);
+
+            // Mountain
+            ctx.fillStyle = '#475569';
+            ctx.beginPath();
+            ctx.moveTo(210, 220);
+            ctx.lineTo(270, 120);
+            ctx.lineTo(w - 20, 220);
+            ctx.fill();
+
+            // Clouds
+            cloudPulse += 0.02;
+            let cloudDark = (activeStage === 'rain' || (autoLoop && cycleTimer > 350 && cycleTimer < 580));
+            ctx.fillStyle = cloudDark ? '#475569' : '#e2e8f0';
+            
+            ctx.beginPath();
+            ctx.arc(190, 70, 22, 0, Math.PI * 2);
+            ctx.arc(220, 60, 28, 0, Math.PI * 2);
+            ctx.arc(250, 70, 22, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTerrain();
+
+            if (autoLoop) {
+                cycleTimer = (cycleTimer + 1) % 850; // Increased timer for slower, peaceful transitions
+                updateStageTextByTimer(cycleTimer);
+            }
+
+            // --- 1. EVAPORATION ANIMATION ---
+            if (activeStage === 'evap' || (autoLoop && cycleTimer < 250)) {
+                ctx.fillStyle = '#38bdf8';
+                vaporParticles.forEach(p => {
+                    p.y -= p.speed;
+                    p.x += Math.sin(p.y * 0.04) * 0.4;
+                    if(p.y < 80) {
+                        p.y = 210;
+                        p.x = 30 + Math.random() * 90;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            // --- 2. TRANSPIRATION ANIMATION ---
+            if (activeStage === 'transp' || (autoLoop && cycleTimer >= 100 && cycleTimer < 320)) {
+                ctx.fillStyle = '#4ade80'; // Greenish hue for plant vapor
+                transpParticles.forEach(tp => {
+                    tp.y -= tp.speed;
+                    tp.x += Math.cos(tp.y * 0.05) * 0.3;
+                    if(tp.y < 80) {
+                        tp.y = 195;
+                        tp.x = 175 + Math.random() * 12;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(tp.x, tp.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            // --- 3. CONDENSATION ANIMATION ---
+            if (activeStage === 'cond' || (autoLoop && cycleTimer >= 220 && cycleTimer < 450)) {
+                condensationParticles.forEach(cp => {
+                    cp.alpha += 0.01;
+                    if(cp.alpha > 1) cp.alpha = 0.1;
+                    ctx.fillStyle = '#bae6fd';
+                    ctx.globalAlpha = cp.alpha;
+                    ctx.beginPath();
+                    ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.globalAlpha = 1.0;
+            }
+
+            // --- 4. PRECIPITATION (RAIN) ANIMATION ---
+            if (activeStage === 'rain' || (autoLoop && cycleTimer >= 380 && cycleTimer < 620)) {
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                rainParticles.forEach(r => {
+                    r.y += r.speed;
+                    if(r.y > 220) {
+                        r.y = 70;
+                        r.x = 180 + Math.random() * 110;
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(r.x, r.y);
+                    ctx.lineTo(r.x - 1, r.y + 7);
+                    ctx.stroke();
+                });
+            }
+
+            // --- 5. INFILTRATION & GROUNDWATER RETURN ---
+            if (activeStage === 'infil' || (autoLoop && cycleTimer >= 520)) {
+                ctx.fillStyle = '#38bdf8';
+                
+                // Vertical Seepage
+                infiltrationParticles.forEach(ip => {
+                    ip.y += ip.speed;
+                    if(ip.y > 270) {
+                        ip.y = 220;
+                        ip.x = 160 + Math.random() * 120;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(ip.x, ip.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Horizontal Return Stream back to Ocean
+                groundwaterFlow.forEach(gw => {
+                    gw.x -= gw.speed;
+                    if(gw.x < 20) gw.x = 270;
+                    ctx.beginPath();
+                    ctx.arc(gw.x, gw.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        function updateStageTextByTimer(timer) {
+            const badge = document.getElementById('stageBadge');
+            const title = document.getElementById('stageTitle');
+            const desc = document.getElementById('stageDesc');
+
+            if(timer < 180) {
+                badge.textContent = "STEP 1: EVAPORATION";
+                title.textContent = "Ocean Water Turns into Vapor";
+                desc.textContent = "Sun heats up surface water from oceans/lakes, changing liquid into invisible gas rising up.";
+            } else if(timer < 300) {
+                badge.textContent = "STEP 2: TRANSPIRATION";
+                title.textContent = "Plants Release Water Vapor";
+                desc.textContent = "Trees & plants release excess absorbed water as vapor into the air through leaf pores (stomata).";
+            } else if(timer < 420) {
+                badge.textContent = "STEP 3: CONDENSATION";
+                title.textContent = "Cool Air Forms Cloud Droplets";
+                desc.textContent = "High altitude cool air cools warm vapor down, clumping them together into water droplets to form clouds.";
+            } else if(timer < 600) {
+                badge.textContent = "STEP 4: PRECIPITATION";
+                title.textContent = "Raindrops Fall to Earth";
+                desc.textContent = "Cloud droplets become too heavy to float in air and fall down on ground and mountains due to gravity.";
+            } else {
+                badge.textContent = "STEP 5: INFILTRATION & RETURN";
+                title.textContent = "Seeping Underground & Ocean Return";
+                desc.textContent = "Rainwater seeps deep into soil (Infiltration), recharging groundwater aquifers that flow back to the ocean!";
+            }
+        }
+
+        function setMode(stage) {
+            autoLoop = false;
+            activeStage = stage;
+            document.getElementById('loopBtn').classList.remove('btn-active');
+            const badge = document.getElementById('stageBadge');
+            const title = document.getElementById('stageTitle');
+            const desc = document.getElementById('stageDesc');
+
+            badge.textContent = "MANUAL VIEW";
+            if(stage === 'evap') {
+                title.textContent = "1. Evaporation";
+                desc.textContent = "Liquid ocean water absorbs heat energy and turns into gaseous vapor rising up.";
+            } else if(stage === 'transp') {
+                title.textContent = "2. Transpiration";
+                desc.textContent = "Plants sweat out excess water through tiny microscopic stomata in their leaves into the atmosphere.";
+            } else if(stage === 'cond') {
+                title.textContent = "3. Condensation";
+                desc.textContent = "Gas vapor cools down in atmosphere, turning back into liquid cloud droplets.";
+            } else if(stage === 'rain') {
+                title.textContent = "4. Precipitation";
+                desc.textContent = "Condensed water droplets become heavy and fall as rain onto the land.";
+            } else if(stage === 'infil') {
+                title.textContent = "5. Infiltration";
+                desc.textContent = "Land water seeps down soil, replenishing groundwater that flows back to ocean.";
+            }
+        }
+
+        function toggleLoop() {
+            autoLoop = true;
+            activeStage = 'loop';
+            document.getElementById('loopBtn').classList.add('btn-active');
+        }
+
+        render();
+    </script>
+</body>
+</html>
