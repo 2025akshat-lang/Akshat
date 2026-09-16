@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Charlie Chaplin CSS Art</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #929080;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- GEARS / SETTINGS ANIMATION --- */
+    .gears-container {
+      position: absolute;
+      top: 10px;
+      width: 250px;
+      height: 160px;
+      z-index: 1;
+    }
+
+    .gear {
+      position: absolute;
+      border-radius: 50%;
+      background: #e5e5e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Gear Teeth Effect */
+    .gear::before, .gear::after {
+      content: "";
+      position: absolute;
+      background: #e5e5e0;
+      border-radius: 4px;
+    }
+
+    /* Main Big Center Gear */
+    .gear.main {
+      width: 90px;
+      height: 90px;
+      top: 30px;
+      left: 80px;
+      animation: spinRight 6s linear infinite;
+    }
+    .gear.main::before { width: 105px; height: 30px; }
+    .gear.main::after { width: 30px; height: 105px; }
+
+    /* Left Medium Gear */
+    .gear.left {
+      width: 70px;
+      height: 70px;
+      top: 50px;
+      left: 15px;
+      animation: spinLeft 5s linear infinite;
+    }
+    .gear.left::before { width: 85px; height: 22px; }
+    .gear.left::after { width: 22px; height: 85px; }
+
+    /* Right Medium Gear */
+    .gear.right {
+      width: 75px;
+      height: 75px;
+      top: 25px;
+      right: 15px;
+      animation: spinLeft 5.5s linear infinite;
+    }
+    .gear.right::before { width: 90px; height: 24px; }
+    .gear.right::after { width: 24px; height: 90px; }
+
+    /* Small Top-Right Gear */
+    .gear.small-top {
+      width: 45px;
+      height: 45px;
+      top: 0px;
+      right: 65px;
+      animation: spinRight 4s linear infinite;
+    }
+    .gear.small-top::before { width: 55px; height: 14px; }
+    .gear.small-top::after { width: 14px; height: 55px; }
+
+    /* Inner holes for gears */
+    .gear-hole {
+      width: 35%;
+      height: 35%;
+      background-color: #929080;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    /* Gear Rotation Keyframes */
+    @keyframes spinRight {
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes spinLeft {
+      100% { transform: rotate(-360deg); }
+    }
+
+    /* --- HAT --- */
+    .hat-brim {
+      position: absolute;
+      top: 140px;
+      width: 260px;
+      height: 40px;
+      background: #3a3935;
+      border-radius: 50% / 100% 100% 0 0;
+      z-index: 3;
+    }
+
+    /* --- HAIR --- */
+    .hair {
+      position: absolute;
+      top: 165px;
+      width: 220px;
+      height: 90px;
+      background: #252422;
+      border-radius: 40px 40px 20px 20px;
+      z-index: 2;
+    }
+
+    /* --- FACE --- */
+    .face {
+      position: absolute;
+      top: 175px;
+      width: 170px;
+      height: 220px;
+      background: #f2efe9;
+      clip-path: polygon(0% 0%, 100% 0%, 85% 75%, 50% 100%, 15% 75%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* EYEBROWS */
+    .eyebrows {
+      position: absolute;
+      top: 50px;
+      width: 130px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .eyebrow {
+      width: 45px;
+      height: 35px;
+      border-top: 8px solid #252422;
+      border-radius: 50% 50% 0 0;
+    }
+
+    /* EYES & BLINK ANIMATION */
+    .eyes {
+      position: absolute;
+      top: 80px;
+      width: 120px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .eye {
+      position: relative;
+      width: 40px;
+      height: 30px;
+      background: #ffffff;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pupil {
+      width: 16px;
+      height: 16px;
+      background: #252422;
+      border-radius: 50%;
+    }
+
+    /* Eyelid for Blinking Effect */
+    .eyelid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f2efe9;
+      transform: translateY(-100%);
+      animation: blink 4s infinite;
+    }
+
+    @keyframes blink {
+      0%, 90%, 100% { transform: translateY(-100%); }
+      95% { transform: translateY(0%); }
+    }
+
+    /* NOSE */
+    .nose {
+      position: absolute;
+      top: 120px;
+      width: 8px;
+      height: 18px;
+      border-right: 3px solid #d0cbc0;
+      border-bottom: 3px solid #d0cbc0;
+      border-radius: 0 0 5px 0;
+    }
+
+    /* MUSTACHE */
+    .mustache {
+      position: absolute;
+      top: 152px;
+      width: 34px;
+      height: 22px;
+      background: #252422;
+      border-radius: 4px 4px 10px 10px;
+    }
+
+    /* LIP */
+    .lip {
+      position: absolute;
+      top: 180px;
+      width: 30px;
+      height: 2px;
+      background: #252422;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Rotating Gears (Top/Hat section) -->
+    <div class="gears-container">
+      <div class="gear main"><div class="gear-hole"></div></div>
+      <div class="gear left"><div class="gear-hole"></div></div>
+      <div class="gear right"><div class="gear-hole"></div></div>
+      <div class="gear small-top"><div class="gear-hole"></div></div>
+    </div>
+
+    <!-- Hat Brim -->
+    <div class="hat-brim"></div>
+
+    <!-- Hair -->
+    <div class="hair"></div>
+
+    <!-- Cartoon Face -->
+    <div class="face">
+      <div class="eyebrows">
+        <div class="eyebrow"></div>
+        <div class="eyebrow"></div>
+      </div>
+
+      <div class="eyes">
+        <div class="eye">
+          <div class="pupil"></div>
+          <div class="eyelid"></div>
+        </div>
+        <div class="eye">
+          <div class="pupil"></div>
+          <div class="eyelid"></div>
+        </div>
+      </div>
+
+      <div class="nose"></div>
+      <div class="mustache"></div>
+      <div class="lip"></div>
+    </div>
+  </div>
+
+</body>
+</html>
