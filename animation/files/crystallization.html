@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystallization Lab Animation</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --copper-blue: #0284c7;
+            --text-light: #f8fafc;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--accent-blue);
+            margin: 0 0 5px 0;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .lab-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 900px;
+            width: 100%;
+            background: var(--panel-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .lab-container {
+                flex-direction: row;
+                padding: 20px;
+            }
+        }
+
+        .canvas-section {
+            flex: 1.4;
+            background: #020617;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #475569;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .step-card {
+            background: #111827;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        .step-desc-en {
+            font-size: 14px;
+            color: #f8fafc;
+            line-height: 1.4;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .step-desc-hi {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-next {
+            background: var(--accent-blue);
+            color: #0f172a;
+        }
+
+        .btn-next:hover {
+            background: #7dd3fc;
+        }
+
+        .btn-prev {
+            background: #475569;
+            color: white;
+        }
+
+        .btn-prev:hover {
+            background: #64748b;
+        }
+
+        .btn:disabled {
+            background: #1e293b;
+            color: #64748b;
+            cursor: not-allowed;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Copper Sulfate Crystallization</h1>
+    <p class="subtitle">Interactive Lab Simulation (Activity 5.3)</p>
+
+    <div class="lab-container">
+        <!-- SIMULATION INTERFACE -->
+        <div class="canvas-section">
+            <canvas id="labCanvas" width="600" height="400"></canvas>
+        </div>
+
+        <!-- EXPLANATION & CONTROLS -->
+        <div class="info-section">
+            <div class="step-card">
+                <div class="step-title" id="ui-step-num">Step 1 of 4</div>
+                <div id="ui-step-text-en" class="step-desc-en">Loading...</div>
+                <div id="ui-step-text-hi" class="step-desc-hi">Loading...</div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-prev" id="btn-prev" disabled>Previous</button>
+                <button class="btn btn-next" id="btn-next">Next Step</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('labCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentStep = 0;
+        let animationTime = 0;
+
+        const stepsData = [
+            {
+                title: "Preparing Saturated Solution",
+                descEn: "Add copper sulfate powder to water and heat gently while stirring continuously.",
+                descHi: "पानी में कॉपर सल्फेट पाउडर मिलाएं और लगातार हिलाते हुए धीरे-धीरे गर्म करें।"
+            },
+            {
+                title: "Filtration Process",
+                descEn: "Filter the hot solution using filter paper to remove insoluble impurities.",
+                descHi: "अघुलनशील अशुद्धियों को बाहर निकालने के लिए गर्म घोल को छान लें।"
+            },
+            {
+                title: "Slow Controlled Cooling",
+                descEn: "Cover the clear filtrate with a watch glass and leave it completely undisturbed to cool.",
+                descHi: "घोल को वॉच ग्लास से ढक दें और बिना हिलाए-डुलाये धीरे-धीरे ठंडा होने दें।"
+            },
+            {
+                title: "Pure Crystal Formation",
+                descEn: "As the liquid cools, pure blue copper sulfate crystals form at the bottom.",
+                descHi: "ठंडा होने पर नीचे शुद्ध नीले रंग के कॉपर सल्फेट क्रिस्टल बन जाते हैं।"
+            }
+        ];
+
+        const uiNum = document.getElementById('ui-step-num');
+        const uiTextEn = document.getElementById('ui-step-text-en');
+        const uiTextHi = document.getElementById('ui-step-text-hi');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+
+        function updateUI() {
+            const step = stepsData[currentStep];
+            uiNum.innerText = `Step ${currentStep + 1} of 4 — ${step.title}`;
+            uiTextEn.innerText = step.descEn;
+            uiTextHi.innerText = step.descHi;
+            
+            btnPrev.disabled = currentStep === 0;
+            btnNext.innerText = (currentStep === 3) ? "Restart Experiment" : "Next Step";
+        }
+
+        function drawBeaker(x, y, w, h, fluidLevel = 0, fluidColor = '#0284c7') {
+            if (fluidLevel > 0) {
+                ctx.fillStyle = fluidColor;
+                ctx.fillRect(x + 4, y + h - fluidLevel, w - 8, fluidLevel - 2);
+            }
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y + h - 5);
+            ctx.quadraticCurveTo(x, y + h, x + 5, y + h);
+            ctx.lineTo(x + w - 5, y + h);
+            ctx.quadraticCurveTo(x + w, y + h, x + w, y + h - 5);
+            ctx.lineTo(x + w, y);
+            ctx.stroke();
+        }
+
+        function drawBurner(x, y, isOn = false) {
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x - 50, y);
+            ctx.lineTo(x + 50, y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x - 40, y); ctx.lineTo(x - 60, y + 100);
+            ctx.moveTo(x + 40, y); ctx.lineTo(x + 60, y + 100);
+            ctx.stroke();
+
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(x - 20, y + 60, 40, 40);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(x - 4, y + 45, 8, 15);
+
+            if (isOn) {
+                let pulse = Math.sin(animationTime * 0.1) * 3;
+                ctx.fillStyle = '#f97316';
+                ctx.beginPath();
+                ctx.moveTo(x, y + 20 + pulse);
+                ctx.quadraticCurveTo(x - 12, y + 45, x, y + 45);
+                ctx.quadraticCurveTo(x + 12, y + 45, x, y + 20 + pulse);
+                ctx.fill();
+            }
+        }
+
+        // Draw Retort Stand for Funnel Support
+        function drawRetortStand() {
+            // Heavy Metal Base Plate
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(350, 348, 60, 10);
+            
+            // Vertical Metallic Rod
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(375, 140, 6, 208);
+            
+            // Clamp Bosshead on rod
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(371, 163, 14, 15);
+            
+            // Horizontal Ring Arm supporting the Funnel
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(371, 170);
+            ctx.lineTo(250, 170);
+            ctx.stroke();
+        }
+
+        function renderSimulation() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            animationTime++;
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2 + 20);
+            ctx.scale(1.6, 1.6);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2 - 20);
+
+            switch(currentStep) {
+                case 0: // STEP 1
+                    drawBurner(300, 270, true);
+                    drawBeaker(240, 190, 120, 80, 50, 'rgba(56, 189, 248, 0.4)');
+                    drawBeaker(260, 170, 80, 70, 40, `rgba(2, 132, 199, ${0.3 + Math.sin(animationTime*0.05)*0.2})`);
+                    
+                    let rodX = 290 + Math.sin(animationTime * 0.08) * 15;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(rodX + 15, 120);
+                    ctx.lineTo(rodX, 220);
+                    ctx.stroke();
+                    break;
+
+                case 1: // STEP 2: Filtration with Retort Stand
+                    // Draw Lab Stand behind apparatus
+                    drawRetortStand();
+
+                    // Receiving Beaker
+                    let dripFill = Math.min(40, animationTime * 0.15);
+                    drawBeaker(260, 280, 80, 75, dripFill, '#0284c7');
+
+                    // Filter Funnel outline
+                    ctx.strokeStyle = '#cbd5e1';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(250, 170); ctx.lineTo(350, 170);
+                    ctx.lineTo(310, 220); ctx.lineTo(310, 260);
+                    ctx.lineTo(290, 260); ctx.lineTo(290, 220);
+                    ctx.closePath();
+                    ctx.stroke();
+
+                    // Filter Paper Cone
+                    ctx.strokeStyle = '#f8fafc';
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                    ctx.beginPath();
+                    ctx.moveTo(260, 175);
+                    ctx.lineTo(340, 175);
+                    ctx.lineTo(300, 215);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Drops animation
+                    if (dripFill < 40) {
+                        ctx.fillStyle = '#38bdf8';
+                        ctx.beginPath();
+                        ctx.arc(300, 250 + (animationTime % 20) * 1.5, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    break;
+
+                case 2: // STEP 3
+                    drawBeaker(250, 200, 100, 100, 60, '#0284c7');
+
+                    ctx.strokeStyle = '#cbd5e1';
+                    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                    ctx.beginPath();
+                    ctx.ellipse(300, 200, 56, 10, 0, 0, Math.PI, false);
+                    ctx.stroke();
+                    ctx.fill();
+
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    let waveOffset = (animationTime % 40) * 0.5;
+                    ctx.arc(300, 270, 10 + waveOffset, 0, Math.PI * 2);
+                    ctx.stroke();
+                    break;
+
+                case 3: // STEP 4
+                    drawBeaker(250, 200, 100, 100, 45, 'rgba(2, 132, 199, 0.6)');
+
+                    ctx.fillStyle = '#00e5ff';
+                    ctx.strokeStyle = '#0091ea';
+                    ctx.lineWidth = 1.5;
+
+                    function drawCrystalCluster(cx, cy, size) {
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy - size);
+                        ctx.lineTo(cx + size, cy - size/3);
+                        ctx.lineTo(cx + size/2, cy + size);
+                        ctx.lineTo(cx - size, cy + size/2);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+
+                    drawCrystalCluster(275, 290, 12);
+                    drawCrystalCluster(295, 292, 16);
+                    drawCrystalCluster(325, 294, 10);
+                    drawCrystalCluster(305, 285, 14);
+                    drawCrystalCluster(285, 295, 8);
+                    break;
+            }
+
+            ctx.restore();
+            requestAnimationFrame(renderSimulation);
+        }
+
+        btnNext.addEventListener('click', () => {
+            currentStep = (currentStep === 3) ? 0 : currentStep + 1;
+            animationTime = 0;
+            updateUI();
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                animationTime = 0;
+                updateUI();
+            }
+        });
+
+        updateUI();
+        renderSimulation();
+    </script>
+</body>
+</html>

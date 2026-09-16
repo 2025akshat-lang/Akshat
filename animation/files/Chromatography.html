@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Ink Separation - Paper Chromatography</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 440px;
+            border: 4px solid #f1c40f;
+        }
+        h1 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 24px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .experiment-box {
+            position: relative;
+            width: 220px;
+            height: 340px;
+            border: 5px solid rgba(255, 255, 255, 0.8);
+            border-top: none;
+            border-radius: 0 0 25px 25px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        /* Animated Water at bottom */
+        .water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(180deg, rgba(52, 152, 219, 0.6) 0%, rgba(41, 128, 185, 0.9) 100%);
+            border-top: 3px solid #00d2d3;
+            box-shadow: 0 -5px 15px rgba(0, 210, 211, 0.5);
+        }
+        /* Chromatography Paper Strip */
+        .paper-strip {
+            position: absolute;
+            bottom: 15px;
+            left: 60px;
+            width: 100px;
+            height: 300px;
+            background-color: #fcfbf7;
+            border: 1px solid #dcdde1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 2px;
+        }
+        /* Pencil Line (Baseline) */
+        .baseline {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            height: 2px;
+            border-top: 2px dashed #95a5a6;
+        }
+        .label-line {
+            position: absolute;
+            right: 4px;
+            bottom: 43px;
+            font-size: 10px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        /* Glowing Water Front Line */
+        .solvent-front {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            height: 4px;
+            background-color: #00d2d3;
+            display: none;
+            box-shadow: 0 0 10px #00d2d3, 0 0 20px #00d2d3;
+            z-index: 10;
+        }
+        /* Wet Paper Effect */
+        .wet-paper {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            height: 0px;
+            background: rgba(220, 240, 255, 0.4);
+            transition: height 0.1s linear;
+        }
+
+        /* Ink Spots & Realistic Bleed Effects */
+        .spot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 33px;
+            border-radius: 50%;
+            transition: opacity 0.5s ease;
+        }
+        .black-ink {
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #000 60%, #434343 100%);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            z-index: 5;
+        }
+
+        /* Separated Color Spots with Realistic Blur Bleed */
+        .spot-yellow { 
+            width: 18px; height: 22px; 
+            background: radial-gradient(circle, #ffeaa7 20%, #fdcb6e 80%);
+            filter: blur(1px); opacity: 0; 
+            box-shadow: 0 0 12px #fdcb6e;
+        }
+        .spot-blue { 
+            width: 18px; height: 20px; 
+            background: radial-gradient(circle, #74b9ff 20%, #0984e3 80%);
+            filter: blur(1px); opacity: 0; 
+            box-shadow: 0 0 12px #0984e3;
+        }
+        .spot-red { 
+            width: 18px; height: 18px; 
+            background: radial-gradient(circle, #ff7675 20%, #d63031 80%);
+            filter: blur(1px); opacity: 0; 
+            box-shadow: 0 0 12px #d63031;
+        }
+
+        /* Trails behind spots */
+        .trail {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            bottom: 40px;
+            opacity: 0;
+            border-radius: 4px;
+        }
+        .trail-yellow { background: linear-gradient(to top, transparent, rgba(253, 203, 110, 0.4)); }
+        .trail-blue   { background: linear-gradient(to top, transparent, rgba(9, 132, 227, 0.4)); }
+        .trail-red    { background: linear-gradient(to top, transparent, rgba(214, 48, 49, 0.4)); }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .btn-run {
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            color: white;
+        }
+        .btn-run:hover { transform: scale(1.05); }
+        .btn-reset {
+            background: linear-gradient(45deg, #FF416C, #FF4B2B);
+            color: white;
+        }
+        .btn-reset:hover { transform: scale(1.05); }
+
+        /* Magic Info Box */
+        .info-box {
+            margin-top: 18px;
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #2c3e50;
+            border: 2px dashed #0984e3;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .sparkle-text {
+            animation: pulse 1.5s infinite alternate;
+            color: #6c5ce7;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); color: #e84393; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🎨Ink Separation</h1>
+    <div class="subtitle">Paper Chromatography Demo made by akshat</div>
+
+    <div class="experiment-box">
+        <div class="water"></div>
+        <div class="paper-strip">
+            <div class="wet-paper" id="wetPaper"></div>
+            <div class="baseline"></div>
+            <span class="label-line">Start Line</span>
+            
+            <div class="solvent-front" id="solventFront"></div>
+
+            <!-- Color Trails -->
+            <div class="trail trail-yellow" id="trailYellow"></div>
+            <div class="trail trail-blue" id="trailBlue"></div>
+            <div class="trail trail-red" id="trailRed"></div>
+
+            <!-- Original Ink Mixture Spot -->
+            <div class="spot black-ink" id="blackSpot"></div>
+
+            <!-- Separated Color Spots -->
+            <div class="spot spot-yellow" id="yellowSpot"></div>
+            <div class="spot spot-blue" id="blueSpot"></div>
+            <div class="spot spot-red" id="redSpot"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-run" onclick="startSeparation()">▶ Start experiment!</button>
+        <button class="btn-reset" onclick="resetExperiment()">🔄 Reset</button>
+    </div>
+
+    <div class="info-box" id="infoText">
+        Click "Start experiment" to see how black ink secretly hides multiple colors! 🧙‍♂️✨
+    </div>
+</div>
+
+<script>
+    let animationId;
+    let isRunning = false;
+
+    function startSeparation() {
+        if (isRunning) return;
+        isRunning = true;
+
+        const solventFront = document.getElementById('solventFront');
+        const wetPaper = document.getElementById('wetPaper');
+        const blackSpot = document.getElementById('blackSpot');
+        
+        const yellowSpot = document.getElementById('yellowSpot');
+        const blueSpot = document.getElementById('blueSpot');
+        const redSpot = document.getElementById('redSpot');
+
+        const trailYellow = document.getElementById('trailYellow');
+        const trailBlue = document.getElementById('trailBlue');
+        const trailRed = document.getElementById('trailRed');
+
+        const infoText = document.getElementById('infoText');
+
+        solventFront.style.display = 'block';
+        infoText.className = "info-box sparkle-text";
+        infoText.innerHTML = "💧 Water is climbing slowly up the paper! Watch the black ink closely...";
+
+        let progress = 0; // 0 to 100%
+
+        function animate() {
+            // EXTREMELY SLOW SPEED for clear visualization (0.08 per frame)
+            progress += 0.08; 
+
+            if (progress <= 100) {
+                let maxDistance = 220; // Total height travel in pixels
+                let currentDistance = (progress / 100) * maxDistance;
+
+                // Move Water Front & Wet Paper Effect
+                solventFront.style.bottom = (40 + currentDistance) + 'px';
+                wetPaper.style.height = currentDistance + 'px';
+
+                // Stage 1: Water reaches ink (0 - 15%)
+                if (progress > 5 && progress <= 20) {
+                    blackSpot.style.opacity = Math.max(0, 1 - (progress - 5) / 15);
+                    infoText.innerHTML = "🔍 Look! The black spot is melting into water...";
+                }
+
+                // Stage 2: Separation Starts (20%+)
+                if (progress > 12) {
+                    yellowSpot.style.opacity = 0.95;
+                    blueSpot.style.opacity = 0.95;
+                    redSpot.style.opacity = 0.95;
+
+                    // Show color trails
+                    trailYellow.style.opacity = 0.6;
+                    trailBlue.style.opacity = 0.6;
+                    trailRed.style.opacity = 0.6;
+                }
+
+                // Stage 3: Mid Separation Message
+                if (progress > 45 && progress < 80) {
+                    infoText.innerHTML = "🌈 Wow! Yellow is running super fast! Blue is middle, Red is slow!";
+                }
+
+                // Positions based on different speeds (Rf Values)
+                let yDist = currentDistance * 0.88;
+                let bDist = currentDistance * 0.58;
+                let rDist = currentDistance * 0.32;
+
+                yellowSpot.style.bottom = (33 + yDist) + 'px';
+                blueSpot.style.bottom = (33 + bDist) + 'px';
+                redSpot.style.bottom = (33 + rDist) + 'px';
+
+                // Update Trails height
+                trailYellow.style.height = yDist + 'px';
+                trailBlue.style.height = bDist + 'px';
+                trailRed.style.height = rDist + 'px';
+
+                animationId = requestAnimationFrame(animate);
+            } else {
+                infoText.innerHTML = "🎉 Magic Complete! Black Ink was a mixture of Yellow, Blue, & Red all along! 🥳";
+                isRunning = false;
+            }
+        }
+
+        animationId = requestAnimationFrame(animate);
+    }
+
+    function resetExperiment() {
+        cancelAnimationFrame(animationId);
+        isRunning = false;
+
+        const solventFront = document.getElementById('solventFront');
+        solventFront.style.display = 'none';
+        solventFront.style.bottom = '40px';
+
+        document.getElementById('wetPaper').style.height = '0px';
+        document.getElementById('blackSpot').style.opacity = 1;
+
+        const spots = ['yellowSpot', 'blueSpot', 'redSpot'];
+        spots.forEach(id => {
+            const el = document.getElementById(id);
+            el.style.opacity = 0;
+            el.style.bottom = '33px';
+        });
+
+        const trails = ['trailYellow', 'trailBlue', 'trailRed'];
+        trails.forEach(id => {
+            const el = document.getElementById(id);
+            el.style.opacity = 0;
+            el.style.height = '0px';
+        });
+
+        const infoText = document.getElementById('infoText');
+        infoText.className = "info-box";
+        infoText.innerText = 'Click "Start Magic" to see how black ink secretly hides multiple colors! 🧙‍♂️✨';
+    }
+</script>
+
+</body>
+</html>

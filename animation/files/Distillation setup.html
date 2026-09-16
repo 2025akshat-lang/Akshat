@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Distillation Lab Pro - Smart Pipe Locking</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; touch-action: none; }
+    body { margin: 0; padding: 10px; background: #e2e8f0; display: flex; flex-direction: column; align-items: center; }
+    
+    #app-container { width: 100%; max-width: 950px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .status-tracker { font-weight: bold; color: #1e293b; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 12px; border: 1px solid #cbd5e1; }
+
+    .controls { display: flex; gap: 10px; }
+    .btn { padding: 8px 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-undo { background: #cbd5e1; color: #1e293b; }
+    .btn-restart { background: #ef4444; color: white; }
+
+    #sidebar { display: flex; flex-wrap: wrap; gap: 6px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+    .drag-item { padding: 6px 12px; background: #fff; border: 2px solid #3b82f6; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: #1e40af; }
+    .drag-item.selected { background: #2563eb; color: white; }
+
+    #board { width: 100%; height: 520px; position: relative; background: #ffffff; border: 2px solid #94a3b8; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+    
+    .ghost-guide { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0.12; pointer-events: none; }
+
+    #pipe-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 15; }
+    .pipe-path { pointer-events: stroke; stroke-dasharray: 6 0; transition: stroke 0.3s; }
+    .pipe-handle { pointer-events: auto; cursor: grab; transition: fill 0.2s, stroke 0.2s; }
+    .pipe-handle.locked { cursor: pointer; fill: #22c55e !important; stroke: #15803d !important; }
+
+    .placed-item { position: absolute; cursor: grab; padding: 4px; border: 2px dashed transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; user-select: none; border-radius: 6px; }
+    .placed-item.locked { border-color: #22c55e !important; background: rgba(34, 197, 94, 0.05); }
+
+    .resizer { width: 14px; height: 14px; background: #2563eb; position: absolute; bottom: -2px; right: -2px; cursor: nwse-resize; border-radius: 3px; z-index: 20; }
+    
+    .label { font-size: 9px; background: #334155; color: white; padding: 2px 5px; border-radius: 3px; margin-top: 2px; pointer-events: none; white-space: nowrap; }
+    .svg-container { width: 100%; height: 100%; pointer-events: none; }
+    .svg-container svg { width: 100%; height: 100%; display: block; }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    <div class="top-bar">
+      <div class="status-tracker" id="status-text">Target: Assemble Laboratory Apparatus</div>
+      <div class="controls">
+        <button class="btn btn-undo" onclick="undo()">← Undo</button>
+        <button class="btn btn-restart" onclick="restart()">↺ Restart</button>
+      </div>
+    </div>
+
+    <div id="sidebar">
+      <div class="drag-item" id="tripod" onclick="selectType('tripod', 80, 90)">Tripod Stand</div>
+      <div class="drag-item" id="lab_stand" onclick="selectType('lab_stand', 60, 220)">Lab Stand with Clamp</div>
+      <div class="drag-item" id="condenser" onclick="selectType('condenser', 160, 70)">Water Condenser</div>
+      <div class="drag-item" id="round_flask" onclick="selectType('round_flask', 80, 110)">Distillation Flask</div>
+      <div class="drag-item" id="burner" onclick="selectType('burner', 40, 65)">Bunsen Burner</div>
+      <div class="drag-item" id="wire_gauze" onclick="selectType('wire_gauze', 70, 15)">Wire Gauze</div>
+      <div class="drag-item" id="thermometer" onclick="selectType('thermometer', 15, 80)">Thermometer</div>
+      <div class="drag-item" id="conical_flask" onclick="selectType('conical_flask', 60, 75)">Conical Flask</div>
+      <div class="drag-item" id="tap" onclick="selectType('tap', 40, 50)">Water Tap</div>
+      <div class="drag-item" id="sink" onclick="selectType('sink', 60, 40)">Sink Basin</div>
+      <div class="drag-item" id="burner_pro" onclick="selectType('burner_pro', 40, 80)">Gas Burner (Pro)</div>
+      <div class="drag-item" style="border-color: #ea580c; color: #ea580c;" onclick="addFlexiblePipe()">+ Add Flexible Rubber Pipe</div>
+    </div>
+
+    <div id="board" onclick="placeItemOnBoard(event)">
+      <svg class="ghost-guide" viewBox="0 0 950 520">
+        <rect x="220" y="290" width="80" height="90" fill="#000"/>
+        <circle cx="260" cy="230" r="35" fill="#000"/>
+        <rect x="310" y="210" width="160" height="40" fill="#000"/>
+        <polygon points="490,270 530,270 550,340 470,340" fill="#000"/>
+      </svg>
+      <svg id="pipe-canvas"></svg>
+    </div>
+  </div>
+
+<script>
+const SVGs = {
+    tripod: `<svg viewBox="0 0 80 90"><line x1="10" y1="10" x2="70" y2="10" stroke="#333" stroke-width="6"/><line x1="20" y1="10" x2="5" y2="90" stroke="#555" stroke-width="5"/><line x1="60" y1="10" x2="75" y2="90" stroke="#555" stroke-width="5"/><line x1="40" y1="10" x2="40" y2="85" stroke="#777" stroke-width="4"/></svg>`,
+    lab_stand: `<svg viewBox="0 0 70 220"><rect x="5" y="205" width="55" height="15" fill="#334155"/><rect x="22" y="0" width="6" height="205" fill="#64748b"/><rect x="18" y="75" width="14" height="14" fill="#0f172a" rx="2"/><path d="M 32 80 L 55 80 Q 62 70 65 82 Q 62 94 55 84 Z" fill="none" stroke="#0f172a" stroke-width="4"/></svg>`,
+    condenser: `<svg viewBox="0 0 160 70"><path d="M 0 10 L 140 50 L 140 65" fill="none" stroke="#3b82f6" stroke-width="6"/><path d="M 20 0 L 130 32 L 125 47 L 15 15 Z" fill="rgba(186, 230, 253, 0.6)" stroke="#0284c7" stroke-width="2"/><circle id="nozzle-top" cx="30" cy="10" r="5" fill="#ea580c"/><circle id="nozzle-bottom" cx="110" cy="48" r="5" fill="#ea580c"/></svg>`,
+    round_flask: `<svg viewBox="0 0 80 110"><polygon points="28,2 52,2 48,16 32,16" fill="#78350f"/><rect x="26" y="16" width="28" height="4" fill="#451a03"/><rect x="32" y="20" width="16" height="30" fill="rgba(191, 219, 254, 0.5)" stroke="#1d4ed8" stroke-width="2"/><line x1="48" y1="32" x2="75" y2="42" stroke="#1d4ed8" stroke-width="3"/><circle cx="40" cy="72" r="30" fill="rgba(191, 219, 254, 0.5)" stroke="#1d4ed8" stroke-width="2"/></svg>`,
+    burner: `<svg viewBox="0 0 40 65"><rect x="5" y="55" width="30" height="10" fill="#444" rx="2"/><rect x="16" y="20" width="8" height="35" fill="#888"/><polygon points="20,0 12,20 28,20" fill="#f59e0b"/></svg>`,
+    wire_gauze: `<svg viewBox="0 0 70 15"><rect x="0" y="2" width="70" height="8" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="2,2"/><rect x="20" y="2" width="30" height="8" fill="#aaa" opacity="0.7"/></svg>`,
+    thermometer: `<svg viewBox="0 0 15 90"><rect x="5" y="0" width="5" height="75" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" rx="2"/><circle cx="7.5" cy="80" r="6" fill="#ef4444"/><line x1="7.5" y1="20" x2="7.5" y2="75" stroke="#ef4444" stroke-width="2"/></svg>`,
+    conical_flask: `<svg viewBox="0 0 60 75"><path d="M 22 0 L 38 0 L 38 25 L 58 70 A 5 5 0 0 1 53 78 L 7 78 A 5 5 0 0 1 2 70 L 22 25 Z" fill="rgba(191, 219, 254, 0.5)" stroke="#1d4ed8" stroke-width="2"/></svg>`,
+    tap: `<svg viewBox="0 0 40 50"><rect x="15" y="10" width="10" height="30" fill="#94a3b8"/><path d="M 25 15 L 40 10" stroke="#94a3b8" stroke-width="5"/><circle id="nozzle-tap" cx="38" cy="10" r="5" fill="#ea580c"/></svg>`,
+    sink: `<svg viewBox="0 0 60 40"><rect x="0" y="0" width="60" height="40" fill="#cbd5e1" rx="5"/><circle id="nozzle-sink" cx="30" cy="20" r="5" fill="#ea580c"/></svg>`,
+    burner_pro: `<svg viewBox="0 0 40 80"><path d="M 16 70 L 40 70" stroke="#ff4500" stroke-width="4"/><rect x="5" y="65" width="30" height="10" fill="#444"/><rect x="16" y="20" width="8" height="45" fill="#888"/><polygon points="20,0 12,20 28,20" fill="#3b82f6"/></svg>`
+};
+
+let activeType = null;
+let history = [];
+let pipes = [];
+
+function selectType(type, defaultW, defaultH) {
+    document.querySelectorAll('.drag-item').forEach(el => el.classList.remove('selected'));
+    const itemEl = document.getElementById(type);
+    if (!itemEl) return;
+    activeType = { type, w: defaultW, h: defaultH, label: itemEl.innerText };
+    itemEl.classList.add('selected');
+}
+
+function placeItemOnBoard(e) {
+    if (!activeType || e.target.closest('.placed-item')) return;
+    
+    const board = document.getElementById('board');
+    const rect = board.getBoundingClientRect();
+    const x = e.clientX - rect.left - (activeType.w / 2);
+    const y = e.clientY - rect.top - (activeType.h / 2);
+
+    const div = document.createElement('div');
+    div.className = 'placed-item';
+    div.dataset.type = activeType.type;
+    div.dataset.isLocked = "false";
+    div.style.left = `${x}px`;
+    div.style.top = `${y}px`;
+    div.style.width = `${activeType.w}px`;
+    div.style.height = `${activeType.h}px`;
+
+    div.innerHTML = `
+      <div class="svg-container">${SVGs[activeType.type]}</div>
+      <span class="label">${activeType.label}</span>
+      <div class="resizer"></div>
+    `;
+
+    board.appendChild(div);
+    history.push({ type: 'item', element: div });
+    makeItemInteractive(div);
+
+    document.querySelectorAll('.drag-item').forEach(el => el.classList.remove('selected'));
+    activeType = null;
+}
+
+function makeItemInteractive(el) {
+    let isDragging = false, isResizing = false;
+    let startX, startY, startW, startH, startL, startT;
+
+    const getPos = (e) => e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+
+    const startHandler = (e) => {
+        if (el.dataset.isLocked === "true") return;
+        e.stopPropagation();
+        const pos = getPos(e);
+        startX = pos.x; startY = pos.y;
+
+        if (e.target.classList.contains('resizer')) {
+            isResizing = true;
+            startW = el.offsetWidth;
+            startH = el.offsetHeight;
+        } else {
+            isDragging = true;
+            startL = el.offsetLeft;
+            startT = el.offsetTop;
+        }
+
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('touchmove', moveHandler, { passive: false });
+        document.addEventListener('mouseup', endHandler);
+        document.addEventListener('touchend', endHandler);
+    };
+
+    const moveHandler = (e) => {
+        if (el.dataset.isLocked === "true") return;
+        if (e.preventDefault) e.preventDefault();
+        const pos = getPos(e);
+        const dx = pos.x - startX;
+        const dy = pos.y - startY;
+
+        if (isResizing) {
+            el.style.width = `${Math.max(30, startW + dx)}px`;
+            el.style.height = `${Math.max(30, startH + dy)}px`;
+        } else if (isDragging) {
+            el.style.left = `${startL + dx}px`;
+            el.style.top = `${startT + dy}px`;
+        }
+    };
+
+    const endHandler = () => {
+        isDragging = false;
+        isResizing = false;
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('mouseup', endHandler);
+        document.removeEventListener('touchend', endHandler);
+    };
+
+    el.addEventListener('dblclick', () => {
+        el.dataset.isLocked = "false";
+        el.classList.remove('locked');
+    });
+
+    el.addEventListener('mousedown', startHandler);
+    el.addEventListener('touchstart', startHandler, { passive: false });
+}
+
+// 🚰 ADVANCED SEQUENTIAL PIPE LOCKING SYSTEM
+function addFlexiblePipe() {
+    const canvas = document.getElementById('pipe-canvas');
+    const pipeId = 'pipe_' + Date.now();
+    const offset = (pipes.length * 35) % 120;
+
+    const pipeData = { 
+        id: pipeId, 
+        p1: { x: 50 + offset, y: 120 + offset, lockedTo: null }, 
+        p2: { x: 180 + offset, y: 180 + offset, lockedTo: null } 
+    };
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('id', pipeId);
+    path.setAttribute('class', 'pipe-path');
+    path.setAttribute('stroke', '#ea580c');
+    path.setAttribute('stroke-width', '7');
+    path.setAttribute('fill', 'none');
+    
+    const h1 = createHandle(pipeData, 'p1');
+    const h2 = createHandle(pipeData, 'p2');
+    
+    canvas.appendChild(path);
+    canvas.appendChild(h1);
+    canvas.appendChild(h2);
+
+    const pipeObj = { type: 'pipe', path, h1, h2, data: pipeData };
+    pipes.push(pipeObj);
+    history.push(pipeObj);
+    updatePipePath(pipeData, h1, h2);
+}
+
+function getNozzleTargetPositions() {
+    const board = document.getElementById('board');
+    const boardRect = board.getBoundingClientRect();
+    const targets = [];
+
+    const getCoord = (el, relXRatio, relYRatio, targetName) => {
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        targets.push({
+            name: targetName,
+            x: (r.left + r.width * relXRatio) - boardRect.left,
+            y: (r.top + r.height * relYRatio) - boardRect.top
+        });
+    };
+
+    getCoord(document.querySelector('[data-type="tap"]'), 0.95, 0.2, 'tap');
+    getCoord(document.querySelector('[data-type="condenser"]'), 0.68, 0.68, 'condenser_bottom'); // Lower inlet
+    getCoord(document.querySelector('[data-type="condenser"]'), 0.18, 0.15, 'condenser_top');   // Upper outlet
+    getCoord(document.querySelector('[data-type="sink"]'), 0.5, 0.5, 'sink');
+
+    return targets;
+}
+
+function createHandle(pipeData, pointKey) {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('class', 'pipe-handle');
+    circle.setAttribute('r', '8');
+    circle.setAttribute('fill', '#ea580c');
+    circle.setAttribute('stroke', '#ffffff');
+    circle.setAttribute('stroke-width', '2');
+    
+    let isDragging = false;
+
+    const startDrag = (e) => {
+        if (pipeData[pointKey].lockedTo) return; // Prevent drag if locked
+        e.stopPropagation();
+        isDragging = true;
+        document.addEventListener('mousemove', moveDrag);
+        document.addEventListener('touchmove', moveDrag, { passive: false });
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+    };
+
+    const moveDrag = (e) => {
+        if (!isDragging) return;
+        if (e.preventDefault) e.preventDefault();
+        const board = document.getElementById('board');
+        const rect = board.getBoundingClientRect();
+        const pos = e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+
+        pipeData[pointKey].x = pos.x - rect.left;
+        pipeData[pointKey].y = pos.y - rect.top;
+
+        const pipeObj = pipes.find(p => p.data.id === pipeData.id);
+        if (pipeObj) updatePipePath(pipeData, pipeObj.h1, pipeObj.h2);
+    };
+
+    const endDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        // Check magnet snap on release
+        const targets = getNozzleTargetPositions();
+        for (let target of targets) {
+            const dist = Math.hypot(pipeData[pointKey].x - target.x, pipeData[pointKey].y - target.y);
+            if (dist < 30) {
+                // Lock this end!
+                pipeData[pointKey].x = target.x;
+                pipeData[pointKey].y = target.y;
+                pipeData[pointKey].lockedTo = target.name;
+                circle.classList.add('locked');
+                break;
+            }
+        }
+
+        const pipeObj = pipes.find(p => p.data.id === pipeData.id);
+        if (pipeObj) updatePipePath(pipeData, pipeObj.h1, pipeObj.h2);
+
+        document.removeEventListener('mousemove', moveDrag);
+        document.removeEventListener('touchmove', moveDrag);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchend', endDrag);
+    };
+
+    // Double click on node to unlock/detach end
+    circle.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        pipeData[pointKey].lockedTo = null;
+        circle.classList.remove('locked');
+    });
+
+    circle.addEventListener('mousedown', startDrag);
+    circle.addEventListener('touchstart', startDrag, { passive: false });
+    return circle;
+}
+
+function updatePipePath(pipeData, h1, h2) {
+    const path = document.getElementById(pipeData.id);
+    if (!path) return;
+    const { p1, p2 } = pipeData;
+
+    // Smooth Bezier curve connection
+    const dx = Math.abs(p2.x - p1.x) * 0.5;
+    const dy = Math.abs(p2.y - p1.y) * 0.5;
+    path.setAttribute('d', `M ${p1.x} ${p1.y} C ${p1.x + dx} ${p1.y + dy}, ${p2.x - dx} ${p2.y - dy}, ${p2.x} ${p2.y}`);
+
+    if (h1 && h2) {
+        h1.setAttribute('cx', p1.x); h1.setAttribute('cy', p1.y);
+        h2.setAttribute('cx', p2.x); h2.setAttribute('cy', p2.y);
+    }
+
+    // Change path color if both ends are locked
+    if (p1.lockedTo && p2.lockedTo) {
+        path.setAttribute('stroke', '#0ea5e9'); // Water Flow Active Line
+    } else {
+        path.setAttribute('stroke', '#ea580c');
+    }
+}
+
+function undo() {
+    if (history.length > 0) {
+        const last = history.pop();
+        if (last.type === 'item') last.element.remove();
+        else if (last.type === 'pipe') {
+            last.path.remove(); last.h1.remove(); last.h2.remove();
+            pipes = pipes.filter(p => p.data.id !== last.data.id);
+        }
+    }
+}
+
+function restart() {
+    document.getElementById('board').innerHTML = `
+      <svg class="ghost-guide" viewBox="0 0 950 520">
+        <rect x="220" y="290" width="80" height="90" fill="#000"/>
+        <circle cx="260" cy="230" r="35" fill="#000"/>
+        <rect x="310" y="210" width="160" height="40" fill="#000"/>
+        <polygon points="490,270 530,270 550,340 470,340" fill="#000"/>
+      </svg>
+      <svg id="pipe-canvas"></svg>`;
+    history = []; pipes = []; activeType = null;
+    document.querySelectorAll('.drag-item').forEach(el => el.classList.remove('selected'));
+}
+</script>
+</body>
+</html>
