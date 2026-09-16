@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creepy Eyes Button</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #e2e8f0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Outer Wrapper */
+    .button-container {
+      position: relative;
+      width: 220px;
+      height: 70px;
+    }
+
+    /* Eyes Container (Black box) */
+    .eyes-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      border-radius: 35px;
+      display: flex;
+      justify-content: flex-end; /* Right side alignment */
+      align-items: center;
+      padding-right: 25px;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    /* White Part of Eye */
+    .eye {
+      width: 28px;
+      height: 28px;
+      background-color: #fff;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Black Pupil */
+    .pupil {
+      width: 12px;
+      height: 12px;
+      background-color: #000;
+      border-radius: 50%;
+      position: absolute;
+      transition: transform 0.05s ease-out;
+    }
+
+    /* Front Blue Button */
+    .main-button {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1d4ed8;
+      color: white;
+      border: none;
+      border-radius: 35px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 2;
+      transform-origin: bottom left;
+      transition: transform 0.3s ease;
+    }
+
+    /* Fixed Tilt Shift */
+    .button-container:hover .main-button,
+    .button-container:active .main-button {
+      transform: rotate(-14deg) translateY(-8px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="button-container" id="btnContainer">
+    <!-- Eyes Layer -->
+    <div class="eyes-bg">
+      <div class="eye"><div class="pupil"></div></div>
+      <div class="eye"><div class="pupil"></div></div>
+    </div>
+
+    <!-- Top Blue Button Layer -->
+    <button class="main-button">Button</button>
+  </div>
+
+  <script>
+    const container = document.getElementById('btnContainer');
+    const pupils = document.querySelectorAll('.pupil');
+
+    function updateEyes(e) {
+      const rect = container.getBoundingClientRect();
+      const containerCenterX = rect.left + rect.width / 2;
+      const containerCenterY = rect.top + rect.height / 2;
+
+      const mouseX = e.clientX || (e.touches && e.touches[0].clientX);
+      const mouseY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      if (!mouseX || !mouseY) return;
+
+      const dx = mouseX - containerCenterX;
+      const dy = mouseY - containerCenterY;
+
+      const angle = Math.atan2(dy, dx);
+      const distance = Math.min(Math.hypot(dx, dy), 6);
+
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+
+      pupils.forEach(pupil => {
+        pupil.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    }
+
+    window.addEventListener('mousemove', updateEyes);
+    window.addEventListener('touchmove', updateEyes);
+  </script>
+
+</body>
+</html>
