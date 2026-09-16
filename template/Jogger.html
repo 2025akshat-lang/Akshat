@@ -1,0 +1,60 @@
+<svg width="450" height="500" viewBox="0 0 500 550" xmlns="http://w3.org">
+  <style>
+    body { background-color: #1a1a1a; } /* Aap background color adjust kar sakte hain */
+  </style>
+
+  <!-- 1. CROSSBONES (Piche ki Haddiyan) -->
+  <g fill="#FFFFFF">
+    <!-- Diagonal Bone 1 -->
+    <path d="M 90,90 L 410,430" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round" />
+    <circle cx="70" cy="70" r="24" />
+    <circle cx="85" cy="55" r="24" />
+    <circle cx="430" cy="445" r="24" />
+    <circle cx="415" cy="460" r="24" />
+
+    <!-- Diagonal Bone 2 -->
+    <path d="M 90,430 L 410,90" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round" />
+    <circle cx="70" cy="445" r="24" />
+    <circle cx="85" cy="460" r="24" />
+    <circle cx="430" cy="70" r="24" />
+    <circle cx="420" cy="55" r="24" />
+  </g>
+
+  <!-- 2. MINIMAL SKULL HEAD WITH SEMI-SPHERICAL JAW (PERFECTLY ROUNDED) -->
+  <!-- Side ke corners ko smooth karke skull ko perfectly circular banaya gaya hai -->
+  <path d="M 150,240 
+           C 110,130 390,130 350,240 
+           C 350,290 315,305 285,315 
+           L 280,355 
+           A 30,30 0 0,1 220,355 
+           L 215,315
+           C 185,305 150,290 150,240 Z" 
+        fill="#FFFFFF" />
+
+
+  <!-- 3. CARTOONY ROUND EYES & NOSE -->
+  <!-- Video ke mutabik aankhein sharp nahi hain, bilkul gol aur cute hain -->
+  <g fill="#1a1a1a">
+    <!-- Left Round Eye -->
+    <circle cx="210" cy="225" r="28" />
+    
+    <!-- Right Round Eye -->
+    <circle cx="290" cy="225" r="28" />
+    
+    <!-- Nose Hole (Chhota Vertical Oval) -->
+    <ellipse cx="250" cy="275" rx="10" ry="16" />
+  </g>
+
+  <!-- 4. FLAT STRAW HAT (STRAIGHT STYLE) -->
+  <!-- Video ke hissaab se hat ki brim curved nahi balki bilkul flat aur straight strip hai -->
+  <g>
+    <!-- Top Straw Dome -->
+    <path d="M 180,140 C 180,50 320,50 320,140 Z" fill="#F4C400" />
+    
+    <!-- Red Ribbon Strip -->
+    <rect x="178" y="120" width="144" height="20" fill="#D21414" />
+    
+    <!-- Flat Hat Brim (Straight Strip) -->
+    <rect x="110" y="138" width="280" height="15" rx="5" fill="#F4C400" />
+  </g>
+</svg>
