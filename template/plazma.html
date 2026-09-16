@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyper Neon Plasma Web - Loud Sound</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000003;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+            user-select: none;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .plasma-hud {
+            position: absolute;
+            top: 5%;
+            color: #ff00ff;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            z-index: 10;
+            pointer-events: none;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="plasma-hud">⚡ TAP ANYWHERE TO ACTIVATE LOUD PLASMA SOUND ⚡</div>
+    <canvas id="plasmaCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('plasmaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const pointer = { x: null, y: null, active: false };
+        let hue = 0;
+        const shocks = [];
+
+        // --- LOUD ALWAYS ON AUDIO SYNTHESIZER ---
+        let audioCtx = null, oscillator = null, gainNode = null;
+        let soundStarted = false;
+
+        function initAlwaysOnSound() {
+            if (!soundStarted) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                
+                // Sawtooth wave gives that raw electric buzz
+                oscillator.type = 'sawtooth'; 
+                oscillator.frequency.setValueAtTime(75, audioCtx.currentTime); // Stronger base frequency
+                
+                // VOLUME INCREASED: 0.02 -> 0.15 for loud, clear sound
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                
+                // FILTER INCREASED: 250 -> 600 for sharp electric crunch
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+
+                soundStarted = true;
+                document.querySelector('.plasma-hud').innerText = '⚡ PLASMA CORE ACTIVE ⚡';
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function updatePlasmaSound(speed) {
+            if (oscillator && audioCtx && soundStarted) {
+                // Pitch moves up clearly when dragging
+                let targetFreq = 75 + speed * 18;
+                oscillator.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.08);
+            }
+        }
+
+        // --- ELECTRIC SPARK CLASS ---
+        class ElectricSpark {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 10 + 5;
+                this.life = 1;
+                this.decay = Math.random() * 0.04 + 0.02;
+                this.color = `hsl(${(hue + Math.random() * 60) % 360}, 100%, 60%)`;
+            }
+            update() {
+                this.x += Math.cos(this.angle) * this.speed + (Math.random() - 0.5) * 10;
+                this.y += Math.sin(this.angle) * this.speed + (Math.random() - 0.5) * 10;
+                this.life -= this.decay;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = Math.random() * 3 + 1;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.lineWidth * 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // --- LIGHTNING BOLT FUNCTION ---
+        function drawLightning(startX, startY, endX, endY, color) {
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.random() * 4 + 1.5;
+            ctx.shadowBlur = 25;
+            ctx.shadowColor = color;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+
+            let distance = Math.hypot(endX - startX, endY - startY);
+            let steps = Math.min(25, distance / 15); 
+            let currentX = startX;
+            let currentY = startY;
+
+            for (let i = 1; i <= steps; i++) {
+                let t = i / steps;
+                let targetX = startX + (endX - startX) * t;
+                let targetY = startY + (endY - startY) * t;
+
+                if (i < steps) {
+                    targetX += (Math.random() - 0.5) * 25;
+                    targetY += (Math.random() - 0.5) * 25;
+                }
+
+                ctx.lineTo(targetX, targetY);
+            }
+
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        let lastX = 0;
+        let lastY = 0;
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 3, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            hue += 3;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Core Energy
+            ctx.save();
+            let coreColor = `hsl(${hue}, 100%, 50%)`;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 30 + Math.sin(Date.now() * 0.01) * 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.shadowBlur = 50;
+            ctx.shadowColor = coreColor;
+            ctx.fill();
+            ctx.restore();
+
+            // Background Lightning
+            if (Math.random() < 0.3) {
+                let angle = Math.random() * Math.PI * 2;
+                let targetX = cx + Math.cos(angle) * (Math.random() * 200 + 100);
+                let targetY = cy + Math.sin(angle) * (Math.random() * 200 + 100);
+                drawLightning(cx, cy, targetX, targetY, `hsl(${(hue + 120) % 360}, 100%, 50%)`);
+            }
+
+            // User Interaction & Always-On Sound Modulation
+            if (pointer.active && pointer.x !== null) {
+                drawLightning(cx, cy, pointer.x, pointer.y, `hsl(${hue}, 100%, 50%)`);
+                
+                if (Math.random() < 0.5) {
+                    drawLightning(pointer.x, pointer.y, pointer.x + (Math.random() - 0.5) * 100, pointer.y + (Math.random() - 0.5) * 100, '#00ffff');
+                }
+
+                let speed = Math.hypot(pointer.x - lastX, pointer.y - lastY);
+                updatePlasmaSound(speed);
+                lastX = pointer.x;
+                lastY = pointer.y;
+            } else if (soundStarted && oscillator && audioCtx) {
+                // Return to base hum when idle
+                oscillator.frequency.setTargetAtTime(75, audioCtx.currentTime, 0.15);
+            }
+
+            // Explosions
+            for (let i = shocks.length - 1; i >= 0; i--) {
+                shocks[i].update();
+                shocks[i].draw();
+                if (shocks[i].life <= 0) shocks.splice(i, 1);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function doExplosion(x, y) {
+            for (let i = 0; i < 40; i++) {
+                shocks.push(new ElectricSpark(x, y));
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        function handleStart(x, y) {
+            initAlwaysOnSound();
+            pointer.active = true;
+            pointer.x = x;
+            pointer.y = y;
+            lastX = x;
+            lastY = y;
+            doExplosion(x, y);
+        }
+
+        function handleMove(x, y) {
+            pointer.x = x;
+            pointer.y = y;
+        }
+
+        function handleEnd() {
+            pointer.active = false;
+        }
+
+        // Mouse Controls
+        window.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => {
+            if (pointer.active) handleMove(e.clientX, e.clientY);
+        });
+        window.addEventListener('mouseup', handleEnd);
+
+        // Touch Controls
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) handleStart(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        window.addEventListener('touchend', handleEnd);
+
+        animate();
+    </script>
+</body>
+</html>
