@@ -22,6 +22,6 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
 7. biochemistry
    https://2025akshat-lang.github.io/Akshat/practical/biochemistry.html
 
-   8. Carbon cycle
-  
-      https://2025akshat-lang.github.io/Akshat/animation/files/Carbon%20cycle.html
+   8.  template
+   9.
+     https://2025akshat-lang.github.io/Akshat/template/tempdash.html
