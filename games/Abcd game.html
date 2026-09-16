@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मजेदार एबीसीडी टेस्ट! 🎈</title>
+    <!-- Fixed Fonts Import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 8px solid #FFED4A;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: #FF477E;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px #FFF;
+        }
+
+        .score-board {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4CC9F0;
+            margin-bottom: 20px;
+            background: #F0F3F4;
+            padding: 5px 15px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .question-box {
+            background: #F72585;
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,0.2);
+        }
+
+        .letter {
+            font-family: 'Fredoka One', cursive;
+            font-size: 5rem;
+            display: block;
+            line-height: 1;
+            animation: bounce 1s infinite alternate;
+        }
+
+        .prompt {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 4px solid #3A0CA3;
+            border-radius: 20px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 8px 0 #3A0CA3;
+        }
+
+        .option-btn:active {
+            transform: translateY(8px);
+            box-shadow: none;
+        }
+
+        .option-text {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            display: none;
+        }
+
+        .result-screen h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: #4BB543;
+            margin-bottom: 15px;
+        }
+
+        .restart-btn {
+            background: #4CC9F0;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-family: 'Fredoka One', cursive;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #4361EE;
+            margin-top: 20px;
+        }
+
+        .restart-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: drop 2s infinite linear;
+            top: 0;
+            z-index: 99;
+        }
+
+        @keyframes drop {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Quiz Area -->
+        <div id="quiz-area">
+            <h1>मजेदार ABC Test! 🎉</h1>
+            <div class="score-board">स्कोर: <span id="score">0</span>/<span id="total-questions">26</span></div>
+            
+            <div class="question-box">
+                <span class="letter" id="current-letter">A</span>
+                <div class="prompt">for क्या होता है? 🤔</div>
+            </div>
+
+            <div class="options-grid" id="options-container">
+                <!-- Options will be loaded by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Result Area -->
+        <div id="result-area" class="result-screen">
+            <h2>कमाल कर दिया! 🌟</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 10px;">आपका कुल स्कोर:</p>
+            <div class="score-board" style="font-size: 2rem; padding: 10px 30px;"><span id="final-score">0</span> / <span id="final-total">26</span></div>
+            <br>
+            <button class="restart-btn" onclick="restartGame()">फिर से खेलें 🔄</button>
+        </div>
+    </div>
+
+    <!-- Working Audio Links -->
+    <audio id="correct-sound" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+    <audio id="wrong-sound" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3"></audio>
+
+    <script>
+        const quizData = [
+            {
+                letter: 'A',
+                correct: 'Apple',
+                options: [
+                    { text: 'Apple', img: '🍎' },
+                    { text: 'Ball', img: '⚽' },
+                    { text: 'Cat', img: '🐱' },
+                    { text: 'Dog', img: '🐶' }
+                ]
+            },
+            {
+                letter: 'B',
+                correct: 'Ball',
+                options: [
+                    { text: 'Egg', img: '🥚' },
+                    { text: 'Ball', img: '⚽' },
+                    { text: 'Fish', img: '🐟' },
+                    { text: 'Hat', img: '🎩' }
+                ]
+            },
+            {
+                letter: 'C',
+                correct: 'Cat',
+                options: [
+                    { text: 'Grapes', img: '🍇' },
+                    { text: 'Ice Cream', img: '🍦' },
+                    { text: 'Cat', img: '🐱' },
+                    { text: 'Lion', img: '🦁' }
+                ]
+            },
+            {
+                letter: 'D',
+                correct: 'Dog',
+                options: [
+                    { text: 'Jug', img: '🥛' },
+                    { text: 'Kite', img: '🪁' },
+                    { text: 'Monkey', img: '🐒' },
+                    { text: 'Dog', img: '🐶' }
+                ]
+            },
+            {
+                letter: 'E',
+                correct: 'Elephant',
+                options: [
+                    { text: 'Elephant', img: '🐘' },
+                    { text: 'Nest', img: '🪹' },
+                    { text: 'Orange', img: '🍊' },
+                    { text: 'Parrot', img: '🦜' }
+                ]
+            },
+            {
+                letter: 'F',
+                correct: 'Fish',
+                options: [
+                    { text: 'Fish', img: '🐟' },
+                    { text: 'Apple', img: '🍎' },
+                    { text: 'Queen', img: '👑' },
+                    { text: 'Sun', img: '☀️' }
+                ]
+            },
+            {
+                letter: 'G',
+                correct: 'Grapes',
+                options: [
+                    { text: 'Tree', img: '🌳' },
+                    { text: 'Grapes', img: '🍇' },
+                    { text: 'Van', img: '🚐' },
+                    { text: 'Watch', img: '⌚' }
+                ]
+            },
+            {
+                letter: 'H',
+                correct: 'Hat',
+                options: [
+                    { text: 'Hat', img: '🎩' },
+                    { text: 'Dog', img: '🐶' },
+                    { text: 'Yak', img: '🐂' },
+                    { text: 'Zebra', img: '🦓' }
+                ]
+            },
+            {
+                letter: 'I',
+                correct: 'Ice Cream',
+                options: [
+                    { text: 'Ball', img: '⚽' },
+                    { text: 'Cat', img: '🐱' },
+                    { text: 'Ice Cream', img: '🍦' },
+                    { text: 'Kite', img: '🪁' }
+                ]
+            },
+            {
+                letter: 'J',
+                correct: 'Jug',
+                options: [
+                    { text: 'Jug', img: '🥛' },
+                    { text: 'Lion', img: '🦁' },
+                    { text: 'Monkey', img: '🐒' },
+                    { text: 'Nest', img: '🪹' }
+                ]
+            },
+            {
+                letter: 'K',
+                correct: 'Kite',
+                options: [
+                    { text: 'Orange', img: '🍊' },
+                    { text: 'Kite', img: '🪁' },
+                    { text: 'Parrot', img: '🦜' },
+                    { text: 'Queen', img: '👑' }
+                ]
+            },
+            {
+                letter: 'L',
+                correct: 'Lion',
+                options: [
+                    { text: 'Rabbit', img: '🐰' },
+                    { text: 'Sun', img: '☀️' },
+                    { text: 'Lion', img: '🦁' },
+                    { text: 'Tree', img: '🌳' }
+                ]
+            },
+            {
+                letter: 'M',
+                correct: 'Monkey',
+                options: [
+                    { text: 'Monkey', img: '🐒' },
+                    { text: 'Umbrella', img: '☂️' },
+                    { text: 'Van', img: '🚐' },
+                    { text: 'Watch', img: '⌚' }
+                ]
+            },
+            {
+                letter: 'N',
+                correct: 'Nest',
+                options: [
+                    { text: 'Xylophone', img: '🎼' },
+                    { text: 'Nest', img: '🪹' },
+                    { text: 'Yak', img: '🐂' },
+                    { text: 'Zebra', img: '🦓' }
+                ]
+            },
+            {
+                letter: 'O',
+                correct: 'Orange',
+                options: [
+                    { text: 'Orange', img: '🍊' },
+                    { text: 'Apple', img: '🍎' },
+                    { text: 'Ball', img: '⚽' },
+                    { text: 'Cat', img: '🐱' }
+                ]
+            },
+            {
+                letter: 'P',
+                correct: 'Parrot',
+                options: [
+                    { text: 'Dog', img: '🐶' },
+                    { text: 'Parrot', img: '🦜' },
+                    { text: 'Elephant', img: '🐘' },
+                    { text: 'Fish', img: '🐟' }
+                ]
+            },
+            {
+                letter: 'Q',
+                correct: 'Queen',
+                options: [
+                    { text: 'Grapes', img: '🍇' },
+                    { text: 'Hat', img: '🎩' },
+                    { text: 'Queen', img: '👑' },
+                    { text: 'Ice Cream', img: '🍦' }
+                ]
+            },
+            {
+                letter: 'R',
+                correct: 'Rabbit',
+                options: [
+                    { text: 'Rabbit', img: '🐰' },
+                    { text: 'Jug', img: '🥛' },
+                    { text: 'Kite', img: '🪁' },
+                    { text: 'Lion', img: '🦁' }
+                ]
+            },
+            {
+                letter: 'S',
+                correct: 'Sun',
+                options: [
+                    { text: 'Monkey', img: '🐒' },
+                    { text: 'Nest', img: '🪹' },
+                    { text: 'Sun', img: '☀️' },
+                    { text: 'Orange', img: '🍊' }
+                ]
+            },
+            {
+                letter: 'T',
+                correct: 'Tree',
+                options: [
+                    { text: 'Tree', img: '🌳' },
+                    { text: 'Parrot', img: '🦜' },
+                    { text: 'Queen', img: '👑' },
+                    { text: 'Rabbit', img: '🐰' }
+                ]
+            },
+            {
+                letter: 'U',
+                correct: 'Umbrella',
+                options: [
+                    { text: 'Sun', img: '☀️' },
+                    { text: 'Umbrella', img: '☂️' },
+                    { text: 'Tree', img: '🌳' },
+                    { text: 'Van', img: '🚐' }
+                ]
+            },
+            {
+                letter: 'V',
+                correct: 'Van',
+                options: [
+                    { text: 'Van', img: '🚐' },
+                    { text: 'Watch', img: '⌚' },
+                    { text: 'Xylophone', img: '🎼' },
+                    { text: 'Yak', img: '🐂' }
+                ]
+            },
+            {
+                letter: 'W',
+                correct: 'Watch',
+                options: [
+                    { text: 'Zebra', img: '🦓' },
+                    { text: 'Watch', img: '⌚' },
+                    { text: 'Apple', img: '🍎' },
+                    { text: 'Ball', img: '⚽' }
+                ]
+            },
+            {
+                letter: 'X',
+                correct: 'Xylophone',
+                options: [
+                    { text: 'Cat', img: '🐱' },
+                    { text: 'Dog', img: '🐶' },
+                    { text: 'Xylophone', img: '🎼' },
+                    { text: 'Elephant', img: '🐘' }
+                ]
+            },
+            {
+                letter: 'Y',
+                correct: 'Yak',
+                options: [
+                    { text: 'Yak', img: '🐂' },
+                    { text: 'Fish', img: '🐟' },
+                    { text: 'Grapes', img: '🍇' },
+                    { text: 'Hat', img: '🎩' }
+                ]
+            },
+            {
+                letter: 'Z',
+                correct: 'Zebra',
+                options: [
+                    { text: 'Ice Cream', img: '🍦' },
+                    { text: 'Jug', img: '🥛' },
+                    { text: 'Kite', img: '🪁' },
+                    { text: 'Zebra', img: '🦓' }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const quizArea = document.getElementById('quiz-area');
+        const resultArea = document.getElementById('result-area');
+        const letterEl = document.getElementById('current-letter');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreEl = document.getElementById('score');
+        const finalScoreEl = document.getElementById('final-score');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const finalTotalEl = document.getElementById('final-total');
+        
+        const correctSound = document.getElementById('correct-sound');
+        const wrongSound = document.getElementById('wrong-sound');
+
+        // Total questions dynamically set kar diye hain
+        totalQuestionsEl.textContent = quizData.length;
+        finalTotalEl.textContent = quizData.length;
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                showResults();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            letterEl.textContent = currentQuestion.letter;
+            optionsContainer.innerHTML = '';
+
+            currentQuestion.options.forEach(opt => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(button, opt.text, currentQuestion.correct);
+
+                button.innerHTML = `
+                    <div style="font-size: 3.5rem; margin-bottom: 5px;">${opt.img}</div>
+                    <span class="option-text">${opt.text}</span>
+                `;
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedBtn, selectedText, correctText) {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            if (selectedText === correctText) {
+                selectedBtn.style.background = '#8BF6B5';
+                selectedBtn.style.borderColor = '#4BB543';
+                correctSound.play().catch(e => console.log("Audio play blocked"));
+                score++;
+                scoreEl.textContent = score;
+                createConfetti();
+            } else {
+                selectedBtn.style.background = '#FFD0D0';
+                selectedBtn.style.borderColor = '#FF4747';
+                wrongSound.play().catch(e => console.log("Audio play blocked"));
+
+                buttons.forEach(btn => {
+                    if (btn.querySelector('.option-text').textContent === correctText) {
+                        btn.style.background = '#8BF6B5';
+                        btn.style.borderColor = '#4BB543';
+                    }
+                });
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1500);
+        }
+
+        function showResults() {
+            quizArea.style.display = 'none';
+            resultArea.style.display = 'block';
+            finalScoreEl.textContent = score;
+        }
+
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreEl.textContent = '0';
+            quizArea.style.display = 'block';
+            resultArea.style.display = 'none';
+            loadQuestion();
+        }
+
+        function createConfetti() {
+            const container = document.querySelector('.game-container');
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 90 + '%';
+                confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
