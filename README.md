@@ -25,3 +25,7 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
    8.  template
    9.
      https://2025akshat-lang.github.io/Akshat/template/tempdash.html
+
+10. games:
+
+11. https://2025akshat-lang.github.io/Akshat/games/gamedashboard.html
