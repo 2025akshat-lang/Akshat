@@ -119,6 +119,35 @@
             font-size: 13px;
             color: #94a3b8;
             line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .step-note {
+            font-size: 12px;
+            color: #fbbf24;
+            line-height: 1.4;
+            background: rgba(251, 191, 36, 0.08);
+            border-radius: 6px;
+            padding: 8px 10px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            transition: background 0.2s;
+        }
+
+        .dot.active {
+            background: var(--accent-blue);
         }
 
         .controls {
@@ -166,7 +195,7 @@
 <body>
 
     <h1>Copper Sulfate Crystallization</h1>
-    <p class="subtitle">Interactive Lab Simulation (Activity 5.3)</p>
+    <p class="subtitle">Interactive Lab Simulation — Separating Pure Crystals from an Impure Sample</p>
 
     <div class="lab-container">
         <!-- SIMULATION INTERFACE -->
@@ -177,14 +206,18 @@
         <!-- EXPLANATION & CONTROLS -->
         <div class="info-section">
             <div class="step-card">
-                <div class="step-title" id="ui-step-num">Step 1 of 4</div>
+                <div class="step-title" id="ui-step-num">Step 1 of 6</div>
                 <div id="ui-step-text-en" class="step-desc-en">Loading...</div>
                 <div id="ui-step-text-hi" class="step-desc-hi">Loading...</div>
+                <div id="ui-step-note" class="step-note"></div>
             </div>
-            
-            <div class="controls">
-                <button class="btn btn-prev" id="btn-prev" disabled>Previous</button>
-                <button class="btn btn-next" id="btn-next">Next Step</button>
+
+            <div>
+                <div class="progress-dots" id="progress-dots"></div>
+                <div class="controls" style="margin-top: 12px;">
+                    <button class="btn btn-prev" id="btn-prev" disabled>Previous</button>
+                    <button class="btn btn-next" id="btn-next">Next Step</button>
+                </div>
             </div>
         </div>
     </div>
@@ -196,43 +229,82 @@
         let currentStep = 0;
         let animationTime = 0;
 
+        // Six stages, verified against NCERT Class 9 "Is Matter Around Us Pure"
+        // and standard CBSE lab-manual sources for this exact activity
+        // (1 g copper sulfate in 25 mL water + a drop of dilute H2SO4):
+        // dissolve -> heat to saturation -> filter HOT -> slow undisturbed
+        // cooling -> pure crystals form (mother liquor left behind) -> filter & dry.
+        // Note the real order: the solution is saturated BEFORE filtering, not after.
         const stepsData = [
             {
-                title: "Preparing Saturated Solution",
-                descEn: "Add copper sulfate powder to water and heat gently while stirring continuously.",
-                descHi: "पानी में कॉपर सल्फेट पाउडर मिलाएं और लगातार हिलाते हुए धीरे-धीरे गर्म करें।"
+                title: "Dissolving the Impure Sample",
+                descEn: "Weigh about 1 g of the impure copper sulfate sample and dissolve it in about 25 mL of water with a drop of dilute sulfuric acid, shaking until mixed. The acid keeps the solution clear and stops the copper sulfate from hydrolysing.",
+                descHi: "लगभग 1 ग्राम अशुद्ध कॉपर सल्फेट नमूने को तोलें और इसे लगभग 25 mL पानी में एक बूंद तनु सल्फ्यूरिक एसिड के साथ घोलें, अच्छी तरह हिलाएं। एसिड घोल को साफ रखता है और कॉपर सल्फेट के जल-अपघटन (hydrolysis) को रोकता है।",
+                note: ""
             },
             {
-                title: "Filtration Process",
-                descEn: "Filter the hot solution using filter paper to remove insoluble impurities.",
-                descHi: "अघुलनशील अशुद्धियों को बाहर निकालने के लिए गर्म घोल को छान लें।"
+                title: "Heating to Saturation",
+                descEn: "Heat the solution gently in a water bath, stirring constantly, and keep adding a little more copper sulfate until no more dissolves. This gives a hot saturated solution.",
+                descHi: "घोल को वॉटर बाथ में धीरे-धीरे गर्म करें, लगातार हिलाते रहें, और थोड़ा-थोड़ा कॉपर सल्फेट तब तक मिलाते रहें जब तक और न घुले। इस तरह गर्म संतृप्त (saturated) घोल तैयार होता है।",
+                note: "The solution is saturated by heating first — filtration comes only after this, not before."
             },
             {
-                title: "Slow Controlled Cooling",
-                descEn: "Cover the clear filtrate with a watch glass and leave it completely undisturbed to cool.",
-                descHi: "घोल को वॉच ग्लास से ढक दें और बिना हिलाए-डुलाये धीरे-धीरे ठंडा होने दें।"
+                title: "Filtering While Hot",
+                descEn: "Filter the hot saturated solution through filter paper right away. This removes insoluble impurities like sand or dust, which stay behind on the paper.",
+                descHi: "गर्म संतृप्त घोल को तुरंत फिल्टर पेपर से छान लें। इससे रेत या धूल जैसी अघुलनशील अशुद्धियां पेपर पर ही रह जाती हैं।",
+                note: "It's filtered while still hot — if it cools first, crystals can start forming on the filter paper itself."
             },
             {
-                title: "Pure Crystal Formation",
-                descEn: "As the liquid cools, pure blue copper sulfate crystals form at the bottom.",
-                descHi: "ठंडा होने पर नीचे शुद्ध नीले रंग के कॉपर सल्फेट क्रिस्टल बन जाते हैं।"
+                title: "Slow, Undisturbed Cooling",
+                descEn: "Collect the filtrate in a clean beaker, cover it with a watch glass, and let it cool slowly to room temperature without disturbing it.",
+                descHi: "छने हुए घोल को एक साफ बीकर में लें, उसे वॉच ग्लास से ढक दें, और बिना हिलाए-डुलाये धीरे-धीरे कमरे के तापमान तक ठंडा होने दें।",
+                note: "As it cools, solubility falls and the solution becomes supersaturated — this is what drives crystals to form."
+            },
+            {
+                title: "Pure Crystals Form",
+                descEn: "Blue, well-shaped copper sulfate crystals separate out first. The small amount of soluble impurity never reaches saturation, so it stays dissolved in the leftover liquid — the mother liquor.",
+                descHi: "शुद्ध नीले, अच्छे आकार के कॉपर सल्फेट क्रिस्टल पहले अलग होते हैं। घुलनशील अशुद्धि इतनी कम मात्रा में होती है कि वह संतृप्ति तक नहीं पहुंचती, इसलिए वह बचे हुए द्रव — मदर लिकर — में घुली रह जाती है।",
+                note: "Cooling speed matters: slow cooling gives a few large, pure crystals. Fast cooling gives no time for particles to line up properly — you get lots of tiny, impure crystals instead."
+            },
+            {
+                title: "Filtering and Drying the Crystals",
+                descEn: "Filter the crystals out of the mother liquor, then dry them by pressing gently between folds of filter paper. This gives the final pure copper sulfate crystals.",
+                descHi: "क्रिस्टल को मदर लिकर से छानकर अलग करें, फिर उन्हें फिल्टर पेपर की परतों के बीच हल्के से दबाकर सुखाएं। इस तरह शुद्ध कॉपर सल्फेट क्रिस्टल तैयार होते हैं।",
+                note: ""
             }
         ];
+
+        const totalSteps = stepsData.length;
 
         const uiNum = document.getElementById('ui-step-num');
         const uiTextEn = document.getElementById('ui-step-text-en');
         const uiTextHi = document.getElementById('ui-step-text-hi');
+        const uiNote = document.getElementById('ui-step-note');
         const btnPrev = document.getElementById('btn-prev');
         const btnNext = document.getElementById('btn-next');
+        const dotsContainer = document.getElementById('progress-dots');
+
+        for (let i = 0; i < totalSteps; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.id = `dot-${i}`;
+            dotsContainer.appendChild(dot);
+        }
 
         function updateUI() {
             const step = stepsData[currentStep];
-            uiNum.innerText = `Step ${currentStep + 1} of 4 — ${step.title}`;
+            uiNum.innerText = `Step ${currentStep + 1} of ${totalSteps} — ${step.title}`;
             uiTextEn.innerText = step.descEn;
             uiTextHi.innerText = step.descHi;
-            
+            uiNote.innerText = step.note;
+            uiNote.style.display = step.note ? 'block' : 'none';
+
             btnPrev.disabled = currentStep === 0;
-            btnNext.innerText = (currentStep === 3) ? "Restart Experiment" : "Next Step";
+            btnNext.innerText = (currentStep === totalSteps - 1) ? "Restart Experiment" : "Next Step";
+
+            for (let i = 0; i < totalSteps; i++) {
+                document.getElementById(`dot-${i}`).classList.toggle('active', i === currentStep);
+            }
         }
 
         function drawBeaker(x, y, w, h, fluidLevel = 0, fluidColor = '#0284c7') {
@@ -281,26 +353,74 @@
             }
         }
 
+        function drawSteamWisp(x, y, offset) {
+            const t = (animationTime + offset) % 60;
+            const alpha = Math.max(0, 0.5 - t / 60 * 0.5);
+            ctx.strokeStyle = `rgba(226, 232, 240, ${alpha})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y - t);
+            ctx.quadraticCurveTo(x + 8, y - t - 8, x, y - t - 16);
+            ctx.stroke();
+        }
+
         // Draw Retort Stand for Funnel Support
         function drawRetortStand() {
             // Heavy Metal Base Plate
             ctx.fillStyle = '#334155';
             ctx.fillRect(350, 348, 60, 10);
-            
+
             // Vertical Metallic Rod
             ctx.fillStyle = '#64748b';
             ctx.fillRect(375, 140, 6, 208);
-            
+
             // Clamp Bosshead on rod
             ctx.fillStyle = '#475569';
             ctx.fillRect(371, 163, 14, 15);
-            
+
             // Horizontal Ring Arm supporting the Funnel
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(371, 170);
             ctx.lineTo(250, 170);
+            ctx.stroke();
+        }
+
+        function drawFunnelWithPaper(topY) {
+            // Funnel outline
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(250, topY); ctx.lineTo(350, topY);
+            ctx.lineTo(310, topY + 50); ctx.lineTo(310, topY + 90);
+            ctx.lineTo(290, topY + 90); ctx.lineTo(290, topY + 50);
+            ctx.closePath();
+            ctx.stroke();
+
+            // Filter Paper Cone
+            ctx.strokeStyle = '#f8fafc';
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.beginPath();
+            ctx.moveTo(260, topY + 5);
+            ctx.lineTo(340, topY + 5);
+            ctx.lineTo(300, topY + 45);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function drawCrystalCluster(cx, cy, size) {
+            ctx.fillStyle = '#00e5ff';
+            ctx.strokeStyle = '#0091ea';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - size);
+            ctx.lineTo(cx + size, cy - size / 3);
+            ctx.lineTo(cx + size / 2, cy + size);
+            ctx.lineTo(cx - size, cy + size / 2);
+            ctx.closePath();
+            ctx.fill();
             ctx.stroke();
         }
 
@@ -313,51 +433,84 @@
             ctx.scale(1.6, 1.6);
             ctx.translate(-canvas.width / 2, -canvas.height / 2 - 20);
 
-            switch(currentStep) {
-                case 0: // STEP 1
-                    drawBurner(300, 270, true);
-                    drawBeaker(240, 190, 120, 80, 50, 'rgba(56, 189, 248, 0.4)');
-                    drawBeaker(260, 170, 80, 70, 40, `rgba(2, 132, 199, ${0.3 + Math.sin(animationTime*0.05)*0.2})`);
-                    
-                    let rodX = 290 + Math.sin(animationTime * 0.08) * 15;
+            switch (currentStep) {
+                case 0: { // Dissolving the impure sample (1g CuSO4 + 25mL water + drop dil. H2SO4)
+                    drawBeaker(250, 190, 100, 90, 55, `rgba(2, 132, 199, ${0.3 + Math.sin(animationTime * 0.05) * 0.15})`);
+
+                    let rodX = 300 + Math.sin(animationTime * 0.08) * 15;
                     ctx.strokeStyle = 'rgba(255,255,255,0.7)';
                     ctx.lineWidth = 4;
                     ctx.beginPath();
                     ctx.moveTo(rodX + 15, 120);
-                    ctx.lineTo(rodX, 220);
+                    ctx.lineTo(rodX, 230);
+                    ctx.stroke();
+
+                    // a drop of dilute sulfuric acid falling in
+                    const dropCycle = animationTime % 90;
+                    if (dropCycle < 60) {
+                        ctx.fillStyle = 'rgba(226, 232, 240, 0.9)';
+                        ctx.beginPath();
+                        ctx.arc(340, 130 + dropCycle * 1.2, 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    // undissolved powder specks fading out over time
+                    const speckAlpha = Math.max(0, 0.6 - animationTime * 0.005);
+                    if (speckAlpha > 0) {
+                        ctx.fillStyle = `rgba(30, 64, 175, ${speckAlpha})`;
+                        for (let i = 0; i < 5; i++) {
+                            ctx.beginPath();
+                            ctx.arc(280 + i * 10, 265 - (i % 2) * 6, 2.5, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                    break;
+                }
+
+                case 1: { // Heating to saturation (in a water bath, BEFORE filtering)
+                    drawBurner(300, 270, true);
+                    // outer water-bath beaker
+                    drawBeaker(230, 195, 140, 80, 45, 'rgba(56, 189, 248, 0.35)');
+                    // inner beaker with the copper sulfate solution
+                    drawBeaker(255, 175, 90, 75, 45, `rgba(2, 132, 199, ${0.5 + Math.sin(animationTime * 0.05) * 0.15})`);
+
+                    drawSteamWisp(270, 195, 0);
+                    drawSteamWisp(300, 195, 25);
+
+                    // extra copper sulfate being added and stirred in until saturated
+                    const addCycle = animationTime % 80;
+                    if (addCycle < 30) {
+                        ctx.fillStyle = '#1e40af';
+                        ctx.beginPath();
+                        ctx.arc(280, 150 + addCycle, 2, 0, Math.PI * 2);
+                        ctx.arc(295, 150 + addCycle * 0.8, 1.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    let stirX = 285 + Math.sin(animationTime * 0.09) * 12;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(stirX + 10, 120);
+                    ctx.lineTo(stirX, 210);
                     ctx.stroke();
                     break;
+                }
 
-                case 1: // STEP 2: Filtration with Retort Stand
-                    // Draw Lab Stand behind apparatus
+                case 2: { // Filtering while hot
                     drawRetortStand();
-
-                    // Receiving Beaker
                     let dripFill = Math.min(40, animationTime * 0.15);
                     drawBeaker(260, 280, 80, 75, dripFill, '#0284c7');
+                    drawFunnelWithPaper(170);
+                    drawSteamWisp(300, 170, 10);
 
-                    // Filter Funnel outline
-                    ctx.strokeStyle = '#cbd5e1';
-                    ctx.lineWidth = 3;
+                    // a couple of dark specks caught on the paper (insoluble impurity)
+                    ctx.fillStyle = '#78350f';
                     ctx.beginPath();
-                    ctx.moveTo(250, 170); ctx.lineTo(350, 170);
-                    ctx.lineTo(310, 220); ctx.lineTo(310, 260);
-                    ctx.lineTo(290, 260); ctx.lineTo(290, 220);
-                    ctx.closePath();
-                    ctx.stroke();
-
-                    // Filter Paper Cone
-                    ctx.strokeStyle = '#f8fafc';
-                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                    ctx.beginPath();
-                    ctx.moveTo(260, 175);
-                    ctx.lineTo(340, 175);
-                    ctx.lineTo(300, 215);
-                    ctx.closePath();
+                    ctx.arc(292, 195, 2, 0, Math.PI * 2);
+                    ctx.arc(305, 200, 1.6, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.stroke();
 
-                    // Drops animation
                     if (dripFill < 40) {
                         ctx.fillStyle = '#38bdf8';
                         ctx.beginPath();
@@ -365,8 +518,9 @@
                         ctx.fill();
                     }
                     break;
+                }
 
-                case 2: // STEP 3
+                case 3: { // Slow undisturbed cooling
                     drawBeaker(250, 200, 100, 100, 60, '#0284c7');
 
                     ctx.strokeStyle = '#cbd5e1';
@@ -383,31 +537,69 @@
                     ctx.arc(300, 270, 10 + waveOffset, 0, Math.PI * 2);
                     ctx.stroke();
                     break;
+                }
 
-                case 3: // STEP 4
-                    drawBeaker(250, 200, 100, 100, 45, 'rgba(2, 132, 199, 0.6)');
+                case 4: { // Pure crystals separate from mother liquor — contrast slow vs fast cooling
+                    // Slow cooling beaker (correct method) on the left
+                    drawBeaker(200, 200, 90, 100, 45, 'rgba(2, 132, 199, 0.55)');
+                    const growth = Math.min(1, animationTime / 60);
+                    drawCrystalCluster(225, 285, 11 * growth);
+                    drawCrystalCluster(243, 288, 14 * growth);
+                    drawCrystalCluster(265, 285, 9 * growth);
+                    drawCrystalCluster(250, 278, 12 * growth);
 
+                    ctx.fillStyle = 'rgba(224, 242, 254, 0.7)';
+                    ctx.font = '8px system-ui';
+                    ctx.fillText('mother liquor', 205, 225);
+                    ctx.fillStyle = '#7dd3fc';
+                    ctx.fillText('slow cooling: large, pure crystals', 190, 320);
+
+                    // Fast-cooling beaker (what NOT to do) on the right, faded/crossed
+                    ctx.save();
+                    ctx.globalAlpha = 0.6;
+                    drawBeaker(340, 210, 70, 85, 35, 'rgba(2, 132, 199, 0.4)');
+                    const speckle = [[350, 275], [360, 280], [370, 272], [380, 278], [355, 285], [372, 284], [365, 270], [345, 282]];
                     ctx.fillStyle = '#00e5ff';
-                    ctx.strokeStyle = '#0091ea';
-                    ctx.lineWidth = 1.5;
-
-                    function drawCrystalCluster(cx, cy, size) {
+                    speckle.forEach(([sx, sy]) => {
                         ctx.beginPath();
-                        ctx.moveTo(cx, cy - size);
-                        ctx.lineTo(cx + size, cy - size/3);
-                        ctx.lineTo(cx + size/2, cy + size);
-                        ctx.lineTo(cx - size, cy + size/2);
-                        ctx.closePath();
+                        ctx.arc(sx, sy, 2, 0, Math.PI * 2);
                         ctx.fill();
-                        ctx.stroke();
-                    }
-
-                    drawCrystalCluster(275, 290, 12);
-                    drawCrystalCluster(295, 292, 16);
-                    drawCrystalCluster(325, 294, 10);
-                    drawCrystalCluster(305, 285, 14);
-                    drawCrystalCluster(285, 295, 8);
+                    });
+                    ctx.restore();
+                    // red cross over the fast-cooling beaker
+                    ctx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(335, 205); ctx.lineTo(415, 300);
+                    ctx.moveTo(415, 205); ctx.lineTo(335, 300);
+                    ctx.stroke();
+                    ctx.fillStyle = '#fca5a5';
+                    ctx.font = '8px system-ui';
+                    ctx.fillText('fast cooling: tiny, impure crystals', 325, 320);
                     break;
+                }
+
+                case 5: { // Filtering and drying the crystals
+                    drawRetortStand();
+                    drawFunnelWithPaper(170);
+                    drawBeaker(260, 280, 80, 75, 30, 'rgba(2, 132, 199, 0.35)');
+
+                    // crystals resting in the filter paper
+                    drawCrystalCluster(295, 195, 8);
+                    drawCrystalCluster(308, 198, 6);
+                    drawCrystalCluster(285, 200, 5);
+
+                    // a folded filter paper with a crystal being pressed dry, off to the side
+                    ctx.strokeStyle = '#f8fafc';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(140, 300); ctx.lineTo(210, 300);
+                    ctx.lineTo(210, 330); ctx.lineTo(140, 330);
+                    ctx.closePath();
+                    ctx.stroke();
+                    drawCrystalCluster(175, 315, 7);
+                    break;
+                }
             }
 
             ctx.restore();
@@ -415,7 +607,7 @@
         }
 
         btnNext.addEventListener('click', () => {
-            currentStep = (currentStep === 3) ? 0 : currentStep + 1;
+            currentStep = (currentStep === totalSteps - 1) ? 0 : currentStep + 1;
             animationTime = 0;
             updateUI();
         });
