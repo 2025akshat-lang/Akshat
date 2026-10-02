@@ -9,16 +9,6 @@
     box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-.svg-container {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, #e0f2fe, #f0fdf4);
-  border-radius: 0px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
   body {
     margin: 0;
@@ -52,7 +42,6 @@
   .card-title { font-size: 15px; font-weight: 600; margin: 0 0 8px 0; color: #fff; }
   .card-meta { font-size: 12px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
   .badge { background: rgba(255, 255, 255, 0.12); padding: 3px 8px; border-radius: 4px; }
-  .badge-simulation { background: #0284c7; color: #fff; font-weight: 700; }
 
   /* EXPANDED GALLERY VIEW */
   .gallery-view {
@@ -115,33 +104,6 @@
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
   }
-
-  /* WATER SIMULATION CONTAINER IN GALLERY */
-  .simulation-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #0f172a;
-    border-radius: 16px;
-    padding: 10px;
-    border: 1px solid #334155;
-  }
-
-  .canvas-card { width: 100%; background: #1e293b; border-radius: 12px; overflow: hidden; position: relative; }
-  canvas { width: 100%; height: 280px; display: block; touch-action: none; }
-
-  .controls-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-  
-  .sim-btn { background: #0284c7; color: white; border: none; padding: 10px 6px; border-radius: 8px; font-weight: 600; font-size: 11px; text-align: center; cursor: pointer; transition: 0.2s; }
-  .sim-btn:active { transform: scale(0.96); opacity: 0.9; }
-  .sim-btn-loop { background: #8b5cf6; grid-column: span 2; font-size: 13px; font-weight: 700; }
-  .sim-btn-active { background: #e11d48 !important; }
-
-  .info-box { width: 100%; background: #1e293b; margin-top: 10px; padding: 10px 12px; border-radius: 10px; border-left: 4px solid #38bdf8; text-align: left; }
-  .info-box h3 { color: #38bdf8; font-size: 14px; margin: 0 0 4px 0; }
-  .info-box p { color: #cbd5e1; font-size: 11px; line-height: 1.4; margin: 0; }
-  .stage-badge { display: inline-block; padding: 2px 6px; border-radius: 10px; background: #334155; color: #38bdf8; font-size: 10px; font-weight: bold; margin-bottom: 4px; }
 
   /* FIRE THEME */
   .modal-fire-bg { display: none; position: absolute; top: 0; right: 0; width: 100%; height: 200px; pointer-events: none; z-index: 1; }
@@ -264,7 +226,7 @@
 
   <!-- MAIN GRID INCLUDING KIDS CARD & GALLERY CARDS -->
   <div id="albumsGrid" class="albums-grid">
-    
+
     <!-- Kids Practical File Floating Card -->
     <a href="https://drive.google.com/file/d/1GYL5wSm8ppEZUiiH1GGwIr1KkPPIrBRO/view?usp=sharing" target="_blank" class="kids-card">
       <div class="character-container">
@@ -368,38 +330,6 @@
       images: [
         "https://i.postimg.cc/T3kb4TLP/20260804-131206.jpg"
       ]
-    },
-    {
-      id: 3,
-      title: "Ultra 3D Water Cycle Visualizer",
-      author: "Class 9th Science Model",
-      theme: "science",
-      type: "simulation",
-      // FIXED THUMBNAIL HERE (Water Cycle Illustration)
-      thumbnailType: "svg", // Batayega ki ye SVG card hai
-  // Yahan lagega poora SVG tag ka code 👇
-  svgMarkup: `<div class="svg-container">
-    <svg viewBox="0 0 312 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-      <rect width="312" height="200" fill="none"/>
-      <circle cx="260" cy="45" r="22" fill="#f59e0b" opacity="0.9"/>
-      <circle cx="260" cy="45" r="28" fill="#fef3c7" opacity="0.4"/>
-      <path d="M75 55 a18 18 0 0 1 30 -10 a15 15 0 0 1 25 10 a14 14 0 0 1 -5 20 h-50 a14 14 0 0 1 0 -20 z" fill="#94a3b8"/>
-      <path d="M0 160 Q 78 150, 156 160 T 312 160 V 200 H 0 Z" fill="#0284c7"/>
-      <path d="M0 168 Q 78 158, 156 168 T 312 168 V 200 H 0 Z" fill="#0369a1" opacity="0.6"/>
-      <line x1="85" y1="85" x2="80" y2="105" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
-      <line x1="95" y1="90" x2="90" y2="110" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
-      <line x1="105" y1="85" x2="100" y2="105" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M 140 145 Q 145 120, 130 95" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3 3"/>
-      <polygon points="127,97 132,90 135,98" fill="#f59e0b"/>
-      <path d="M 175 145 Q 180 125, 160 100" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3 3"/>
-      <polygon points="157,102 162,95 165,103" fill="#f59e0b"/>
-      <text x="175" y="78" font-size="9" fill="#b45309" font-weight="bold">Evaporation</text>
-      <text x="42" y="95" font-size="9" fill="#0369a1" font-weight="bold">Precipitation</text>
-      <text x="115" y="38" font-size="9" fill="#334155" font-weight="bold">Condensation</text>
-      <text x="118" y="182" font-size="9" fill="#ffffff" font-weight="bold">Collection</text>
-    </svg>
-  </div>`,
-      thumbnail: " "
     }
   ];
 
@@ -407,8 +337,7 @@
     const grid = document.getElementById('albumsGrid');
 
     albumsData.forEach(album => {
-      const badgeText = album.type === 'simulation' ? '3D Simulation' : `${album.images ? album.images.length : 1} Photos`;
-      const badgeClass = album.type === 'simulation' ? 'badge badge-simulation' : 'badge';
+      const badgeText = `${album.images ? album.images.length : 1} Photos`;
 
       const cardHtml = `
         <div class="behance-card" onclick="openGallery(${album.id})">
@@ -419,251 +348,13 @@
             <div class="card-title">${album.title}</div>
             <div class="card-meta">
               <span>${album.author}</span>
-              <span class="${badgeClass}">${badgeText}</span>
+              <span class="badge">${badgeText}</span>
             </div>
           </div>
         </div>
       `;
-      grid.innerHTML += cardHtml;
+      grid.insertAdjacentHTML('beforeend', cardHtml);
     });
-  }
-
-  // --- WATER CYCLE SIMULATION ENGINE LOGIC ---
-  let animId = null;
-  let autoLoop = true;
-  let activeStage = 'loop';
-  let cycleTimer = 0;
-
-  let vaporParticles = [];
-  let transpParticles = [];
-  let rainParticles = [];
-  let condensationParticles = [];
-  let infiltrationParticles = [];
-  let groundwaterFlow = [];
-
-  function initSimulationParticles(w) {
-    vaporParticles = []; transpParticles = []; rainParticles = []; 
-    condensationParticles = []; infiltrationParticles = []; groundwaterFlow = [];
-
-    const centerW = w || 320;
-    for(let i=0; i<30; i++) vaporParticles.push({ x: 20 + Math.random()*(centerW*0.3), y: 190 + Math.random()*30, speed: 0.5 + Math.random()*0.5 });
-    for(let i=0; i<20; i++) transpParticles.push({ x: (centerW*0.4) + Math.random()*20, y: 175 + Math.random()*15, speed: 0.4 + Math.random()*0.4 });
-    for(let i=0; i<30; i++) condensationParticles.push({ x: (centerW*0.4) + Math.random()*(centerW*0.4), y: 35 + Math.random()*35, radius: 1 + Math.random()*2, alpha: Math.random() });
-    for(let i=0; i<45; i++) rainParticles.push({ x: (centerW*0.45) + Math.random()*(centerW*0.45), y: 65 + Math.random()*100, speed: 2.5 + Math.random()*2 });
-    for(let i=0; i<25; i++) infiltrationParticles.push({ x: (centerW*0.4) + Math.random()*(centerW*0.45), y: 200 + Math.random()*10, speed: 0.3 + Math.random()*0.3 });
-    for(let i=0; i<20; i++) groundwaterFlow.push({ x: (centerW*0.35) + Math.random()*(centerW*0.5), y: 255 + Math.random()*10, speed: 0.4 + Math.random()*0.4 });
-  }
-
-  function startWaterSimulation() {
-    const canvas = document.getElementById('stageCanvas');
-    if(!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    function resize() {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = 280;
-      initSimulationParticles(canvas.width);
-    }
-    resize();
-
-    function drawTerrain() {
-      const w = canvas.width;
-      const h = canvas.height;
-
-      let skyGrad = ctx.createLinearGradient(0, 0, 0, h);
-      skyGrad.addColorStop(0, '#0f172a');
-      skyGrad.addColorStop(1, '#1e293b');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, h);
-
-      // Sun
-      ctx.fillStyle = '#f59e0b';
-      ctx.shadowColor = '#f59e0b';
-      ctx.shadowBlur = 12;
-      ctx.beginPath();
-      ctx.arc(35, 35, 16, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      // Ocean / Water Body
-      const oceanW = w * 0.35;
-      ctx.fillStyle = '#0284c7';
-      ctx.fillRect(0, 190, oceanW, 55);
-
-      // Grass / Land
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(oceanW, 190, w - oceanW, 55);
-
-      // Underground Soil
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(oceanW, 210, w - oceanW, 35);
-
-      // Tree
-      const treeX = oceanW + 25;
-      ctx.fillStyle = '#166534';
-      ctx.beginPath();
-      ctx.arc(treeX, 175, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#451a03';
-      ctx.fillRect(treeX - 2, 183, 4, 12);
-
-      // Aquifer
-      ctx.fillStyle = '#0369a1';
-      ctx.fillRect(0, 245, w, 35);
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = '9px Segoe UI';
-      ctx.fillText('Underground Aquifer / Return Flow ➔', Math.max(10, w*0.25), 262);
-
-      // Mountain
-      ctx.fillStyle = '#475569';
-      ctx.beginPath();
-      ctx.moveTo(w * 0.55, 190);
-      ctx.lineTo(w * 0.75, 90);
-      ctx.lineTo(w, 190);
-      ctx.fill();
-
-      // Cloud
-      let cloudDark = (activeStage === 'rain' || (autoLoop && cycleTimer > 350 && cycleTimer < 580));
-      ctx.fillStyle = cloudDark ? '#475569' : '#e2e8f0';
-      const cloudX = w * 0.6;
-      ctx.beginPath();
-      ctx.arc(cloudX - 20, 55, 18, 0, Math.PI * 2);
-      ctx.arc(cloudX, 45, 24, 0, Math.PI * 2);
-      ctx.arc(cloudX + 22, 55, 18, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function renderSim() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const w = canvas.width;
-      drawTerrain();
-
-      if (autoLoop) {
-        cycleTimer = (cycleTimer + 1) % 850;
-        updateStageTextByTimer(cycleTimer);
-      }
-
-      if (activeStage === 'evap' || (autoLoop && cycleTimer < 250)) {
-        ctx.fillStyle = '#38bdf8';
-        vaporParticles.forEach(p => {
-          p.y -= p.speed;
-          p.x += Math.sin(p.y * 0.04) * 0.4;
-          if(p.y < 65) { p.y = 190; p.x = 10 + Math.random() * (w * 0.3); }
-          ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
-        });
-      }
-
-      if (activeStage === 'transp' || (autoLoop && cycleTimer >= 100 && cycleTimer < 320)) {
-        ctx.fillStyle = '#4ade80';
-        transpParticles.forEach(tp => {
-          tp.y -= tp.speed;
-          tp.x += Math.cos(tp.y * 0.05) * 0.3;
-          if(tp.y < 65) { tp.y = 175; tp.x = (w * 0.35) + 20 + Math.random() * 12; }
-          ctx.beginPath(); ctx.arc(tp.x, tp.y, 2, 0, Math.PI * 2); ctx.fill();
-        });
-      }
-
-      if (activeStage === 'cond' || (autoLoop && cycleTimer >= 220 && cycleTimer < 450)) {
-        condensationParticles.forEach(cp => {
-          cp.alpha += 0.01;
-          if(cp.alpha > 1) cp.alpha = 0.1;
-          ctx.fillStyle = '#bae6fd'; ctx.globalAlpha = cp.alpha;
-          ctx.beginPath(); ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2); ctx.fill();
-        });
-        ctx.globalAlpha = 1.0;
-      }
-
-      if (activeStage === 'rain' || (autoLoop && cycleTimer >= 380 && cycleTimer < 620)) {
-        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5;
-        rainParticles.forEach(r => {
-          r.y += r.speed;
-          if(r.y > 190) { r.y = 60; r.x = (w * 0.45) + Math.random() * (w * 0.45); }
-          ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - 1, r.y + 6); ctx.stroke();
-        });
-      }
-
-      if (activeStage === 'infil' || (autoLoop && cycleTimer >= 520)) {
-        ctx.fillStyle = '#38bdf8';
-        infiltrationParticles.forEach(ip => {
-          ip.y += ip.speed;
-          if(ip.y > 245) { ip.y = 190; ip.x = (w * 0.35) + Math.random() * (w * 0.5); }
-          ctx.beginPath(); ctx.arc(ip.x, ip.y, 1.8, 0, Math.PI * 2); ctx.fill();
-        });
-        groundwaterFlow.forEach(gw => {
-          gw.x -= gw.speed;
-          if(gw.x < 10) gw.x = w * 0.85;
-          ctx.beginPath(); ctx.arc(gw.x, gw.y, 1.8, 0, Math.PI * 2); ctx.fill();
-        });
-      }
-
-      animId = requestAnimationFrame(renderSim);
-    }
-
-    renderSim();
-  }
-
-  function updateStageTextByTimer(timer) {
-    const badge = document.getElementById('simStageBadge');
-    const title = document.getElementById('simStageTitle');
-    const desc = document.getElementById('simStageDesc');
-    if(!badge) return;
-
-    if(timer < 180) {
-      badge.textContent = "STEP 1: EVAPORATION";
-      title.textContent = "Ocean Water Turns into Vapor";
-      desc.textContent = "Sun heats surface water, changing liquid into invisible gas rising up.";
-    } else if(timer < 300) {
-      badge.textContent = "STEP 2: TRANSPIRATION";
-      title.textContent = "Plants Release Water Vapor";
-      desc.textContent = "Plants release excess water vapor into air through leaf pores (stomata).";
-    } else if(timer < 420) {
-      badge.textContent = "STEP 3: CONDENSATION";
-      title.textContent = "Cool Air Forms Cloud Droplets";
-      desc.textContent = "Cool air condenses warm vapor into water droplets forming clouds.";
-    } else if(timer < 600) {
-      badge.textContent = "STEP 4: PRECIPITATION";
-      title.textContent = "Raindrops Fall to Earth";
-      desc.textContent = "Heavy cloud droplets fall down to ground as rain due to gravity.";
-    } else {
-      badge.textContent = "STEP 5: INFILTRATION & RETURN";
-      title.textContent = "Seeping Underground & Ocean Return";
-      desc.textContent = "Rainwater seeps deep into soil, recharging groundwater back to the ocean!";
-    }
-  }
-
-  function setSimMode(stage) {
-    autoLoop = false;
-    activeStage = stage;
-    const loopBtn = document.getElementById('simLoopBtn');
-    if(loopBtn) loopBtn.classList.remove('sim-btn-active');
-    const badge = document.getElementById('simStageBadge');
-    const title = document.getElementById('simStageTitle');
-    const desc = document.getElementById('simStageDesc');
-
-    badge.textContent = "MANUAL VIEW";
-    if(stage === 'evap') {
-      title.textContent = "1. Evaporation";
-      desc.textContent = "Liquid ocean water absorbs heat and turns into gaseous vapor rising up.";
-    } else if(stage === 'transp') {
-      title.textContent = "2. Transpiration";
-      desc.textContent = "Plants release excess water through stomata into atmosphere.";
-    } else if(stage === 'cond') {
-      title.textContent = "3. Condensation";
-      desc.textContent = "Gas vapor cools down in sky, forming liquid cloud droplets.";
-    } else if(stage === 'rain') {
-      title.textContent = "4. Precipitation";
-      desc.textContent = "Condensed water droplets fall as rain onto land and mountains.";
-    } else if(stage === 'infil') {
-      title.textContent = "5. Infiltration";
-      desc.textContent = "Rainwater seeps down soil, replenishing underground streams.";
-    }
-  }
-
-  function toggleSimLoop() {
-    autoLoop = true;
-    activeStage = 'loop';
-    const loopBtn = document.getElementById('simLoopBtn');
-    if(loopBtn) loopBtn.classList.add('sim-btn-active');
   }
 
   // --- GALLERY OPEN / CLOSE SYSTEM ---
@@ -677,87 +368,25 @@
 
     galleryModal.classList.remove('fire-active', 'science-active');
 
-    if (album.type === 'simulation') {
-      stream.innerHTML = `
-        <div class="simulation-container">
-          <div class="canvas-card">
-            <canvas id="stageCanvas"></canvas>
-          </div>
-          <div class="controls-grid">
-            <button class="sim-btn sim-btn-loop sim-btn-active" id="simLoopBtn" onclick="toggleSimLoop()">🔄 Continuous Cycle Mode (Active)</button>
-            <button class="sim-btn" onclick="setSimMode('evap')">1. Evaporation</button>
-            <button class="sim-btn" onclick="setSimMode('transp')">2. Transpiration</button>
-            <button class="sim-btn" onclick="setSimMode('cond')">3. Condensation</button>
-            <button class="sim-btn" onclick="setSimMode('rain')">4. Precipitation</button>
-            <button class="sim-btn" style="grid-column: span 2; background: #059669;" onclick="setSimMode('infil')">5. Infiltration & Groundwater</button>
-          </div>
-          <div class="info-box">
-            <span class="stage-badge" id="simStageBadge">LOOP MODE</span>
-            <h3 id="simStageTitle">Continuous Water Cycle</h3>
-            <p id="simStageDesc">Watch how water seamlessly travels from ocean/plants to sky, soil, and back!</p>
-          </div>
-        </div>
-      `;
-      galleryModal.classList.add('science-active');
-      document.getElementById('albumsGrid').style.display = 'none';
-      galleryModal.style.display = 'block';
+    stream.innerHTML = album.images.map(imgUrl =>
+      `<img src="${imgUrl}" loading="lazy" alt="${album.title}">`
+    ).join('');
 
-      startWaterSimulation();
-    } else {
-      stream.innerHTML = album.images.map(imgUrl => 
-        `<img src="${imgUrl}" loading="lazy" alt="${album.title}">`
-      ).join('');
+    if (album.theme === 'fire') galleryModal.classList.add('fire-active');
+    else if (album.theme === 'science') galleryModal.classList.add('science-active');
 
-      if (album.theme === 'fire') galleryModal.classList.add('fire-active');
-      else if (album.theme === 'science') galleryModal.classList.add('science-active');
-
-      document.getElementById('albumsGrid').style.display = 'none';
-      galleryModal.style.display = 'block';
-    }
+    document.getElementById('albumsGrid').style.display = 'none';
+    galleryModal.style.display = 'block';
   }
 
   function closeGallery() {
-    if(animId) cancelAnimationFrame(animId);
     const galleryModal = document.getElementById('galleryView');
     galleryModal.style.display = 'none';
     galleryModal.classList.remove('fire-active', 'science-active');
     document.getElementById('albumsGrid').style.display = 'grid';
   }
 
-  renderAlbums()
-  function renderAlbums() {
-  const grid = document.getElementById('albumsGrid');
-
-  albumsData.forEach(album => {
-    const badgeText = album.type === 'simulation' ? '3D Simulation' : `${album.images ? album.images.length : 1} Photos`;
-    const badgeClass = album.type === 'simulation' ? 'badge badge-simulation' : 'badge';
-
-    // SVG vs Normal Image Check 👇 (Ye line miss ho gayi thi)
-    let mediaContent = '';
-    if (album.thumbnailType === 'svg') {
-      mediaContent = album.svgMarkup; // Direct SVG inject karega
-    } else {
-      mediaContent = `<img src="${album.thumbnail}" alt="${album.title}">`;
-    }
-
-    const cardHtml = `
-      <div class="behance-card" onclick="openGallery(${album.id})">
-        <div class="img-wrapper">
-          ${mediaContent}
-        </div>
-        <div class="card-info">
-          <div class="card-title">${album.title}</div>
-          <div class="card-meta">
-            <span>${album.author}</span>
-            <span class="${badgeClass}">${badgeText}</span>
-          </div>
-        </div>
-      </div>
-    `;
-    grid.innerHTML += cardHtml;
-  });
-}
-;
+  renderAlbums();
 </script>
 
 </body>
