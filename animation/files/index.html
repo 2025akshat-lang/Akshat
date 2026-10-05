@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!-- © akshat — Rutherford Gold Foil Experiment 3D Simulation -->
+<html lang="hi"><head><meta charset="utf-8">
+<title>रदरफोर्ड स्वर्ण पन्नी प्रयोग (Rutherford Gold Foil Experiment) — akshat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{--z:1;--qz:1;--wz:1;--wo:.07;--bg:#f3f0fa;--fg:#1d1633;--card:#fff;--ac:#6b3fa0;--mut:#6b6580}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120e1f;--fg:#ece8f8;--card:#1d1730;--ac:#b48cf0;--mut:#9a93b3}}
+:root[data-theme="dark"]{--bg:#120e1f;--fg:#ece8f8;--card:#1d1730;--ac:#b48cf0;--mut:#9a93b3}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:calc(14px*var(--z))/1.5 'Noto Sans Devanagari','Nirmala UI',system-ui,sans-serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+#v{flex:1;min-height:0;position:relative;background:#0a0716;touch-action:none;overflow:hidden}
+canvas#c{display:block;width:100%;height:100%}
+#wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 calc(clamp(56px,18vw,120px)*var(--wz))/1 Georgia,serif;color:#fff;opacity:var(--wo);transform:rotate(-18deg);pointer-events:none;user-select:none}
+#wm2{position:absolute;right:10px;bottom:6px;color:#fff;opacity:.45;font:600 calc(13px*var(--z)) Georgia,serif;pointer-events:none}
+#gear{position:fixed;right:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:9;border:1px solid var(--ac);background:#1d1730ee;color:#fff;border-radius:10px;padding:8px 12px;font:600 13px inherit;font-family:inherit}
+.fl{position:absolute;left:8px;color:#e8e2ff;background:#0a0716cc;padding:6px 9px;border-radius:8px;font-size:calc(12px*var(--z));pointer-events:none;display:none}
+#hud{top:8px}#r0{top:calc(96px + (var(--z) - 1)*126px);max-width:70%}
+#grw{position:absolute;left:8px;bottom:8px;display:none;background:#0a0716cc;border-radius:8px;padding:4px;color:#e8e2ff;font-size:calc(10px*var(--z));max-width:calc(230px*var(--z))}
+#tip{position:absolute;display:none;max-width:calc(230px*var(--z));background:#fffffff2;color:#1d1633;border-radius:10px;padding:8px 10px;font-size:calc(13px*var(--z));box-shadow:0 2px 12px #0008;z-index:6;pointer-events:none}
+#tip b{display:block;color:#6b3fa0}
+#gr{width:calc(220px*var(--z));height:auto;display:block}
+#toast{position:absolute;right:8px;bottom:34px;width:min(58%,calc(250px*var(--z)));display:none;background:#ffe14de6;color:#2a1f00;border-radius:10px;padding:6px 9px;font-weight:600;font-size:calc(11px*var(--z));line-height:1.35;text-align:left;z-index:7}
+#sheet{display:none;height:56%;overflow:auto;padding:10px 12px 16px;background:var(--bg);border-top:2px solid var(--ac);box-sizing:border-box}
+.hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;position:sticky;top:-10px;background:var(--bg);padding:6px 0;z-index:2}
+.hd b{flex:1;font-size:calc(14px*var(--z))}
+button{font:inherit;font-size:calc(13px*var(--z));border:1px solid var(--ac);background:var(--card);color:var(--fg);border-radius:9px;padding:calc(9px*var(--z)) calc(11px*var(--z));text-align:left}
+button.on{background:var(--ac);color:#fff}
+.li{display:flex;flex-direction:column;gap:7px}
+.li button{width:100%}
+label{display:block;font-size:calc(13px*var(--z));color:var(--mut);margin:4px 0 8px}label b{color:var(--fg)}
+input[type=range]{width:100%;height:calc(16px*var(--z));accent-color:var(--ac)}
+.nt{font-size:calc(12px*var(--z));color:var(--mut);margin:-4px 0 8px}
+.pg p,.pg li{margin:0 0 8px}.pg ul{padding-left:18px;margin:0}
+.q{margin-bottom:12px;padding:8px;border:1px solid var(--mut);border-radius:9px;font-size:calc(14px*var(--z)*var(--qz))}
+.q button{margin:3px 0;width:100%;font-size:calc(13px*var(--z)*var(--qz));padding:calc(9px*var(--z)*var(--qz)) calc(11px*var(--z)*var(--qz))}.q .ok{background:#2e9c5a;color:#fff;border-color:#2e9c5a}.q .no{background:#c0392b;color:#fff;border-color:#c0392b}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+</style></head><body>
+<div id="v"><canvas id="c"></canvas><div id="wm">akshat</div><div id="wm2">© akshat</div>
+<div class="fl" id="hud"></div><div class="fl" id="r0"></div>
+<div id="grw"><div>विक्षेपण कोण θ बनाम निकटतम दूरी (Deflection angle vs closest distance)</div><canvas id="gr" width="340" height="210"></canvas></div>
+<div id="tip"></div><div id="toast"></div></div>
+<button id="gear">⚙ नियंत्रण सेटिंग्स (Control Settings)</button>
+<div id="sheet"></div>
+<script>
+const $=s=>document.querySelector(s),T=(a,b)=>`${a} (${b})`,el=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e};
+const M=[[T('स्वर्ण','Gold'),79,0xffcc33],[T('रजत','Silver'),47,0xcfd8dc],[T('ताँबा','Copper'),29,0xd2784a],[T('एल्युमिनियम','Aluminium'),13,0xb0bec5]];
+let ZZ=1;const P={qz:1,fs:1,wz:1,wo:.07,Z:79,E:5,N:8,rn:.10,rate:14,speed:1,w:6,b:.3,ne:6};
+const F={tp:'br',quiz:1,trail:1,thom:0,cloud:1,zns:1,toast:1,cnt:0,r0:0,graph:0,pause:0,mode:'foil'};let mat=0;
+const K=.01215,sx=1.6,sy=2,MAXP=150,TL=40;
+const vw=$('#v'),R=new THREE.WebGLRenderer({canvas:$('#c'),antialias:true});
+const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,1,.1,500);
+sc.add(new THREE.AmbientLight(0xffffff,.7));const pl=new THREE.PointLight(0xffffff,.9);pl.position.set(10,25,20);sc.add(pl);
+let th=.8,ph=1.15,rad=38;
+function cp(){cam.position.set(rad*Math.sin(ph)*Math.cos(th),rad*Math.cos(ph),rad*Math.sin(ph)*Math.sin(th));cam.lookAt(0,0,0)}
+function rs(){const w=vw.clientWidth,h=vw.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+new ResizeObserver(rs).observe(vw);
+// ---- कैमरा नियंत्रण और टैप (orbit + tap) ----
+const ptr=new Map();let pd=0,dn=null,mv=0;
+vw.onpointerdown=e=>{vw.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);dn=[e.clientX,e.clientY];mv=0};
+vw.onpointerup=e=>{if(ptr.size==1&&mv<6)pick(e.clientX,e.clientY);ptr.delete(e.pointerId);pd=0};
+vw.onpointercancel=e=>{ptr.delete(e.pointerId);pd=0};
+vw.onpointermove=e=>{if(!ptr.has(e.pointerId))return;const o=ptr.get(e.pointerId);mv+=Math.abs(e.clientX-o[0])+Math.abs(e.clientY-o[1]);
+ if(ptr.size==1){th-=(e.clientX-o[0])*.008;ph=Math.min(3,Math.max(.15,ph-(e.clientY-o[1])*.008))}
+ ptr.set(e.pointerId,[e.clientX,e.clientY]);
+ if(ptr.size==2){mv+=9;const [a,b]=[...ptr.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pd)rad=Math.min(80,Math.max(5,rad*pd/d));pd=d}};
+vw.onwheel=e=>{e.preventDefault();rad=Math.min(80,Math.max(5,rad*(1+e.deltaY*.001)))};
+// ---- पर्दा और स्रोत ----
+const scr=new THREE.Mesh(new THREE.SphereGeometry(24,28,18),new THREE.MeshBasicMaterial({color:0x8866ff,wireframe:true,transparent:true,opacity:.09}));sc.add(scr);
+const scrHit=new THREE.Mesh(new THREE.SphereGeometry(24,16,10),new THREE.MeshBasicMaterial({visible:false,side:THREE.BackSide}));sc.add(scrHit);
+const src=new THREE.Mesh(new THREE.CylinderGeometry(.6,.9,1.6,16),new THREE.MeshStandardMaterial({color:0x888899}));src.rotation.z=Math.PI/2;src.position.x=-19;sc.add(src);
+// ---- परमाणु ----
+let nuc=[],LN=1,LM=1,nucM,cloudM,thE,thO=[],eg=[];const egrp=new THREE.Group();sc.add(egrp);
+const o3=new THREE.Object3D(),sph=new THREE.SphereGeometry(1,16,12);
+const cloudMat=new THREE.MeshBasicMaterial({color:0xffcc33,transparent:true,opacity:.07,depthWrite:false});
+function build(){
+ [nucM,cloudM,thE].forEach(m=>{if(m){sc.remove(m);m.dispose()}});
+ const atom=F.mode=='atom';LN=atom?1:P.N;LM=atom?1:9;nuc=[];
+ for(let i=0;i<LN;i++)for(let j=0;j<LM;j++)for(let k=0;k<LM;k++)nuc.push([(i-(LN-1)/2)*sx,(j-(LM-1)/2)*sy,(k-(LM-1)/2)*sy]);
+ nucM=new THREE.InstancedMesh(sph,new THREE.MeshStandardMaterial({color:0xff4d5e,emissive:0x771122}),nuc.length);
+ cloudM=new THREE.InstancedMesh(sph,cloudMat,nuc.length);
+ const per=atom?P.ne:4;thO=[];for(let i=0;i<nuc.length*per;i++){const a=Math.random()*6.283,c=Math.random()*2-1,s=Math.sqrt(1-c*c),r=Math.cbrt(Math.random())*.7;thO.push([r*s*Math.cos(a),r*c,r*s*Math.sin(a)])}
+ thE=new THREE.InstancedMesh(sph,new THREE.MeshBasicMaterial({color:0x66ddff}),nuc.length*per);
+ sc.add(nucM,cloudM,thE);
+ while(egrp.children.length)egrp.remove(egrp.children[0]);eg=[];
+ if(atom)for(let i=0;i<P.ne;i++){const g=new THREE.Group(),r=1.3+i*.28;g.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3);
+  const ring=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([...Array(64)].map((_,q)=>new THREE.Vector3(r*Math.cos(q/64*6.283),0,r*Math.sin(q/64*6.283)))),new THREE.LineBasicMaterial({color:0x66ccff,transparent:true,opacity:.25}));
+  const e=new THREE.Mesh(sph,new THREE.MeshBasicMaterial({color:0x66ccff}));e.scale.setScalar(.13);g.add(ring,e);egrp.add(g);eg.push({e,r,w:1.6/Math.sqrt(r),a:Math.random()*6})}
+ sizes()}
+function sizes(){const atom=F.mode=='atom',cs=F.thom?.9:atom?3.2:.95,per=atom?P.ne:4;
+ nuc.forEach((n,i)=>{o3.position.set(...n);o3.scale.setScalar(F.thom?1e-4:P.rn);o3.updateMatrix();nucM.setMatrixAt(i,o3.matrix);
+  o3.scale.setScalar(cs);o3.updateMatrix();cloudM.setMatrixAt(i,o3.matrix);
+  for(let q=0;q<per;q++){const o=thO[i*per+q],k=cs/.9*(F.thom?.9:1);o3.position.set(n[0]+o[0]*cs,n[1]+o[1]*cs,n[2]+o[2]*cs);o3.scale.setScalar(atom?.14:.09);o3.updateMatrix();thE.setMatrixAt(i*per+q,o3.matrix)}});
+ nucM.instanceMatrix.needsUpdate=cloudM.instanceMatrix.needsUpdate=thE.instanceMatrix.needsUpdate=true;
+ thE.visible=!!F.thom;egrp.visible=!F.thom;
+ cloudM.visible=!!(F.cloud||F.thom);cloudMat.color.set(F.thom?0xff4466:mat>=0?M[mat][2]:0x5599ff);cloudMat.opacity=F.thom?.26:.07;
+ scr.visible=!!F.zns;src.visible=F.mode=='foil'}
+// ---- α-कण, ग्लो, पथ, चमक ----
+const pool=[...Array(MAXP)].map(()=>({on:0,x:0,y:0,z:0,vx:0,vy:0,vz:0,tr:[],mr:9}));
+const heads=new THREE.InstancedMesh(sph,new THREE.MeshBasicMaterial({color:0xffffff}),MAXP);
+const glow=new THREE.InstancedMesh(sph,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.22,blending:THREE.AdditiveBlending,depthWrite:false}),MAXP);
+heads.frustumCulled=glow.frustumCulled=false;sc.add(heads,glow);
+const tp=new Float32Array(MAXP*TL*6),tc=new Float32Array(MAXP*TL*6),tgeo=new THREE.BufferGeometry();
+tgeo.setAttribute('position',new THREE.BufferAttribute(tp,3));tgeo.setAttribute('color',new THREE.BufferAttribute(tc,3));
+const tl=new THREE.LineSegments(tgeo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.85}));tl.frustumCulled=false;sc.add(tl);
+const fcv=document.createElement('canvas');fcv.width=fcv.height=64;{const g=fcv.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'#fff');r.addColorStop(.3,'#9ff');r.addColorStop(1,'#0000');g.fillStyle=r;g.fillRect(0,0,64,64)}
+const ftex=new THREE.CanvasTexture(fcv);
+const fl=[...Array(40)].map(()=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:ftex,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false}));s.visible=false;s.life=0;sc.add(s);return s});
+function flash(p){if(!F.zns)return;const s=fl.find(q=>q.life<=0);if(!s)return;const l=Math.hypot(p.x,p.y,p.z);s.position.set(p.x/l*24,p.y/l*24,p.z/l*24);s.life=1;s.visible=true}
+const st={tot:0,s:0,d:0,bk:0};let sp=0,pts=[],tt=0,mm=9;
+function spawn(){const p=pool.find(q=>!q.on);if(!p)return;const v0=Math.sqrt(3.2*P.E);
+ p.on=1;p.tr=[];p.mr=9;p.vx=v0;p.vy=p.vz=0;p.x=-18;
+ if(F.mode=='atom'){p.y=P.b;p.z=0}else{const r=P.w*Math.sqrt(Math.random()),a=Math.random()*6.283;p.y=r*Math.cos(a);p.z=r*Math.sin(a)}}
+function acc(p){let ax=0,ay=0,az=0;const eps=F.thom?.9:.03,Zk=K*P.Z;
+ const i0=Math.round(p.x/sx+(LN-1)/2),j0=Math.round(p.y/sy+(LM-1)/2),k0=Math.round(p.z/sy+(LM-1)/2);
+ for(let i=i0-1;i<=i0+1;i++){if(i<0||i>=LN)continue;for(let j=j0-1;j<=j0+1;j++){if(j<0||j>=LM)continue;for(let k=k0-1;k<=k0+1;k++){if(k<0||k>=LM)continue;
+  const n=nuc[(i*LM+j)*LM+k],dx=p.x-n[0],dy=p.y-n[1],dz=p.z-n[2],r2=dx*dx+dy*dy+dz*dz;if(r2>5)continue;if(r2<mm)mm=r2;
+  const q=r2+eps*eps,f=Zk/(q*Math.sqrt(q));ax+=f*dx;ay+=f*dy;az+=f*dz}}}
+ return[ax,ay,az]}
+const col=new THREE.Color();
+function ang(p){return Math.acos(Math.max(-1,Math.min(1,p.vx/Math.hypot(p.vx,p.vy,p.vz))))*57.3}
+function cc(a){return a<3?col.set(0x3dff9a):a<20?col.set(0xffe14d):a<90?col.set(0xff9a3d):col.set(0xff3d7a)}
+function toast(m){const t=$('#toast'),S=t.style,p=F.tp;S.top=S.bottom=S.left=S.right='auto';if(p=='bl'){S.left='8px';S.bottom='34px'}else if(p=='tr'){S.right='8px';S.top='56px'}else{S.right='8px';S.bottom='34px'}t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',4200)}
+function step(dt){
+ fl.forEach(s=>{if(s.life>0){s.life-=dt*2;s.scale.setScalar(3*s.life+.5);s.material.opacity=Math.max(0,s.life);if(s.life<=0)s.visible=false}});
+ if(F.pause)return;
+ sp+=P.rate*dt;while(sp>=1){sp--;spawn()}
+ const ns=Math.max(1,Math.ceil(dt*240)),h=dt/ns;
+ for(const p of pool){if(!p.on)continue;
+  for(let s=0;s<ns;s++){mm=9;const a=acc(p);p.vx+=a[0]*h;p.vy+=a[1]*h;p.vz+=a[2]*h;p.x+=p.vx*h;p.y+=p.vy*h;p.z+=p.vz*h;if(mm<9)p.mr=Math.min(p.mr,Math.sqrt(mm))}
+  p.tr.push([p.x,p.y,p.z]);if(p.tr.length>TL)p.tr.shift();
+  if(p.x*p.x+p.y*p.y+p.z*p.z>576){p.on=0;const a=ang(p);st.tot++;
+   if(a>90){st.bk++;if(F.toast&&performance.now()>tt){tt=performance.now()+4000;toast('कण वापस क्यों आया? क्योंकि दोनों पर धनावेश है (Rebound)! — Why did the particle bounce back? Both carry positive charge!')}}else a>10?st.d++:st.s++;
+   pts.push([p.mr,a]);if(pts.length>300)pts.shift();flash(p)}}
+ for(const p of pool)if(!p.on&&p.tr.length)p.tr.shift();
+ eg.forEach(q=>{q.a+=q.w*dt;q.e.position.set(q.r*Math.cos(q.a),0,q.r*Math.sin(q.a))})}
+function draw(){
+ pool.forEach((p,i)=>{if(p.on){o3.position.set(p.x,p.y,p.z);o3.scale.setScalar(.22)}else{o3.position.set(0,0,0);o3.scale.setScalar(1e-4)}o3.updateMatrix();heads.setMatrixAt(i,o3.matrix);
+  if(p.on){o3.scale.setScalar(.6);o3.updateMatrix()}glow.setMatrixAt(i,o3.matrix);
+  const c=cc(p.on?ang(p):0);heads.setColorAt(i,c);glow.setColorAt(i,c);
+  const t=p.tr;for(let k=0;k<TL-1;k++){const b=(i*TL+k)*6;
+   if(F.trail&&k<t.length-1){const A=t[k],B=t[k+1],f=(k+1)/t.length;cc(ang(p));
+    tp.set(A,b);tp.set(B,b+3);tc[b]=tc[b+3]=col.r*f;tc[b+1]=tc[b+4]=col.g*f;tc[b+2]=col.b*f}else tp.fill(0,b,b+6)}});
+ heads.instanceMatrix.needsUpdate=glow.instanceMatrix.needsUpdate=true;heads.instanceColor.needsUpdate=glow.instanceColor.needsUpdate=true;
+ tgeo.attributes.position.needsUpdate=tgeo.attributes.color.needsUpdate=true}
+// ---- सूचना पट्ट ----
+function graph(){const c=$('#gr'),g=c.getContext('2d'),W=c.width,H=c.height;g.clearRect(0,0,W,H);g.fillStyle='#0a0716';g.fillRect(0,0,W,H);
+ const X=r=>36+r/2*(W-42),Y=a=>H-20-a/180*(H-28);
+ g.strokeStyle='#8878b8';g.strokeRect(36,8,W-42,H-28);g.fillStyle='#d8d0f5';g.font='13px sans-serif';
+ g.fillText('180°',0,18);g.fillText('0°',10,H-22);g.fillText('दूरी (Distance) →',40,H-6);g.fillText('θ',12,H/2);
+ const d=2*K*P.Z/(3.2*P.E);g.strokeStyle='#ffe14d';g.beginPath();let f=1;for(let r=d;r<=2;r+=.01){const a=2*Math.asin(Math.min(1,1/(2*r/d-1)))*57.3;f?(g.moveTo(X(r),Y(a)),f=0):g.lineTo(X(r),Y(a))}g.stroke();
+ pts.forEach(q=>{g.fillStyle=q[1]>90?'#ff3d7a':q[1]>10?'#ff9a3d':'#3dff9a';g.fillRect(X(Math.min(q[0],2))-1,Y(q[1])-1,3,3)})}
+function info(){const T1=st.tot||1,pc=x=>(100*x/T1).toFixed(1),r0=2*1.44*P.Z/P.E;
+ $('#hud').innerHTML=`छोड़े गए कण (Fired): <b>${st.tot}</b><br>सीधे निकले (Straight, &lt;10°): ${st.s} (${pc(st.s)}%)<br>विचलित (Deflected, 10°–90°): ${st.d} (${pc(st.d)}%)<br>वापस लौटे (Rebounded, &gt;90°): ${st.bk} (${pc(st.bk)}%)`;
+ $('#r0').innerHTML=`निकटतम दूरी (Distance of Closest Approach)<br>r₀ = 2kZe² ÷ E = <b>${r0.toFixed(1)} fm</b> (= ${r0.toFixed(1)}×10⁻¹⁵ m)<br>सीधी टक्कर (b = 0) पर α-कण नाभिक के इतने पास पहुँचकर लौटता है।`}
+// ---- टैप पर नाम ----
+const rc=new THREE.Raycaster(),V=new THREE.Vector3();
+function s2(p){V.set(p[0],p[1],p[2]).project(cam);return[(V.x+1)/2*vw.clientWidth,(1-V.y)/2*vw.clientHeight]}
+function near(L,x,y,t){let b=null,bd=t;for(const it of L){const s=s2(it.p),d=Math.hypot(s[0]-x,s[1]-y);if(d<bd){bd=d;b=it}}return b}
+const NM={a:[T('α-कण','Alpha Particle'),T('दोहरा धनावेश','Double positive charge')+' · '+T('हीलियम नाभिक','Helium nucleus')],
+ n:[T('नाभिक','Nucleus'),'धनावेश व लगभग पूरा द्रव्यमान यहीं है; परमाणु से लगभग 10⁵ गुना छोटा। (Holds the positive charge and most of the mass; about 10⁵ times smaller than the atom.)'],
+ e:[T('इलेक्ट्रॉन','Electron'),'ऋणावेशित कण, नाभिक के चारों ओर घूमता है। (Negatively charged; revolves around the nucleus.)'],
+ s:[T('α-कण स्रोत','Alpha Source'),'यहाँ से α-कणों की किरण पन्नी की ओर छोड़ी जाती है। (Fires a beam of α-particles at the foil.)'],
+ z:[T('जिंक सल्फाइड पर्दा','Zinc Sulphide Screen'),'α-कण टकराने पर चमक (Scintillation) देता है। (Gives a flash when an α-particle hits it.)']};
+function pick(px,py){$('#toast').style.display='none';const r=vw.getBoundingClientRect(),x=px-r.left,y=py-r.top,W=vw.clientWidth,H=vw.clientHeight;let h=null,nm;
+ h=near(pool.filter(p=>p.on).map(p=>({p:[p.x,p.y,p.z],t:'a'})),x,y,24);
+ if(!h&&!F.thom)h=near(nuc.map(n=>({p:n,t:'n'})),x,y,20);
+ if(!h&&!F.thom)h=near(eg.map(q=>{const w=new THREE.Vector3();q.e.getWorldPosition(w);return{p:[w.x,w.y,w.z],t:'e'}}),x,y,22);
+ if(!h&&F.mode=='foil'){const s=s2([-19,0,0]);if(Math.hypot(s[0]-x,s[1]-y)<28)h={t:'s'}}
+ rc.setFromCamera({x:x/W*2-1,y:-(y/H*2-1)},cam);
+ if(!h&&cloudM.visible&&rc.intersectObject(cloudM).length)h={t:'c'};
+ if(!h&&F.mode=='foil'){const b=new THREE.Box3(new THREE.Vector3(-(LN-1)*sx/2-1,-9,-9),new THREE.Vector3((LN-1)*sx/2+1,9,9));if(rc.ray.intersectBox(b,V))h={t:'f'}}
+ if(!h&&scr.visible&&rc.intersectObject(scrHit).length)h={t:'z'};
+ const tip=$('#tip');if(!h){tip.style.display='none';return}
+ if(h.t=='c')nm=F.thom?[T('थॉमसन परमाणु','Thomson Atom'),'धनावेश पूरे गोले में फैला है और उसमें इलेक्ट्रॉन धँसे हैं। (Positive charge spread through the sphere with electrons embedded.)']:[T('परमाणु','Atom'),'अधिकांश स्थान खाली है; बीच में छोटा नाभिक। (Mostly empty space with a tiny nucleus at the centre.)'];
+ else if(h.t=='f')nm=[T('पन्नी','Foil')+' — '+(mat>=0?M[mat][0]:T('अन्य पदार्थ','Other material')),'परमाणुओं की क्रमबद्ध परतें (क्रिस्टल जालक)। (Ordered layers of atoms — a crystal lattice.)'];
+ else nm=NM[h.t];
+ tip.innerHTML=`<b>${nm[0]}</b>${nm[1]}`;tip.style.display='block';
+ tip.style.left=Math.min(Math.max(4,x+10),Math.max(4,W-240*ZZ))+'px';tip.style.top=Math.min(Math.max(50,y-10),H-90)+'px';clearTimeout(pick.h);pick.h=setTimeout(()=>tip.style.display='none',6000)}
+// ---- मुख्य चक्र ----
+let last=performance.now(),fc=0;
+function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000)*P.speed;last=t;
+ step(dt);draw();cp();R.render(sc,cam);
+ if(++fc%8==0){if(F.cnt||F.r0)info();if(F.graph)graph()}}
+// ---- नियंत्रण वृक्ष ----
+const sl=(n,k,mn,mx,s,m,note)=>({t:'sl',n,k,mn,mx,s,m,note});
+const tg=(n,k)=>({t:'tg',n,k});
+const ac=(n,f,on)=>({t:'ac',n,f,on});
+const pg=(n,r,a)=>({t:'ht',n,r,a});
+const GL=[['α-कण','Alpha Particle','दोहरा धनावेश, हीलियम का नाभिक।','Doubly positive; a helium nucleus.'],['नाभिक','Nucleus','परमाणु के केंद्र का सघन धनावेशित भाग।','Dense, positive centre of the atom.'],['इलेक्ट्रॉन','Electron','ऋणावेशित कण जो नाभिक के चारों ओर घूमता है।','Negative particle revolving around the nucleus.'],['प्रतिकर्षण','Repulsion','समान आवेश एक-दूसरे को दूर धकेलते हैं।','Like charges push each other away.'],['विचलन','Deflection','कण के मार्ग का मुड़ जाना।','Bending of a particle’s path.'],['ग्रहीय मॉडल','Planetary Model','इलेक्ट्रॉन नाभिक की परिक्रमा ग्रहों की तरह करते हैं।','Electrons orbit the nucleus like planets.'],['संघट्ट पैरामीटर','Impact Parameter','नाभिक की सीध से कण की लंबवत दूरी (b)।','Perpendicular distance of the beam from the nucleus line (b).'],['निकटतम दूरी','Distance of Closest Approach','नाभिक के सबसे पास पहुँचने की दूरी (r₀)।','Least distance from the nucleus (r₀).']];
+const QZ=[[T('अधिकांश α-कण सीधे क्यों निकल गए?','Why did most α-particles pass straight through?'),['परमाणु का अधिकांश स्थान खाली है (Most of the atom is empty space)','पन्नी बहुत मोटी थी (The foil was very thick)','नाभिक बहुत बड़ा है (The nucleus is very large)'],0],
+[T('परमाणु का पूरा द्रव्यमान कहाँ होता है?','Where is the mass of an atom?'),['नाभिक में (In the nucleus)','इलेक्ट्रॉनों में (In the electrons)','खाली स्थान में (In the empty space)'],0],
+[T('कुछ α-कण वापस क्यों लौटे?','Why did a few α-particles bounce back?'),['नाभिक और α-कण दोनों धनावेशित हैं (Both are positively charged)','इलेक्ट्रॉन ने रोक लिया (An electron stopped it)','पन्नी चुंबकीय थी (The foil was magnetic)'],0],
+[T('नाभिक, परमाणु से लगभग कितना गुना छोटा है?','About how many times smaller is the nucleus than the atom?'),['लगभग एक लाख (10⁵) गुना (About 10⁵ times)','लगभग 10 गुना (About 10 times)','लगभग 100 गुना (About 100 times)'],0],
+[T('रदरफोर्ड का परमाणु मॉडल क्या कहलाता है?','What is Rutherford’s model called?'),['ग्रहीय मॉडल (Planetary Model)','प्लम पुडिंग मॉडल (Plum Pudding Model)','ठोस गोला मॉडल (Solid Sphere Model)'],0]];
+const ROOT={n:T('नियंत्रण सेटिंग्स','Control Settings'),k:[
+ {n:T('प्रयोग और मॉडल','Experiment and Model'),k:[
+  {n:T('प्रयोग का चयन','Choose Experiment'),k:[ac(T('स्वर्ण पन्नी प्रयोग','Gold Foil Experiment'),()=>mode('foil'),()=>F.mode=='foil'),ac(T('एकल परमाणु दृश्य','Single Atom View'),()=>mode('atom'),()=>F.mode=='atom')]},
+  {n:T('परमाणु मॉडल','Atom Model'),k:[ac(T('रदरफोर्ड मॉडल — ग्रहीय','Rutherford Model — Planetary'),()=>{F.thom=0;sizes();reset()},()=>!F.thom),ac(T('थॉमसन मॉडल — प्लम पुडिंग','Thomson Model — Plum Pudding'),()=>{F.thom=1;sizes();reset()},()=>F.thom)]}]},
+ {n:T('भौतिक राशियाँ','Physical Quantities'),k:[
+  {n:T('पन्नी','Foil'),k:[
+   {n:T('पदार्थ का चयन','Choose Material'),k:M.map((m,i)=>ac(`${m[0]} — Z = ${m[1]}`,()=>{mat=i;P.Z=m[1];sizes()},()=>mat==i))},
+   sl(T('पन्नी की मोटाई — परतों की संख्या','Foil Thickness — Number of Layers'),'N',1,14,1,'foil',T('वास्तविक 0.1 mm शीट में लगभग 10 लाख परतें होती हैं','A real 0.1 mm sheet has about 10 lakh layers')),
+   sl(T('किरण की चौड़ाई','Beam Width'),'w',1,8,.5,'foil'),
+   sl(T('परमाणु क्रमांक Z','Atomic Number Z'),'Z',2,100,1,0)]},
+  {n:T('α-कण (दोहरा धनावेश / हीलियम नाभिक)','Alpha Particle (Double Positive Charge / Helium Nucleus)'),k:[
+   sl(T('α-कण की ऊर्जा (MeV)','Alpha Energy (MeV)'),'E',1,10,.5,0),
+   sl(T('प्रति सेकंड कण','Particles per Second'),'rate',1,40,1,0),
+   sl(T('संघट्ट पैरामीटर b (0 = सीधी टक्कर)','Impact Parameter b (0 = Head-on)'),'b',0,3,.05,'atom')]},
+  {n:T('नाभिक और इलेक्ट्रॉन','Nucleus and Electron'),k:[
+   sl(T('नाभिक का आकार','Nucleus Size'),'rn',.03,.4,.01,0),
+   sl(T('इलेक्ट्रॉनों की संख्या','Number of Electrons'),'ne',1,8,1,'atom')]}]},
+ {n:T('समय नियंत्रण','Time Control'),k:[
+  {n:T('चलाना और रोकना','Play and Pause'),k:[tg(T('रोकें','Pause'),'pause'),sl(T('समय की गति — धीमी से तेज़','Time Speed — Slow to Fast'),'speed',.1,3,.1,0)]},
+  {n:T('गणना','Counters'),k:[ac(T('गिनती शून्य करें','Reset Counters'),()=>{reset()},()=>0)]}]},
+ {n:T('दृश्य विकल्प','Visual Options'),k:[
+  {n:T('कण और पथ','Particles and Trails'),k:[tg(T('पथ की पूँछ','Trails'),'trail')]},
+  {n:T('परमाणु और पर्दा','Atom and Screen'),k:[tg(T('परमाणु का बादल','Atom Cloud'),'cloud'),tg(T('जिंक सल्फाइड पर्दा व चमक','ZnS Screen and Flashes'),'zns')]},
+  {n:T('कैमरा','Camera'),k:[ac(T('दृश्य पुनः स्थापित करें','Reset View'),()=>{th=.8;ph=1.15;rad=F.mode=='atom'?13:38},()=>0)]}]},
+ {n:T('शिक्षक नियंत्रण','Teacher Controls'),k:[
+  {n:T('प्रश्नोत्तरी','Quiz'),k:[ac(T('प्रश्नोत्तरी का बटन दिखाएँ','Show Quiz Button'),()=>{F.quiz=1},()=>F.quiz),ac(T('प्रश्नोत्तरी का बटन छिपाएँ','Hide Quiz Button'),()=>{F.quiz=0},()=>!F.quiz)]}]},
+ {n:T('प्रदर्शन आकार','Display Size'),k:[
+  {n:T('तैयार आकार','Ready Sizes'),k:[ac(T('मोबाइल','Mobile'),()=>{P.fs=1;applyUI()},()=>P.fs==1),ac(T('टैबलेट','Tablet'),()=>{P.fs=1.25;applyUI()},()=>P.fs==1.25),ac(T('स्मार्ट बोर्ड','Smart Board'),()=>{P.fs=1.5;applyUI()},()=>P.fs==1.5),ac(T('बड़ा स्मार्ट बोर्ड — पीछे बैठे विद्यार्थियों के लिए','Extra Large Smart Board — for the back benches'),()=>{P.fs=1.9;applyUI()},()=>P.fs==1.9)]},
+  {n:T('सूक्ष्म समायोजन','Fine Adjustment'),k:[sl(T('अक्षर और बटन का आकार','Text and Button Size'),'fs',.8,2.2,.05,0)]},
+  {n:T('वॉटरमार्क','Watermark'),k:[sl(T('वॉटरमार्क का आकार','Watermark Size'),'wz',.5,2.5,.1,0),sl(T('वॉटरमार्क की गहराई','Watermark Visibility'),'wo',.02,.3,.01,0)]},
+  {n:T('प्रश्नोत्तरी','Quiz'),hide:()=>!F.quiz,k:[
+   {n:T('तैयार आकार','Ready Sizes'),k:[ac(T('सामान्य','Normal'),()=>{P.qz=1;applyUI()},()=>P.qz==1),ac(T('बड़ा','Large'),()=>{P.qz=1.6;applyUI()},()=>P.qz==1.6),ac(T('बहुत बड़ा — पीछे की बेंच के लिए','Very Large — for the back benches'),()=>{P.qz=2.4;applyUI()},()=>P.qz==2.4)]},
+   sl(T('प्रश्न और विकल्पों का आकार','Question and Option Size'),'qz',.8,3,.1,0)]}]},
+ {n:T('सूचना पट्ट','Information Panels'),k:[
+  {n:T('लाइव आँकड़े','Live Data'),k:[tg(T('कणों की गिनती','Particle Counter'),'cnt'),tg(T('निकटतम दूरी r₀','Closest Approach r₀'),'r0'),tg(T('लाइव विक्षेपण ग्राफ','Live Scattering Graph'),'graph')]},
+  {n:T('संदेश','Messages'),k:[ac(T('वापसी का संदेश दिखाएँ','Show Rebound Message'),()=>{F.toast=1},()=>F.toast),ac(T('वापसी का संदेश छिपाएँ','Hide Rebound Message'),()=>{F.toast=0;$('#toast').style.display='none'},()=>!F.toast),{n:T('संदेश की जगह','Message Position'),k:[ac(T('नीचे दाएँ कोने में','Bottom Right Corner'),()=>{F.tp='br'},()=>F.tp=='br'),ac(T('नीचे बाएँ कोने में','Bottom Left Corner'),()=>{F.tp='bl'},()=>F.tp=='bl'),ac(T('ऊपर दाएँ कोने में','Top Right Corner'),()=>{F.tp='tr'},()=>F.tp=='tr')]}]}]},
+ {n:T('सीखें','Learn'),k:[
+  {n:T('समझें','Understand'),k:[
+   pg(T('परमाणु और क्रिकेट मैदान','Atom and Cricket Ground'),()=>`<div class="pg"><svg viewBox="0 0 300 175" width="100%"><ellipse cx="150" cy="82" rx="140" ry="72" fill="#2e7d3266" stroke="#6b3fa0" stroke-width="2"/><rect x="145" y="52" width="10" height="60" fill="#c9a66b88"/><circle cx="150" cy="82" r="2" fill="#000"/><line x1="150" y1="82" x2="215" y2="30" stroke="#c0392b"/><text x="152" y="26" font-size="9" fill="#c0392b" text-anchor="start">नाभिक = काली मिर्च का दाना (Nucleus = black pepper grain)</text><text x="150" y="168" font-size="10" fill="currentColor" text-anchor="middle">परमाणु = क्रिकेट मैदान, लगभग 100 m (Atom = cricket ground)</text></svg><p>परमाणु का व्यास ≈ 10⁻¹⁰ m और नाभिक का व्यास ≈ 10⁻¹⁵ m है, यानी नाभिक लगभग एक लाख (10⁵) गुना छोटा है। (Atom ≈ 10⁻¹⁰ m, nucleus ≈ 10⁻¹⁵ m — about 10⁵ times smaller.)</p><p>इसीलिए परमाणु का अधिकांश भाग खाली है। (That is why most of the atom is empty.)</p></div>`),
+   pg(T('बहुत आगे — लाइव गणक','Ready to Go Beyond — Live Calculator'),()=>`<div class="pg"><p>प्रश्न: 0.1 mm मोटी शीट बनाने के लिए कितने परमाणु एक के ऊपर एक चाहिए? (How many atoms stacked make a 0.1 mm sheet?)</p><label>शीट की मोटाई (Sheet thickness): <b id="cm">0.1</b> mm<input type="range" id="cr" min="0.001" max="1" step="0.001" value="0.1"></label><p id="cres"></p></div>`,b=>{const f=()=>{const mm=+b.querySelector('#cr').value,n=mm*1e-3/1e-10;b.querySelector('#cm').textContent=mm;b.querySelector('#cres').innerHTML=`परमाणुओं की संख्या = ${mm}×10⁻³ m ÷ 10⁻¹⁰ m ≈ <b>${(n/1e5).toLocaleString('en-IN',{maximumFractionDigits:1})} लाख</b> (≈ ${n.toExponential(1)})<br>इतने परमाणु एक के ऊपर एक रखे गए हैं! (That many atoms are stacked one on top of another!)`};b.querySelector('#cr').oninput=f;f()}),
+   pg(T('शब्दावली','Glossary'),()=>`<div class="pg"><ul>${GL.map(g=>`<li><b>${g[0]} (${g[1]})</b> — ${g[2]} (${g[3]})</li>`).join('')}</ul></div>`),
+   pg(T('इलेक्ट्रॉन α-कण को क्यों नहीं मोड़ता?','Why does an electron not deflect an α-particle?'),()=>`<div class="pg"><p>इलेक्ट्रॉन का द्रव्यमान α-कण से लगभग 7300 गुना कम है। भारी α-कण पर हल्के इलेक्ट्रॉन का प्रभाव वैसा ही है जैसे बड़ी गेंद पर धूल का कण टकराए, इसलिए उसका मार्ग लगभग नहीं बदलता। (An electron is about 7300 times lighter than an α-particle, so it barely changes the path — like dust hitting a heavy ball.)</p><p>मार्ग नाभिक के धनावेश से मुड़ता है। (The path bends because of the nucleus’s positive charge.)</p></div>`)]},
+  {n:T('जाँचें','Test Yourself'),hide:()=>!F.quiz,k:[
+   pg(T('प्रश्नोत्तरी — 5 प्रश्न','Quiz — 5 Questions'),()=>`<div class="pg" id="qz">${QZ.map((q,i)=>`<div class="q"><b>${i+1}. ${q[0]}</b>${q[1].map((o,j)=>`<button data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div>`).join('')}<p id="qs"></p></div>`,b=>{let sc=0,done={};b.querySelectorAll('.q button').forEach(x=>x.onclick=()=>{const i=+x.dataset.q,j=+x.dataset.o;if(done[i]!=null)return;done[i]=j;const ok=j==QZ[i][2];if(ok)sc++;x.classList.add(ok?'ok':'no');if(!ok)b.querySelector(`[data-q="${i}"][data-o="${QZ[i][2]}"]`).classList.add('ok');b.querySelector('#qs').innerHTML=`अंक (Score): <b>${sc} / ${QZ.length}</b>`})})]},
+  {n:T('निर्देश','Instructions'),k:[pg(T('कैसे उपयोग करें','How to Use'),()=>`<div class="pg"><ul><li>किसी भी भाग पर टैप करें, उसका नाम दिखेगा। (Tap any part to see its name.)</li><li>एक उँगली से घुमाएँ, दो उँगलियों से ज़ूम करें। (Drag with one finger to rotate; pinch to zoom.)</li><li>हरा पथ = सीधा, पीला = हल्का मुड़ाव, नारंगी = बड़ा मुड़ाव, गुलाबी = वापसी। (Green = straight, yellow = slight bend, orange = large bend, pink = rebound.)</li><li>सभी नियंत्रण नियंत्रण सेटिंग्स में हैं। (All controls are inside Control Settings.)</li></ul></div>`)]}]}]};
+// ---- मेनू प्रदर्शन ----
+let path=[];const cur=()=>path.reduce((n,i)=>n.k[i],ROOT);
+function ap(){sizes();render()}
+function render(){const n=cur(),s=$('#sheet');s.innerHTML='';
+ const hd=el('div','hd');
+ if(path.length){const b=el('button');b.textContent='‹ पीछे (Back)';b.onclick=()=>{path.pop();render()};hd.append(b)}
+ const t=el('b');t.textContent=n.n;hd.append(t);const x=el('button');x.textContent='✕ बंद करें (Close)';x.onclick=()=>openS(0);hd.append(x);s.append(hd);
+ if(n.t=='ht'){const b=el('div');b.innerHTML=n.r();s.append(b);n.a&&n.a(b);return}
+ const L=el('div','li');s.append(L);
+ n.k.forEach((c,i)=>{if((c.m&&c.m!=F.mode)||(c.hide&&c.hide()))return;
+  if(c.t=='sl'){const d=el('div');d.innerHTML=`<label>${c.n}: <b>${P[c.k]}</b><input type="range" min="${c.mn}" max="${c.mx}" step="${c.s}" value="${P[c.k]}"></label>${c.note?`<div class="nt">${c.note}</div>`:''}`;
+   const inp=d.querySelector('input'),b=d.querySelector('b');inp.oninput=()=>{P[c.k]=+inp.value;b.textContent=P[c.k];if(c.k=='Z')mat=M.findIndex(m=>m[1]==P.Z);if(c.k=='fs'||c.k=='wz'||c.k=='wo'||c.k=='qz')applyUI();else c.k=='N'||c.k=='ne'?build():sizes();info()};L.append(d);return}
+  const b=el('button');
+  if(c.t=='tg'){b.textContent=c.n;b.className=F[c.k]?'on':'';b.onclick=()=>{F[c.k]^=1;$('#hud').style.display=F.cnt?'block':'none';$('#r0').style.display=F.r0?'block':'none';$('#grw').style.display=F.graph?'block':'none';info();ap()}}
+  else if(c.t=='ac'){b.textContent=c.n;b.className=c.on()?'on':'';b.onclick=()=>{c.f();ap()}}
+  else{b.textContent=c.n+'  ›';b.onclick=()=>{path.push(i);render()}}
+  L.append(b)})}
+function openS(o){$('#sheet').style.display=o?'block':'none';$('#gear').textContent=o?'✕ बंद करें (Close)':'⚙ नियंत्रण सेटिंग्स (Control Settings)';if(o){path=[];render()}setTimeout(rs,30)}
+$('#gear').onclick=()=>openS($('#sheet').style.display!='block');
+function applyUI(){const r=document.documentElement.style;r.setProperty('--z',P.fs);r.setProperty('--wz',P.wz);r.setProperty('--wo',P.wo);r.setProperty('--qz',P.qz);ZZ=P.fs;setTimeout(rs,30)}
+function reset(){st.tot=st.s=st.d=st.bk=0;pts=[]}
+function mode(m){F.mode=m;rad=m=='atom'?13:38;pool.forEach(p=>{p.on=0;p.tr=[]});reset();build()}
+build();rs();requestAnimationFrame(loop);
+</script></body></html>
