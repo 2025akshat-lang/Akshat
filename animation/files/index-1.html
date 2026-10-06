@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temperature Scales — Celsius, Fahrenheit, Kelvin</title>
+<style>
+:root{--th:340;--bs:1.1;--ts:1.05;--grad:linear-gradient(90deg,#38bdf8,#f59e0b,#ef4444);
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace}
+*{box-sizing:border-box}
+html{background:#071a47}
+body{margin:0;min-height:100vh;color:#fff;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:calc(16px*var(--ts));overflow-x:hidden}
+
+/* ---------- 3D grid background ---------- */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;perspective:800px;perspective-origin:50% 46%;
+  background:
+   linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px) 0 0/48px 48px,
+   linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px) 0 0/48px 48px,
+   linear-gradient(180deg,#1747b0 0%,#0e2f80 46%,#071a47 100%)}
+.floor{position:absolute;left:-100%;right:-100%;top:46%;height:640px;transform-origin:50% 0;transform:rotateX(70deg);
+  background:
+   linear-gradient(rgba(255,255,255,.34) 2px,transparent 2px) 0 0/64px 64px,
+   linear-gradient(90deg,rgba(255,255,255,.34) 2px,transparent 2px) 0 0/64px 64px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%);mask-image:linear-gradient(to bottom,transparent 0,#000 30%)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1700px;margin:0 auto;padding:14px 18px 28px}
+.bar{display:flex;flex-wrap:wrap;gap:.7em;align-items:center}
+.title{font-size:1.25em;font-weight:700;letter-spacing:.2px;margin-right:auto}
+.title small{display:block;font-size:.62em;font-weight:500;color:#bfdbfe;letter-spacing:.6px;text-transform:uppercase}
+.glass{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px}
+.btn{font:inherit;font-size:calc(15px*var(--bs));font-weight:600;padding:.6em 1.1em;border-radius:10px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:background .15s,color .15s}
+.btn:hover{background:rgba(255,255,255,.2)}
+.btn.on{background:#fff;color:#0b2a6b;border-color:#fff}
+.btn.accent{background:#38bdf8;border-color:#38bdf8;color:#04243d}
+.btn.accent.on{background:#fff;border-color:#fff;color:#0b2a6b}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22)}
+.seg .btn{border:0;background:transparent}
+.seg .btn:hover{background:rgba(255,255,255,.14)}
+.seg .btn.on{background:#fff;color:#0b2a6b}
+.panel{margin-top:10px;padding:.9em 1.1em;display:grid;gap:.7em}
+.panel[hidden]{display:none}
+.row{display:grid;grid-template-columns:minmax(8em,auto) 1fr;gap:1em;align-items:center}
+.mini{width:100%;height:calc(30px*var(--bs));accent-color:#38bdf8}
+
+.layout{display:grid;gap:18px;margin-top:10px}
+@media(min-width:1000px){.layout{grid-template-columns:minmax(0,1fr) minmax(340px,36%);align-items:center}}
+
+/* ---------- thermometers ---------- */
+.therms{display:flex;justify-content:space-around;align-items:flex-end;padding-top:8px}
+.t{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;container-type:inline-size}
+.name{font-size:1.15em;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding-bottom:.35em;margin-bottom:.5em;border-bottom:3px solid var(--ac)}
+.th{height:calc(var(--th)*1px);width:auto;max-width:100%;overflow:visible;filter:drop-shadow(0 18px 14px rgba(0,0,0,.35));animation:fl 6s ease-in-out infinite;will-change:transform}
+.t:nth-child(2) .th{animation-delay:-2s}.t:nth-child(3) .th{animation-delay:-4s}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.col{transform-box:fill-box;transform-origin:50% 100%;transition:transform .2s ease-out}
+.liq{transition:fill .25s}
+body.running .col,body.running .liq{transition:none}
+.read{display:flex;justify-content:center;align-items:baseline;gap:.25em;white-space:nowrap;margin-top:.5em;font-family:var(--mono);font-weight:700;font-size:min(2em,15cqw)}
+.read .n{display:inline-block;width:6.4ch;text-align:right;font-variant-numeric:tabular-nums}
+.read .u{font-size:.55em;color:var(--ac);width:2.2ch}
+
+/* ---------- control card ---------- */
+.card{padding:1em 1.1em;display:grid;gap:1em}
+.stat{display:flex;align-items:center;gap:.6em;min-width:0}
+.stat .k{font-size:.62em;letter-spacing:1px;text-transform:uppercase;color:#bfdbfe;font-weight:600}
+.stat .v{font-size:1.15em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat i{width:.7em;height:.7em;border-radius:50%;flex:none;background:#38bdf8}
+input.main{-webkit-appearance:none;appearance:none;width:100%;height:calc(40px*var(--bs));background:transparent;margin:0}
+input.main::-webkit-slider-runnable-track{height:calc(14px*var(--bs));border-radius:99px;background:var(--grad)}
+input.main::-moz-range-track{height:calc(14px*var(--bs));border-radius:99px;background:var(--grad)}
+input.main::-webkit-slider-thumb{-webkit-appearance:none;width:calc(34px*var(--bs));height:calc(34px*var(--bs));border-radius:50%;background:#fff;border:calc(5px*var(--bs)) solid #1d4ed8;margin-top:calc((14px - 34px)*var(--bs)/2);box-shadow:0 3px 10px rgba(0,0,0,.4)}
+input.main::-moz-range-thumb{width:calc(28px*var(--bs));height:calc(28px*var(--bs));border-radius:50%;background:#fff;border:calc(5px*var(--bs)) solid #1d4ed8}
+.chips{display:flex;flex-wrap:wrap;gap:.5em}
+.chips .btn{display:inline-flex;align-items:center;gap:.5em}
+.chips .d{width:.6em;height:.6em;border-radius:50%}
+
+/* ---------- blackboard ---------- */
+.cw{container-type:inline-size}
+.chalk{background:#0f2a22;border:2px solid #355e50;border-radius:12px;padding:.8em 1em;color:#fde68a;font-family:var(--mono);font-size:min(1.1em,5cqw);line-height:1.8;box-shadow:inset 0 0 36px rgba(0,0,0,.65);overflow:hidden}
+.chalk .lbl{color:#fff;font-size:.72em;letter-spacing:1.2px;text-transform:uppercase;opacity:.8;margin-top:.5em}
+.chalk .lbl:first-child{margin-top:0}
+.chalk .ln{white-space:nowrap}
+.chalk b{color:#fff}
+
+@media (prefers-reduced-motion:reduce){.th{animation:none}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="floor"></div></div>
+
+<div class="wrap">
+  <div class="bar">
+    <div class="title">Temperature Scales<small>Celsius · Fahrenheit · Kelvin</small></div>
+    <div class="seg">
+      <button class="btn on" id="mW">Weather &amp; Water</button>
+      <button class="btn" id="mB">Body Temperature</button>
+    </div>
+    <button class="btn accent" id="bRun">Auto Run</button>
+    <button class="btn" id="bScreen">Screen Size</button>
+  </div>
+
+  <div class="panel glass" id="panel" hidden>
+    <div class="seg" style="justify-self:start">
+      <button class="btn p" data-p="phone">Mobile</button>
+      <button class="btn p" data-p="tablet">Tablet</button>
+      <button class="btn p" data-p="laptop">Laptop</button>
+      <button class="btn p" data-p="board">Smart Board</button>
+    </div>
+    <div class="row"><span>Thermometer size</span><input class="mini" type="range" id="sTh" min="160" max="760" step="10"></div>
+    <div class="row"><span>Button size</span><input class="mini" type="range" id="sBs" min="0.7" max="2.2" step="0.05"></div>
+    <div class="row"><span>Text size</span><input class="mini" type="range" id="sTs" min="0.7" max="2.2" step="0.05"></div>
+  </div>
+
+  <div class="layout">
+    <div class="therms">
+      <div class="t" style="--ac:#22d3ee"><div class="name">Celsius</div><div id="rC"></div><div class="read"><span class="n" id="nC"></span><span class="u">°C</span></div></div>
+      <div class="t" style="--ac:#fbbf24"><div class="name">Fahrenheit</div><div id="rF"></div><div class="read"><span class="n" id="nF"></span><span class="u">°F</span></div></div>
+      <div class="t" style="--ac:#c4b5fd"><div class="name">Kelvin</div><div id="rK"></div><div class="read"><span class="n" id="nK"></span><span class="u">K</span></div></div>
+    </div>
+
+    <div class="card glass">
+      <div class="stat"><i id="dot"></i><span class="k">State</span><span class="v" id="status"></span></div>
+      <input class="main" type="range" id="sl" aria-label="Temperature">
+      <div class="chips" id="chips"></div>
+      <div class="cw"><div class="chalk">
+        <div class="lbl">Kelvin</div>
+        <div class="ln">K = °C + 273.15</div>
+        <div class="ln">K = <span id="k1"></span> + 273.15 = <b id="k2"></b></div>
+        <div class="lbl">Fahrenheit</div>
+        <div class="ln">°F = (°C × 9/5) + 32</div>
+        <div class="ln">°F = (<span id="f1"></span> × 9/5) + 32</div>
+        <div class="ln">°F = <span id="f2"></span> + 32 = <b id="f3"></b></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const r2  = n => String(Math.round((n + Number.EPSILON) * 100) / 100);   // trimmed, max 2 decimals
+const fx2 = n => (Math.abs(n) < 0.005 ? 0 : n).toFixed(2);               // fixed 2 decimals (no layout shift)
+const fmt = n => String(Math.round(n * 10) / 10);
+const toF = c => c * 9 / 5 + 32, toK = c => c + 273.15;
+const lerp = (a, b, f) => a + (b - a) * f;
+const conv = { C: c => c, F: toF, K: toK }, unit = { C: '°C', F: '°F', K: ' K' };
+
+const modes = {
+  world: { min: -20, max: 120, step: 1, val: 25,
+    tk: { C: [20, 5], F: [40, 10], K: [20, 5] },
+    marks: [[0, 'Freeze', '#7dd3fc'], [37, 'Body', '#86efac'], [100, 'Boil', '#fca5a5']],
+    chips: [['Snow', -10], ['Ice melts', 0], ['Room', 25], ['Body', 37], ['Boil water', 100]] },
+  body: { min: 35, max: 42, step: 0.1, val: 37,
+    tk: { C: [1, 0.2], F: [1, 0.5], K: [1, 0.5] },
+    marks: [[37, 'Normal', '#86efac']],
+    chips: [['Low', 35.5], ['Normal', 37], ['Fever', 39], ['High fever', 41]] }
+};
+let M = 'world', T = 25;
+
+/* colour: blue → amber → red */
+const hue = f => f < .5 ? 200 - (f / .5) * 160 : 40 - ((f - .5) / .5) * 40;
+const color = f => `hsl(${hue(f)},90%,56%)`;
+const fOf = c => (c - modes[M].min) / (modes[M].max - modes[M].min);
+const Y = f => 325 - 285 * f;
+
+/* ---------- thermometer drawing ---------- */
+function ticks(s, lo, hi) {
+  const [maj, mn] = modes[M].tk[s]; let o = '';
+  const n0 = Math.ceil(lo / mn - 1e-9), n1 = Math.floor(hi / mn + 1e-9);
+  for (let n = n0; n <= n1; n++) {
+    const v = n * mn, y = Y((v - lo) / (hi - lo));
+    const big = Math.abs(v / maj - Math.round(v / maj)) < 1e-6;
+    o += `<line x1="${big ? 66 : 77}" x2="85" y1="${y}" y2="${y}" stroke="#fff" stroke-width="${big ? 2 : 1.2}" opacity=".85"/>`;
+    if (big) o += `<text x="60" y="${y + 5.5}" text-anchor="end" font-size="16" font-weight="600" fill="#fff">${fmt(v)}</text>`;
+  }
+  return o;
+}
+function marks(s) {
+  return modes[M].marks.map(([c, name, col]) => {
+    const y = Y(fOf(c));
+    return `<line x1="87" x2="123" y1="${y}" y2="${y}" stroke="${col}" stroke-width="2.5"/>
+      <polygon points="127,${y} 136,${y - 6} 136,${y + 6}" fill="${col}"/>
+      <text x="141" y="${y - 1}" font-size="13" font-weight="700" fill="${col}">${name}</text>
+      <text x="141" y="${y + 14}" font-size="14" font-weight="600" fill="#fff">${r2(conv[s](c))}${unit[s]}</text>`;
+  }).join('');
+}
+function svg(s) {
+  const m = modes[M], lo = conv[s](m.min), hi = conv[s](m.max);
+  return `<svg class="th" viewBox="0 0 210 430" role="img" aria-label="${s} thermometer">
+  <defs><linearGradient id="g${s}" x1="0" x2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset=".5" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity=".26"/>
+  </linearGradient></defs>
+  <path d="M87 34 A18 18 0 0 1 123 34 L123 333.5 A32 32 0 1 1 87 333.5 Z" fill="url(#g${s})" stroke="#fff" stroke-opacity=".65" stroke-width="2.5"/>
+  <g class="liq" id="l${s}">
+    <rect class="col" id="c${s}" x="99" y="40" width="12" height="285"/>
+    <rect x="99" y="324" width="12" height="40"/>
+    <circle cx="105" cy="360" r="23"/>
+  </g>
+  <rect x="91" y="40" width="4" height="270" rx="2" fill="#fff" opacity=".38"/>
+  <ellipse cx="94" cy="352" rx="7" ry="11" fill="#fff" opacity=".42"/>
+  ${ticks(s, lo, hi)}${marks(s)}
+  </svg>`;
+}
+function build() {
+  ['C', 'F', 'K'].forEach(s => $('r' + s).innerHTML = svg(s));
+  const m = modes[M], sl = $('sl');
+  sl.min = m.min; sl.max = m.max; sl.step = m.step;
+  $('chips').innerHTML = m.chips.map(([l, v]) =>
+    `<button class="btn" data-v="${v}"><span class="d" style="background:${color(fOf(v))}"></span>${l}</button>`).join('');
+  $('chips').querySelectorAll('button').forEach(b => b.onclick = () => { stop(); set(+b.dataset.v); });
+}
+
+/* ---------- state ---------- */
+function status(c) {
+  if (c <= 0)   return 'Freezing';
+  if (c < 15)   return 'Cold';
+  if (c < 30)   return 'Warm & Cozy';
+  if (c < 37.5) return 'Normal body temperature';
+  if (c < 40)   return 'Fever';
+  if (c < 100)  return 'Very hot';
+  return 'Boiling';
+}
+function set(c) {
+  const m = modes[M];
+  T = Math.min(m.max, Math.max(m.min, c));
+  const f = fOf(T), col = color(f);
+  ['C', 'F', 'K'].forEach(s => {
+    $('c' + s).style.transform = `scaleY(${f})`;
+    $('l' + s).style.fill = col;
+  });
+  $('nC').textContent = fx2(T);
+  $('nF').textContent = fx2(toF(T));
+  $('nK').textContent = fx2(toK(T));
+  $('k1').textContent = r2(T);  $('k2').textContent = r2(toK(T)) + ' K';
+  $('f1').textContent = r2(T);  $('f2').textContent = r2(T * 9 / 5);  $('f3').textContent = r2(toF(T)) + ' °F';
+  $('status').textContent = status(T);
+  $('dot').style.background = col;
+  $('sl').value = T;
+}
+
+/* manual slider */
+$('sl').oninput = e => { stop(); set(+e.target.value); };
+
+/* mode switch */
+function mode(k) {
+  stop(); M = k;
+  $('mW').classList.toggle('on', k === 'world');
+  $('mB').classList.toggle('on', k === 'body');
+  build(); set(modes[k].val);
+}
+$('mW').onclick = () => mode('world');
+$('mB').onclick = () => mode('body');
+
+/* auto run — requestAnimationFrame, no CSS transition while running (prevents jitter) */
+let raf = null, last = 0, dir = 1;
+function frame(ts) {
+  const m = modes[M], dt = Math.min(0.05, (ts - last) / 1000); last = ts;
+  let n = T + dir * (m.max - m.min) / 9 * dt;
+  if (n >= m.max) { n = m.max; dir = -1; }
+  if (n <= m.min) { n = m.min; dir = 1; }
+  set(n);
+  raf = requestAnimationFrame(frame);
+}
+function stop() {
+  if (!raf) return;
+  cancelAnimationFrame(raf); raf = null;
+  document.body.classList.remove('running');
+  $('sl').step = modes[M].step;
+  $('bRun').textContent = 'Auto Run'; $('bRun').classList.remove('on');
+}
+$('bRun').onclick = () => {
+  if (raf) { stop(); return; }
+  document.body.classList.add('running');
+  $('sl').step = 'any';
+  $('bRun').textContent = 'Pause'; $('bRun').classList.add('on');
+  last = performance.now(); raf = requestAnimationFrame(frame);
+};
+
+/* ---------- screen presets & manual sizes ---------- */
+const P = { phone: { th: 250, bs: .9, ts: .9 }, tablet: { th: 370, bs: 1.15, ts: 1.1 },
+            laptop: { th: 340, bs: 1.1, ts: 1.05 }, board: { th: 600, bs: 1.7, ts: 1.7 } };
+const root = document.documentElement.style;
+function applySize(th, bs, ts) {
+  root.setProperty('--th', th); root.setProperty('--bs', bs); root.setProperty('--ts', ts);
+  $('sTh').value = th; $('sBs').value = bs; $('sTs').value = ts;
+}
+function preset(k) {
+  const p = P[k]; applySize(p.th, p.bs, p.ts);
+  document.querySelectorAll('.p').forEach(b => b.classList.toggle('on', b.dataset.p === k));
+}
+document.querySelectorAll('.p').forEach(b => b.onclick = () => preset(b.dataset.p));
+['sTh', 'sBs', 'sTs'].forEach(id => $(id).oninput = () => {
+  applySize($('sTh').value, $('sBs').value, $('sTs').value);
+  document.querySelectorAll('.p').forEach(b => b.classList.remove('on'));
+});
+$('bScreen').onclick = () => { $('panel').hidden = !$('panel').hidden; };
+
+/* slider track gradient = same colours as the liquid */
+root.setProperty('--grad', 'linear-gradient(90deg,' + [0, .15, .3, .45, .6, .75, .9, 1].map(f => color(f)).join(',') + ')');
+
+const w = innerWidth;
+preset(w < 600 ? 'phone' : w < 1000 ? 'tablet' : w < 1700 ? 'laptop' : 'board');
+build(); set(25);
+</script>
+</body>
+</html>
