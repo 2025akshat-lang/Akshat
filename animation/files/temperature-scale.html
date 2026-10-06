@@ -34,13 +34,14 @@ body{margin:0;min-height:100vh;color:#fff;font-family:"Segoe UI",Roboto,"Helveti
 .btn.on{background:#fff;color:#0b2a6b;border-color:#fff}
 .btn.accent{background:#38bdf8;border-color:#38bdf8;color:#04243d}
 .btn.accent.on{background:#fff;border-color:#fff;color:#0b2a6b}
-.seg{display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22)}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22)}
 .seg .btn{border:0;background:transparent}
 .seg .btn:hover{background:rgba(255,255,255,.14)}
 .seg .btn.on{background:#fff;color:#0b2a6b}
 .panel{margin-top:10px;padding:.9em 1.1em;display:grid;gap:.7em}
 .panel[hidden]{display:none}
 .row{display:grid;grid-template-columns:minmax(8em,auto) 1fr;gap:1em;align-items:center}
+.row b{color:#7dd3fc;font-family:var(--mono);font-weight:600;margin-left:.3em}
 .mini{width:100%;height:calc(30px*var(--bs));accent-color:#38bdf8}
 
 .layout{display:grid;gap:18px;margin-top:10px}
@@ -97,19 +98,28 @@ input.main::-moz-range-thumb{width:calc(28px*var(--bs));height:calc(28px*var(--b
       <button class="btn" id="mB">Body Temperature</button>
     </div>
     <button class="btn accent" id="bRun">Auto Run</button>
-    <button class="btn" id="bScreen">Screen Size</button>
+    <button class="btn" id="bScreen">Settings</button>
   </div>
 
   <div class="panel glass" id="panel" hidden>
-    <div class="seg" style="justify-self:start">
-      <button class="btn p" data-p="phone">Mobile</button>
-      <button class="btn p" data-p="tablet">Tablet</button>
-      <button class="btn p" data-p="laptop">Laptop</button>
-      <button class="btn p" data-p="board">Smart Board</button>
-    </div>
-    <div class="row"><span>Thermometer size</span><input class="mini" type="range" id="sTh" min="160" max="760" step="10"></div>
-    <div class="row"><span>Button size</span><input class="mini" type="range" id="sBs" min="0.7" max="2.2" step="0.05"></div>
-    <div class="row"><span>Text size</span><input class="mini" type="range" id="sTs" min="0.7" max="2.2" step="0.05"></div>
+    <div class="row"><span>Screen</span>
+      <div class="seg">
+        <button class="btn p" data-p="phone">Mobile</button>
+        <button class="btn p" data-p="tablet">Tablet</button>
+        <button class="btn p" data-p="laptop">Laptop</button>
+        <button class="btn p" data-p="board">Smart Board</button>
+      </div></div>
+    <div class="row"><span>Thermometer <b id="oTh"></b></span><input class="mini" type="range" id="sTh" min="-40" max="100" step="5" value="0"></div>
+    <div class="row"><span>Buttons <b id="oBs"></b></span><input class="mini" type="range" id="sBs" min="-40" max="100" step="5" value="0"></div>
+    <div class="row"><span>Text <b id="oTs"></b></span><input class="mini" type="range" id="sTs" min="-40" max="100" step="5" value="0"></div>
+    <div class="row"><span>Auto Run speed</span>
+      <div class="seg" id="spd">
+        <button class="btn on" data-s="0">Very Slow</button>
+        <button class="btn" data-s="1">Slow</button>
+        <button class="btn" data-s="2">Medium</button>
+        <button class="btn" data-s="3">Fast</button>
+        <button class="btn" data-s="4">Very Fast</button>
+      </div></div>
   </div>
 
   <div class="layout">
@@ -253,9 +263,15 @@ $('mB').onclick = () => mode('body');
 
 /* auto run — requestAnimationFrame, no CSS transition while running (prevents jitter) */
 let raf = null, last = 0, dir = 1;
+const SWEEP = [80, 40, 20, 10, 5];   // seconds for one full bottom-to-top sweep
+let spIdx = 0;                       // default: Very Slow
+document.querySelectorAll('#spd .btn').forEach(b => b.onclick = () => {
+  spIdx = +b.dataset.s;
+  document.querySelectorAll('#spd .btn').forEach(x => x.classList.toggle('on', x === b));
+});
 function frame(ts) {
   const m = modes[M], dt = Math.min(0.05, (ts - last) / 1000); last = ts;
-  let n = T + dir * (m.max - m.min) / 9 * dt;
+  let n = T + dir * (m.max - m.min) / SWEEP[spIdx] * dt;
   if (n >= m.max) { n = m.max; dir = -1; }
   if (n <= m.min) { n = m.min; dir = 1; }
   set(n);
@@ -280,19 +296,23 @@ $('bRun').onclick = () => {
 const P = { phone: { th: 250, bs: .9, ts: .9 }, tablet: { th: 370, bs: 1.15, ts: 1.1 },
             laptop: { th: 340, bs: 1.1, ts: 1.05 }, board: { th: 600, bs: 1.7, ts: 1.7 } };
 const root = document.documentElement.style;
-function applySize(th, bs, ts) {
-  root.setProperty('--th', th); root.setProperty('--bs', bs); root.setProperty('--ts', ts);
-  $('sTh').value = th; $('sBs').value = bs; $('sTs').value = ts;
+let base = P.laptop;
+const pct = v => (v > 0 ? '+' : '') + v + '%';
+function applySize() {                       // sliders are adjustments on top of the base size; 0% = base
+  const a = +$('sTh').value, b = +$('sBs').value, c = +$('sTs').value;
+  root.setProperty('--th', base.th * (1 + a / 100));
+  root.setProperty('--bs', base.bs * (1 + b / 100));
+  root.setProperty('--ts', base.ts * (1 + c / 100));
+  $('oTh').textContent = pct(a); $('oBs').textContent = pct(b); $('oTs').textContent = pct(c);
 }
 function preset(k) {
-  const p = P[k]; applySize(p.th, p.bs, p.ts);
+  base = P[k];
+  ['sTh', 'sBs', 'sTs'].forEach(id => $(id).value = 0);   // every control starts at zero
+  applySize();
   document.querySelectorAll('.p').forEach(b => b.classList.toggle('on', b.dataset.p === k));
 }
 document.querySelectorAll('.p').forEach(b => b.onclick = () => preset(b.dataset.p));
-['sTh', 'sBs', 'sTs'].forEach(id => $(id).oninput = () => {
-  applySize($('sTh').value, $('sBs').value, $('sTs').value);
-  document.querySelectorAll('.p').forEach(b => b.classList.remove('on'));
-});
+['sTh', 'sBs', 'sTs'].forEach(id => $(id).oninput = applySize);
 $('bScreen').onclick = () => { $('panel').hidden = !$('panel').hidden; };
 
 /* slider track gradient = same colours as the liquid */
