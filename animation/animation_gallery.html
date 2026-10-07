@@ -403,17 +403,18 @@
     { id: 14, title: "Cathode Ray Tube Lab", svg: "cathodeRay", file: "cathode_ray_tube_lab.html" },
 
     // NEW
-    // NOTE: GitHub par file ka naam screenshot mein cut tha ("Thomson Plum Pudding Mo…"). Exact naam check karke niche sahi karein.
-    { id: 15, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model.html" },
+    // Asli naam repo se verify kiya hua hai (spaces + brackets encoded)
+    { id: 15, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model%203D%20%28Watermelon%29.html" },
     { id: 16, title: "Temperature Scale", svg: "tempScale", file: "temperature-scale.html" }
   ];
 
   // Card tap karne par asli file ka page khulta hai (container ke andar nahi).
-  // Link <a> hai, isliye long-press se "new tab" bhi kaam karega.
+  // target="_blank" => Google Sites ke embed ke andar bhi nayi tab mein khulta hai
+  // (embed ke andar same-tab navigation block ho jata hai).
   function render() {
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = data.map(item => `
-      <a class="card" href="${BASE}${item.file}">
+      <a class="card" href="${BASE}${item.file}" target="_blank" rel="noopener noreferrer">
         <div class="card-thumbnail">
           ${svgThumbnails[item.svg] || svgThumbnails.chem}
         </div>
