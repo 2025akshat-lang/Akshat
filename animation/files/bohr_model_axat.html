@@ -1,0 +1,1215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atom Lab 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600&family=Lexend:wght@500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Screen = only the 3D model. Everything else lives in one dropdown menu. */
+:root{
+  --panel:rgba(255,255,255,.95);--card:#ffffff;--ink:#0f2038;--muted:#475c78;--line:#bacce0;
+  --accent:#0a67cc;--accent-ink:#ffffff;--good:#137a45;--bad:#c22a2a;--warn:#9a5500;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --ui:1;--lab:1;--cap:1;--touch:2.75rem;
+  --f-d:'Lexend','Hind',system-ui,sans-serif;--f-b:'Hind','Lexend',system-ui,sans-serif;--f-m:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --panel:rgba(12,22,40,.95);--card:#14233f;--ink:#e7effa;--muted:#9bb0cc;--line:#27406a;
+    --accent:#58b4ff;--accent-ink:#04101f;--good:#52d492;--bad:#ff7070;--warn:#ffb54d;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --panel:rgba(12,22,40,.95);--card:#14233f;--ink:#e7effa;--muted:#9bb0cc;--line:#27406a;
+  --accent:#58b4ff;--accent-ink:#04101f;--good:#52d492;--bad:#ff7070;--warn:#ffb54d;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{font-size:calc(16px * var(--ui))}
+html,body{height:100%;margin:0}
+body{background:#040a16;color:var(--ink);font:400 1rem/1.45 var(--f-b);overflow:hidden}
+button,select,input{font-family:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+#stage{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 45%,#0e1f3d,#040a16 75%);overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#gl:active{cursor:grabbing}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lab{position:absolute;transform:translate(-50%,-135%);font:600 calc(.85rem * var(--lab))/1.2 var(--f-d);padding:.2em .6em;border-radius:.5em;background:rgba(6,14,30,.78);border:1px solid rgba(130,180,240,.45);color:#e7effa;white-space:nowrap}
+
+/* dropdown dock */
+#dock{position:fixed;top:calc(.6rem + env(safe-area-inset-top,0px));left:.6rem;z-index:10;width:min(23rem,calc(100vw - 1.2rem));display:flex;flex-direction:column;gap:.45rem;max-height:calc(100% - 1.2rem - env(safe-area-inset-top,0px))}
+.btn{min-height:var(--touch);padding:0 1rem;border-radius:.65rem;border:1.5px solid var(--line);background:var(--card);font:600 .95rem var(--f-d);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn:disabled{opacity:.4;cursor:default}
+#menuBtn{align-self:flex-start;box-shadow:var(--shadow);background:var(--panel);backdrop-filter:blur(6px)}
+#menu{background:var(--panel);border:1px solid var(--line);border-radius:.9rem;box-shadow:var(--shadow);backdrop-filter:blur(8px);overflow-y:auto;padding:.4rem .85rem .8rem}
+.mode{display:grid;gap:.3rem;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.mode label,.row span{font:600 .72rem var(--f-d);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+select{min-height:var(--touch);border-radius:.6rem;border:1.5px solid var(--line);background:var(--card);padding:0 .5rem;font-size:.95rem;width:100%}
+details{border-bottom:1px solid var(--line)}
+details:last-child{border-bottom:0}
+summary{min-height:var(--touch);display:flex;align-items:center;justify-content:space-between;font:600 .95rem var(--f-d);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'▾';color:var(--muted);transition:transform .2s}
+details[open]>summary::after{transform:rotate(180deg)}
+.body{display:flex;flex-direction:column;gap:.55rem;padding:.1rem 0 .8rem}
+.row{display:grid;grid-template-columns:1fr;gap:.3rem}
+.chk{display:flex;align-items:center;gap:.6rem;min-height:calc(var(--touch) * .8);cursor:pointer}
+.chk input{width:1.35rem;height:1.35rem;accent-color:var(--accent);flex:none}
+.rng{display:grid;grid-template-columns:1fr auto;gap:.15rem .5rem;align-items:center}
+.rng input{grid-column:1/-1;width:100%;height:var(--touch);accent-color:var(--accent);margin:0}
+.rng output{font:500 .85rem var(--f-m);color:var(--muted)}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.note{font-size:.8rem;color:var(--muted);margin:0;line-height:1.35}
+.capk{font:600 .72rem var(--f-d);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+#capT{margin:0;font:700 calc(1.1rem * var(--cap))/1.25 var(--f-d)}
+#capP{margin:0;font-size:calc(.98rem * var(--cap));line-height:1.45}
+.capnav{display:flex;align-items:center;gap:.5rem}
+.dots{flex:1;display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap}
+.dots i{width:.6rem;height:.6rem;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent);transform:scale(1.25)}
+.chip{align-self:flex-start;display:inline-flex;padding:.25rem .7rem;border-radius:99px;font:600 .85rem var(--f-d);border:1.5px solid currentColor}
+.chip.good{color:var(--good)}.chip.warn{color:var(--warn)}.chip.bad{color:var(--bad)}.chip.info{color:var(--accent)}
+.meter{height:.55rem;border-radius:99px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:#ff8a4c}
+#info{margin:0;font:500 .85rem/1.5 var(--f-m);white-space:pre-wrap;color:var(--ink)}
+#lvl{width:100%;height:auto;display:block}
+#lvl .lv{stroke:var(--muted);stroke-width:1.5}
+#lvl .on{stroke:var(--accent);stroke-width:2.5}
+#lvl text{fill:var(--ink);font:600 11px var(--f-m)}
+#lvl .en{fill:var(--muted);font-weight:500}
+#lvl .dot{fill:#1469e0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #lvl .dot{fill:#58b8ff}}
+:root[data-theme="dark"] #lvl .dot{fill:#58b8ff}
+/* lesson dock: bottom, collapsed by default, draggable */
+#lesson{position:fixed;left:.6rem;bottom:calc(.6rem + env(safe-area-inset-bottom,0px));z-index:11;display:flex;flex-direction:column;gap:.4rem;align-items:flex-start;pointer-events:none;max-width:calc(100vw - 1.2rem)}
+#lesson.open{width:min(26rem,calc(100vw - 1.2rem))}
+#lesson>*{pointer-events:auto}
+#lessonHead{display:inline-flex;align-items:center;gap:.2rem;min-height:var(--touch);padding:0 .6rem 0 .3rem;border-radius:.65rem;border:1.5px solid var(--line);background:var(--panel);backdrop-filter:blur(6px);box-shadow:var(--shadow);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#lessonHead.drag{cursor:grabbing;border-color:var(--accent)}
+#grip{font:700 1.25rem var(--f-d);color:var(--muted);padding:0 .3rem;line-height:1}
+#lessonBtn{border:0;background:none;font:600 .95rem var(--f-d);display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;min-height:var(--touch);padding:0 .3rem;color:var(--ink)}
+#lessonBtn small{font:500 .8rem var(--f-m);color:var(--muted)}
+#lessonBtn::after{content:'\25B4';color:var(--muted);transition:transform .2s}
+#lesson.open #lessonBtn::after{transform:rotate(180deg)}
+#lessonBody{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:.9rem;box-shadow:var(--shadow);backdrop-filter:blur(8px);padding:.75rem .9rem;display:flex;flex-direction:column;gap:.55rem}
+#backBtn{position:fixed;top:calc(.6rem + env(safe-area-inset-top,0px));right:.6rem;z-index:10;box-shadow:var(--shadow);background:var(--panel)}
+</style>
+</head>
+<body>
+
+<main id="stage">
+  <canvas id="gl" aria-label="3D atom"></canvas>
+  <div id="labels"></div>
+</main>
+
+<div id="dock">
+  <button class="btn" id="menuBtn" aria-expanded="false" aria-controls="menu">☰ <span data-i="menu">Menu</span></button>
+  <div id="menu" hidden>
+
+    <div class="mode">
+      <label for="mode" data-i="modeL">Model</label>
+      <select id="mode">
+        <option value="r" data-i="m_r">Rutherford (3D)</option>
+        <option value="b" data-i="m_b">Bohr (3D)</option>
+        <option value="q" data-i="m_q">Quantum cloud (4D: space + time)</option>
+        <option value="f" data-i="m_f">5D: space + time + energy</option>
+      </select>
+    </div>
+
+    <details id="dModel">
+      <summary data-i="sModel">Model controls</summary>
+      <div class="body">
+        <label class="row" data-m="rb"><span data-i="element">Element</span><select id="zsel"></select></label>
+        <p class="note" id="shellNote" data-m="rb"></p>
+
+        <div data-m="r" class="body" style="padding:0">
+          <label class="chk"><input type="checkbox" id="lossOn"><span data-i="loss">Electron loses energy (theory)</span></label>
+          <label class="rng"><span data-i="collT">Collapse time</span><output id="Tout"></output><input type="range" id="T" min="3" max="30" step="1"></label>
+          <label class="chk"><input type="checkbox" id="waves"><span data-i="waves">Show radiated energy</span></label>
+          <label class="chk"><input type="checkbox" id="arrows"><span data-i="arrows">Show velocity and acceleration</span></label>
+          <button class="btn" id="replay" data-i="replay">↺ Replay</button>
+        </div>
+
+        <div data-m="b" class="body" style="padding:0">
+          <div class="btnrow"><button class="btn primary" id="exc" data-i="excite">⬆ Absorb energy</button><button class="btn" id="rel" data-i="relax">⬇ Emit energy</button></div>
+          <label class="chk"><input type="checkbox" id="autoJ"><span data-i="autoJ">Automatic jumps</span></label>
+          <label class="chk"><input type="checkbox" id="shellVis"><span data-i="shellVis">Show shells</span></label>
+        </div>
+
+        <div data-m="q" class="body" style="padding:0">
+          <label class="row"><span data-i="qstate">Quantum state</span>
+            <select id="qs"><option value="1s">1s</option><option value="2p">2p</option><option value="3d">3d</option><option value="1s+2p">1s + 2p</option><option value="2p+3d">2p + 3d</option></select></label>
+        </div>
+
+        <div data-m="f" class="body" style="padding:0">
+          <label class="rng"><span data-i="energy">Energy dimension (n)</span><output id="enOut"></output><input type="range" id="en" min="1" max="3" step="0.01"></label>
+          <label class="chk"><input type="checkbox" id="sweep"><span data-i="sweep">Sweep energy automatically</span></label>
+        </div>
+
+        <div data-m="qf" class="body" style="padding:0">
+          <label class="chk"><input type="checkbox" id="play"><span data-i="play">Time running</span></label>
+          <label class="rng"><span data-i="timeL">Time (4th dimension)</span><output id="tauOut"></output><input type="range" id="tau" min="0" max="60" step="0.1"></label>
+          <label class="chk"><input type="checkbox" id="phase"><span data-i="phase">Colour by wave phase</span></label>
+        </div>
+      </div>
+    </details>
+
+    <details id="dEff">
+      <summary data-i="sEff">Effects</summary>
+      <div class="body">
+        <label class="chk"><input type="checkbox" id="bloom"><span data-i="bloom">Glow (bloom)</span></label>
+        <label class="rng"><span data-i="bloomAmt">Glow strength</span><output id="bloomOut"></output><input type="range" id="bloomAmt" min="0" max="250" step="5"></label>
+        <label class="chk"><input type="checkbox" id="stars"><span data-i="stars">Starfield</span></label>
+        <label class="chk"><input type="checkbox" id="trails"><span data-i="trails">Electron trails</span></label>
+        <label class="chk"><input type="checkbox" id="shock"><span data-i="shock">Shockwave rings</span></label>
+        <label class="chk"><input type="checkbox" id="shake"><span data-i="shake">Camera shake on collapse</span></label>
+        <label class="chk"><input type="checkbox" id="pulse"><span data-i="pulse">Pulsing nucleus</span></label>
+        <label class="chk" data-m="r"><input type="checkbox" id="orbits"><span data-i="orbits">Show orbit paths</span></label>
+      </div>
+    </details>
+
+    <details id="dView">
+      <summary data-i="sView">View</summary>
+      <div class="body">
+        <label class="rng"><span data-i="speed">Animation speed</span><output id="spdOut"></output><input type="range" id="spd" min="0.1" max="2" step="0.1"></label>
+        <label class="chk"><input type="checkbox" id="labsOn"><span data-i="labsOn">Show labels</span></label>
+        <label class="chk"><input type="checkbox" id="rot"><span data-i="rot">Auto-rotate</span></label>
+        <div class="btnrow"><button class="btn" id="resetView" data-i="resetView">Reset camera</button><button class="btn" id="full" data-i="full">Full screen</button></div>
+      </div>
+    </details>
+
+    <details id="dDisp">
+      <summary data-i="sDisp">Screen, text and language</summary>
+      <div class="body">
+        <button class="btn" id="board" data-i="board">Smartboard size</button>
+        <label class="rng"><span data-i="ui">Whole screen size</span><output id="uiOut"></output><input type="range" id="ui" min="70" max="220" step="5"></label>
+        <label class="rng"><span data-i="cap">Lesson text size</span><output id="capOut"></output><input type="range" id="capS" min="70" max="260" step="5"></label>
+        <label class="rng"><span data-i="lab">Label size</span><output id="labOut"></output><input type="range" id="labS" min="70" max="260" step="5"></label>
+        <label class="row"><span data-i="theme">Theme</span><select id="theme"><option value="auto" data-i="tAuto">Auto</option><option value="light" data-i="tLight">Light</option><option value="dark" data-i="tDark">Dark</option></select></label>
+        <label class="row"><span data-i="lang">Language</span><select id="lang"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
+        <button class="btn" id="reset" data-i="reset">Reset all settings</button>
+      </div>
+    </details>
+
+    <details id="dStat">
+      <summary data-i="sStat">Status</summary>
+      <div class="body">
+        <span class="chip info" id="stat"></span>
+        <div class="meter" data-m="r"><i id="mR"></i></div>
+        <pre id="info"></pre>
+        <svg id="lvl" data-m="b" viewBox="0 0 250 150" role="img" aria-label="Energy levels"></svg>
+        <p class="note" id="hint"></p>
+      </div>
+    </details>
+
+  </div>
+</div>
+
+<button class="btn" id="backBtn" hidden>← <span data-i="back">Back to main atom</span></button>
+
+<div id="lesson">
+  <div id="lessonBody" hidden>
+    <div class="capk" id="capK"></div>
+    <h2 id="capT"></h2>
+    <p id="capP"></p>
+    <div class="capnav">
+      <button class="btn" id="prev" aria-label="Previous step">◀</button>
+      <div class="dots" id="dots"></div>
+      <button class="btn primary" id="next" aria-label="Next step">▶</button>
+    </div>
+  </div>
+  <div id="lessonHead" title="Drag to move">
+    <span id="grip" aria-hidden="true">⠿</span>
+    <button id="lessonBtn" aria-expanded="false" aria-controls="lessonBody">📖 <span data-i="sLesson">Lesson</span> <small id="lessonStep"></small></button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const root = document.documentElement;
+
+/* ---------- settings (display + effect preferences are remembered) ---------- */
+const DEF = { ui: 1, cap: 1, lab: 1, theme: 'auto', lang: 'en', speed: 1, trails: true, labels: true, rot: false,
+  bloom: true, bloomAmt: 1, stars: true, shock: true, shake: true, pulse: true, orbits: true };
+const S = Object.assign({}, DEF, { mode: 'r', zr: 1, zb: 11, loss: false, T: 10, waves: true, arrows: false, shells: true, auto: false,
+  qs: '1s+2p', energy: 1.5, sweep: false, play: true, tau: 0, phase: true });
+try { const k = JSON.parse(localStorage.getItem('atomlab3d') || '{}'); for (const key in DEF) if (key in k) S[key] = k[key]; } catch (e) {}
+const save = () => { try { const o = {}; for (const key in DEF) o[key] = S[key]; localStorage.setItem('atomlab3d', JSON.stringify(o)); } catch (e) {} };
+
+/* ---------- text: [English, Hindi] ---------- */
+const L = {
+  menu: ['Menu', 'मेन्यू'], modeL: ['Model', 'मॉडल'],
+  m_r: ['Rutherford (3D)', 'रदरफ़ोर्ड (3D)'], m_b: ['Bohr (3D)', 'बोहर (3D)'],
+  m_q: ['Quantum cloud (4D: space + time)', 'क्वांटम बादल (4D: स्थान + समय)'], m_f: ['5D: space + time + energy', '5D: स्थान + समय + ऊर्जा'],
+  sLesson: ['Lesson', 'पाठ'], sModel: ['Model controls', 'मॉडल कंट्रोल'], sEff: ['Effects', 'इफ़ेक्ट'], sView: ['View', 'दृश्य'],
+  sDisp: ['Screen, text and language', 'स्क्रीन, अक्षर और भाषा'], sStat: ['Status', 'स्थिति'],
+  element: ['Element', 'तत्व'], loss: ['Electron loses energy (theory)', 'इलेक्ट्रॉन ऊर्जा खोता है (सिद्धांत)'], collT: ['Collapse time', 'गिरने का समय'],
+  waves: ['Show radiated energy', 'विकिरित ऊर्जा दिखाएँ'], arrows: ['Show velocity and acceleration', 'वेग और त्वरण दिखाएँ'], replay: ['↺ Replay', '↺ दोबारा चलाएँ'],
+  excite: ['⬆ Absorb energy', '⬆ ऊर्जा अवशोषित'], relax: ['⬇ Emit energy', '⬇ ऊर्जा उत्सर्जित'], autoJ: ['Automatic jumps', 'अपने आप कूदना'], shellVis: ['Show shells', 'कोश दिखाएँ'],
+  qstate: ['Quantum state', 'क्वांटम अवस्था'], energy: ['Energy dimension (n)', 'ऊर्जा आयाम (n)'], sweep: ['Sweep energy automatically', 'ऊर्जा अपने आप बदलें'],
+  play: ['Time running', 'समय चल रहा है'], timeL: ['Time (4th dimension)', 'समय (चौथा आयाम)'], phase: ['Colour by wave phase', 'तरंग की कला से रंग'],
+  bloom: ['Glow (bloom)', 'चमक (ब्लूम)'], bloomAmt: ['Glow strength', 'चमक की तीव्रता'], stars: ['Starfield', 'तारों की पृष्ठभूमि'], trails: ['Electron trails', 'इलेक्ट्रॉन का पथ'],
+  shock: ['Shockwave rings', 'शॉकवेव छल्ले'], shake: ['Camera shake on collapse', 'गिरने पर कैमरा हिले'], pulse: ['Pulsing nucleus', 'धड़कता नाभिक'], orbits: ['Show orbit paths', 'कक्षा पथ दिखाएँ'],
+  speed: ['Animation speed', 'एनिमेशन की गति'], labsOn: ['Show labels', 'लेबल दिखाएँ'], rot: ['Auto-rotate', 'अपने आप घुमाएँ'], resetView: ['Reset camera', 'कैमरा रीसेट'], full: ['Full screen', 'फ़ुल स्क्रीन'],
+  board: ['Smartboard size', 'स्मार्टबोर्ड साइज़'], ui: ['Whole screen size', 'पूरी स्क्रीन का आकार'], cap: ['Lesson text size', 'पाठ के अक्षर'], lab: ['Label size', 'लेबल का आकार'],
+  theme: ['Theme', 'थीम'], tAuto: ['Auto', 'ऑटो'], tLight: ['Light', 'हल्का'], tDark: ['Dark', 'गहरा'], lang: ['Language', 'भाषा'], reset: ['Reset all settings', 'सभी सेटिंग रीसेट'],
+  lNuc: ['Nucleus (+)', 'नाभिक (+)'], lElec: ['Electron (−)', 'इलेक्ट्रॉन (−)'], lPhoton: ['Photon', 'फ़ोटॉन'], lV: ['v  velocity', 'v  वेग'], lA: ['a  acceleration', 'a  त्वरण'],
+  lProton: ['Proton (+)', 'प्रोटॉन (+)'], lEnergyAxis: ['Energy (5th dimension)', 'ऊर्जा (5वाँ आयाम)'],
+  sStable: ['Stable orbit (no energy loss)', 'स्थिर कक्षा (ऊर्जा हानि नहीं)'], sLosing: ['Losing energy, spiralling in', 'ऊर्जा खो रहा है, अंदर गिर रहा है'],
+  sDone: ['Atom collapsed!', 'परमाणु ध्वस्त हो गया!'], sBohr: ['Stable: no energy lost', 'स्थिर: कोई ऊर्जा हानि नहीं'],
+  sJumpUp: ['Absorbing energy, moving outward', 'ऊर्जा लेकर बाहर जा रहा है'], sJumpDn: ['Emitting energy, moving inward', 'ऊर्जा छोड़कर अंदर आ रहा है'],
+  sQ: ['Probability cloud evolving in time', 'संभावना का बादल समय के साथ बदल रहा है'], sQp: ['Time paused', 'समय रुका है'],
+  hRad: ['Orbit radius', 'कक्षा की त्रिज्या'], hSpd: ['Electron speed', 'इलेक्ट्रॉन की चाल'], hCol: ['Collapse in', 'टकराने में'], hCfg: ['Electrons in K, L, M…', 'K, L, M में इलेक्ट्रॉन'],
+  hintR: ['Slowed down for the class. By theory the real collapse takes about 10⁻¹¹ s. The nucleus is drawn far bigger than real.', 'कक्षा के लिए धीमा किया गया है। सिद्धांत के अनुसार असली अंत लगभग 10⁻¹¹ सेकंड में हो जाता। नाभिक असली से बहुत बड़ा दिखाया है।'],
+  hintB: ['Electrons stay on their fixed ring. They move to another ring only when they absorb or emit energy. Energy values are for hydrogen; ring gaps are not to scale.', 'इलेक्ट्रॉन अपने तय छल्ले पर ही घूमते हैं। ऊर्जा सोखने या छोड़ने पर ही दूसरे छल्ले में जाते हैं। ऊर्जा के मान हाइड्रोजन के हैं; दूरी पैमाने पर नहीं।'],
+  hintQ: ['Hydrogen only. Brightness = chance of finding the electron there. Colour = phase of the wave. Time axis: the ring below the cloud.', 'सिर्फ़ हाइड्रोजन। चमक = वहाँ इलेक्ट्रॉन मिलने की संभावना। रंग = तरंग की कला। समय की धुरी: बादल के नीचे का छल्ला।'],
+  hintF: ['Axes: x, y, z (space) + t (time) + n (energy ladder on the left). Heights are not to scale.', 'धुरियाँ: x, y, z (स्थान) + t (समय) + n (बाईं ओर ऊर्जा की सीढ़ी)। ऊँचाइयाँ पैमाने पर नहीं हैं।'],
+  ground: ['Already in the ground state: no lower shell has space.', 'यह पहले से मूल अवस्था में है: नीचे के कोश में जगह नहीं।'], top: ['Highest shell (N) reached.', 'सबसे ऊँचा कोश (N) आ गया।'],
+  step: ['Step', 'चरण'], nextB: ['Bohr ▶', 'बोहर ▶'], next4: ['4D ▶', '4D ▶'], next5: ['5D ▶', '5D ▶'], nextR: ['↺', '↺'],
+  noFull: ['Full screen is not available in this view', 'इस व्यू में फ़ुल स्क्रीन उपलब्ध नहीं'],
+  back: ['Back to main atom', 'मुख्य परमाणु पर वापस'], absorbed: ['Absorbed', 'अवशोषित'], emitted: ['Emitted', 'उत्सर्जित'],
+  sVisit: ['Visiting another atom', 'दूसरे परमाणु पर'], tapStar: ['✦ Tap this star', '✦ इस तारे को छुएँ'], farAtom: ['Another atom, far away', 'दूर का दूसरा परमाणु'],
+  eRad: ['Radiated', 'विकिरित'], uv: [' (UV, invisible)', ' (UV, अदृश्य)'], ir: [' (infrared, invisible)', ' (अवरक्त, अदृश्य)']
+};
+const tr = k => { const v = L[k]; return v ? v[S.lang === 'hi' ? 1 : 0] : k; };
+function shellNote(z) {
+  const cfg = shellsFor(z).filter(x => x).join(', ');
+  return S.lang === 'hi' ? `${z} इलेक्ट्रॉन → कोश: ${cfg}। हर कोश में सीमित इलेक्ट्रॉन (K 2, L 8, M 18)।` : `${z} electrons → shells: ${cfg}. Each shell holds only so many (K 2, L 8, M 18).`;
+}
+function applyLang() {
+  document.querySelectorAll('[data-i]').forEach(el => { el.textContent = tr(el.dataset.i); });
+  root.lang = S.lang === 'hi' ? 'hi' : 'en';
+}
+function applyTheme() { if (S.theme === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', S.theme); }
+function applyScale() {
+  root.style.setProperty('--ui', S.ui); root.style.setProperty('--cap', S.cap); root.style.setProperty('--lab', S.lab);
+  root.style.setProperty('--touch', (2.75 + Math.max(0, S.ui - 1) * 0.6).toFixed(2) + 'rem');
+}
+
+/* ---------- three.js scene: always a dark "space" stage so glow looks right ---------- */
+const COL = { nuc: 0xff8a4c, el: 0x5cc8ff, vel: 0x4ade80, acc: 0xf472b6, warn: 0xffb54d, accent: 0x58b4ff };
+const stage = $('#stage'), canvas = $('#gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setClearColor(0x040a16, 1);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050c1a);
+const cam = new THREE.PerspectiveCamera(45, 1, 0.1, 300);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8899bb, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 0.8); sun.position.set(6, 10, 8); scene.add(sun);
+
+/* post-processing: bloom (falls back to plain rendering if the add-ons fail to load) */
+let composer = null, bloomPass = null;
+try {
+  composer = new THREE.EffectComposer(renderer);
+  composer.addPass(new THREE.RenderPass(scene, cam));
+  bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(256, 256), 0.9, 0.55, 0.12);
+  composer.addPass(bloomPass);
+} catch (e) { composer = null; bloomPass = null; }
+
+const HOME = { th: 0.6, ph: 1.15, d: 18 };
+const view = { th: HOME.th, ph: HOME.ph, d: HOME.d, tth: HOME.th, tph: HOME.ph, td: HOME.d, cen: new THREE.Vector3(), tcen: new THREE.Vector3() };
+let shake = 0;
+const MODE_D = { r: 18, b: 18, q: 21, f: 27 };
+function placeCam(dt) {
+  if (S.rot) view.tth += dt * 0.25;
+  const k = 1 - Math.pow(0.0005, dt);
+  view.th += (view.tth - view.th) * k; view.ph += (view.tph - view.ph) * k; view.d += (view.td - view.d) * k;
+  view.cen.lerp(view.tcen, 1 - Math.pow(0.004, dt));
+  cam.position.set(view.cen.x + view.d * Math.sin(view.ph) * Math.sin(view.th), view.cen.y + view.d * Math.cos(view.ph), view.cen.z + view.d * Math.sin(view.ph) * Math.cos(view.th));
+  cam.lookAt(view.cen);
+  if (shake > 0) { cam.position.x += (Math.random() - 0.5) * shake * 0.6; cam.position.y += (Math.random() - 0.5) * shake * 0.6; shake = Math.max(0, shake - dt * 1.6); }
+}
+function resetView() { if (visiting) { leaveAtom(); return; } Object.assign(view, { tth: HOME.th, tph: HOME.ph, td: MODE_D[S.mode] }); }
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight, pr = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(pr); renderer.setSize(w, h, false);
+  if (composer) { if (composer.setPixelRatio) composer.setPixelRatio(pr); composer.setSize(w, h); }
+  cam.aspect = w / h; cam.fov = w / h < 0.9 ? 62 : 45; cam.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+
+/* one finger rotates, two fingers pinch, wheel zooms */
+const ptrs = new Map(); let pinch0 = 0, tap = null;
+const pdist = () => { const a = [...ptrs.values()]; return a.length > 1 ? Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) : 0; };
+canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); tap = ptrs.size === 1 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null; if (ptrs.size === 2) pinch0 = pdist(); });
+canvas.addEventListener('pointermove', e => {
+  const p = ptrs.get(e.pointerId); if (!p) return;
+  const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+  if (tap && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 10) tap = null;
+  if (ptrs.size === 1) { view.tth -= dx * 0.006; view.tph = clamp(view.tph - dy * 0.006, 0.15, Math.PI - 0.15); }
+  else if (ptrs.size >= 2) { const d = pdist(); if (pinch0 && d) view.td = clamp(view.td * pinch0 / d, 7, 45); pinch0 = d; }
+});
+const pend = e => { ptrs.delete(e.pointerId); pinch0 = 0; };
+canvas.addEventListener('pointerup', e => { const t = tap; tap = null; pend(e); if (t && performance.now() - t.t < 700) tapAt(e.clientX, e.clientY); });
+canvas.addEventListener('pointercancel', e => { tap = null; pend(e); });
+canvas.addEventListener('wheel', e => { e.preventDefault(); view.td = clamp(view.td * (1 + e.deltaY * 0.001), 7, 45); }, { passive: false });
+
+/* ---------- shared 3D helpers ---------- */
+const glowTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.25, 'rgba(255,255,255,.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})();
+const ringTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 34, 64, 64, 62);
+  r.addColorStop(0, 'rgba(255,255,255,0)'); r.addColorStop(0.7, 'rgba(255,255,255,.9)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})();
+function makeGlow(color, size, op = 0.9) {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, depthWrite: false, opacity: op, blending: THREE.AdditiveBlending }));
+  s.scale.setScalar(size); return s;
+}
+
+/* starfield */
+const stars = (() => {
+  const n = 1500, a = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const v = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(60 + Math.random() * 90);
+    a[i * 3] = v.x; a[i * 3 + 1] = v.y; a[i * 3 + 2] = v.z;
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(a, 3));
+  const p = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xaec8ff, size: 0.9, map: glowTex, transparent: true, depthWrite: false, opacity: 0.85, blending: THREE.AdditiveBlending }));
+  scene.add(p); return p;
+})();
+
+/* particles and shockwave rings */
+const parts = [], rings = [];
+function spawn(pos, vel, color, life, size, op = 0.9) {
+  if (parts.length > 260) return;
+  const s = makeGlow(color, size, op); s.position.copy(pos); scene.add(s);
+  parts.push({ s, vel, life, max: life, size, op });
+}
+function spawnRing(pos, color, size, life = 1.2) {
+  if (!S.shock || rings.length > 30) return;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: ringTex, color, transparent: true, depthWrite: false, opacity: 0.9, blending: THREE.AdditiveBlending }));
+  s.position.copy(pos); s.scale.setScalar(0.1); scene.add(s);
+  rings.push({ s, t: 0, life, size });
+}
+function stepParts(dt) {
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.life -= dt;
+    if (p.life <= 0) { scene.remove(p.s); p.s.material.dispose(); parts.splice(i, 1); continue; }
+    p.s.position.addScaledVector(p.vel, dt);
+    const k = p.life / p.max; p.s.material.opacity = p.op * k; p.s.scale.setScalar(p.size * (0.5 + 0.5 * k));
+  }
+  for (let i = rings.length - 1; i >= 0; i--) {
+    const r = rings[i]; r.t += dt;
+    if (r.t >= r.life) { scene.remove(r.s); r.s.material.dispose(); rings.splice(i, 1); continue; }
+    const k = r.t / r.life; r.s.scale.setScalar(0.3 + r.size * k); r.s.material.opacity = 0.9 * (1 - k);
+  }
+}
+function clearParts() {
+  parts.forEach(p => { scene.remove(p.s); p.s.material.dispose(); }); parts.length = 0;
+  rings.forEach(p => { scene.remove(p.s); p.s.material.dispose(); }); rings.length = 0;
+}
+
+/* each orbit is a circle in its own plane, spread evenly over the sphere */
+const Yaxis = new THREE.Vector3(0, 1, 0);
+function planeBasis(i, n) {
+  const nrm = n === 1 ? new THREE.Vector3(0.28, 1, 0.1).normalize() : (() => {
+    const y = 1 - (i + 0.5) * 2 / n, rr = Math.sqrt(1 - y * y), a = i * 2.39996;
+    return new THREE.Vector3(Math.cos(a) * rr, y, Math.sin(a) * rr);
+  })();
+  const q = new THREE.Quaternion().setFromUnitVectors(Yaxis, nrm);
+  return { u: new THREE.Vector3(1, 0, 0).applyQuaternion(q), v: new THREE.Vector3(0, 0, 1).applyQuaternion(q) };
+}
+const TRAIL = 90;
+function makeTrail(color) {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TRAIL * 3), 3));
+  const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending }));
+  l.frustumCulled = false; return l;
+}
+function pushTrail(l, p) { const a = l.geometry.attributes.position.array; a.copyWithin(0, 3); a[TRAIL * 3 - 3] = p.x; a[TRAIL * 3 - 2] = p.y; a[TRAIL * 3 - 1] = p.z; l.geometry.attributes.position.needsUpdate = true; }
+function fillTrail(l, p) { const a = l.geometry.attributes.position.array; for (let i = 0; i < TRAIL; i++) { a[i * 3] = p.x; a[i * 3 + 1] = p.y; a[i * 3 + 2] = p.z; } l.geometry.attributes.position.needsUpdate = true; }
+
+const nucR = z => 0.26 * Math.cbrt(z) + 0.18;
+function buildNucleus(z) {
+  const g = new THREE.Group(), R0 = nucR(z) - 0.12;
+  const mat = new THREE.MeshStandardMaterial({ color: COL.nuc, emissive: COL.nuc, emissiveIntensity: 0.6, roughness: 0.4 });
+  for (let i = 0; i < z; i++) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), mat);
+    if (z > 1) { const y = 1 - (i + 0.5) * 2 / z, rr = Math.sqrt(1 - y * y), a = i * 2.39996; m.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr).multiplyScalar(R0); }
+    g.add(m);
+  }
+  const glow = makeGlow(COL.nuc, nucR(z) * 6, 0.55); g.add(glow);
+  g.userData = { mat, glow, base: nucR(z) * 6 };
+  return g;
+}
+let clock = 0;
+function pulseNucleus(nuc, flash) {
+  const k = 1 + (S.pulse ? 0.1 * Math.sin(clock * 3) : 0) + flash * 1.4;
+  nuc.userData.glow.scale.setScalar(nuc.userData.base * k);
+}
+
+/* labels follow 3D points on screen */
+const labs = [];
+function addLabel(text, getPos, vis, keep) {
+  const el = document.createElement('div'); el.className = 'lab'; $('#labels').appendChild(el);
+  labs.push({ el, text, getPos, vis, keep, last: '' });
+}
+function updLabels() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const l of labs) {
+    if (!(S.labels && l.vis()) || (visiting && !l.keep)) { l.el.style.display = 'none'; continue; }
+    const v = l.getPos().clone().project(cam);
+    if (v.z > 1) { l.el.style.display = 'none'; continue; }
+    l.el.style.display = '';
+    l.el.style.left = (v.x * 0.5 + 0.5) * w + 'px'; l.el.style.top = (-v.y * 0.5 + 0.5) * h + 'px';
+    const t = typeof l.text === 'function' ? l.text() : tr(l.text);
+    if (t !== l.last) { l.el.textContent = t; l.last = t; }
+  }
+}
+
+/* menu status helpers */
+const cache = {};
+function setT(id, txt) { if (cache[id] !== txt) { cache[id] = txt; $('#' + id).textContent = txt; } }
+function setChip(cls, key) { const c = $('#stat'); const k = 'chip ' + cls; if (c.className !== k) c.className = k; setT('stat', tr(key)); }
+let toastT = 0;
+function toast(msg) { setChip('warn', msg); clearTimeout(toastT); }
+
+const SYM = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar'];
+const NAME = ['Hydrogen', 'Helium', 'Lithium', 'Beryllium', 'Boron', 'Carbon', 'Nitrogen', 'Oxygen', 'Fluorine', 'Neon', 'Sodium', 'Magnesium', 'Aluminium', 'Silicon', 'Phosphorus', 'Sulphur', 'Chlorine', 'Argon'];
+const CAP = [2, 8, 18, 32];
+function shellsFor(z) { return z <= 2 ? [z, 0, 0, 0] : z <= 10 ? [2, z - 2, 0, 0] : [2, 8, z - 10, 0]; }
+
+/* ================= Rutherford: electron radiates, orbit shrinks, atom collapses ================= */
+function placeOn(e, r) {
+  e.pos.copy(e.b.u).multiplyScalar(Math.cos(e.a) * r).addScaledVector(e.b.v, Math.sin(e.a) * r);
+  e.m.position.copy(e.pos);
+}
+const circleGeo = (() => {
+  const a = new Float32Array(97 * 3);
+  for (let i = 0; i < 97; i++) { const t = i / 96 * Math.PI * 2; a[i * 3] = Math.cos(t); a[i * 3 + 2] = Math.sin(t); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(a, 3)); return g;
+})();
+
+const R = { group: new THREE.Group(), dyn: null, el: [], tau: 0, boost: 1, done: false, flash: 0, emitT: 0, first: null, rn: 0.5 };
+scene.add(R.group); R.group.visible = false;
+R.arrowV = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(), 1, COL.vel, 0.4, 0.25);
+R.arrowA = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(), 1, COL.acc, 0.4, 0.25);
+R.group.add(R.arrowV, R.arrowA); R.arrowV.visible = R.arrowA.visible = false;
+
+R.build = function () {
+  if (R.dyn) R.group.remove(R.dyn);
+  R.dyn = new THREE.Group(); R.group.add(R.dyn);
+  const z = S.zr;
+  R.nuc = buildNucleus(z); R.dyn.add(R.nuc);
+  R.rn = nucR(z) + 0.1; R.el = [];
+  for (let i = 0; i < z; i++) {
+    const r0 = z === 1 ? 5.2 : 3.4 + ((i * 7) % 5) * 0.62 + (i % 2) * 0.2;
+    const m = new THREE.Mesh(new THREE.SphereGeometry(0.17, 14, 10), new THREE.MeshStandardMaterial({ color: COL.el, emissive: COL.el, emissiveIntensity: 0.9 }));
+    m.add(makeGlow(COL.el, 1.4, 0.7));
+    const tl = makeTrail(COL.el);
+    const orb = new THREE.LineLoop(circleGeo, new THREE.LineBasicMaterial({ color: COL.el, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending }));
+    orb.matrixAutoUpdate = false; orb.frustumCulled = false;
+    R.dyn.add(m, tl, orb);
+    R.el.push({ m, tl, orb, b: planeBasis(i, z), r0, a: i * 2.1, w0: 1.4 * Math.pow(5 / r0, 1.5), alive: true, pos: new THREE.Vector3(), r: r0, w: 1 });
+  }
+  R.reset();
+};
+const _n = new THREE.Vector3(), _u = new THREE.Vector3(), _v = new THREE.Vector3();
+function setOrbit(e, r) {
+  _u.copy(e.b.u).multiplyScalar(r); _v.copy(e.b.v).multiplyScalar(r); _n.crossVectors(e.b.u, e.b.v);
+  e.orb.matrix.makeBasis(_u, _n, _v); e.orb.matrixWorldNeedsUpdate = true;
+}
+R.reset = function () {
+  R.tau = 0; R.boost = 1; R.done = false; R.flash = 0; R.emitT = 0; clearParts();
+  for (const e of R.el) { e.alive = true; e.m.visible = true; e.tl.visible = S.trails; e.r = e.r0; placeOn(e, e.r0); fillTrail(e.tl, e.pos); setOrbit(e, e.r0); e.orb.visible = S.orbits; }
+};
+function burst(pos) {
+  const c = new THREE.Color(COL.nuc);
+  for (let i = 0; i < 18; i++) {
+    const v = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(2 + Math.random() * 5);
+    spawn(pos.clone(), v, c, 1.2, 0.9);
+  }
+  spawnRing(pos, COL.nuc, 4); if (S.shake) shake = Math.max(shake, 0.6); R.flash = 1;
+}
+R.update = function (dt) {
+  const ds = dt * S.speed;
+  if (S.loss && !R.done) R.tau = Math.min(1, R.tau + ds / S.T * R.boost);
+  let alive = 0; R.first = null;
+  R.emitT -= dt;
+  const emit = S.waves && S.loss && R.emitT <= 0 && ds > 0;
+  if (emit) R.emitT = 0.14;
+  for (const e of R.el) {
+    if (!e.alive) { e.orb.visible = false; continue; }
+    const r = e.r0 * Math.sqrt(Math.max(0, 1 - R.tau));
+    if (r <= R.rn) { e.alive = false; e.m.visible = false; e.tl.visible = false; e.orb.visible = false; burst(e.pos); continue; }
+    const w = Math.min(e.w0 * Math.pow(e.r0 / r, 1.5), 14);
+    e.a += w * ds; e.r = r; e.w = w; placeOn(e, r);
+    e.tl.visible = S.trails; e.orb.visible = S.orbits; setOrbit(e, r);
+    if (S.trails && ds > 0) pushTrail(e.tl, e.pos);
+    if (emit) {
+      const v = e.pos.clone().normalize().multiplyScalar(2.5 + Math.random() * 1.5);
+      v.x += (Math.random() - 0.5); v.y += (Math.random() - 0.5); v.z += (Math.random() - 0.5);
+      spawn(e.pos.clone(), v, new THREE.Color(COL.warn), 1.0, 0.7, 0.85);
+      if (Math.random() < 0.35) spawnRing(e.pos, COL.warn, 1.8, 0.9);
+    }
+    alive++; if (!R.first) R.first = e;
+  }
+  if (!alive && R.el.length && !R.done) { R.done = true; R.flash = 1; spawnRing(new THREE.Vector3(), COL.nuc, 14, 1.8); if (S.shake) shake = 1; }
+  R.flash = Math.max(0, R.flash - dt * 1.1);
+  pulseNucleus(R.nuc, R.flash);
+
+  const f = R.first, show = S.arrows && f;
+  R.arrowV.visible = R.arrowA.visible = !!show;
+  if (show) {
+    const tang = f.b.v.clone().multiplyScalar(Math.cos(f.a)).addScaledVector(f.b.u, -Math.sin(f.a)).normalize();
+    const acc = f.pos.clone().normalize().negate();
+    const lv = clamp(f.r * f.w * 0.35, 1, 4), la = clamp(f.r * f.w * f.w * 0.06, 1, 4);
+    R.arrowV.position.copy(f.pos); R.arrowV.setDirection(tang); R.arrowV.setLength(lv, 0.4, 0.25);
+    R.arrowA.position.copy(f.pos); R.arrowA.setDirection(acc); R.arrowA.setLength(la, 0.4, 0.25);
+    R.vTip = f.pos.clone().addScaledVector(tang, lv); R.aTip = f.pos.clone().addScaledVector(acc, la);
+  }
+  const st = R.done ? ['bad', 'sDone'] : S.loss ? ['warn', 'sLosing'] : ['good', 'sStable'];
+  setChip(st[0], st[1]);
+  const pct = f ? f.r / f.r0 * 100 : 0;
+  $('#mR').style.width = pct + '%';
+  const spd = f ? (f.w / f.w0).toFixed(1) + '×' : '–';
+  const col = R.done ? '0.0 s' : S.loss ? ((1 - R.tau) * S.T / (S.speed * R.boost)).toFixed(1) + ' s' : '–';
+  setT('info', `${tr('hRad')}: ${pct.toFixed(0)}%\n${tr('hSpd')}: ${spd}\n${tr('hCol')}: ${col}`);
+};
+addLabel('lNuc', () => new THREE.Vector3(0, R.rn + 0.5, 0), () => S.mode === 'r' && !R.done);
+addLabel('lElec', () => R.first.pos, () => S.mode === 'r' && !!R.first);
+addLabel('lV', () => R.vTip, () => S.mode === 'r' && S.arrows && !!R.first && !!R.vTip);
+addLabel('lA', () => R.aTip, () => S.mode === 'r' && S.arrows && !!R.first && !!R.aTip);
+
+const STEPS = {};
+STEPS.r = [
+  { t: ['Rutherford\'s model', 'रदरफ़ोर्ड का मॉडल'],
+    p: ['A tiny, dense, positive nucleus sits at the centre. Electrons revolve around it in circular paths, like planets around the Sun.',
+        'बीच में छोटा, भारी, धनावेशित नाभिक है। इलेक्ट्रॉन उसके चारों ओर वृत्ताकार पथ में घूमते हैं, जैसे ग्रह सूर्य के चारों ओर।'],
+    run() { R.reset(); S.loss = false; S.arrows = false; } },
+  { t: ['Acceleration', 'त्वरण'],
+    p: ['Its speed can stay the same, but its direction keeps changing, so it has acceleration. Green arrow: velocity. Pink arrow: acceleration, always pointing to the nucleus.',
+        'चाल वही रह सकती है, पर दिशा लगातार बदलती है, इसलिए त्वरण है। हरा तीर: वेग। गुलाबी तीर: त्वरण, जो हमेशा नाभिक की ओर है।'],
+    run() { R.reset(); S.loss = false; S.arrows = true; } },
+  { t: ['Energy loss', 'ऊर्जा हानि'],
+    p: ['An accelerating charged particle loses energy. Watch the orbit shrink and the electron speed up as it radiates energy.',
+        'त्वरित आवेशित कण ऊर्जा खोता है। देखिए ऊर्जा निकलने पर कक्षा छोटी होती है और इलेक्ट्रॉन तेज़ होता जाता है।'],
+    run() { R.reset(); S.loss = true; S.arrows = false; S.waves = true; } },
+  { t: ['Collapse', 'ध्वस्त'],
+    p: ['The electron spirals into the nucleus. If this were true, no atom could exist. But real atoms are stable, so the model has a limitation.',
+        'इलेक्ट्रॉन सर्पिल पथ में नाभिक में गिर जाता है। ऐसा होता तो परमाणु टिकता ही नहीं। पर असली परमाणु स्थिर हैं, इसलिए इस मॉडल की सीमा है।'],
+    run() { if (!R.done) { S.loss = true; S.arrows = false; R.boost = 2.5; } } },
+  { t: ['Limitation, so Bohr', 'सीमा, इसलिए बोहर'],
+    p: ['Rutherford could not explain why atoms stay stable. In 1913 Niels Bohr proposed that electrons stay in fixed shells without losing energy. Press next to see it.',
+        'रदरफ़ोर्ड यह नहीं समझा पाए कि परमाणु स्थिर क्यों रहते हैं। 1913 में नील्स बोहर ने बताया कि इलेक्ट्रॉन तय कोशों में ऊर्जा खोए बिना रहते हैं। आगे बढ़ें।'],
+    run() {} }
+];
+
+/* ================= Bohr: fixed shells, jumps by absorbing or emitting a photon ================= */
+const RS = n => 2.1 + 1.6 * (n - 1);
+const SHELL = ['K', 'L', 'M', 'N'];
+const EN = n => -13.6 / (n * n);
+function wlColor(nm) {
+  if (nm < 380) return new THREE.Color('#a855f7');
+  if (nm > 750) return new THREE.Color('#ef4444');
+  let r = 0, g = 0, b = 0;
+  if (nm < 440) { r = -(nm - 440) / 60; b = 1; } else if (nm < 490) { g = (nm - 440) / 50; b = 1; }
+  else if (nm < 510) { g = 1; b = -(nm - 510) / 20; } else if (nm < 580) { r = (nm - 510) / 70; g = 1; }
+  else if (nm < 645) { r = 1; g = -(nm - 645) / 65; } else { r = 1; }
+  return new THREE.Color(r, g, b);
+}
+const B = { group: new THREE.Group(), dyn: null, shellG: new THREE.Group(), el: [], counts: [0, 0, 0, 0], photon: null, timers: [], autoT: 2, sig: '', flash: 0,
+  ringMesh: [], hl: [0, 0, 0, 0], hlCol: [new THREE.Color(), new THREE.Color(), new THREE.Color(), new THREE.Color()], note: null };
+const RING0 = new THREE.Color(COL.accent), ELC = new THREE.Color(COL.el);
+scene.add(B.group); B.group.add(B.shellG); B.group.visible = false;
+for (let n = 1; n <= 4; n++) {
+  const s = new THREE.Mesh(new THREE.SphereGeometry(RS(n), 32, 20), new THREE.MeshBasicMaterial({ color: COL.accent, transparent: true, opacity: 0.05, depthWrite: false }));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(RS(n), 0.03, 6, 100), new THREE.MeshBasicMaterial({ color: COL.accent, transparent: true, opacity: 0.6 }));
+  ring.rotation.x = Math.PI / 2; B.shellG.add(s, ring); B.ringMesh.push(ring);
+}
+B.recount = function () { B.counts = [0, 0, 0, 0]; B.el.forEach(e => B.counts[e.n - 1]++); };
+B.build = function () {
+  B.timers.forEach(clearTimeout); B.timers = [];
+  clearParts(); if (B.photon) { scene.remove(B.photon.s); B.photon = null; }
+  if (B.dyn) B.group.remove(B.dyn);
+  B.dyn = new THREE.Group(); B.group.add(B.dyn);
+  const z = S.zb;
+  B.nuc = buildNucleus(z); B.dyn.add(B.nuc);
+  B.el = [];
+  const sh = shellsFor(z);
+  for (let n = 1; n <= 4; n++) for (let k = 0; k < sh[n - 1]; k++) {
+    const b = { u: new THREE.Vector3(1, 0, 0), v: new THREE.Vector3(0, 0, 1) };  /* every electron stays on its shell's ring (same plane as the drawn ring) */
+    const m = new THREE.Mesh(new THREE.SphereGeometry(0.17, 14, 10), new THREE.MeshStandardMaterial({ color: COL.el, emissive: COL.el, emissiveIntensity: 0.9 }));
+    m.add(makeGlow(COL.el, 1.4, 0.7));
+    const tl = makeTrail(COL.el); B.dyn.add(m, tl);
+    const e = { m, tl, b, n, a: k * Math.PI * 2 / sh[n - 1] + n, r: RS(n), pos: new THREE.Vector3(), jump: null, flash: 0, tint: new THREE.Color(COL.el) };
+    placeOn(e, e.r); fillTrail(tl, e.pos); B.el.push(e);
+  }
+  B.recount(); B.autoT = 2; B.flash = 0; B.hl = [0, 0, 0, 0]; B.note = null;
+};
+B.reset = B.build;
+function startJump(e, toN) { e.jump = { from: e.r, to: RS(toN), t: 0, dur: 1.3 }; e.n = toN; B.recount(); }
+function photonSprite(col) { const s = makeGlow(col, 1.4, 1); scene.add(s); return s; }
+function sparks(pos, col, n, sp) {
+  for (let i = 0; i < n; i++) {
+    const v = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(sp * (0.5 + Math.random()));
+    spawn(pos.clone(), v, col, 0.9, 0.6, 0.9);
+  }
+}
+function converge(pos, col, n) {
+  for (let i = 0; i < n; i++) {
+    const d = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    spawn(pos.clone().addScaledVector(d, 1.8), d.clone().multiplyScalar(-4.5), col, 0.4, 0.55, 0.9);
+  }
+}
+function flashShell(n, col) { B.hl[n - 1] = 1; B.hlCol[n - 1].copy(col); }
+function jumpInfo(n1, n2) {
+  const dE = 13.6 * (1 / (n1 * n1) - 1 / (n2 * n2)), nm = 1240 / dE;
+  return { dE: dE.toFixed(2), col: wlColor(nm), note: nm < 380 ? tr('uv') : nm > 750 ? tr('ir') : '' };
+}
+B.busy = () => !!B.photon || B.el.some(e => e.jump);
+B.excite = function () {
+  if (B.busy()) return;
+  let e = null; B.el.forEach(x => { if (!e || x.n >= e.n) e = x; });
+  if (!e || e.n >= 4) { toast('top'); return; }
+  const info = jumpInfo(e.n, e.n + 1);
+  const side = new THREE.Vector3().crossVectors(cam.position, Yaxis).normalize();
+  if (Math.random() < 0.5) side.negate();
+  const dir = side.add(new THREE.Vector3(0, 0.35, 0)).normalize();
+  const s = photonSprite(info.col); s.position.copy(e.pos).addScaledVector(dir, 15);
+  B.photon = { kind: 'in', e, s, info, to: e.n + 1, tt: 0, ph: 0, side: new THREE.Vector3().crossVectors(dir, Yaxis).normalize() };
+};
+B.relax = function () {
+  if (B.busy()) return;
+  let e = null, m = 0;
+  B.el.forEach(x => { for (let k = x.n - 1; k >= 1; k--) if (B.counts[k - 1] < CAP[k - 1]) { if (!e || x.n >= e.n) { e = x; m = k; } break; } });
+  if (!e) { toast('ground'); return; }
+  const info = jumpInfo(m, e.n), oldN = e.n;
+  startJump(e, m);
+  const dir = e.pos.clone().normalize();
+  const sd = new THREE.Vector3().crossVectors(dir, Yaxis); if (sd.lengthSq() < 1e-4) sd.set(1, 0, 0); sd.normalize();
+  const s = photonSprite(info.col); s.position.copy(e.pos);
+  /* emission effects: flash, sparks, ring, source shell lights up */
+  spawnRing(e.pos, info.col, 5, 1.1); spawnRing(e.pos, info.col, 8, 1.5); sparks(e.pos, info.col, 18, 3.4);
+  e.tint.copy(info.col); e.flash = 1; flashShell(oldN, info.col);
+  B.note = { kind: 'emitted', dE: info.dE, note: info.note, e, t: 3 };
+  B.photon = { kind: 'out', e, s, info, vel: dir.clone().multiplyScalar(9), tt: 0, ph: 0, side: sd };
+};
+B.update = function (dt) {
+  const ds = dt * S.speed;
+  B.shellG.visible = S.shells;
+  let moving = null;
+  for (const e of B.el) {
+    if (e.jump) {
+      const j = e.jump; j.t = Math.min(1, j.t + ds / j.dur);
+      const k = j.t < 0.5 ? 2 * j.t * j.t : 1 - Math.pow(-2 * j.t + 2, 2) / 2;
+      e.r = j.from + (j.to - j.from) * k; moving = j.to > j.from ? 'up' : 'down';
+      if (j.t >= 1) { e.jump = null; spawnRing(e.pos, e.tint, 3.5, 1); flashShell(e.n, e.tint); e.flash = 1; }
+    } else e.r = RS(e.n);
+    const gl = e.m.children[0];
+    e.flash = Math.max(0, e.flash - dt * 0.5);
+    gl.material.color.copy(ELC).lerp(e.tint, Math.min(1, e.flash * 1.2));
+    gl.scale.setScalar(1.4 + (e.jump ? 2.4 * Math.sin(Math.PI * e.jump.t) : 0) + e.flash * 1.8);
+    const neff = 1 + (e.r - 2.1) / 1.6;
+    e.a += 2.6 / Math.pow(neff, 1.2) * ds;
+    placeOn(e, e.r);
+    e.tl.visible = S.trails;
+    if (S.trails && ds > 0) pushTrail(e.tl, e.pos);
+  }
+  const p = B.photon;
+  if (p) {
+    p.tt += dt;
+    if (p.kind === 'in') {
+      const to = p.e.pos.clone().sub(p.s.position), d = to.length();
+      if (d < 0.35) {
+        const eo = p.e, nn = p.to;
+        /* absorption effects: particles rush in, double ring, electron glows in the photon colour, new shell lights up */
+        converge(eo.pos, p.info.col, 20); spawnRing(eo.pos, p.info.col, 4, 1); spawnRing(eo.pos, p.info.col, 7, 1.4);
+        B.flash = 1; eo.tint.copy(p.info.col); eo.flash = 1; flashShell(nn, p.info.col);
+        B.note = { kind: 'absorbed', dE: p.info.dE, note: p.info.note, e: eo, t: 3 };
+        scene.remove(p.s); p.s.material.dispose(); B.photon = null; startJump(eo, nn);
+      }
+      else p.s.position.addScaledVector(to.normalize(), Math.min(d, 10 * ds));
+    } else {
+      p.s.position.addScaledVector(p.vel, ds);
+      if (p.tt > 2.4 / Math.max(S.speed, 0.2)) { scene.remove(p.s); p.s.material.dispose(); B.photon = null; }
+    }
+    if (B.photon && ds > 0) {
+      /* photon drawn as a travelling wave */
+      p.ph += dt * 26;
+      const off = p.side.clone().multiplyScalar(Math.sin(p.ph) * 0.45);
+      spawn(p.s.position.clone().add(off), new THREE.Vector3(), p.info.col, 0.7, 0.5, 0.85);
+      spawn(p.s.position.clone().sub(off), new THREE.Vector3(), p.info.col, 0.7, 0.3, 0.4);
+    }
+  }
+  if (S.auto && !B.busy()) {
+    B.autoT -= dt;
+    if (B.autoT <= 0) {
+      B.autoT = 1.6;
+      const excited = B.el.some(x => { for (let k = 1; k < x.n; k++) if (B.counts[k - 1] < CAP[k - 1]) return true; return false; });
+      if (excited && Math.random() < 0.65) B.relax(); else B.excite();
+    }
+  }
+  if (B.note) { B.note.t -= dt; if (B.note.t <= 0) B.note = null; }
+  for (let i = 0; i < 4; i++) {
+    B.hl[i] = Math.max(0, B.hl[i] - dt * 0.7);
+    const rm = B.ringMesh[i]; rm.material.color.copy(RING0).lerp(B.hlCol[i], B.hl[i]); rm.material.opacity = 0.6 + 0.4 * B.hl[i];
+  }
+  B.flash = Math.max(0, B.flash - dt * 1.5);
+  pulseNucleus(B.nuc, B.flash * 0.5);
+  if (moving) setChip('info', moving === 'up' ? 'sJumpUp' : 'sJumpDn'); else setChip('good', 'sBohr');
+  let last = 3; while (last > 0 && !B.counts[last]) last--;
+  setT('info', `${tr('hCfg')}: ${B.counts.slice(0, last + 1).join(', ')}`);
+  const sig = B.counts.join() + (moving || '') + S.lang;
+  if (sig !== B.sig) { B.sig = sig; drawLevels(); }
+};
+function drawLevels() {
+  let h = '';
+  for (let n = 1; n <= 4; n++) {
+    const y = 128 - (n - 1) * 36, jumping = B.el.some(e => e.jump && e.n === n);
+    h += `<line class="lv${jumping ? ' on' : ''}" x1="52" x2="168" y1="${y}" y2="${y}"/>`;
+    h += `<text x="2" y="${y + 4}">${SHELL[n - 1]} n=${n}</text><text class="en" x="174" y="${y + 4}">${EN(n).toFixed(2)}</text>`;
+    for (let k = 0; k < B.counts[n - 1]; k++) h += `<circle class="dot" cx="${60 + k * 13}" cy="${y - 7}" r="4.5"/>`;
+  }
+  $('#lvl').innerHTML = h;
+}
+for (let n = 1; n <= 4; n++) addLabel(() => `${SHELL[n - 1]}  n=${n}`, () => new THREE.Vector3(RS(n) * 0.7, 0, RS(n) * 0.7), () => S.mode === 'b' && S.shells);
+addLabel('lNuc', () => new THREE.Vector3(0, nucR(S.zb) + 0.5, 0), () => S.mode === 'b');
+addLabel(() => `${tr('lPhoton')}  ${B.photon.info.dE} eV${B.photon.info.note}`, () => B.photon.s.position, () => S.mode === 'b' && !!B.photon);
+addLabel(() => `${tr(B.note.kind)} ${B.note.dE} eV${B.note.note}`, () => B.note.e.pos, () => S.mode === 'b' && !!B.note);
+
+STEPS.b = [
+  { t: ['Shells', 'कोश'],
+    p: ['Bohr (1913): electrons do not move randomly. They follow fixed circular paths called shells, orbits or stationary states, named K, L, M, N or n = 1, 2, 3, 4.',
+        'बोहर (1913): इलेक्ट्रॉन मनमाने नहीं घूमते। वे तय वृत्ताकार पथों में चलते हैं जिन्हें कोश, कक्षा या स्थिर अवस्था कहते हैं: K, L, M, N यानी n = 1, 2, 3, 4।'],
+    run() { B.reset(); S.auto = false; } },
+  { t: ['Shell energy', 'कोश की ऊर्जा'],
+    p: ['K (n = 1) is closest to the nucleus and has the least energy. The farther a shell is, the higher its energy. See the energy ladder in Status.',
+        'K (n = 1) नाभिक के सबसे पास है और उसकी ऊर्जा सबसे कम है। कोश जितना दूर, ऊर्जा उतनी अधिक। Status में ऊर्जा की सीढ़ी देखिए।'],
+    run() { B.reset(); } },
+  { t: ['Stable, no energy loss', 'स्थिर, ऊर्जा हानि नहीं'],
+    p: ['In a stationary state the electron keeps moving but does not radiate energy. That removes the collapse problem of Rutherford\'s model, so the atom stays stable.',
+        'स्थिर अवस्था में इलेक्ट्रॉन घूमता रहता है पर ऊर्जा विकिरित नहीं करता। इससे रदरफ़ोर्ड मॉडल की गिरने की समस्या दूर होती है और परमाणु स्थिर रहता है।'],
+    run() { B.reset(); } },
+  { t: ['Absorb: jump outward', 'अवशोषण: बाहर कूदना'],
+    p: ['An electron moves to a higher shell by absorbing exactly the energy difference between the two shells.',
+        'इलेक्ट्रॉन दो कोशों की ऊर्जा के ठीक अंतर जितनी ऊर्जा सोखकर ऊँचे कोश में जाता है।'],
+    run() { B.reset(); B.timers.push(setTimeout(() => B.excite(), 500)); } },
+  { t: ['Emit: fall back', 'उत्सर्जन: वापस गिरना'],
+    p: ['When the electron drops to a lower shell, it releases the same amount of energy as a photon of light.',
+        'जब इलेक्ट्रॉन नीचे के कोश में आता है तो उतनी ही ऊर्जा फ़ोटॉन (प्रकाश) के रूप में छोड़ता है।'],
+    run() { B.reset(); B.timers.push(setTimeout(() => B.excite(), 300), setTimeout(() => B.relax(), 4300)); } },
+  { t: ['Shell capacity', 'कोश की क्षमता'],
+    p: ['K holds up to 2 electrons, L up to 8, M up to 18. Choose another element in Model controls to see the shells fill in order. Next: the modern quantum picture.',
+        'K में 2, L में 8, M में 18 तक इलेक्ट्रॉन आ सकते हैं। Model controls में दूसरा तत्व चुनकर देखिए कि कोश क्रम से कैसे भरते हैं। आगे: आधुनिक क्वांटम चित्र।'],
+    run() { if (S.zb < 3) S.zb = 11; B.reset(); } }
+];
+
+/* ================= Quantum cloud: 4D (x, y, z + time) and 5D (+ energy) =================
+   Hydrogen states 1s, 2p(z), 3d(z²). Each point of a cloud shows |psi(x,t)|² as brightness and the wave phase as colour.
+   psi(x,t) = sum c_k * psi_k(x) * exp(-i E_k t). Hydrogen units (Bohr radius = 1), time sped up for display. */
+const SC = 0.65, EK = [-0.5, -0.125, -1 / 18].map(e => e * 3);
+const NORM = [1, 1 / 0.7358, 1 / 9.744];
+const PSI = [
+  (x, y, z, r) => Math.exp(-r),
+  (x, y, z, r) => z * Math.exp(-r / 2),
+  (x, y, z, r) => (3 * z * z - r * r) * Math.exp(-r / 3)
+];
+const QP = { '1s': [1, 0, 0], '2p': [0, 1, 0], '3d': [0, 0, 1], '1s+2p': [0.7071, 0.7071, 0], '2p+3d': [0, 0.7071, 0.7071] };
+const QN = ['1s', '2p', '3d'];
+const LADY = [-4, 0.5, 3], LADX = -12.5, LADC = [0x5cc8ff, 0xffd36b, 0xf472b6];
+const ampVec = () => {
+  if (S.mode === 'q') return QP[S.qs];
+  const c = [1, 2, 3].map(k => Math.max(0, 1 - Math.abs(S.energy - k))), n = Math.hypot(c[0], c[1], c[2]) || 1;
+  return c.map(x => x / n);
+};
+const HUE = (() => {
+  const a = [], c = new THREE.Color();
+  for (let i = 0; i < 72; i++) { c.setHSL(i / 72, 1, 0.58); a.push([c.r, c.g, c.b]); }
+  return a;
+})();
+
+const Q = { group: new THREE.Group(), lad: new THREE.Group(), clk: new THREE.Group(), N: 18000, pts: null, ps: null, re: null, im: null, col: null, dens: null, nuc: null, amp: [1, 0, 0], flash: 0 };
+scene.add(Q.group); Q.group.visible = false; Q.group.add(Q.lad, Q.clk); Q.lad.visible = false;
+Q.nuc = buildNucleus(1); Q.nuc.scale.setScalar(0.7); Q.group.add(Q.nuc);
+
+/* time ring (the 4th axis) */
+(() => {
+  const ring = new THREE.LineLoop(circleGeo, new THREE.LineBasicMaterial({ color: 0xaec8ff, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending }));
+  ring.scale.setScalar(3.6); Q.clk.add(ring);
+  Q.clkDot = makeGlow(0xffffff, 1.1, 1); Q.clk.add(Q.clkDot);
+  Q.clk.position.y = -6.6;
+})();
+/* energy ladder (the 5th axis) */
+(() => {
+  Q.ladDots = [];
+  const axis = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(LADX - 1.8, -5.3, 0), 10.5, 0xaec8ff, 0.7, 0.4);
+  Q.lad.add(axis);
+  for (let k = 0; k < 3; k++) {
+    const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(LADX - 1.3, LADY[k], 0), new THREE.Vector3(LADX + 1.3, LADY[k], 0)]);
+    Q.lad.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color: LADC[k] })));
+    const d = makeGlow(LADC[k], 1, 1); d.position.set(LADX, LADY[k], 0); Q.lad.add(d); Q.ladDots.push(d);
+  }
+  Q.ladMark = makeGlow(0xffffff, 1.2, 1); Q.lad.add(Q.ladMark);
+})();
+const ladY = e => e <= 2 ? LADY[0] + (LADY[1] - LADY[0]) * (e - 1) : LADY[1] + (LADY[2] - LADY[1]) * (e - 2);
+
+Q.build = function () {
+  if (Q.pts) { Q.group.remove(Q.pts); Q.pts.geometry.dispose(); }
+  const N = Q.N, pos = new Float32Array(N * 3), th = 2.2, rmax = 15;
+  Q.ps = [new Float32Array(N), new Float32Array(N), new Float32Array(N)];
+  Q.re = new Float32Array(N); Q.im = new Float32Array(N); Q.dens = new Float32Array(N); Q.col = new Float32Array(N * 3);
+  const tmp = [0, 0, 0];
+  const trial = () => {
+    const r = -th * Math.log(Math.random() * Math.random() * Math.random());
+    if (r > rmax || r < 0.02) return null;
+    const u = 2 * Math.random() - 1, ph = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+    const x = r * s * Math.cos(ph), y = r * s * Math.sin(ph), z = r * u;
+    let sum = 0;
+    for (let k = 0; k < 3; k++) { tmp[k] = PSI[k](x, y, z, r) * NORM[k]; sum += Math.abs(tmp[k]); }
+    return { x, y, z, w: sum * sum * Math.exp(r / th) };
+  };
+  let M = 0;
+  for (let i = 0; i < 40000; i++) { const t = trial(); if (t && t.w > M) M = t.w; }
+  M *= 1.2;
+  let n = 0, guard = 0;
+  while (n < N && guard++ < 3000000) {
+    const t = trial(); if (!t || Math.random() > t.w / M) continue;
+    pos[n * 3] = t.x * SC; pos[n * 3 + 1] = t.y * SC; pos[n * 3 + 2] = t.z * SC;
+    Q.ps[0][n] = tmp[0]; Q.ps[1][n] = tmp[1]; Q.ps[2][n] = tmp[2];
+    n++;
+  }
+  Q.N = n;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos.subarray(0, n * 3), 3));
+  g.setAttribute('color', new THREE.BufferAttribute(Q.col.subarray(0, n * 3), 3));
+  Q.pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.16, map: glowTex, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
+  Q.pts.frustumCulled = false; Q.group.add(Q.pts);
+};
+Q.reset = function () { if (!Q.pts) Q.build(); clearParts(); };
+Q.update = function (dt) {
+  if (S.play) S.tau += dt * S.speed;
+  if (S.tau > 60) S.tau -= 60;
+  if (S.mode === 'f' && S.sweep) { S.energy = 2 + 0.98 * Math.sin(S.tau * 0.22); }
+  const amp = ampVec(), N = Q.N, ps = Q.ps, re = Q.re, im = Q.im, d = Q.dens, col = Q.col;
+  const a0 = amp[0] * Math.cos(EK[0] * S.tau), a1 = amp[1] * Math.cos(EK[1] * S.tau), a2 = amp[2] * Math.cos(EK[2] * S.tau);
+  const b0 = -amp[0] * Math.sin(EK[0] * S.tau), b1 = -amp[1] * Math.sin(EK[1] * S.tau), b2 = -amp[2] * Math.sin(EK[2] * S.tau);
+  const p0 = ps[0], p1 = ps[1], p2 = ps[2];
+  let mx = 1e-9;
+  for (let i = 0; i < N; i++) {
+    const x = a0 * p0[i] + a1 * p1[i] + a2 * p2[i], y = b0 * p0[i] + b1 * p1[i] + b2 * p2[i], v = x * x + y * y;
+    re[i] = x; im[i] = y; d[i] = v; if (v > mx) mx = v;
+  }
+  const inv = 1 / mx, ph = S.phase, TAU2 = Math.PI * 2;
+  for (let i = 0; i < N; i++) {
+    const br = Math.pow(d[i] * inv, 0.6) * 1.1;
+    if (ph) {
+      let h = Math.atan2(im[i], re[i]) / TAU2; if (h < 0) h += 1;
+      const c = HUE[(h * 72) | 0]; col[i * 3] = c[0] * br; col[i * 3 + 1] = c[1] * br; col[i * 3 + 2] = c[2] * br;
+    } else { col[i * 3] = 0.45 * br; col[i * 3 + 1] = 0.8 * br; col[i * 3 + 2] = br; }
+  }
+  Q.pts.geometry.attributes.color.needsUpdate = true;
+  pulseNucleus(Q.nuc, 0);
+  Q.clkDot.position.set(Math.cos(S.tau * 0.9) * 3.6, 0, Math.sin(S.tau * 0.9) * 3.6);
+  if (S.mode === 'f') {
+    for (let k = 0; k < 3; k++) Q.ladDots[k].scale.setScalar(0.8 + 3.4 * amp[k] * amp[k]);
+    Q.ladMark.position.set(LADX + 2.3, ladY(S.energy), 0);
+  }
+  setChip(S.play ? 'info' : 'warn', S.play ? 'sQ' : 'sQp');
+  const terms = amp.map((c, k) => c > 0.001 ? `${c.toFixed(2)}·${QN[k]}` : null).filter(Boolean).join(' + ');
+  setT('info', `ψ = ${terms}\nt = ${S.tau.toFixed(1)}` + (S.mode === 'f' ? `\nn = ${S.energy.toFixed(2)}` : ''));
+  if (S.play) { const t = $('#tau'); if (document.activeElement !== t) t.value = S.tau.toFixed(1); setT('tauOut', S.tau.toFixed(1)); }
+  if (S.mode === 'f' && S.sweep && document.activeElement !== $('#en')) { $('#en').value = S.energy; setT('enOut', S.energy.toFixed(2)); }
+};
+addLabel('lProton', () => new THREE.Vector3(0, 0.9, 0), () => (S.mode === 'q' || S.mode === 'f'));
+addLabel(() => `t = ${S.tau.toFixed(1)}`, () => Q.clkDot.getWorldPosition(new THREE.Vector3()), () => S.mode === 'q' || S.mode === 'f');
+['1s  n=1  −13.60 eV', '2p  n=2  −3.40 eV', '3d  n=3  −1.51 eV'].forEach((txt, k) =>
+  addLabel(() => txt, () => new THREE.Vector3(LADX, LADY[k] + 0.7, 0), () => S.mode === 'f'));
+addLabel('lEnergyAxis', () => new THREE.Vector3(LADX - 1.8, 5.9, 0), () => S.mode === 'f');
+
+STEPS.q = [
+  { t: ['Beyond orbits', 'कक्षाओं से आगे'],
+    p: ['Later models showed electrons are not tiny balls on tracks. The quantum model gives a cloud: the brighter a place, the more likely the electron is found there. Drag to rotate it.',
+        'बाद के मॉडलों ने दिखाया कि इलेक्ट्रॉन पटरी पर चलती गेंद नहीं है। क्वांटम मॉडल में बादल है: जहाँ चमक ज़्यादा, वहाँ इलेक्ट्रॉन मिलने की संभावना ज़्यादा। घुमाकर देखिए।'],
+    run() { S.qs = '1s'; S.play = true; S.phase = true; } },
+  { t: ['1s cloud', '1s बादल'],
+    p: ['The lowest state (K shell, n = 1) is a round ball, densest near the nucleus.',
+        'सबसे निचली अवस्था (K कोश, n = 1) एक गोल गेंद जैसी है, नाभिक के पास सबसे घनी।'],
+    run() { S.qs = '1s'; } },
+  { t: ['2p: two lobes', '2p: दो पालियाँ'],
+    p: ['A higher state has two lobes. The two colours show the wave\'s phase (+ and −). The electron is a wave, not a ball.',
+        'ऊँची अवस्था में दो पालियाँ होती हैं। दो रंग तरंग की कला (+ और −) दिखाते हैं। इलेक्ट्रॉन गेंद नहीं, तरंग है।'],
+    run() { S.qs = '2p'; S.phase = true; } },
+  { t: ['Time: the 4th dimension', 'समय: चौथा आयाम'],
+    p: ['Mix 1s and 2p and the cloud sloshes back and forth in time, like an oscillating charge. Colours rotate with the phase. Scrub the time slider in Model controls. Next: add a 5th dimension.',
+        '1s और 2p को मिलाइए तो बादल समय के साथ आगे-पीछे हिलता है, जैसे दोलन करता आवेश। रंग कला के साथ घूमते हैं। Model controls में समय स्लाइडर चलाइए। आगे: 5वाँ आयाम।'],
+    run() { S.qs = '1s+2p'; S.play = true; } }
+];
+STEPS.f = [
+  { t: ['Five dimensions', 'पाँच आयाम'],
+    p: ['Three of space (x, y, z), one of time (t) and one of energy (n). The glowing ladder on the left is the energy axis; the white dot shows where you are on it.',
+        'तीन स्थान के (x, y, z), एक समय का (t) और एक ऊर्जा का (n)। बाईं ओर चमकती सीढ़ी ऊर्जा की धुरी है; सफ़ेद बिंदु बताता है कि आप कहाँ हैं।'],
+    run() { S.energy = 1; S.sweep = false; S.play = true; } },
+  { t: ['Energy n = 1', 'ऊर्जा n = 1'],
+    p: ['At the bottom of the energy axis the cloud is the round 1s ball.',
+        'ऊर्जा की धुरी के सबसे नीचे बादल गोल 1s गेंद है।'],
+    run() { S.energy = 1; S.sweep = false; } },
+  { t: ['Slide the energy', 'ऊर्जा को सरकाइए'],
+    p: ['The energy sweeps up and down by itself. Between two levels the electron is a mix of both states, so the cloud pulses in time.',
+        'ऊर्जा अपने आप ऊपर-नीचे जा रही है। दो स्तरों के बीच इलेक्ट्रॉन दोनों अवस्थाओं का मिश्रण है, इसलिए बादल समय के साथ धड़कता है।'],
+    run() { S.sweep = true; S.play = true; } },
+  { t: ['Higher energy: n = 3', 'ऊँची ऊर्जा: n = 3'],
+    p: ['At n = 3 the cloud grows and gets lobes and a ring: bigger, higher energy, farther from the nucleus. You can drag Energy yourself in Model controls.',
+        'n = 3 पर बादल बड़ा होता है और उसमें पालियाँ व छल्ला आ जाता है: बड़ा, ज़्यादा ऊर्जा, नाभिक से दूर। Model controls में ऊर्जा खुद भी खिसका सकते हैं।'],
+    run() { S.sweep = false; S.energy = 3; } }
+];
+
+/* ================= Neighbour atoms: far-away "stars" that turn out to be other atoms. Tap one to fly there. ================= */
+const NBS = [];
+let visiting = null, hinted = false;
+const NB_DEF = [
+  { z: 6, en: 'Carbon', hi: 'कार्बन', col: 0xffd36b, a: 0.22, b: -0.28, D: 50 },
+  { z: 2, en: 'Helium', hi: 'हीलियम', col: 0xff9ec4, a: -0.26, b: 0.2, D: 62 },
+  { z: 10, en: 'Neon', hi: 'नियॉन', col: 0x9effc9, a: 0.27, b: 0.3, D: 72 },
+  { z: 8, en: 'Oxygen', hi: 'ऑक्सीजन', col: 0xa9c4ff, a: -0.2, b: -0.34, D: 56 }
+];
+function makeNeighbour(d, pos) {
+  const g = new THREE.Group(); g.position.copy(pos); scene.add(g);
+  const col = new THREE.Color(d.col);
+  const star = makeGlow(col, 2.6, 1), halo = makeGlow(col, 6, 0.35);
+  g.add(halo, star);
+  const det = new THREE.Group(); det.visible = false; det.scale.setScalar(0.001); g.add(det);
+  const nuc = buildNucleus(d.z); nuc.scale.setScalar(0.6); det.add(nuc);
+  const sh = shellsFor(d.z), els = [], rad = n => 1.7 + 1.25 * (n - 1);
+  let R0 = 0;
+  for (let n = 1; n <= 3; n++) {
+    if (!sh[n - 1]) continue;
+    R0 = rad(n);
+    const ring = new THREE.LineLoop(circleGeo, new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending }));
+    ring.scale.setScalar(rad(n)); det.add(ring);
+    for (let k = 0; k < sh[n - 1]; k++) {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 8), new THREE.MeshStandardMaterial({ color: COL.el, emissive: COL.el, emissiveIntensity: 0.9 }));
+      m.add(makeGlow(COL.el, 1.1, 0.7)); det.add(m);
+      els.push({ m, r: rad(n), a: k * Math.PI * 2 / sh[n - 1] + n, w: 1.7 / Math.pow(n, 1.3) });
+    }
+  }
+  return { g, star, halo, det, els, z: d.z, d, pos, reveal: 0, R: R0, cfg: sh.filter(x => x).join(', ') };
+}
+(() => {
+  /* placed relative to the starting camera so a star sits in each visible corner area */
+  const cp = new THREE.Vector3(HOME.d * Math.sin(HOME.ph) * Math.sin(HOME.th), HOME.d * Math.cos(HOME.ph), HOME.d * Math.sin(HOME.ph) * Math.cos(HOME.th));
+  const fwd = cp.clone().negate().normalize(), right = new THREE.Vector3().crossVectors(fwd, Yaxis).normalize(), up = new THREE.Vector3().crossVectors(right, fwd).normalize();
+  NB_DEF.forEach(d => {
+    const pos = cp.clone().addScaledVector(fwd, d.D).addScaledVector(right, d.a * d.D).addScaledVector(up, d.b * d.D);
+    NBS.push(makeNeighbour(d, pos));
+  });
+})();
+function updNeighbours(dt) {
+  NBS.forEach((n, i) => {
+    const goal = visiting === n ? 1 : 0;
+    n.reveal += clamp(goal - n.reveal, -dt * 0.9, dt * 0.9);
+    const k = n.reveal * n.reveal * (3 - 2 * n.reveal);
+    n.det.visible = n.reveal > 0.01; n.det.scale.setScalar(Math.max(0.001, k));
+    n.star.material.opacity = 1 - k; n.halo.material.opacity = 0.35 * (1 - k);
+    n.star.scale.setScalar(2.6 * (1 + 0.15 * Math.sin(clock * 2 + i * 1.7)));
+    n.halo.scale.setScalar(6 * (1 + 0.2 * Math.sin(clock * 1.3 + i)));
+    if (n.det.visible) for (const e of n.els) { e.a += e.w * dt * S.speed; e.m.position.set(Math.cos(e.a) * e.r, 0, Math.sin(e.a) * e.r); }
+  });
+}
+function visitAtom(n) {
+  visiting = n; hinted = true;
+  view.tcen.copy(n.pos); view.td = Math.max(9, n.R * 2.6 + 4);
+  $('#backBtn').hidden = false; toggleMenu(false);
+}
+function leaveAtom() {
+  visiting = null; view.tcen.set(0, 0, 0); view.td = MODE_D[S.mode]; $('#backBtn').hidden = true;
+}
+function visitStatus() {
+  setChip('info', 'sVisit');
+  setT('info', `${S.lang === 'hi' ? visiting.d.hi : visiting.d.en} · ${visiting.z}\n${visiting.cfg}`);
+}
+function tapAt(cx, cy) {
+  const rc = canvas.getBoundingClientRect();
+  let best = null, bd = 46 * Math.max(1, S.ui * 0.8);
+  for (const n of NBS) {
+    if (n === visiting) continue;
+    const v = n.pos.clone().project(cam);
+    if (v.z > 1) continue;
+    const px = (v.x * 0.5 + 0.5) * rc.width + rc.left, py = (-v.y * 0.5 + 0.5) * rc.height + rc.top;
+    const d = Math.hypot(px - cx, py - cy);
+    if (d < bd) { bd = d; best = n; }
+  }
+  if (best) visitAtom(best);
+}
+NBS.forEach(n => {
+  addLabel(() => S.lang === 'hi' ? `${n.d.hi} · ${n.z} इलेक्ट्रॉन (${n.cfg})` : `${n.d.en} · ${n.z} electrons (${n.cfg})`,
+    () => new THREE.Vector3(n.pos.x, n.pos.y + n.R + 1.4, n.pos.z), () => visiting === n, true);
+  addLabel('farAtom', () => new THREE.Vector3(n.pos.x, n.pos.y - n.R - 0.6, n.pos.z), () => visiting === n, true);
+});
+addLabel('tapStar', () => NBS[0].pos.clone().add(new THREE.Vector3(0, 1.9, 0)), () => !visiting && !hinted);
+
+/* ================= lessons, controls, main loop ================= */
+let si = 0;
+const ENGINE = { r: R, b: B, q: Q, f: Q };
+const cur = () => ENGINE[S.mode];
+const NEXTKEY = { r: 'nextB', b: 'next4', q: 'next5', f: 'nextR' };
+const NEXTMODE = { r: 'b', b: 'q', q: 'f', f: null };
+const HINT = { r: 'hintR', b: 'hintB', q: 'hintQ', f: 'hintF' };
+function renderCap() {
+  const st = STEPS[S.mode], s = st[si], hi = S.lang === 'hi' ? 1 : 0;
+  $('#capK').textContent = `${tr('step')} ${si + 1} / ${st.length}`;
+  $('#capT').textContent = s.t[hi]; $('#capP').textContent = s.p[hi];
+  $('#dots').innerHTML = st.map((_, i) => `<i class="${i === si ? 'on' : ''}"></i>`).join('');
+  $('#next').textContent = si === st.length - 1 ? tr(NEXTKEY[S.mode]) : '▶';
+  $('#prev').disabled = si === 0;
+  $('#hint').textContent = tr(HINT[S.mode]);
+  $('#lessonStep').textContent = `${si + 1}/${st.length}`;
+}
+function showStep(i) { const st = STEPS[S.mode]; si = clamp(i, 0, st.length - 1); if (S.mode === 'b') S.auto = false; st[si].run(); syncUI(); renderCap(); noteShells(); }
+function noteShells() { if (S.mode === 'r' || S.mode === 'b') $('#shellNote').textContent = shellNote(S.mode === 'r' ? S.zr : S.zb); }
+function applyModeUI() {
+  document.querySelectorAll('[data-m]').forEach(el => { el.hidden = !el.dataset.m.includes(S.mode); });
+}
+function setMode(m) {
+  S.mode = m; cache.info = cache.stat = undefined;
+  R.group.visible = m === 'r'; B.group.visible = m === 'b'; Q.group.visible = m === 'q' || m === 'f'; Q.lad.visible = m === 'f'; Q.clk.visible = true;
+  applyModeUI(); $('#mode').value = m;
+  clearParts();
+  if (m === 'r') R.build(); else if (m === 'b') B.build(); else Q.reset();
+  leaveAtom(); view.td = MODE_D[m];
+  showStep(0);
+}
+$('#zsel').innerHTML = SYM.map((s, i) => `<option value="${i + 1}">${i + 1} · ${s} (${NAME[i]})</option>`).join('');
+$('#zsel').addEventListener('change', e => {
+  const z = +e.target.value;
+  if (S.mode === 'r') { S.zr = z; R.build(); } else { S.zb = z; B.build(); }
+  STEPS[S.mode][si].run(); syncUI(); noteShells();
+});
+
+function syncUI() {
+  $('#lossOn').checked = S.loss; $('#waves').checked = S.waves; $('#arrows').checked = S.arrows;
+  $('#T').value = S.T; $('#Tout').textContent = S.T + ' s';
+  $('#autoJ').checked = S.auto; $('#shellVis').checked = S.shells;
+  $('#qs').value = S.qs; $('#en').value = S.energy; $('#enOut').textContent = S.energy.toFixed(2); $('#sweep').checked = S.sweep;
+  $('#play').checked = S.play; $('#tau').value = S.tau.toFixed(1); $('#tauOut').textContent = S.tau.toFixed(1); $('#phase').checked = S.phase;
+  $('#bloom').checked = S.bloom; $('#bloomAmt').value = Math.round(S.bloomAmt * 100); $('#bloomOut').textContent = Math.round(S.bloomAmt * 100) + '%';
+  $('#stars').checked = S.stars; $('#trails').checked = S.trails; $('#shock').checked = S.shock; $('#shake').checked = S.shake; $('#pulse').checked = S.pulse; $('#orbits').checked = S.orbits;
+  $('#spd').value = S.speed; $('#spdOut').textContent = S.speed.toFixed(1) + '×';
+  $('#labsOn').checked = S.labels; $('#rot').checked = S.rot;
+  $('#ui').value = Math.round(S.ui * 100); $('#uiOut').textContent = Math.round(S.ui * 100) + '%';
+  $('#capS').value = Math.round(S.cap * 100); $('#capOut').textContent = Math.round(S.cap * 100) + '%';
+  $('#labS').value = Math.round(S.lab * 100); $('#labOut').textContent = Math.round(S.lab * 100) + '%';
+  $('#theme').value = S.theme; $('#lang').value = S.lang;
+  $('#zsel').value = S.mode === 'r' ? S.zr : S.zb;
+}
+const bind = (id, key, conv) => $('#' + id).addEventListener('input', e => { S[key] = conv(e.target); save(); applyScale(); syncUI(); });
+const num = k => t => +t.value / (k || 1), chk = t => t.checked, str = t => t.value;
+bind('lossOn', 'loss', chk); bind('waves', 'waves', chk); bind('arrows', 'arrows', chk); bind('T', 'T', num());
+bind('autoJ', 'auto', chk); bind('shellVis', 'shells', chk);
+bind('qs', 'qs', str); bind('en', 'energy', num()); bind('sweep', 'sweep', chk); bind('play', 'play', chk); bind('phase', 'phase', chk);
+bind('bloom', 'bloom', chk); bind('bloomAmt', 'bloomAmt', num(100)); bind('stars', 'stars', chk); bind('trails', 'trails', chk);
+bind('shock', 'shock', chk); bind('shake', 'shake', chk); bind('pulse', 'pulse', chk); bind('orbits', 'orbits', chk);
+bind('spd', 'speed', num()); bind('labsOn', 'labels', chk); bind('rot', 'rot', chk);
+bind('ui', 'ui', num(100)); bind('capS', 'cap', num(100)); bind('labS', 'lab', num(100));
+$('#en').addEventListener('input', () => { S.sweep = false; syncUI(); });
+$('#tau').addEventListener('input', e => { S.play = false; S.tau = +e.target.value; syncUI(); });
+$('#theme').addEventListener('change', e => { S.theme = e.target.value; save(); applyTheme(); });
+$('#lang').addEventListener('change', e => { S.lang = e.target.value; save(); applyLang(); renderCap(); noteShells(); syncUI(); B.sig = ''; });
+$('#mode').addEventListener('change', e => setMode(e.target.value));
+
+$('#replay').addEventListener('click', () => { R.reset(); S.loss = true; syncUI(); });
+$('#exc').addEventListener('click', () => B.excite());
+$('#rel').addEventListener('click', () => B.relax());
+$('#resetView').addEventListener('click', resetView);
+$('#prev').addEventListener('click', () => showStep(si - 1));
+$('#next').addEventListener('click', () => {
+  const last = si === STEPS[S.mode].length - 1;
+  if (!last) showStep(si + 1); else if (NEXTMODE[S.mode]) setMode(NEXTMODE[S.mode]); else setMode('r');
+});
+function toggleMenu(open) {
+  const m = $('#menu'); m.hidden = open === undefined ? !m.hidden : !open;
+  $('#menuBtn').setAttribute('aria-expanded', String(!m.hidden));
+}
+$('#menuBtn').addEventListener('click', () => toggleMenu());
+$('#backBtn').addEventListener('click', leaveAtom);
+
+/* lesson dock: collapsed by default; tap the bar to open, drag it anywhere */
+const lessonEl = $('#lesson'), headEl = $('#lessonHead');
+function clampDock() {
+  const vw = innerWidth, vh = innerHeight, r = lessonEl.getBoundingClientRect();
+  lessonEl.style.left = clamp(r.left, 4, Math.max(4, vw - r.width - 4)) + 'px';
+  lessonEl.style.bottom = clamp(vh - r.bottom, 4, Math.max(4, vh - r.height - 4)) + 'px';
+}
+function toggleLesson(open) {
+  const willOpen = open === undefined ? $('#lessonBody').hidden : open;
+  $('#lessonBody').hidden = !willOpen; lessonEl.classList.toggle('open', willOpen);
+  $('#lessonBtn').setAttribute('aria-expanded', String(willOpen));
+  clampDock();
+}
+let drag = null;
+headEl.addEventListener('pointerdown', e => {
+  const r = lessonEl.getBoundingClientRect();
+  drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, left: r.left, bottom: innerHeight - r.bottom, moved: false };
+  headEl.setPointerCapture(e.pointerId);
+});
+headEl.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+  if (!drag.moved && Math.hypot(dx, dy) < 8) return;
+  drag.moved = true; headEl.classList.add('drag');
+  lessonEl.style.left = (drag.left + dx) + 'px'; lessonEl.style.bottom = (drag.bottom - dy) + 'px';
+  clampDock();
+});
+const dragEnd = e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const moved = drag.moved; drag = null; headEl.classList.remove('drag');
+  if (!moved && e.type === 'pointerup') toggleLesson();
+};
+headEl.addEventListener('pointerup', dragEnd); headEl.addEventListener('pointercancel', dragEnd);
+$('#lessonBtn').addEventListener('click', e => { if (e.detail === 0) toggleLesson(); });
+addEventListener('resize', clampDock);
+/* full screen starts with everything closed */
+document.addEventListener('fullscreenchange', () => { if (document.fullscreenElement) { toggleMenu(false); toggleLesson(false); } });
+$('#full').addEventListener('click', () => {
+  const p = document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen();
+  if (p && p.catch) p.catch(() => alert(tr('noFull')));
+});
+$('#board').addEventListener('click', () => { Object.assign(S, { ui: 1.5, cap: 1.3, lab: 1.5 }); save(); applyScale(); syncUI(); });
+$('#reset').addEventListener('click', () => { Object.assign(S, DEF); save(); applyScale(); applyTheme(); applyLang(); syncUI(); renderCap(); B.sig = ''; });
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') { toggleMenu(false); toggleLesson(false); if (visiting) leaveAtom(); return; }
+  if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight') $('#next').click(); else if (e.key === 'ArrowLeft') $('#prev').click();
+  else if (e.key === 'm' || e.key === 'M') toggleMenu(); else if (e.key === 'l' || e.key === 'L') toggleLesson();
+});
+
+/* main loop */
+let lastT = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now; clock += dt;
+  stars.visible = S.stars; stars.rotation.y += dt * 0.01;
+  placeCam(dt); cur().update(dt); updNeighbours(dt); if (visiting) visitStatus(); stepParts(dt); updLabels();
+  if (composer && S.bloom) { bloomPass.strength = 0.9 * S.bloomAmt; composer.render(dt); } else renderer.render(scene, cam);
+  requestAnimationFrame(frame);
+}
+
+/* start */
+applyScale(); applyTheme(); applyLang(); resize();
+R.build(); B.build();
+setMode('r');
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
