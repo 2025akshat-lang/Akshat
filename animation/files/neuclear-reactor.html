@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
-<title>PHWR 3D Simulator</title>
+<title>PHWR 3D Learning Lab</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--panel:#0d1b2b;--panel2:#112338;--line:#25415b;--text:#e7f0fa;--muted:#9ab0c7;--green:#38e0a0;--cyan:#53d8f2;--amber:#ffc45b;--red:#ff6b73}
@@ -12,52 +12,62 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);c
 button,input{font:inherit}
 button{cursor:pointer;color:var(--text);background:#12263a;border:1px solid var(--line);border-radius:9px;padding:9px 11px}
 button:hover{border-color:var(--cyan)}
+button:disabled{opacity:.45;cursor:default}
 button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .app{position:relative;height:100%;display:grid;grid-template-rows:auto 1fr}
-.topbar{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:8px 12px;background:#091624;border-bottom:1px solid var(--line);z-index:6}
-.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#0fba8d,#1c6c98);display:grid;place-items:center;font-size:20px;flex:none}
-.menus{display:flex;gap:6px;flex:1;justify-content:center;flex-wrap:wrap}
-.menus button{display:flex;align-items:center;gap:6px;padding:8px 11px;font-size:12px}
+.topbar{display:flex;align-items:center;gap:6px;justify-content:space-between;padding:8px 10px;background:#091624;border-bottom:1px solid var(--line);z-index:6}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0fba8d,#1c6c98);display:grid;place-items:center;font-size:19px;flex:none}
+.menus{display:flex;gap:5px;flex:1;justify-content:center;flex-wrap:wrap}
+.menus button{display:flex;align-items:center;gap:5px;padding:7px 10px;font-size:12px;min-width:38px;justify-content:center}
 .menus button.open{border-color:var(--cyan);background:#0e3a4d}
-.menus button::after{content:"▾";font-size:10px;color:var(--muted)}
-#langBtn{font-weight:700;flex:none;min-width:58px}
+.menus button[data-menu="chern"]{border-color:#7a5a1c}
+.menus button[data-menu="chern"].open{background:#4a3410;border-color:var(--amber)}
+#langBtn{font-weight:700;flex:none;min-width:56px;padding:7px 8px}
 .viewport{position:relative;min-width:0;min-height:0;background:radial-gradient(ellipse at 50% 42%,#142c40 0,#07111f 67%);overflow:hidden}
 #scene{display:block;width:100%;height:100%;touch-action:none;outline:none}
-.dd{position:absolute;top:56px;right:8px;width:min(350px,calc(100% - 16px));max-height:calc(100% - 68px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;z-index:7;box-shadow:0 14px 40px #000a}
+.dd{position:absolute;top:8px;right:8px;width:min(360px,calc(100% - 16px));max-height:calc(100% - 16px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;z-index:7;box-shadow:0 14px 40px #000a}
+.dd.sheet{top:auto;bottom:8px;max-height:48%}
 .dd[hidden]{display:none}
 .dd h3{font-size:12px;color:var(--cyan);margin:0 0 8px;letter-spacing:.04em}
 .dd .sec{padding:10px 0;border-top:1px solid var(--line)}.dd .sec:first-child{border-top:0;padding-top:0}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;position:sticky;top:-12px;margin:-12px -12px 8px;padding:10px 12px 6px;background:var(--panel);z-index:2;border-radius:12px 12px 0 0}.hd h3{margin:0}
+.mini{padding:2px 8px;font-size:12px;border-radius:7px;flex:none}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:7px}.btnrow button{font-size:12px}.wide{grid-column:1/-1}
 .primary{background:#0e493e;border-color:#1c8068}.danger{background:#48222b;border-color:#853945}
 .control{margin:10px 0}.control label{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}.control output{color:var(--text);font-weight:700}
 input[type=range]{width:100%;accent-color:var(--green)}
 .toggleline{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;margin:9px 0}
-.switch{appearance:none;width:37px;height:21px;border-radius:20px;background:#34485a;position:relative;border:1px solid #52697d;cursor:pointer;flex:none}
+.switch{appearance:none;-webkit-appearance:none;width:37px;height:21px;border-radius:20px;background:#34485a;position:relative;border:1px solid #52697d;cursor:pointer;flex:none}
 .switch:before{content:'';position:absolute;left:2px;top:2px;width:15px;height:15px;border-radius:50%;background:#d7e2ec;transition:.2s}
 .switch:checked{background:#08795f}.switch:checked:before{left:18px;background:#fff}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.metric{font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px}
-.metric strong{display:block;color:var(--text);font-size:15px;margin-top:2px}
-.statusline{display:flex;align-items:center;gap:7px;font-weight:700;margin:0 0 10px;font-size:12px}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--green);color:var(--green);box-shadow:0 0 10px currentColor}
+.metric{font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 8px}
+.metric strong{display:block;color:var(--text);font-size:14px;margin-top:2px}
+.statusline{display:flex;align-items:center;gap:7px;font-weight:700;margin:0 0 8px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);color:var(--green);box-shadow:0 0 10px currentColor;flex:none}
 .dd p{font-size:12px;color:#c1d0df;margin:0 0 8px}
+.dd p.story{font-size:13px;line-height:1.6;color:#dbe7f3}
 .dd ul{margin:0;padding-left:18px;font-size:12px;color:#c1d0df}
+.dots{display:grid;gap:5px;margin:2px 0 8px}
+.dots button{padding:6px 0;font-size:12px}
+.dots button.cur{background:#0e493e;border-color:#1c8068;font-weight:700}
+.dots button.done{border-color:#2a5a4a;color:#bfe9da}
+#chDots button.cur{background:#4a3410;border-color:var(--amber)}
+#chDots button.done{border-color:#7a5a1c;color:#ffe2b0}
+.warn{font-size:11px;line-height:1.5;color:#ffe2b0;background:#3a2a10;border:1px solid #7a5a1c;border-radius:9px;padding:8px;margin:0 0 8px}
 .legend{display:grid;gap:5px;font-size:12px;color:#c9d7e6}.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
 .notice{font-size:11px;line-height:1.5;color:#c3d2e1;background:#13283b;border:1px solid #28465f;border-radius:9px;padding:10px}.notice strong{color:var(--amber)}
 .footer{font-size:10px;color:#8098ae;margin-top:8px}
-.steps{display:grid;gap:6px}.step{text-align:left;font-size:12px}
-.step.cur{background:#0e493e;border-color:#1c8068;font-weight:700}
-.step.done{border-color:#2a5a4a;color:#bfe9da}.step.done::before{content:"✓ "}
 .err{position:fixed;left:8px;right:8px;bottom:8px;z-index:20;background:#48222b;border:1px solid #853945;color:#ffd9dc;border-radius:9px;padding:8px 10px;font-size:11px;white-space:pre-wrap}
 .err[hidden]{display:none}
-/* tap label */
 .lbl{position:absolute;transform:translate(-50%,-115%);background:#071522f2;border:1px solid var(--cyan);border-radius:10px;padding:7px 8px 7px 11px;max-width:240px;pointer-events:auto;box-shadow:0 6px 22px #0009;z-index:3}
 .lbl::after{content:"";position:absolute;left:50%;bottom:-6px;width:10px;height:10px;background:#071522;border-right:1px solid var(--cyan);border-bottom:1px solid var(--cyan);transform:translateX(-50%) rotate(45deg)}
 .lbl .row{display:flex;align-items:center;gap:6px}
 .lbl b{font-size:12px;color:#e6f4ff;flex:1}
 .lbl button{padding:2px 7px;font-size:12px;border-radius:7px;line-height:1.4}
 .lbl .d{font-size:11px;color:#c1d0df;margin-top:6px;display:none}.lbl.more .d{display:block}
-@media(max-width:600px){.menus button span{display:none}.menus button{padding:8px 10px;font-size:15px}.menus button::after{display:none}.dd{left:8px;right:8px;width:auto}.topbar{padding:7px 8px}}
+@media(max-width:600px){.menus button span{display:none}.menus button{padding:7px 9px;font-size:15px;min-width:36px}.dd{left:8px;right:8px;width:auto}.topbar{padding:7px 6px}}
+@media(max-width:480px){.logo{display:none}}
 </style></head>
 <body><div class="app">
 <header class="topbar">
@@ -66,8 +76,9 @@ input[type=range]{width:100%;accent-color:var(--green)}
   <button data-menu="start" aria-label="Startup">🚀<span data-t="m_start"></span></button>
   <button data-menu="ctrl" aria-label="Controls">⚙<span data-t="m_ctrl"></span></button>
   <button data-menu="safe" aria-label="Safety">🛡<span data-t="m_safe"></span></button>
+  <button data-menu="chern" aria-label="Chernobyl">☢<span data-t="m_chern"></span></button>
+  <button data-menu="sound" aria-label="Sound"><b id="soundIcon">🔇</b><span data-t="m_sound"></span></button>
   <button data-menu="view" aria-label="View">👁<span data-t="m_view"></span></button>
-  <button data-menu="stat" aria-label="Status">📊<span data-t="m_stat"></span></button>
   <button data-menu="info" aria-label="Info">ℹ<span data-t="m_info"></span></button>
  </nav>
  <button id="langBtn" aria-label="Language">हिं | EN</button>
@@ -77,18 +88,26 @@ input[type=range]{width:100%;accent-color:var(--green)}
  <canvas id="scene"></canvas>
 
  <!-- Startup -->
- <div class="dd" id="dd-start" hidden>
-  <div class="sec"><h3 data-t="h_start"></h3><div class="steps" id="stageList"></div></div>
-  <div class="sec"><p id="stageDesc"></p>
+ <div class="dd sheet" id="dd-start" hidden>
+  <div class="hd"><h3 data-t="h_start"></h3><button class="mini" data-close aria-label="close">✕</button></div>
+  <div class="statusline"><span class="dot" id="statusDot"></span><span id="statusText"></span></div>
+  <div class="metrics">
+   <div class="metric"><span data-t="power"></span><strong id="powerRead"></strong></div>
+   <div class="metric"><span data-t="temp"></span><strong id="tempRead"></strong></div>
+   <div class="metric"><span data-t="flowAnim"></span><strong id="flowRead"></strong></div>
+   <div class="metric"><span data-t="shutdown"></span><strong id="scramRead"></strong></div>
+  </div>
+  <div class="sec"><div class="dots" id="stageDots" style="grid-template-columns:repeat(5,1fr)"></div>
+   <h3 id="stageTitle" style="margin-top:4px"></h3><p id="stageDesc"></p>
    <div class="btnrow"><button id="prevBtn"></button><button id="nextBtn" class="primary"></button><button id="autoBtn" class="wide"></button><button id="coldBtn" class="wide"></button></div>
-   <p style="margin-top:9px" data-t="startNote"></p></div>
+   <p style="margin:9px 0 0" data-t="startNote"></p></div>
  </div>
 
  <!-- Controls -->
  <div class="dd" id="dd-ctrl" hidden>
   <div class="sec"><h3 data-t="h_params"></h3>
-   <div class="control"><label for="power"><span data-t="power"></span><output id="powerOut"></output></label><input id="power" type="range" min="0" max="100" step="5" value="80"></div>
-   <div class="control"><label for="temp"><span data-t="temp"></span><output id="tempOut"></output></label><input id="temp" type="range" min="200" max="320" step="5" value="280"></div>
+   <div class="control"><label for="power"><span data-t="power"></span><output id="powerOut"></output></label><input id="power" type="range" min="0" max="100" step="1" value="100"></div>
+   <div class="control"><label for="temp"><span data-t="temp"></span><output id="tempOut"></output></label><input id="temp" type="range" min="30" max="320" step="5" value="280"></div>
    <div class="toggleline"><span data-t="flowShow"></span><input class="switch" type="checkbox" id="flowToggle" checked></div>
   </div>
   <div class="sec"><div class="btnrow"><button class="wide" id="resetSim"></button></div></div>
@@ -98,7 +117,29 @@ input[type=range]{width:100%;accent-color:var(--green)}
  <div class="dd" id="dd-safe" hidden>
   <div class="sec"><h3 data-t="h_modes"></h3><div class="btnrow"><button class="primary" id="normalMode"></button><button id="safetyMode"></button></div></div>
   <div class="sec"><h3 data-t="h_safety"></h3><div class="btnrow"><button class="danger wide" id="scramBtn"></button><button id="pdhrsBtn"></button><button id="eccsBtn"></button></div>
-   <p style="margin-top:9px" data-t="safetyNote"></p></div>
+   <p style="margin-top:9px" data-t="scramNote"></p><p data-t="safetyNote"></p></div>
+ </div>
+
+ <!-- Chernobyl -->
+ <div class="dd sheet" id="dd-chern" hidden>
+  <div class="hd"><h3 data-t="h_chern"></h3><button class="mini" data-close aria-label="close">✕</button></div>
+  <div class="warn" data-t="chWarn"></div>
+  <div class="dots" id="chDots" style="grid-template-columns:repeat(6,1fr)"></div>
+  <h3 id="chTitle" style="color:var(--amber)"></h3><p id="chText" class="story"></p>
+  <div class="btnrow"><button id="chPrev"></button><button id="chNext" class="primary"></button><button id="chExit" class="wide"></button></div>
+ </div>
+
+ <!-- Sound -->
+ <div class="dd" id="dd-sound" hidden>
+  <div class="sec"><h3 data-t="h_sound"></h3>
+   <div class="btnrow"><button id="soundBtn" class="wide"></button></div>
+   <div class="control"><label for="vol"><span data-t="volume"></span><output id="volOut"></output></label><input id="vol" type="range" min="0" max="100" step="5" value="70"></div></div>
+  <div class="sec">
+   <div class="toggleline"><span data-t="s_mach"></span><input class="switch" type="checkbox" id="tMach"></div>
+   <div class="toggleline"><span data-t="s_alarm"></span><input class="switch" type="checkbox" id="tAlarm"></div>
+   <div class="toggleline"><span data-t="s_gei"></span><input class="switch" type="checkbox" id="tGei"></div>
+   <div class="toggleline"><span data-t="s_narr"></span><input class="switch" type="checkbox" id="tNarr"></div>
+   <p data-t="s_note"></p></div>
  </div>
 
  <!-- View -->
@@ -108,17 +149,6 @@ input[type=range]{width:100%;accent-color:var(--green)}
    <button id="spinBtn"></button><button id="containmentBtn"></button>
    <button id="rodsBtn"></button><button id="resetView"></button>
    <button id="topBtn"></button><button id="sideBtn"></button></div></div>
- </div>
-
- <!-- Status -->
- <div class="dd" id="dd-stat" hidden>
-  <div class="statusline"><span class="dot" id="statusDot"></span><span id="statusText"></span></div>
-  <div class="metrics">
-   <div class="metric"><span data-t="power"></span><strong id="powerRead"></strong></div>
-   <div class="metric"><span data-t="temp"></span><strong id="tempRead"></strong></div>
-   <div class="metric"><span data-t="flowAnim"></span><strong id="flowRead"></strong></div>
-   <div class="metric"><span data-t="shutdown"></span><strong id="scramRead"></strong></div>
-  </div>
  </div>
 
  <!-- Info -->
@@ -131,7 +161,7 @@ input[type=range]{width:100%;accent-color:var(--green)}
    <span><i style="background:#ffbd4a"></i><span data-t="lg3"></span></span></div></div>
   <div class="sec"><div class="notice"><strong data-t="n_head"></strong> <span data-t="n_body"></span></div><div class="footer" data-t="footer"></div></div>
  </div>
-<div class="err" id="err" hidden></div>
+ <div class="err" id="err" hidden></div>
 </section>
 </div>
 
@@ -141,31 +171,43 @@ const $=s=>document.querySelector(s);
 function showErr(m){const e=document.getElementById('err');if(!e)return;e.hidden=false;e.textContent='⚠ '+m;}
 window.addEventListener('error',ev=>showErr((ev.message||'Error')+(ev.filename?'  ['+String(ev.filename).split('/').pop()+':'+ev.lineno+']':'')));
 window.addEventListener('unhandledrejection',ev=>showErr(String(ev.reason&&ev.reason.message||ev.reason)));
-if(!window.THREE){document.body.insertAdjacentHTML('beforeend','<p style="position:fixed;inset:80px 20px auto;color:#fff">3D library unavailable / 3D लाइब्रेरी उपलब्ध नहीं — check internet.</p>');return;}
+if(!window.THREE){showErr('3D library unavailable / 3D लाइब्रेरी उपलब्ध नहीं — इंटरनेट जाँचें / check internet.');return;}
 
-/* ---------- Translations: [Hindi, English] ---------- */
+/* ================= Text: [Hindi, English] ================= */
 const T={
-m_ctrl:['नियंत्रण','Controls'],m_safe:['सुरक्षा','Safety'],m_view:['दृश्य','View'],m_stat:['स्थिति','Status'],m_info:['जानकारी','Info'],
+m_start:['शुरू करें','Startup'],m_ctrl:['नियंत्रण','Controls'],m_safe:['सुरक्षा','Safety'],m_chern:['चेरनोबिल','Chernobyl'],m_sound:['ध्वनि','Sound'],m_view:['दृश्य','View'],m_info:['जानकारी','Info'],
+h_start:['रिएक्टर स्टार्ट-अप क्रम (अवधारणा)','REACTOR START-UP SEQUENCE (CONCEPT)'],
 h_params:['उदाहरण पैरामीटर','ILLUSTRATIVE PARAMETERS'],power:['सापेक्ष शक्ति','Relative power'],temp:['शीतलक तापमान','Coolant temperature'],
-flowShow:['शीतलक प्रवाह एनिमेशन दिखाएँ','Show animated coolant flow'],flowAnim:['प्रवाह एनिमेशन','Coolant flow'],shutdown:['शटडाउन स्थिति','Shutdown state'],
-reset:['↺ डेमो रीसेट','↺ Reset demonstration'],h_modes:['दृश्य मोड','SCENE MODES'],normal:['सामान्य अवलोकन','Normal overview'],safety:['सुरक्षा प्रणालियाँ','Safety systems'],
+flowShow:['शीतलक प्रवाह एनिमेशन दिखाएँ','Show animated coolant flow'],flowAnim:['शीतलक प्रवाह','Coolant flow'],shutdown:['शटडाउन स्थिति','Shutdown state'],
+reset:['↺ सामान्य पूर्ण-शक्ति पर रीसेट','↺ Reset to normal full power'],
+prev:['◀ पिछला','◀ Previous'],next:['अगला ▶','Next ▶'],auto:['▶▶ ऑटो चलाएँ','▶▶ Auto-run'],autoStop:['⏸ ऑटो रोकें','⏸ Stop auto'],cold:['↺ कोल्ड शटडाउन पर जाएँ','↺ Go to cold shutdown'],
+startNote:['यह केवल अवधारणात्मक शिक्षण क्रम है, किसी वास्तविक संयंत्र की स्टार्ट-अप प्रक्रिया नहीं। संख्याएँ उदाहरण हैं।','Conceptual learning sequence only, not an actual plant start-up procedure. Numbers are illustrative.'],
+h_modes:['दृश्य मोड','SCENE MODES'],normal:['सामान्य अवलोकन','Normal overview'],safety:['सुरक्षा प्रणालियाँ','Safety systems'],
 h_safety:['सुरक्षा अवधारणा डेमो','SAFETY CONCEPT DEMOS'],scram:['⏹ SCRAM दिखाएँ','⏹ Demonstrate SCRAM'],scramReset:['▶ SCRAM डेमो रीसेट','▶ Reset SCRAM demo'],
-pdhrs:['निष्क्रिय शीतलन','Passive cooling'],eccs:['ECCS अवधारणा','ECCS concept'],on:['चालू','ON'],off:['बंद','OFF'],
+pdhrs:['निष्क्रिय शीतलन','Passive cooling'],eccs:['ECCS (स्टैंडबाय)','ECCS (standby)'],on:['दिखाएँ','shown'],off:['छिपा','hidden'],
+scramNote:['SCRAM में शटडाउन रॉड तुरंत अंदर गिरती हैं और श्रृंखला अभिक्रिया रुक जाती है। टरबाइन बंद होता है, पर शीतलन चालू रहता है, क्योंकि रुकने के बाद भी क्षय-ऊष्मा (शुरू में लगभग 6%) बची रहती है।','In a SCRAM the shutdown rods drop in at once and the chain reaction stops. The turbine trips, but cooling keeps running because decay heat (about 6% at first) remains after shutdown.'],
 safetyNote:['ये केवल दृश्य शिक्षण एनिमेशन हैं, वास्तविक रिएक्टर नियंत्रण या सत्यापित मॉडल नहीं।','These are visual teaching animations, not reactor controls or validated plant-response models.'],
 h_view:['दृश्य विकल्प','VIEW OPTIONS'],cutaway:['◐ कटअवे दृश्य','◐ Cutaway view'],cutawayOn:['◑ कटअवे: चालू','◑ Cutaway: ON'],
 explode:['⇱ परतें अलग करें','⇱ Separate layers'],explodeOn:['⇱ परतें अलग हैं','⇱ Layers separated'],spinPause:['Ⅱ घुमाव रोकें','Ⅱ Pause rotation'],spinResume:['▶ घुमाव शुरू करें','▶ Resume rotation'],
 cont:['कंटेनमेंट','Containment'],chan:['ईंधन चैनल','Fuel channels'],vis:['दिखाएँ','visible'],hid:['छिपा','hidden'],top:['ऊपर से','Top view'],side:['बगल से','Side view'],resetView:['↺ दृश्य रीसेट','↺ Reset view'],
-stNormal:['सामान्य · शिक्षण मोड','NORMAL · LEARNING MODE'],stScram:['शटडाउन अवधारणा डेमो','SHUTDOWN CONCEPT DEMO'],active:['सक्रिय','ACTIVE'],paused:['रुका हुआ','PAUSED'],ready:['तैयार','READY'],demoActive:['डेमो चालू','DEMO ACTIVE'],
-m_start:['शुरू करें','Startup'],h_start:['रिएक्टर स्टार्ट-अप क्रम (अवधारणा)','REACTOR START-UP SEQUENCE (CONCEPT)'],
-prev:['◀ पिछला चरण','◀ Previous step'],next:['अगला चरण ▶','Next step ▶'],auto:['▶▶ ऑटो चलाएँ','▶▶ Auto-run'],autoStop:['⏸ ऑटो रोकें','⏸ Stop auto'],
-cold:['↺ कोल्ड शटडाउन पर जाएँ','↺ Go to cold shutdown'],
-startNote:['यह केवल अवधारणात्मक शिक्षण क्रम है, किसी वास्तविक संयंत्र की स्टार्ट-अप प्रक्रिया नहीं।','Conceptual learning sequence only, not an actual plant start-up procedure.'],
+stScram:['SCRAM डेमो: रॉड अंदर, शीतलन चालू','SCRAM demo: rods in, cooling on'],stChern:['चेरनोबिल कहानी','Chernobyl story'],
+active:['सक्रिय','ACTIVE'],paused:['रुका हुआ','PAUSED'],ready:['तैयार','READY'],demoActive:['डेमो चालू','DEMO ACTIVE'],storyMode:['कहानी मोड','STORY MODE'],
+h_sound:['ध्वनि सेटिंग','SOUND SETTINGS'],volume:['आवाज़','Volume'],soundOn:['🔊 ध्वनि चालू करें','🔊 Turn sound ON'],soundOff:['🔇 ध्वनि बंद करें','🔇 Turn sound OFF'],
+s_mach:['मशीन की आवाज़ें (पंप, टरबाइन, जनरेटर, रॉड, धमाका)','Machine sounds (pumps, turbine, generator, rods, blast)'],
+s_alarm:['अलार्म और बीप (चरण, SCRAM)','Alarms & beeps (steps, SCRAM)'],s_gei:['रेडिएशन क्लिकर (गाइगर काउंटर)','Radiation clicker (Geiger counter)'],s_narr:['आवाज़ में समझाना (हिंदी/अंग्रेज़ी)','Voice narration (Hindi/English)'],
+s_note:['आवाज़ें इसी डिवाइस पर बनती हैं। वॉइस नैरेशन आपके डिवाइस की उपलब्ध आवाज़ों पर निर्भर है।','Sounds are generated on your device. Narration depends on the voices installed on your device.'],
+h_chern:['चेरनोबिल 1986 — एक सरल कहानी (कक्षा 9)','CHERNOBYL 1986 — A SIMPLE STORY (CLASS 9)'],
+chWarn:['सरलीकृत शैक्षिक कहानी। चेरनोबिल का रिएक्टर RBMK (ग्रेफ़ाइट + पानी) था, जबकि भारतीय PHWR भारी पानी वाला होता है। यहाँ समझाने के लिए यही सरल मॉडल इस्तेमाल हुआ है; संख्याएँ और दृश्य अनुमानित हैं।','A simplified educational story. Chernobyl used an RBMK reactor (graphite + water), while Indian PHWRs use heavy water. This simple model is used only to explain; numbers and visuals are approximate.'],
+chIntroT:['चेरनोबिल दुर्घटना: क्या, क्यों और हमने क्या सीखा','Chernobyl accident: what, why and what we learned'],
+chIntroD:['कहानी 12 छोटे चरणों में है। ▶ दबाकर शुरू करें; हर चरण में मॉडल बदलेगा। इसका मकसद डर फैलाना नहीं, बल्कि समझना है कि सुरक्षा नियम और अच्छा डिज़ाइन क्यों ज़रूरी हैं।','The story has 12 short steps. Press ▶ to begin; the model changes at every step. The aim is not fear, but to understand why safety rules and good design matter.'],
+chBegin:['कहानी शुरू करें ▶','Start the story ▶'],chExit:['↺ सामान्य मॉडल पर लौटें','↺ Back to normal model'],
 i_title:['भारतीय PHWR · 3D लर्निंग लैब','INDIAN PHWR · 3D LEARNING LAB'],i_sub:['प्रेशराइज़्ड हैवी वॉटर रिएक्टर का शैक्षिक दृश्य। मान केवल उदाहरण हैं।','Pressurised Heavy Water Reactor · Educational visualization. Values are illustrative.'],
 i_how:['कैसे इस्तेमाल करें','HOW TO USE'],i_h1:['घुमाने के लिए ड्रैग करें','Drag to rotate'],i_h2:['ज़ूम के लिए स्क्रॉल / पिंच करें','Scroll / pinch to zoom'],i_h3:['किसी भाग का नाम देखने के लिए उस पर टैप करें','Tap a component to see its label'],i_h4:['लेबल में ⓘ दबाने पर विवरण दिखता है; खाली जगह टैप करने पर लेबल छिप जाता है','Press ⓘ in the label for details; tap empty space to hide the label'],
 i_legend:['रंग संकेत','COLOUR KEY'],lg1:['प्राथमिक लूप (अवधारणा)','Primary loop concept'],lg2:['द्वितीयक लूप (अवधारणा)','Secondary loop concept'],lg3:['कंट्रोल रॉड','Control rods'],
 n_head:['शैक्षिक सूचना:','Educational-use notice:'],n_body:['यह एक सरलीकृत, पैमाने से बाहर PHWR मॉडल है। संख्याएँ केवल उदाहरण हैं, वास्तविक संयंत्र डेटा नहीं। ज्यामिति, पाइपिंग, सुरक्षा व्यवस्था और एनिमेशन सरल किए गए हैं; इसे इंजीनियरिंग, संचालन या सुरक्षा निर्णयों के लिए उपयोग न करें।','This is a stylized, not-to-scale PHWR learning model. Numeric values are illustrative and are not plant operating data. Geometry, piping, safeguards, containment details and animations are simplified; do not use this simulation for engineering, operational or safety decisions.'],
 footer:['स्वतंत्र शैक्षिक प्रोजेक्ट · NPCIL का आधिकारिक उत्पाद या किसी संयंत्र का मॉडल नहीं।','Independent educational project · Not an official NPCIL product or plant-specific model.']
 };
+
 /* component names / descriptions: key -> [[nameHi,nameEn],[descHi,descEn]] */
 const C={
 foundation:[['नींव','Foundation'],['रिएक्टर भवन के नीचे का आधार (अवधारणा)।','Foundation platform beneath the conceptual reactor building.']],
@@ -178,51 +220,80 @@ cal:[['कैलेंड्रिया और मॉडरेटर','Calandri
 calEnd:[['कैलेंड्रिया सिरा','Calandria end'],['कैलेंड्रिया का अंतिम ढक्कन (सरलीकृत)।','End closure of the stylized calandria.']],
 channel:[['ईंधन चैनल','Fuel channel'],['प्रेशर-ट्यूब / ईंधन चैनल का सरल रूप। वास्तविक बंडल आकार या लोडिंग नहीं दिखाई गई।','A simplified pressure-tube / fuel-channel representation. Real bundle dimensions or loading are not shown.']],
 fuel:[['ईंधन बंडल (योजनाबद्ध)','Fuel bundle (schematic)'],['सुनहरे भाग केवल ईंधन क्षेत्र की अवधारणा दर्शाते हैं।','Gold inserts indicate the conceptual fuel region only.']],
-rod:[['कंट्रोल / शटडाउन रॉड','Control / shutdown rod'],['अवशोषक रॉड शटडाउन की सामान्य अवधारणा समझाने के लिए हैं। यह वास्तविक तंत्र या समय-मॉडल नहीं है।','Absorber rods illustrate the general shutdown concept. Not a real mechanism or timing model.']],
+rod:[['कंट्रोल / शटडाउन रॉड','Control / shutdown rod'],['अवशोषक रॉड न्यूट्रॉन सोखकर श्रृंखला अभिक्रिया रोकती हैं। यह वास्तविक तंत्र या समय-मॉडल नहीं है।','Absorber rods soak up neutrons and stop the chain reaction. Not a real mechanism or timing model.']],
 sg:[['स्टीम जनरेटर','Steam generator'],['प्राथमिक परिपथ की ऊष्मा को अलग द्वितीयक जल/भाप परिपथ में स्थानांतरित करता है।','Transfers heat from the primary circuit to a separate secondary water/steam circuit.']],
 sgHead:[['स्टीम जनरेटर शीर्ष','Steam generator head'],['स्टीम जनरेटर का ऊपरी ढक्कन (सरलीकृत)।','Top head of the stylized steam generator.']],
 hot:[['प्राथमिक हॉट-लेग','Primary hot leg'],['लाल पाइप प्राथमिक हॉट-लेग मार्ग की अवधारणा है; वास्तविक रूटिंग नहीं।','Red pipe illustrates a conceptual hot-leg route; actual routing is not represented.']],
 ret:[['प्राथमिक वापसी मार्ग','Primary return leg'],['प्राथमिक शीतलक के वापसी मार्ग की अवधारणा।','Primary coolant return path concept.']],
 steam:[['द्वितीयक भाप लाइन','Secondary steam line'],['द्वितीयक भाप को टरबाइन की ओर ले जाने वाली लाइन (अवधारणा)।','Secondary steam line leading conceptually toward the turbine.']],
 feed:[['फ़ीडवॉटर लाइन','Feedwater line'],['द्वितीयक फ़ीडवॉटर की वापसी का अवधारणात्मक मार्ग।','Secondary feedwater return concept.']],
-turbine:[['टरबाइन-जनरेटर','Turbine-generator'],['भाप की ऊर्जा टरबाइन को घुमाती है जो जनरेटर से जुड़ा होता है। घूर्णन केवल उदाहरण है।','Steam energy turns a turbine connected to a generator. Rotation is purely illustrative.']],
+turbine:[['टरबाइन','Turbine'],['भाप के दबाव से टरबाइन के ब्लेड अपनी धुरी पर घूमते हैं और जनरेटर को घुमाते हैं। घूमने की गति केवल उदाहरण है।','Steam pressure spins the turbine blades about their own axis, which drives the generator. Spin speed is illustrative.']],
 shaft:[['टरबाइन शाफ़्ट','Turbine shaft'],['टरबाइन और जनरेटर को जोड़ने वाला शाफ़्ट (अवधारणा)।','Shaft linking the conceptual turbine and generator.']],
-generator:[['जनरेटर','Generator'],['शाफ़्ट के घूर्णन को विद्युत ऊर्जा में बदलता है (अवधारणा)।','Converts shaft rotation into electrical energy (concept).']],
+generator:[['जनरेटर','Generator'],['शाफ़्ट के घूर्णन को विद्युत ऊर्जा में बदलता है। ग्रिड से जुड़ने पर हरा चमकता है। भारतीय ग्रिड की आवृत्ति 50 Hz है।','Converts shaft rotation into electrical energy. Glows green when connected to the grid. The Indian grid frequency is 50 Hz.']],
 condenser:[['कंडेंसर','Condenser'],['निकास भाप को ठंडा करके वापस पानी बनाता है, एक अलग चक्र में।','Exhaust steam is cooled back into water in a separate cycle.']],
 tower:[['कूलिंग टावर (उदाहरण)','Cooling tower (illustrative)'],['सामान्य कूलिंग टावर की आकृति। सभी परमाणु संयंत्र इसका उपयोग नहीं करते; ताप-निष्कासन प्रणाली भिन्न हो सकती है।','Generic cooling-tower silhouette. Not all plants use this type; heat-rejection systems vary.']],
-eccsTank:[['ECCS अवधारणा टैंक','ECCS concept tank'],['आपातकालीन कोर शीतलन को बैकअप जल उप-प्रणाली के रूप में अवधारणात्मक रूप से दिखाया गया है; संयंत्र-विशिष्ट नहीं।','Emergency core cooling shown as a conceptual backup-water subsystem, not plant-specific.']],
+eccsTank:[['ECCS अवधारणा टैंक','ECCS concept tank'],['आपातकालीन कोर शीतलन स्टैंडबाय बैकअप जल उप-प्रणाली के रूप में दिखाया गया है; संयंत्र-विशिष्ट नहीं।','Emergency core cooling shown as a standby backup-water subsystem, not plant-specific.']],
 eccsLine:[['ECCS अवधारणा लाइन','ECCS concept line'],['आपातकालीन शीतलन को दर्शाने वाली सरल लाइन; रूटिंग और सक्रियण मॉडल नहीं किए गए।','Simplified line to visualize emergency cooling; routing and actuation are not modeled.']],
 pool:[['निष्क्रिय शीतलन पूल','Passive cooling pool'],['निष्क्रिय क्षय-ऊष्मा निष्कासन की अवधारणा, जो कुछ डिज़ाइनों में प्राकृतिक परिसंचरण पर निर्भर हो सकती है।','Passive decay-heat removal concept that can rely on natural circulation in some designs.']],
 poolLine:[['निष्क्रिय शीतलन लाइन','Passive cooling line'],['अवधारणात्मक निष्क्रिय शीतलन लाइन; सत्यापित हाइड्रोलिक मॉडल नहीं।','Conceptual passive cooling line; not a validated hydraulic model.']],
 flowP:[['प्राथमिक शीतलक प्रवाह','Primary coolant flow'],['चलते बिंदु केवल प्रवाह की दिशा दर्शाते हैं; कोई थर्मल-हाइड्रोलिक गणना नहीं।','Moving dots indicate flow direction only; no thermal-hydraulic calculation.']],
-flowS:[['द्वितीयक परिपथ प्रवाह','Secondary circuit flow'],['चलते बिंदु केवल प्रवाह की दिशा दर्शाते हैं; कोई प्रवाह-दर गणना नहीं।','Moving dots indicate flow direction only; no flow-rate calculation.']]
+flowS:[['द्वितीयक परिपथ प्रवाह','Secondary circuit flow'],['चलते बिंदु केवल प्रवाह की दिशा दर्शाते हैं; कोई प्रवाह-दर गणना नहीं।','Moving dots indicate flow direction only; no flow-rate calculation.']],
+fire:[['ग्रेफ़ाइट की आग','Graphite fire'],['चेरनोबिल में रिएक्टर का ग्रेफ़ाइट जलने लगा और लगभग 10 दिन जलता रहा। (भारतीय PHWR में ग्रेफ़ाइट मॉडरेटर नहीं होता।)','At Chernobyl the reactor graphite caught fire and burned for about 10 days. (Indian PHWRs do not use a graphite moderator.)']],
+cloud:[['रेडियोधर्मी बादल','Radioactive cloud'],['हवा के साथ फैलते रेडियोधर्मी कणों की अवधारणा; आकार और दिशा केवल उदाहरण हैं।','Concept of radioactive particles drifting with the wind; size and direction are only illustrative.']],
+zone:[['प्रतिबंधित क्षेत्र (प्रतीक)','Exclusion zone (symbol)'],['संयंत्र के चारों ओर लगभग 30 किमी का क्षेत्र आज भी प्रतिबंधित है। यहाँ पैमाने से बाहर प्रतीक के रूप में दिखाया गया है।','An area of about 30 km around the plant is still restricted. Shown here as a not-to-scale symbol.']],
+sarc:[['सारकोफ़ैगस (ढाँचा)','Sarcophagus (cover)'],['दुर्घटना के बाद रिएक्टर को कंक्रीट-स्टील के ढाँचे से ढका गया (1986); 2016 में उसके ऊपर विशाल नया सुरक्षित ढाँचा लगाया गया।','After the accident the reactor was covered with a concrete-and-steel structure (1986); in 2016 a giant New Safe Confinement was slid over it.']]
+};
+/* Chernobyl story: names differ for the building (no strong containment there) */
+const ALT={
+outer:[['रिएक्टर भवन (हल्का ढाँचा)','Reactor building (light structure)'],['चेरनोबिल के रिएक्टर के चारों ओर आज जैसा मज़बूत कंटेनमेंट नहीं था; ऊपर सिर्फ़ भवन की छत थी।','Chernobyl’s reactor did not have the strong containment of today’s plants; above it was only the building roof.']],
+outerDome:[['भवन की छत','Building roof'],['धमाके में यह छत उड़ गई।','The blast blew this roof off.']]
 };
 
-/* ---------- State ---------- */
-let lang='hi';try{lang=localStorage.getItem('phwr_lang')||'hi';}catch(e){}
-const S={cutaway:false,exploded:false,spin:true,scram:false,pdhrs:true,eccs:false,cont:true,chan:true,stage:8,prevStage:8,rod:1,turb:true,gen:true,auto:false};
-let rodLvl=1,ts=1,tween=null,autoT=null;
-/* start-up stages: [[nameHi,nameEn],[descHi,descEn],config] */
-const STG=[
-[['0. कोल्ड शटडाउन','0. Cold shutdown'],['रिएक्टर बंद: रॉड अंदर, प्रवाह बंद, टरबाइन रुका हुआ।','Reactor off: rods in, flow stopped, turbine stopped.'],{power:0,temp:200,flow:false,rod:0,turb:false,gen:false,eccs:false}],
-[['1. प्री-स्टार्ट जाँच','1. Pre-start checks'],['सुरक्षा प्रणालियाँ (निष्क्रिय शीतलन, ECCS) तैयार दिखाई गई हैं।','Safety systems (passive cooling, ECCS) are shown ready.'],{power:0,temp:200,flow:false,rod:0,turb:false,gen:false,eccs:true}],
-[['2. शीतलक परिसंचरण शुरू','2. Start coolant circulation'],['प्राथमिक शीतलक पंप चालू होने की अवधारणा; प्रवाह एनिमेशन शुरू।','Primary coolant pumps start (concept); flow animation begins.'],{power:0,temp:220,flow:true,rod:0,turb:false,gen:false,eccs:true}],
-[['3. शटडाउन रॉड बाहर निकालें','3. Withdraw shutdown rods'],['रॉड ऊपर उठती हैं; रिएक्टर अभी भी बहुत कम शक्ति पर है।','Rods are withdrawn; the reactor is still at negligible power.'],{power:0,temp:220,flow:true,rod:1,turb:false,gen:false,eccs:true}],
-[['4. क्रिटिकैलिटी के निकट','4. Approach criticality'],['नियंत्रण उपकरणों से अभिक्रियाशीलता धीरे-धीरे बढ़ाई जाती है; शक्ति बहुत कम।','Reactivity is raised slowly with control devices; power is very low.'],{power:5,temp:230,flow:true,rod:1,turb:false,gen:false,eccs:true}],
-[['5. शक्ति बढ़ाएँ और गर्म करें','5. Raise power & heat up'],['शक्ति और शीतलक तापमान धीरे-धीरे बढ़ते हैं।','Power and coolant temperature rise gradually.'],{power:40,temp:270,flow:true,rod:1,turb:false,gen:false,eccs:true}],
-[['6. भाप बनना, टरबाइन रोल','6. Steam & turbine roll'],['स्टीम जनरेटर भाप बनाता है; टरबाइन घूमना शुरू करता है।','The steam generator makes steam; the turbine starts to spin.'],{power:60,temp:280,flow:true,rod:1,turb:true,gen:false,eccs:true}],
-[['7. ग्रिड सिंक्रोनाइज़ेशन','7. Grid synchronization'],['जनरेटर ग्रिड से जुड़ता है (जनरेटर हरा चमकता है)।','The generator connects to the grid (generator glows green).'],{power:70,temp:280,flow:true,rod:1,turb:true,gen:true,eccs:true}],
-[['8. पूर्ण शक्ति (उदाहरण)','8. Full power (illustrative)'],['सामान्य संचालन का उदाहरण दृश्य।','Illustrative view of normal operation.'],{power:80,temp:280,flow:true,rod:1,turb:true,gen:true,eccs:false}]
-];
+/* ================= State ================= */
+let lang='hi';try{lang=localStorage.getItem('phwr_lang')==='en'?'en':'hi';}catch(e){}
+const S={cutaway:false,exploded:false,spin:true,scram:false,pdhrs:true,eccs:false,cont:true,chan:true,stage:9,prevStage:9,rod:1,turb:true,gen:true,auto:false,ch:-1};
 const L=()=>lang==='hi'?0:1;
 const tx=k=>T[k][L()];
 const onoff=v=>tx(v?'on':'off');
+const cinfo=k=>(S.ch>=0&&ALT[k])?ALT[k]:C[k];
+let rodLvl=1,ts=1,tween=null,autoT=null,heatCur=0,capLift=0,genGlow=1,boomT=9,shakeT=0,userZoom=false;
 
+/* start-up stages (idx 0..9): [[nameHi,nameEn],[descHi,descEn],cfg] */
+const STG=[
+[['0. कोल्ड शटडाउन','0. Cold shutdown'],['रिएक्टर बंद और ठंडा: शटडाउन रॉड अंदर, पंप बंद, टरबाइन रुका हुआ।','Reactor off and cold: shutdown rods in, pumps off, turbine stopped.'],{power:0,temp:30,flow:false,rod:0,turb:false,gen:false,eccs:false}],
+[['1. शुरू करने से पहले जाँच','1. Pre-start checks'],['सुरक्षा प्रणालियाँ (ECCS, निष्क्रिय शीतलन) तैयार और स्टैंडबाय में हैं, तभी आगे बढ़ते हैं।','Safety systems (ECCS, passive cooling) are ready on standby before going further.'],{power:0,temp:30,flow:false,rod:0,turb:false,gen:false,eccs:true}],
+[['2. शीतलक पंप चालू','2. Start coolant pumps'],['प्राथमिक शीतलक पंप चालू होते हैं और भारी जल घूमने लगता है। रिएक्टर अभी भी बंद है।','Primary coolant pumps start and the heavy water begins to circulate. The reactor is still shut down.'],{power:0,temp:60,flow:true,rod:0,turb:false,gen:false,eccs:true}],
+[['3. पंप-ऊष्मा से गर्म करना','3. Heat-up with pump heat'],['पंपों की ऊष्मा से सिस्टम धीरे-धीरे गर्म होता है। रिएक्टर अभी भी बंद है।','The system warms up slowly from pump heat. The reactor is still shut down.'],{power:0,temp:250,flow:true,rod:0,turb:false,gen:false,eccs:true}],
+[['4. शटडाउन रॉड बाहर','4. Withdraw shutdown rods'],['शटडाउन रॉड धीरे-धीरे बाहर खींची जाती हैं। शक्ति अभी लगभग शून्य है।','The shutdown rods are withdrawn slowly. Power is still almost zero.'],{power:0,temp:250,flow:true,rod:1,turb:false,gen:false,eccs:true}],
+[['5. क्रिटिकल होना','5. Reach criticality'],['नियंत्रण से न्यूट्रॉन धीरे-धीरे बढ़ते हैं और रिएक्टर "क्रिटिकल" होता है, यानी श्रृंखला अभिक्रिया अपने-आप चलती है। शक्ति अब भी बहुत कम है।','Neutrons are raised slowly until the reactor is "critical": the chain reaction sustains itself. Power is still very low.'],{power:1,temp:250,flow:true,rod:1,turb:false,gen:false,eccs:true}],
+[['6. शक्ति बढ़ाना','6. Raise power'],['शक्ति धीरे-धीरे बढ़ाई जाती है और तापमान-दबाव पर नज़र रखी जाती है।','Power is raised slowly while temperature and pressure are watched.'],{power:40,temp:270,flow:true,rod:1,turb:false,gen:false,eccs:true}],
+[['7. भाप और टरबाइन','7. Steam & turbine roll'],['स्टीम जनरेटर भाप बनाता है और टरबाइन घूमना शुरू करता है। बिजली अभी ग्रिड से नहीं जुड़ी।','The steam generator makes steam and the turbine starts to spin. Power is not yet connected to the grid.'],{power:60,temp:280,flow:true,rod:1,turb:true,gen:false,eccs:true}],
+[['8. ग्रिड से जोड़ना','8. Grid synchronization'],['जनरेटर को ग्रिड की 50 Hz आवृत्ति से मिलाकर जोड़ा जाता है (जनरेटर हरा चमकता है)।','The generator is matched to the 50 Hz grid frequency and connected (it glows green).'],{power:70,temp:280,flow:true,rod:1,turb:true,gen:true,eccs:true}],
+[['9. पूर्ण शक्ति (उदाहरण)','9. Full power (illustrative)'],['पूरी शक्ति पर सामान्य संचालन का उदाहरण।','Illustrative normal operation at full power.'],{power:100,temp:280,flow:true,rod:1,turb:true,gen:true,eccs:true}]
+];
+
+/* Chernobyl story steps */
+const CH=[
+{t:['चेरनोबिल: क्या हुआ था?','Chernobyl: what happened?'],d:['26 अप्रैल 1986, रात लगभग 1:23 बजे। चेरनोबिल बिजलीघर (यूक्रेन, तब सोवियत संघ) की यूनिट 4 में इतिहास की सबसे गंभीर परमाणु दुर्घटनाओं में से एक हुई। वह RBMK रिएक्टर था। उसके चारों ओर आज जैसा मज़बूत कंटेनमेंट भवन नहीं था।','26 April 1986, about 1:23 a.m. Unit 4 of the Chernobyl power plant (Ukraine, then the Soviet Union) had one of the most serious nuclear accidents in history. It was an RBMK reactor. It did not have the strong containment building that modern plants have.'],c:{power:100,temp:280,rod:.7,flow:1,turb:1,gen:1,eccs:1,heat:0}},
+{t:['शुरुआत: एक सुरक्षा टेस्ट','It began with a safety test'],d:['टेस्ट का सवाल: अगर बाहर से बिजली चली जाए, तो रुकता हुआ टरबाइन कुछ देर पंपों को चला सकता है या नहीं? टेस्ट कई घंटे देर से, रात की शिफ्ट में हुआ, जिसकी तैयारी ठीक से नहीं थी। शक्ति घटाकर लगभग आधी की गई।','The test question: if outside power fails, can the slowing turbine keep the pumps running for a short time? The test was delayed by many hours and done by a night shift that was not well prepared. Power was reduced to about half.'],c:{power:50,temp:275,rod:.7,flow:1,turb:1,gen:1,eccs:1,heat:0}},
+{t:['शक्ति बहुत गिर गई','Power fell too low'],d:['शक्ति घटाते समय रिएक्टर में एक गैस (ज़ेनॉन) जमा हो गई जो न्यूट्रॉन सोख लेती है। शक्ति लगभग 1% तक गिर गई और रिएक्टर चलाना कठिन हो गया।','While lowering power, a gas (xenon) built up that soaks up neutrons. Power dropped to about 1% and the reactor became hard to control.'],c:{power:1,temp:265,rod:.5,flow:1,turb:1,gen:0,eccs:1,heat:0}},
+{t:['ग़लत फ़ैसले','Wrong decisions'],d:['शक्ति वापस बढ़ाने के लिए ऑपरेटरों ने लगभग सारी कंट्रोल रॉड बाहर खींच लीं और कई सुरक्षा प्रणालियाँ (जैसे आपातकालीन शीतलन) बंद कर दीं, जबकि नियम इसकी अनुमति नहीं देते थे।','To raise power again, the operators pulled out almost all control rods and switched off several safety systems (such as emergency cooling), which the rules did not allow.'],c:{power:7,temp:270,rod:1,flow:1,turb:1,gen:0,eccs:0,heat:.1}},
+{t:['रिएक्टर अस्थिर हुआ','The reactor became unstable'],d:['शक्ति अचानक चढ़ने लगी। पानी में भाप के बुलबुले बने, और इस रिएक्टर के डिज़ाइन में ऐसा होने पर शक्ति घटने के बजाय और बढ़ जाती थी। यह एक बड़ी डिज़ाइन कमी थी।','Power began to climb suddenly. Steam bubbles formed in the water, and in this reactor design that made power rise even more instead of falling. This was a major design flaw.'],c:{power:30,temp:290,rod:1,flow:1,turb:1,gen:0,eccs:0,heat:.45}},
+{t:['आपातकालीन बटन: AZ-5','The emergency button: AZ-5'],d:['ऑपरेटर ने आपातकालीन शटडाउन (SCRAM) बटन दबाया। पर इन रॉड के निचले सिरे ग्रेफ़ाइट के थे, जिन्होंने घुसते समय पल भर के लिए शक्ति और बढ़ा दी। शक्ति कई गुना हो गई। (आधुनिक रिएक्टरों में SCRAM हमेशा शक्ति घटाता है; "सुरक्षा" मेन्यू में खुद देखें।)','The operator pressed the emergency shutdown (SCRAM) button. But the lower tips of these rods were graphite, which for a moment added power as they went in. Power shot up many times. (In modern reactors SCRAM always lowers power; try it yourself in the Safety menu.)'],c:{power:100,temp:320,rod:0,flow:1,turb:1,gen:0,eccs:0,heat:1,pw:'⚠ ≫100%'}},
+{t:['धमाका!','The explosion!'],d:['भाप का दबाव अचानक इतना बढ़ा कि धमाके से रिएक्टर का ऊपरी भाग और छत उड़ गई। यह परमाणु बम जैसा विस्फोट नहीं था (रिएक्टर बम की तरह फट ही नहीं सकता), पर भाप का भयंकर धमाका था जिसने रिएक्टर तोड़ दिया।','Steam pressure rose so suddenly that the blast blew off the top of the reactor and the roof. It was not an atom-bomb type explosion (a reactor cannot explode like a bomb), but a violent steam explosion that destroyed the reactor.'],c:{power:0,temp:320,rod:0,flow:0,turb:0,gen:0,eccs:0,heat:1,lift:1,pw:'—',tp:'—'}},
+{t:['आग और रेडियोधर्मी धुआँ','Fire and radioactive smoke'],d:['रिएक्टर का ग्रेफ़ाइट जलने लगा और लगभग 10 दिन तक आग जलती रही। हवा के साथ रेडियोधर्मी कण दूर-दूर तक फैले और कई यूरोपीय देशों तक पहुँचे। गाइगर काउंटर की तेज़ टिक-टिक का मतलब है ज़्यादा रेडिएशन।','The reactor graphite caught fire and burned for about 10 days. Wind carried radioactive particles far away, to many European countries. Fast Geiger-counter clicking means more radiation.'],c:{power:0,temp:320,rod:0,flow:0,turb:0,gen:0,eccs:0,heat:.8,lift:1,fire:1,cloud:1,gei:40,pw:'—',tp:'—'}},
+{t:['लोगों पर असर','Effect on people'],d:['पहली रात 2 कर्मचारियों की मौत हुई। कुछ महीनों में कुल लगभग 30 लोग (ज़्यादातर बचाव-कर्मी और फ़ायरफ़ाइटर) रेडिएशन बीमारी से मरे। अगले दिन प्रिप्यात शहर के लगभग 49,000 लोग हटाए गए; बाद में एक लाख से ज़्यादा लोगों को घर छोड़ना पड़ा। कई बच्चों में थायरॉइड कैंसर के मामले बढ़े। आज भी लगभग 30 किमी का क्षेत्र प्रतिबंधित है।','Two workers died the first night. Within months about 30 people in all (mostly rescue workers and firefighters) died of radiation sickness. The next day about 49,000 people of Pripyat city were evacuated; later over a lakh (100,000) people had to leave their homes. Thyroid cancer cases rose among many children. An area of about 30 km around the plant is still restricted.'],c:{power:0,temp:320,rod:0,flow:0,turb:0,gen:0,eccs:0,heat:.6,lift:1,fire:1,cloud:1,zone:1,gei:25,pw:'—',tp:'—'}},
+{t:['ढकना और सफ़ाई','Covering and cleaning up'],d:['हज़ारों कर्मियों ने मलबा हटाया। 1986 में रिएक्टर को कंक्रीट-स्टील के "सारकोफ़ैगस" से ढका गया; 2016 में उसके ऊपर एक विशाल नया सुरक्षित ढाँचा (New Safe Confinement) सरकाकर लगाया गया।','Thousands of workers cleared the debris. In 1986 the reactor was covered with a concrete-and-steel "sarcophagus"; in 2016 a giant New Safe Confinement was slid over it.'],c:{power:0,temp:100,rod:0,flow:0,turb:0,gen:0,eccs:0,heat:.1,lift:1,zone:1,sarc:1,gei:8,pw:'—',tp:'—'}},
+{t:['हमने क्या सीखा','What we learned'],d:['1) सुरक्षा नियम कभी न तोड़ें और टेस्ट के बहाने सुरक्षा प्रणालियाँ बंद न करें। 2) डिज़ाइन ऐसा हो कि शटडाउन हमेशा शक्ति घटाए, और रिएक्टर के चारों ओर मज़बूत कंटेनमेंट हो। 3) प्रशिक्षण, खुली रिपोर्टिंग और सुरक्षा-संस्कृति ज़रूरी हैं। भारत में परमाणु सुरक्षा की निगरानी AERB करता है; भारतीय PHWR में मज़बूत कंटेनमेंट भवन और तेज़ शटडाउन प्रणालियाँ होती हैं।','1) Never break safety rules or switch off safety systems for a test. 2) Design so that shutdown always lowers power, with a strong containment around the reactor. 3) Training, open reporting and a safety culture are essential. In India nuclear safety is overseen by the AERB; Indian PHWRs have strong containment buildings and fast shutdown systems.'],c:{power:0,temp:50,rod:0,flow:0,turb:0,gen:0,eccs:0,heat:0,lift:1,zone:1,sarc:1,gei:3,pw:'—',tp:'—'}},
+{t:['आप क्या कर सकते हैं?','What can you do?'],d:['• अफ़वाहों पर नहीं, आधिकारिक सूचना पर भरोसा करें। • रेडियोधर्मी आपातकाल में सरकारी निर्देश मानें; आम तौर पर घर के अंदर रहने और खिड़की-दरवाज़े बंद रखने की सलाह दी जाती है। • रेडिएशन से बचाव के तीन नियम: समय कम, दूरी ज़्यादा, ढाल (शील्डिंग)। • याद रखें: सही डिज़ाइन और अनुशासन के साथ परमाणु ऊर्जा सुरक्षित रूप से चलाई जा सकती है।','• Trust official information, not rumours. • In a radiation emergency follow government instructions; people are usually told to stay indoors and keep windows and doors closed. • Three rules against radiation: less time, more distance, shielding. • Remember: nuclear power can be run safely with good design and discipline.'],c:{power:0,temp:30,rod:0,flow:0,turb:0,gen:0,eccs:0,heat:0,lift:1,zone:1,sarc:1,gei:2,pw:'—',tp:'—'}}
+];
+
+/* ================= Renderer / scene ================= */
 const canvas=$('#scene'),viewport=$('#viewport');
 let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});}catch(err){showErr('WebGL unavailable / WebGL उपलब्ध नहीं: '+err.message);return;}
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputEncoding=THREE.sRGBEncoding;
-const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x07111f,35,90);
-const camera=new THREE.PerspectiveCamera(42,1,.1,160);let theta=.72,phi=1.08,radius=29;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x07111f,70,300);
+const camera=new THREE.PerspectiveCamera(42,1,.1,500);let theta=.72,phi=1.08,radius=34;
 scene.add(new THREE.HemisphereLight(0xb9e4ff,0x15202b,1.2));const key=new THREE.DirectionalLight(0xffffff,2.0);key.position.set(14,22,15);scene.add(key);const rim=new THREE.PointLight(0x32c9f2,1.5,65);rim.position.set(-15,8,-10);scene.add(rim);
 const root=new THREE.Group();scene.add(root);const objects={},anim=[];
 const mat=(color,o={})=>new THREE.MeshStandardMaterial({color,metalness:o.metalness??.25,roughness:o.roughness??.55,transparent:o.transparent??false,opacity:o.opacity??1,side:o.side??THREE.FrontSide,emissive:o.emissive??0x000000});
@@ -233,7 +304,7 @@ function group(k,pos=[0,0,0]){const g=new THREE.Group();g.position.set(...pos);g
 function cyl(k,r1,r2,h,material,pos,radial=24){return addMesh(k,new THREE.CylinderGeometry(r1,r2,h,radial),material,pos);}
 function pipe(k,pts,r,material){const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));return addMesh(k,new THREE.TubeGeometry(curve,64,r,8,false),material,[0,0,0]);}
 
-const foundation=addMesh('foundation',new THREE.CylinderGeometry(12.8,12.8,.55,64),mat(0x203448,{roughness:.8}),[0,-6.9,0]);
+const foundation=addMesh('foundation',new THREE.CylinderGeometry(11.5,11.5,.55,64),mat(0x203448,{roughness:.8}),[0,-6.9,0]);
 const outer=addMesh('outer',new THREE.CylinderGeometry(8.5,8.5,11.2,48,1,true),concrete,[0,-1.2,0]);
 const outerCap=addMesh('outerDome',new THREE.SphereGeometry(8.5,48,24,0,Math.PI*2,0,Math.PI/2),concrete,[0,4.4,0]);
 const inner=addMesh('inner',new THREE.CylinderGeometry(7.2,7.2,9.3,48,1,true),innerConcrete,[0,-1.8,0]);
@@ -252,12 +323,16 @@ pipe('hot',[[-1.7,-.5,.7],[1.5,-.5,.7],[3.4,-.5,.7],[4.9,-1.1,.7],[5.3,-1.6,.7]]
 pipe('ret',[[5.1,-3.6,-.7],[4.1,-4.3,-.7],[2.5,-4.1,-.7],[0,-3.7,-.7],[-2.2,-2.4,-.7]],.16,red);
 pipe('steam',[[6,-.2,1.0],[6.1,1.1,1.0],[7.5,1.8,1.0],[9.1,1.8,1.0],[10,1.1,1.0]],.14,cyan);
 pipe('feed',[[10,-1.8,-1],[9,-2.3,-1],[7.5,-2.3,-1],[6,-2.2,-1]],.13,cyan);
-const turbine=group('turbine');const tb=new THREE.Mesh(new THREE.CylinderGeometry(.9,1.25,2.8,32),mat(0x718da1,{metalness:.72,roughness:.3}));tb.rotation.z=Math.PI/2;tb.position.set(10,-.15,0);turbine.add(tb);
+/* Turbine: group sits AT the turbine position; only the blade rotor spins, about the shaft (x) axis */
+const turbine=group('turbine',[10,-.15,0]);
+const casing=new THREE.Mesh(new THREE.CylinderGeometry(.9,1.25,2.8,32),mat(0x718da1,{metalness:.72,roughness:.3,transparent:true,opacity:.42}));casing.rotation.z=Math.PI/2;turbine.add(casing);
+const rotor=new THREE.Group();rotor.position.set(-.3,0,0);turbine.add(rotor);
+const hub=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,1.7,16),steel);hub.rotation.z=Math.PI/2;rotor.add(hub);
+for(let i=0;i<8;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(.13,.8,.22),cyan);const a=i*Math.PI/4;b.position.set(0,Math.cos(a)*.5,Math.sin(a)*.5);b.rotation.x=a;rotor.add(b);}
 const shaft=cyl('shaft',.16,.16,3.8,steel,[10,-.15,0]);shaft.rotation.z=Math.PI/2;
-for(let i=0;i<8;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(.13,1.25,.22),cyan);const a=i*Math.PI/4;b.position.set(9.5,-.15+Math.cos(a)*.6,Math.sin(a)*.6);b.rotation.x=a;turbine.add(b);}
 const generator=addMesh('generator',new THREE.CylinderGeometry(.85,.85,2.2,32),green,[12.4,-.15,0]);generator.rotation.z=Math.PI/2;
 const condenser=addMesh('condenser',new THREE.BoxGeometry(2.2,1.25,1.7),mat(0x507b8d,{metalness:.4}),[10,-3.0,-2.4]);
-const tower=group('tower');const tw=new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(1.0,-2.4),new THREE.Vector2(1.4,-1.7),new THREE.Vector2(1.65,-.3),new THREE.Vector2(1.45,.8),new THREE.Vector2(1.1,1.7),new THREE.Vector2(1.15,2.2)],32),mat(0x8195a8,{transparent:true,opacity:.55,side:THREE.DoubleSide}));tw.position.set(13,-3.7,-5);tower.add(tw);
+const tower=group('tower');const twr=new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(1.0,-2.4),new THREE.Vector2(1.4,-1.7),new THREE.Vector2(1.65,-.3),new THREE.Vector2(1.45,.8),new THREE.Vector2(1.1,1.7),new THREE.Vector2(1.15,2.2)],32),mat(0x8195a8,{transparent:true,opacity:.55,side:THREE.DoubleSide}));twr.position.set(13,-3.7,-5);tower.add(twr);
 const eccsTank=addMesh('eccsTank',new THREE.CylinderGeometry(.65,.65,2.8,24),mat(0x338fbd,{transparent:true,opacity:.85}),[-6,2.2,1.8]);
 const eccsLine=pipe('eccsLine',[[-6,1,-.2],[-5,0,-.2],[-4,-.4,-.2],[-3,-.7,-.2]],.12,cyan);
 const pdhrsPool=addMesh('pool',new THREE.BoxGeometry(2.8,1.4,2.2),mat(0x1d91c3,{transparent:true,opacity:.62}),[-6,4.2,-2.5]);
@@ -266,18 +341,31 @@ eccsTank.visible=false;eccsLine.visible=false;
 
 function makeParticles(k,pts,color,count,speed){const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));const geo=new THREE.SphereGeometry(.075,8,8);const arr=[];for(let i=0;i<count;i++){const m=new THREE.Mesh(geo,mat(color,{emissive:color,roughness:.2}));m.userData.key=k;root.add(m);arr.push({mesh:m,t:i/count,curve,speed});}return arr;}
 const particles=[...makeParticles('flowP',[[-1.7,-.5,.7],[1.5,-.5,.7],[3.4,-.5,.7],[4.9,-1.1,.7],[5.3,-1.6,.7]],0xff685c,18,.18),...makeParticles('flowP',[[5.1,-3.6,-.7],[4.1,-4.3,-.7],[2.5,-4.1,-.7],[0,-3.7,-.7],[-2.2,-2.4,-.7]],0xffa06c,16,.15),...makeParticles('flowS',[[6,-.2,1],[6.1,1.1,1],[7.5,1.8,1],[9.1,1.8,1],[10,1.1,1]],0x51dafa,14,.17)];
-const grid=new THREE.GridHelper(50,50,0x244258,0x132b3e);grid.position.y=-6.58;scene.add(grid);
+const grid=new THREE.GridHelper(70,70,0x244258,0x132b3e);grid.position.y=-6.58;scene.add(grid);
 
-/* ---------- Camera / resize ---------- */
+/* --- Chernobyl-story objects (hidden until used) --- */
+const fire=group('fire',[0,.9,0]);const flames=[];for(let i=0;i<6;i++){const f=new THREE.Mesh(new THREE.ConeGeometry(.45,1.7,10),new THREE.MeshBasicMaterial({color:i%2?0xff6a1a:0xffa133,transparent:true,opacity:.85}));f.position.set((i-2.5)*.55,0,(i%2?.5:-.5));fire.add(f);flames.push(f);}fire.visible=false;
+const fireLight=new THREE.PointLight(0xff7a2a,0,28);fireLight.position.set(0,2,0);scene.add(fireLight);
+const zone=addMesh('zone',new THREE.RingGeometry(19.2,20,72),new THREE.MeshBasicMaterial({color:0xffc45b,transparent:true,opacity:.6,side:THREE.DoubleSide}),[0,-6.5,0]);zone.rotation.x=-Math.PI/2;zone.visible=false;shells.add(zone);
+const sarc=addMesh('sarc',new THREE.BoxGeometry(8.6,5.8,6.6),mat(0x8b96a1,{metalness:.2,roughness:.8,transparent:true,opacity:.93}),[0,-.6,0]);sarc.visible=false;
+const puffs=[];const puffMat=new THREE.MeshBasicMaterial({color:0xb8e06a,transparent:true,opacity:.22,depthWrite:false});const puffGeo=new THREE.SphereGeometry(.7,10,8);
+for(let i=0;i<40;i++){const m=new THREE.Mesh(puffGeo,puffMat);m.userData.key='cloud';m.visible=false;root.add(m);puffs.push({mesh:m,life:i/40,vz:(Math.random()-.5)*6,vx:8+Math.random()*8,vy:7+Math.random()*5});}
+const flash=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshBasicMaterial({color:0xffaa44,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));flash.position.set(0,0,0);flash.visible=false;flash.raycast=()=>{};scene.add(flash);
+const boomLight=new THREE.PointLight(0xff8a30,0,70);boomLight.position.set(0,1,0);scene.add(boomLight);
+const debris=[];const debMat=mat(0x59616b,{emissive:0x7a2a08,roughness:.9});const debGeo=new THREE.BoxGeometry(.28,.28,.28);
+for(let i=0;i<36;i++){const m=new THREE.Mesh(debGeo,debMat);m.visible=false;m.raycast=()=>{};scene.add(m);debris.push({mesh:m,v:new THREE.Vector3(),on:false});}
+
+/* ================= Camera fit / resize ================= */
+function fitR(){const a=camera.aspect,vf=camera.fov*Math.PI/180,hf=2*Math.atan(Math.tan(vf/2)*a),f=Math.min(vf,hf);return Math.max(26,Math.min(100,12.5/Math.sin(f/2)));}
 function cameraUpdate(){camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(1,0,0);}
-function resize(){const w=viewport.clientWidth,h=viewport.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function resize(){const w=viewport.clientWidth,h=viewport.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();if(!userZoom)radius=fitR();}
 let rz=0;new ResizeObserver(()=>{cancelAnimationFrame(rz);rz=requestAnimationFrame(resize);}).observe(viewport);
 
-/* ---------- Tap label (shown only for tapped component) ---------- */
+/* ================= Tap label (only for tapped component) ================= */
 const labelLayer=document.createElement('div');labelLayer.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden';viewport.appendChild(labelLayer);
 let sel=null,lblEl=null,lblMore=false;
 function hideLabel(){sel=null;lblMore=false;if(lblEl){lblEl.remove();lblEl=null;}}
-function renderLabel(){if(!sel)return;const c=C[sel.key];if(!lblEl){lblEl=document.createElement('div');lblEl.className='lbl';labelLayer.appendChild(lblEl);}
+function renderLabel(){if(!sel)return;const c=cinfo(sel.key);if(!lblEl){lblEl=document.createElement('div');lblEl.className='lbl';labelLayer.appendChild(lblEl);}
 lblEl.classList.toggle('more',lblMore);
 lblEl.innerHTML='<div class="row"><b></b><button type="button" class="i" aria-label="info">ⓘ</button><button type="button" class="x" aria-label="close">✕</button></div><div class="d"></div>';
 lblEl.querySelector('b').textContent=c[0][L()];lblEl.querySelector('.d').textContent=c[1][L()];
@@ -286,77 +374,158 @@ lblEl.querySelector('.x').onclick=hideLabel;}
 const isVis=o=>{for(;o;o=o.parent)if(!o.visible)return false;return true;};
 function keyOf(o){for(;o;o=o.parent)if(o.userData&&o.userData.key)return o;return null;}
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null;
-canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};closeMenus();});
+canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
 canvas.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>7){down=null;return;}down=null;
+closeMenus(true);
 const r=canvas.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);
 const hits=raycaster.intersectObjects(root.children,true).filter(h=>isVis(h.object));
-let hit=hits.find(h=>!shells.has(keyOf(h.object)))||hits[0];
+const hit=hits.find(h=>{const o=keyOf(h.object);return o&&!shells.has(o);})||hits[0];
 if(!hit){hideLabel();return;}
 const o=keyOf(hit.object);if(!o||!C[o.userData.key]){hideLabel();return;}
 if(sel&&sel.obj===o){hideLabel();return;}
 sel={obj:o,key:o.userData.key,local:o.worldToLocal(hit.point.clone())};lblMore=false;renderLabel();});
-function updateLabelPos(){if(!sel||!lblEl)return;const p=sel.obj.localToWorld(sel.local.clone()).project(camera);
+function updateLabelPos(){if(!sel||!lblEl)return;if(!isVis(sel.obj)){hideLabel();return;}const p=sel.obj.localToWorld(sel.local.clone()).project(camera);
 const W=viewport.clientWidth,H=viewport.clientHeight;if(p.z>1){lblEl.style.display='none';return;}lblEl.style.display='block';
 let x=(p.x*.5+.5)*W,y=(-p.y*.5+.5)*H;x=Math.max(70,Math.min(W-70,x));y=Math.max(60,Math.min(H-8,y));lblEl.style.left=x+'px';lblEl.style.top=y+'px';}
 
-/* ---------- Pointer orbit / zoom ---------- */
+/* ================= Orbit / zoom ================= */
 const pointers=new Map();let pinchStart=0;
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture?.(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const a=[...pointers.values()];pinchStart=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);}});
 canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;const old=pointers.get(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
 if(pointers.size===1){theta-=(e.clientX-old.x)*.008;phi=Math.max(.25,Math.min(2.75,phi-(e.clientY-old.y)*.008));}
-else if(pointers.size===2){const a=[...pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinchStart)radius=Math.max(13,Math.min(48,radius*pinchStart/d));pinchStart=d;}});
+else if(pointers.size===2){const a=[...pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinchStart&&d>0){radius=Math.max(13,Math.min(110,radius*pinchStart/d));userZoom=true;}pinchStart=d;}});
 ['pointerup','pointercancel'].forEach(ev=>canvas.addEventListener(ev,e=>{pointers.delete(e.pointerId);if(pointers.size<2)pinchStart=0;}));
-canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(13,Math.min(48,radius*(1+e.deltaY*.001)));},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(13,Math.min(110,radius*(1+e.deltaY*.001)));userZoom=true;},{passive:false});
 
-/* ---------- Dropdown menus ---------- */
+/* ================= Dropdown menus ================= */
 const menuBtns=[...document.querySelectorAll('[data-menu]')];
-function closeMenus(){menuBtns.forEach(b=>{b.classList.remove('open');$('#dd-'+b.dataset.menu).hidden=true;});}
+function closeMenus(keepSheets){menuBtns.forEach(b=>{const dd=$('#dd-'+b.dataset.menu);if(keepSheets&&dd.classList.contains('sheet')&&!dd.hidden)return;b.classList.remove('open');dd.hidden=true;});}
 menuBtns.forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const dd=$('#dd-'+b.dataset.menu),wasOpen=!dd.hidden;closeMenus();if(!wasOpen){dd.hidden=false;b.classList.add('open');}}));
 document.querySelectorAll('.dd').forEach(d=>d.addEventListener('click',e=>e.stopPropagation()));
-document.addEventListener('click',closeMenus);
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeMenus()));
+document.addEventListener('click',()=>closeMenus(true));
 
-/* ---------- State appliers ---------- */
+/* ================= Audio (all sounds synthesised on-device) ================= */
+const AU={ctx:null,mg:null,noise:null,n:{},on:false,vol:.7,mach:true,alarm:true,gei:false,narr:false};
+try{const j=JSON.parse(localStorage.getItem('phwr_audio')||'{}');AU.on=!!j.on;if(typeof j.vol==='number')AU.vol=Math.max(0,Math.min(1,j.vol));AU.mach=j.mach!==false;AU.alarm=j.alarm!==false;AU.gei=!!j.gei;AU.narr=!!j.narr;}catch(e){}
+function auSave(){try{localStorage.setItem('phwr_audio',JSON.stringify({on:AU.on,vol:AU.vol,mach:AU.mach,alarm:AU.alarm,gei:AU.gei,narr:AU.narr}));}catch(e){}}
+function auInit(){
+ if(AU.ctx)return true;
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+  const c=AU.ctx=new AC();
+  AU.mg=c.createGain();AU.mg.gain.value=0;AU.mg.connect(c.destination);
+  const len=c.sampleRate*2,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;AU.noise=buf;
+  const osc=(t,f)=>{const o=c.createOscillator();o.type=t;o.frequency.value=f;return o;};
+  const humG=c.createGain();humG.gain.value=0;humG.connect(AU.mg);
+  const o1=osc('sine',50),o2=osc('sine',100),g2=c.createGain();g2.gain.value=.5;o1.connect(humG);o2.connect(g2);g2.connect(humG);o1.start();o2.start();
+  const ns=c.createBufferSource();ns.buffer=buf;ns.loop=true;const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=220;bp.Q.value=.6;const pumpG=c.createGain();pumpG.gain.value=0;ns.connect(bp);bp.connect(pumpG);pumpG.connect(AU.mg);ns.start();
+  const to=osc('sawtooth',60),tl=c.createBiquadFilter();tl.type='lowpass';tl.frequency.value=500;const turbG=c.createGain();turbG.gain.value=0;to.connect(tl);tl.connect(turbG);turbG.connect(AU.mg);to.start();
+  AU.n={humG,pumpG,turbG,to};
+  return true;
+ }catch(e){AU.ctx=null;return false;}
+}
+function auApply(){if(!AU.ctx)return;AU.mg.gain.setTargetAtTime(AU.on?AU.vol*.9:0,AU.ctx.currentTime,.05);}
+function auResume(){try{if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();}catch(e){}}
+let lastAmb=0;
+function auAmbient(now,power,flow,tsp,gen){
+ if(!AU.ctx||!AU.on||now-lastAmb<120)return;lastAmb=now;const t=AU.ctx.currentTime,m=AU.mach;
+ AU.n.humG.gain.setTargetAtTime(m&&gen?.05+.05*power/100:0,t,.3);
+ AU.n.pumpG.gain.setTargetAtTime(m&&flow?.04+.12*power/100:0,t,.4);
+ AU.n.turbG.gain.setTargetAtTime(m?.08*tsp:0,t,.3);
+ AU.n.to.frequency.setTargetAtTime(55+190*tsp,t,.3);
+}
+function env(g,t,a,d,v){g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,v),t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d);}
+function tone(f,dur,type,v,delay,f2){if(!AU.ctx||!AU.on)return;try{const c=AU.ctx,t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);env(g,t,.01,dur,v||.15);o.connect(g);g.connect(AU.mg);o.start(t);o.stop(t+dur+.05);}catch(e){}}
+function burst(dur,ftype,f0,f1,v,delay){if(!AU.ctx||!AU.on||!AU.noise)return;try{const c=AU.ctx,t=c.currentTime+(delay||0),s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=AU.noise;f.type=ftype;f.frequency.setValueAtTime(f0,t);if(f1)f.frequency.exponentialRampToValueAtTime(f1,t+dur);env(g,t,.005,dur,v);s.connect(f);f.connect(g);g.connect(AU.mg);s.start(t,Math.random()*1.5,dur+.1);}catch(e){}}
+function siren(d){if(!AU.ctx||!AU.on)return;try{const c=AU.ctx,t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type='square';for(let i=0;i<Math.ceil(d/.45);i++)o.frequency.setValueAtTime(i%2?760:980,t+i*.45);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.08,t+.05);g.gain.setValueAtTime(.08,t+d-.2);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AU.mg);o.start(t);o.stop(t+d+.05);}catch(e){}}
+const SND={
+ stage(){if(AU.alarm){tone(660,.14,'sine',.14);tone(880,.2,'sine',.14,.16);}},
+ rods(){if(AU.mach)for(let i=0;i<6;i++)burst(.03,'bandpass',2400,0,.12,i*.12);},
+ pumps(){if(AU.mach)burst(1.6,'bandpass',150,500,.25);},
+ breaker(){if(AU.mach){burst(.05,'highpass',1500,0,.4);tone(110,.25,'square',.12,.05);}},
+ warn(){if(AU.alarm)for(let i=0;i<3;i++)tone(1000,.12,'square',.07,i*.3);},
+ scram(){if(AU.mach){tone(120,.5,'sine',.5,0,40);burst(.5,'lowpass',900,0,.5);}if(AU.alarm)siren(3.6);},
+ boom(){if(AU.mach){burst(2.8,'lowpass',2500,60,1);tone(70,2,'sine',.9,0,22);burst(1.2,'bandpass',400,0,.5,.3);}}
+};
+function say(text){try{if(!AU.on||!AU.narr||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text),vs=speechSynthesis.getVoices(),want=lang==='hi'?'hi':'en';u.lang=lang==='hi'?'hi-IN':'en-IN';const v=vs.find(v=>v.lang&&v.lang.replace('_','-').toLowerCase().startsWith(lang==='hi'?'hi':'en-in'))||vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(want));if(v)u.voice=v;u.rate=.95;u.volume=AU.vol;speechSynthesis.speak(u);}catch(e){}}
+function geiRate(){return S.ch>=0?(CH[S.ch].c.gei||1.5):1.5;}
+setInterval(()=>{if(!AU.ctx||!AU.on||document.hidden)return;
+ if(AU.gei&&Math.random()<geiRate()*.06)burst(.012,'highpass',3500,0,.35);
+ if(AU.mach&&S.ch>=0&&CH[S.ch].c.fire&&Math.random()<.5)burst(.05+Math.random()*.06,'highpass',1800,0,.12*Math.random());},60);
+document.addEventListener('pointerdown',()=>{if(AU.on){auInit();auResume();auApply();}},true);
+document.addEventListener('visibilitychange',()=>{try{if(document.hidden){if(AU.ctx)AU.ctx.suspend();if(window.speechSynthesis)speechSynthesis.cancel();}else if(AU.on)auResume();}catch(e){}});
+
+/* ================= State appliers ================= */
+function shellVis(){outer.visible=outerCap.visible=S.cont;inner.visible=innerCap.visible=S.cont&&S.ch<0;}
 function setCutaway(on){S.cutaway=on;[outer,outerCap,inner,innerCap].forEach((m,i)=>{m.material.opacity=on?(i<2?.075:.13):(i<2?.22:.28);});renderText();}
 function setExploded(on){S.exploded=on;outer.position.x=outerCap.position.x=on?1.8:0;inner.position.x=innerCap.position.x=on?-.8:0;eccsTank.position.x=on?-7:-6;renderText();}
-function setScram(on){
- if(on){stopAuto();S.prevStage=S.stage;S.scram=true;S.rod=0;S.turb=false;S.gen=false;tween={p:+$('#power').value,t:+$('#temp').value,tp:0,tt:+$('#temp').value};renderText();}
- else{S.scram=false;applyStage(S.prevStage);}
-}
+function setPdhrs(v){S.pdhrs=v;pdhrsPool.visible=v;poolLine.visible=v;renderText();}
+function setEccs(v){S.eccs=v;eccsTank.visible=v;eccsLine.visible=v;renderText();}
+function setCont(v){S.cont=v;shellVis();renderText();}
+function setChan(v){S.chan=v;channels.visible=v;fuel.visible=v;renderText();}
+function updateReadouts(){const p=+$('#power').value,t=+$('#temp').value,c=S.ch>=0?CH[S.ch].c:null;
+ $('#powerOut').textContent=p+'%';$('#tempOut').textContent=t+' °C';
+ $('#powerRead').textContent=(c&&c.pw)||p+'%';$('#tempRead').textContent=(c&&c.tp)||t+' °C';}
+function stopAuto(){if(autoT){clearInterval(autoT);autoT=null;}S.auto=false;}
+function leaveStory(){if(S.ch>=0)setCh(-1,true);}
+
 function applyStage(n,instant){
+ const was=S.stage,wasRod=S.rod,wasFlow=$('#flowToggle').checked,wasGen=S.gen;
  S.stage=n;const c=STG[n][2];S.rod=c.rod;S.turb=c.turb;S.gen=c.gen;
  $('#flowToggle').checked=c.flow;setPdhrs(true);setEccs(c.eccs);
  if(instant){rodLvl=c.rod;ts=c.turb?1:0;$('#power').value=c.power;$('#temp').value=c.temp;tween=null;}
- else tween={p:+$('#power').value,t:+$('#temp').value,tp:c.power,tt:c.temp};
+ else{tween={p:+$('#power').value,t:+$('#temp').value,tp:c.power,tt:c.temp};
+  if(c.rod!==wasRod)SND.rods();if(c.flow&&!wasFlow)SND.pumps();if(c.gen&&!wasGen)SND.breaker();SND.stage();say(STG[n][0][L()]+'. '+STG[n][1][L()]);}
  renderText();
 }
-function stepStage(d){S.scram=false;applyStage(Math.max(0,Math.min(8,S.stage+d)));}
-function stopAuto(){if(autoT){clearInterval(autoT);autoT=null;}S.auto=false;}
+function stepStage(d){leaveStory();S.scram=false;applyStage(Math.max(0,Math.min(9,S.stage+d)));}
 function toggleAuto(){
+ leaveStory();
  if(S.auto){stopAuto();renderText();return;}
  S.auto=true;
- if(S.scram||S.stage>=8){S.scram=false;applyStage(0,true);}
+ if(S.scram||S.stage>=9){S.scram=false;applyStage(0,true);}
  stepStage(1);
- autoT=setInterval(()=>{if(S.stage<8)stepStage(1);else{stopAuto();renderText();}},3500);
+ autoT=setInterval(()=>{if(S.stage<9)stepStage(1);else{stopAuto();renderText();}},4000);
 }
-function updateReadouts(){const power=+$('#power').value,temp=+$('#temp').value;$('#powerOut').textContent=power+'%';$('#powerRead').textContent=power+'%';$('#tempOut').textContent=temp+' °C';$('#tempRead').textContent=temp+' °C';}
-function setPdhrs(v){S.pdhrs=v;pdhrsPool.visible=v;poolLine.visible=v;renderText();}
-function setEccs(v){S.eccs=v;eccsTank.visible=v;eccsLine.visible=v;renderText();}
-function setCont(v){S.cont=v;[outer,outerCap,inner,innerCap].forEach(m=>m.visible=v);renderText();}
-function setChan(v){S.chan=v;channels.visible=v;fuel.visible=v;renderText();}
+function setScram(on){
+ leaveStory();
+ if(on){stopAuto();S.prevStage=S.stage;S.scram=true;S.rod=0;S.turb=false;S.gen=false;
+  const t0=+$('#temp').value;tween={p:+$('#power').value,t:t0,tp:Math.min(+$('#power').value,5),tt:Math.min(t0,260)};
+  SND.scram();say(tx('stScram')+'. '+tx('scramNote'));renderText();}
+ else{S.scram=false;applyStage(S.prevStage);}
+}
 
-/* ---------- Text rendering (language aware) ---------- */
+/* Chernobyl story */
+function boom(){boomT=0;shakeT=1.4;debris.forEach(d=>{d.on=true;d.mesh.visible=true;d.mesh.position.set((Math.random()-.5)*3,.5,(Math.random()-.5)*2);d.v.set((Math.random()-.5)*12,6+Math.random()*9,(Math.random()-.5)*12);});SND.boom();}
+function setCh(i,quiet){
+ const was=S.ch;
+ if(i>=0&&was<0){stopAuto();S.scram=false;}
+ S.ch=i;
+ if(i<0){debris.forEach(d=>{d.on=false;d.mesh.visible=false;});flash.visible=false;boomLight.intensity=0;boomT=9;shellVis();applyStage(9,true);return;}
+ const c=CH[i].c;
+ S.rod=c.rod;S.turb=!!c.turb;S.gen=!!c.gen;$('#flowToggle').checked=!!c.flow;setPdhrs(false);setEccs(!!c.eccs);shellVis();
+ tween={p:+$('#power').value,t:+$('#temp').value,tp:c.power,tt:c.temp};
+ if(i<6){debris.forEach(d=>{d.on=false;d.mesh.visible=false;});boomT=9;}
+ if(!quiet){if(i===4)SND.warn();if(i===5)SND.scram();if(i===6&&was<6)boom();else if(i!==5&&i!==4)SND.stage();say(CH[i].t[L()]+'. '+CH[i].d[L()]);}
+ renderText();
+}
+
+/* ================= Text rendering (language aware) ================= */
 function renderText(){
 document.documentElement.lang=lang==='hi'?'hi':'en';
 document.querySelectorAll('[data-t]').forEach(el=>el.textContent=tx(el.dataset.t));
-const power=+$('#power').value,temp=+$('#temp').value;
-$('#powerOut').textContent=power+'%';$('#powerRead').textContent=power+'%';$('#tempOut').textContent=temp+' °C';$('#tempRead').textContent=temp+' °C';
+updateReadouts();
+const story=S.ch>=0;
+$('#power').disabled=$('#temp').disabled=story;
 $('#flowRead').textContent=tx($('#flowToggle').checked?'active':'paused');
-$('#scramRead').textContent=tx(S.scram?'demoActive':'ready');
-$('#statusText').textContent=S.scram?tx('stScram'):STG[S.stage][0][L()];
-document.querySelectorAll('#stageList button').forEach(b=>{const n=+b.dataset.n;b.textContent=STG[n][0][L()];b.classList.toggle('cur',n===S.stage&&!S.scram);b.classList.toggle('done',n<S.stage&&!S.scram);});
-$('#stageDesc').textContent=S.scram?tx('stScram'):STG[S.stage][1][L()];
+$('#scramRead').textContent=story?tx('storyMode'):tx(S.scram?'demoActive':'ready');
+$('#statusText').textContent=story?tx('stChern')+': '+CH[S.ch].t[L()]:(S.scram?tx('stScram'):STG[S.stage][0][L()]);
+$('#statusDot').style.background=$('#statusDot').style.color=story?'#ff6b73':(S.scram?'#ffc45b':'#38e0a0');
+document.querySelectorAll('#stageDots button').forEach(b=>{const n=+b.dataset.n;b.classList.toggle('cur',n===S.stage&&!S.scram&&!story);b.classList.toggle('done',n<S.stage&&!S.scram&&!story);});
+$('#stageTitle').textContent=story?CH[S.ch].t[L()]:(S.scram?tx('stScram'):STG[S.stage][0][L()]);
+$('#stageDesc').textContent=story?CH[S.ch].d[L()]:(S.scram?tx('scramNote'):STG[S.stage][1][L()]);
 $('#prevBtn').textContent=tx('prev');$('#nextBtn').textContent=tx('next');$('#autoBtn').textContent=tx(S.auto?'autoStop':'auto');$('#coldBtn').textContent=tx('cold');
-$('#statusDot').style.background=$('#statusDot').style.color=S.scram?'#ffc45b':'#38e0a0';
 $('#resetSim').textContent=tx('reset');$('#normalMode').textContent=tx('normal');$('#safetyMode').textContent=tx('safety');
 const sb=$('#scramBtn');sb.textContent=tx(S.scram?'scramReset':'scram');sb.classList.toggle('primary',S.scram);sb.classList.toggle('danger',!S.scram);
 $('#pdhrsBtn').textContent=tx('pdhrs')+': '+onoff(S.pdhrs);$('#pdhrsBtn').classList.toggle('primary',S.pdhrs);
@@ -365,47 +534,79 @@ $('#cutawayBtn').textContent=tx(S.cutaway?'cutawayOn':'cutaway');$('#explodeBtn'
 $('#spinBtn').textContent=tx(S.spin?'spinPause':'spinResume');
 $('#containmentBtn').textContent=tx('cont')+': '+tx(S.cont?'vis':'hid');$('#rodsBtn').textContent=tx('chan')+': '+tx(S.chan?'vis':'hid');
 $('#topBtn').textContent=tx('top');$('#sideBtn').textContent=tx('side');$('#resetView').textContent=tx('resetView');
-menuBtns.forEach(b=>b.setAttribute('aria-label',tx('m_'+b.dataset.menu==='m_ctrl'?'m_ctrl':'m_'+b.dataset.menu)));
+menuBtns.forEach(b=>b.setAttribute('aria-label',tx('m_'+b.dataset.menu)));
+/* Chernobyl panel */
+document.querySelectorAll('#chDots button').forEach(b=>{const n=+b.dataset.n;b.classList.toggle('cur',n===S.ch);b.classList.toggle('done',n<S.ch);});
+$('#chTitle').textContent=story?(S.ch+1)+'/'+CH.length+' · '+CH[S.ch].t[L()]:tx('chIntroT');
+$('#chText').textContent=story?CH[S.ch].d[L()]:tx('chIntroD');
+$('#chPrev').textContent=tx('prev');$('#chPrev').disabled=!story;
+$('#chNext').textContent=story?tx('next'):tx('chBegin');$('#chNext').disabled=story&&S.ch>=CH.length-1;
+$('#chExit').textContent=tx('chExit');$('#chExit').disabled=!story;
+/* Sound panel */
+$('#soundBtn').textContent=tx(AU.on?'soundOff':'soundOn');$('#soundBtn').classList.toggle('primary',!AU.on);
+$('#soundIcon').textContent=AU.on?'🔊':'🔇';
+$('#vol').value=Math.round(AU.vol*100);$('#volOut').textContent=Math.round(AU.vol*100)+'%';
+$('#tMach').checked=AU.mach;$('#tAlarm').checked=AU.alarm;$('#tGei').checked=AU.gei;$('#tNarr').checked=AU.narr;
 renderLabel();
 }
 
-/* ---------- Wiring ---------- */
-$('#langBtn').onclick=e=>{e.stopPropagation();lang=lang==='hi'?'en':'hi';try{localStorage.setItem('phwr_lang',lang);}catch(_){}renderText();};
-$('#power').addEventListener('input',renderText);$('#temp').addEventListener('input',renderText);$('#flowToggle').addEventListener('change',renderText);
+/* ================= Wiring ================= */
+$('#langBtn').onclick=e=>{e.stopPropagation();lang=lang==='hi'?'en':'hi';try{localStorage.setItem('phwr_lang',lang);}catch(_){}try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(_){}renderText();};
+$('#power').addEventListener('input',()=>{tween=null;updateReadouts();});$('#temp').addEventListener('input',()=>{tween=null;updateReadouts();});$('#flowToggle').addEventListener('change',()=>{leaveStory();renderText();});
 $('#cutawayBtn').onclick=()=>setCutaway(!S.cutaway);$('#explodeBtn').onclick=()=>setExploded(!S.exploded);
 $('#spinBtn').onclick=()=>{S.spin=!S.spin;renderText();};
-$('#scramBtn').onclick=()=>setScram(!S.scram);$('#pdhrsBtn').onclick=()=>setPdhrs(!S.pdhrs);$('#eccsBtn').onclick=()=>setEccs(!S.eccs);
+$('#scramBtn').onclick=()=>setScram(!S.scram);$('#pdhrsBtn').onclick=()=>{leaveStory();setPdhrs(!S.pdhrs);};$('#eccsBtn').onclick=()=>{leaveStory();setEccs(!S.eccs);};
 $('#containmentBtn').onclick=()=>setCont(!S.cont);$('#rodsBtn').onclick=()=>setChan(!S.chan);
-$('#topBtn').onclick=()=>{theta=0;phi=.22;radius=34;};$('#sideBtn').onclick=()=>{theta=Math.PI/2;phi=1.55;radius=29;};
-$('#resetView').onclick=()=>{theta=.72;phi=1.08;radius=29;S.spin=true;setCutaway(false);setExploded(false);};
+const topV=()=>{theta=0;phi=.22;radius=fitR()*1.1;userZoom=false;},sideV=()=>{theta=Math.PI/2;phi=1.55;radius=fitR();userZoom=false;};
+$('#topBtn').onclick=topV;$('#sideBtn').onclick=sideV;
+$('#resetView').onclick=()=>{theta=.72;phi=1.08;userZoom=false;radius=fitR();S.spin=true;setCutaway(false);setExploded(false);};
 $('#normalMode').onclick=()=>{setCutaway(false);setExploded(false);setCont(true);setChan(true);[sg,condenser,tower].forEach(m=>m.visible=true);};
-$('#safetyMode').onclick=()=>{setCutaway(true);setExploded(true);setEccs(true);setPdhrs(true);};
-$('#resetSim').onclick=()=>{stopAuto();S.scram=false;applyStage(8,true);setCutaway(false);setExploded(false);setCont(true);setChan(true);hideLabel();renderText();};
-
-/* ---------- Start-up wiring ---------- */
-STG.forEach((s,n)=>{const b=document.createElement('button');b.type='button';b.dataset.n=n;b.className='step';b.onclick=()=>{stopAuto();S.scram=false;applyStage(n);};$('#stageList').appendChild(b);});
+$('#safetyMode').onclick=()=>{leaveStory();setCutaway(true);setExploded(true);setEccs(true);setPdhrs(true);};
+$('#resetSim').onclick=()=>{stopAuto();S.scram=false;if(S.ch>=0)S.ch=-1;debris.forEach(d=>{d.on=false;d.mesh.visible=false;});shellVis();applyStage(9,true);setCutaway(false);setExploded(false);setCont(true);setChan(true);hideLabel();renderText();};
+/* startup */
+STG.forEach((s,n)=>{const b=document.createElement('button');b.type='button';b.dataset.n=n;b.textContent=n;b.setAttribute('aria-label',s[0][1]);b.onclick=()=>{leaveStory();stopAuto();S.scram=false;applyStage(n);};$('#stageDots').appendChild(b);});
 $('#prevBtn').onclick=()=>{stopAuto();stepStage(-1);};$('#nextBtn').onclick=()=>{stopAuto();stepStage(1);};
-$('#autoBtn').onclick=toggleAuto;$('#coldBtn').onclick=()=>{stopAuto();S.scram=false;applyStage(0);};
-$('#power').addEventListener('input',()=>{tween=null;updateReadouts();});$('#temp').addEventListener('input',()=>{tween=null;updateReadouts();});
+$('#autoBtn').onclick=toggleAuto;$('#coldBtn').onclick=()=>{leaveStory();stopAuto();S.scram=false;applyStage(0);};
+/* story */
+CH.forEach((s,n)=>{const b=document.createElement('button');b.type='button';b.dataset.n=n;b.textContent=n+1;b.setAttribute('aria-label',s.t[1]);b.onclick=()=>setCh(n);$('#chDots').appendChild(b);});
+$('#chNext').onclick=()=>setCh(S.ch<0?0:Math.min(CH.length-1,S.ch+1));
+$('#chPrev').onclick=()=>{if(S.ch>0)setCh(S.ch-1);else if(S.ch===0)setCh(-1);};
+$('#chExit').onclick=()=>setCh(-1);
+/* sound */
+$('#soundBtn').onclick=()=>{AU.on=!AU.on;if(AU.on){if(!auInit()){AU.on=false;showErr('Audio not supported on this device / इस डिवाइस पर ध्वनि समर्थित नहीं');}else{auResume();auApply();tone(660,.14,'sine',.14);tone(880,.2,'sine',.14,.16);}}else{auApply();try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}}auSave();renderText();};
+$('#vol').addEventListener('input',e=>{AU.vol=(+e.target.value)/100;auApply();auSave();$('#volOut').textContent=e.target.value+'%';});
+[['#tMach','mach'],['#tAlarm','alarm'],['#tGei','gei'],['#tNarr','narr']].forEach(([id,k])=>$(id).addEventListener('change',e=>{AU[k]=e.target.checked;if(k==='narr'&&!AU.narr){try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(_){}}auSave();}));
 
-/* ---------- Render loop (all motion illustrative) ---------- */
-let prev=performance.now(),lastGe=-1,halted=false;
+/* ================= Render loop (all motion illustrative) ================= */
+let prev=performance.now(),halted=false;const flowEl=$('#flowToggle'),yAxis=new THREE.Vector3(0,1,0);
 function frame(now){
 if(halted)return;requestAnimationFrame(frame);
 try{
 const dt=Math.max(0,Math.min(.05,(now-prev)/1000));prev=now;
+const cc=S.ch>=0?CH[S.ch].c:null;
 if(S.spin&&!pointers.size)theta+=dt*.09;cameraUpdate();
+if(shakeT>0){shakeT=Math.max(0,shakeT-dt);const a=shakeT*.5;camera.position.x+=(Math.random()-.5)*a;camera.position.y+=(Math.random()-.5)*a;}
 rodLvl+=(S.rod-rodLvl)*Math.min(1,dt*(S.rod<rodLvl?6:1.6));
-anim.forEach(({obj,baseY,phase})=>{const wob=rodLvl>.98?Math.sin(now*.0016+phase)*.08:0;const target=-0.7+(baseY+0.7)*rodLvl+wob;obj.position.y+=(target-obj.position.y)*Math.min(1,dt*6);});
-ts+=((S.turb?1:0)-ts)*Math.min(1,dt*1.2);turbine.rotation.z+=ts*1.5*dt;
-const ge=S.gen?0x16a874:0x063d2b;if(ge!==lastGe){green.emissive.setHex(ge);lastGe=ge;}
-if(tween){const mv=(a,b,s)=>Math.abs(b-a)<=s?b:a+Math.sign(b-a)*s;tween.p=mv(tween.p,tween.tp,14*dt);tween.t=mv(tween.t,tween.tt,30*dt);
- $('#power').value=Math.round(tween.p/5)*5;$('#temp').value=Math.round(tween.t/5)*5;updateReadouts();if(tween.p===tween.tp&&tween.t===tween.tt)tween=null;}
-const flow=$('#flowToggle').checked;
+anim.forEach(({obj,baseY,phase})=>{const wob=(!cc&&rodLvl>.98)?Math.sin(now*.0016+phase)*.08:0;const target=-0.7+(baseY+0.7)*rodLvl+wob;obj.position.y+=(target-obj.position.y)*Math.min(1,dt*6);});
+ts+=((S.turb?1:0)-ts)*Math.min(1,dt*(S.turb?.8:.5));rotor.rotation.x+=ts*9*dt;
+genGlow+=((S.gen?1:0)-genGlow)*Math.min(1,dt*3);green.emissive.setRGB(.02+.06*genGlow,.24+.36*genGlow,.17+.28*genGlow);
+heatCur+=((cc?cc.heat:0)-heatCur)*Math.min(1,dt*1.5);blue.emissive.setRGB(heatCur*.9,heatCur*.12,0);
+capLift+=((cc&&cc.lift?1:0)-capLift)*Math.min(1,dt*1.2);
+outerCap.position.y=4.4+capLift*9;outerCap.rotation.z=capLift*.6;outerCap.rotation.x=capLift*.25;
+if(tween){const mv=(a,b,s)=>Math.abs(b-a)<=s?b:a+Math.sign(b-a)*s;tween.p=mv(tween.p,tween.tp,18*dt);tween.t=mv(tween.t,tween.tt,40*dt);
+ $('#power').value=Math.round(tween.p);$('#temp').value=Math.round(tween.t/5)*5;updateReadouts();if(tween.p===tween.tp&&tween.t===tween.tt)tween=null;}
+const flow=flowEl.checked;
 particles.forEach(p=>{if(flow){p.t=(((p.t+dt*p.speed)%1)+1)%1;p.mesh.visible=true;const pt=p.curve.getPointAt(Math.min(.9999,Math.max(0,p.t)));if(pt)p.mesh.position.copy(pt);}else p.mesh.visible=false;});
+/* story effects */
+fire.visible=!!(cc&&cc.fire);if(fire.visible){flames.forEach((f,i)=>{f.scale.y=.7+.6*Math.abs(Math.sin(now*.01+i*1.7));f.scale.x=f.scale.z=.8+.3*Math.sin(now*.013+i);});fireLight.intensity=2+Math.random()*1.5;}else fireLight.intensity=0;
+zone.visible=!!(cc&&cc.zone);sarc.visible=!!(cc&&cc.sarc);
+if(cc&&cc.cloud){puffs.forEach(p=>{p.life+=dt*.07;if(p.life>1)p.life-=1;const t=p.life;p.mesh.visible=true;p.mesh.position.set(p.vx*t,.5+p.vy*t,p.vz*t);const sc=(.6+2.4*t)*(t>.8?(1-t)/.2:1);p.mesh.scale.setScalar(Math.max(.01,sc));});}else puffs.forEach(p=>{p.mesh.visible=false;});
+if(boomT<2.2){boomT+=dt;const e=Math.min(1,boomT/2.2);flash.visible=true;flash.scale.setScalar(1+e*11);flash.material.opacity=.9*Math.pow(1-e,1.5);boomLight.intensity=14*(1-e);if(e>=1){flash.visible=false;boomLight.intensity=0;}}
+debris.forEach(d=>{if(!d.on)return;d.v.y-=9*dt;d.mesh.position.addScaledVector(d.v,dt);d.mesh.rotation.x+=dt*4;d.mesh.rotation.z+=dt*3;if(d.mesh.position.y<-6.3){d.mesh.position.y=-6.3;d.v.set(0,0,0);d.on=false;}});
+auAmbient(now,+$('#power').value,flow,ts,genGlow>.5);
 updateLabelPos();renderer.render(scene,camera);
 }catch(err){halted=true;showErr('Render error: '+(err&&err.message||err));}
 }
-applyStage(8,true);resize();cameraUpdate();requestAnimationFrame(frame);
+setCh(-1,true);resize();radius=fitR();cameraUpdate();renderText();requestAnimationFrame(frame);
 })();
 </script></body></html>
