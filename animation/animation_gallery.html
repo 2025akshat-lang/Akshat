@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Science Models</title>
+<title>Interactive Science Animation</title>
 <style>
   * {
     box-sizing: border-box;
@@ -343,7 +343,7 @@
       </svg>
     `,
 
-    // NEW: Thomson Plum Pudding Model Graphic
+    // Thomson Plum Pudding Model Graphic
     thomson: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#1a0f14"/>
@@ -363,7 +363,7 @@
       </svg>
     `,
 
-    // NEW: Temperature Scale Graphic
+    // Temperature Scale Graphic
     tempScale: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0b1329"/>
@@ -380,6 +380,8 @@
         <text x="80" y="22" fill="#38bdf8" font-size="11" font-weight="bold">Temperature Scale</text>
       </svg>
     `,
+
+    // Bohr Atom Model Graphic
     bohr: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0a1020"/>
@@ -397,6 +399,26 @@
         <circle cx="106" cy="144" r="4" fill="#38bdf8"/>
         <text x="95" y="28" fill="#38bdf8" font-size="11" font-weight="bold">Bohr Atom Model</text>
         <text x="95" y="180" fill="#94a3b8" font-size="9">Electrons in Energy Shells</text>
+      </svg>
+    `,
+
+    // NEW: Nuclear Reactor Graphic
+    nuclear: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#0b1220"/>
+        <rect x="95" y="60" width="110" height="95" rx="10" stroke="#38bdf8" stroke-width="3" fill="rgba(56,189,248,0.1)"/>
+        <rect x="108" y="40" width="6" height="55" fill="#94a3b8"/>
+        <rect x="147" y="40" width="6" height="55" fill="#94a3b8"/>
+        <rect x="186" y="40" width="6" height="55" fill="#94a3b8"/>
+        <rect x="120" y="100" width="8" height="45" fill="#facc15"/>
+        <rect x="136" y="100" width="8" height="45" fill="#facc15"/>
+        <rect x="156" y="100" width="8" height="45" fill="#facc15"/>
+        <rect x="172" y="100" width="8" height="45" fill="#facc15"/>
+        <circle cx="150" cy="125" r="3" fill="#ef4444"/>
+        <path d="M 205 110 H 250 V 150" stroke="#0ea5e9" stroke-width="3" fill="none"/>
+        <path d="M 95 130 H 50 V 90" stroke="#ef4444" stroke-width="3" fill="none"/>
+        <text x="85" y="26" fill="#facc15" font-size="11" font-weight="bold">Nuclear Reactor</text>
+        <text x="80" y="177" fill="#94a3b8" font-size="9">Fuel Rods &amp; Control Rods</text>
       </svg>
     `
   };
@@ -420,10 +442,10 @@
     { id: 12, title: "Tyndall Effect", svg: "tyndall", file: "tyndall%20effect.html" },
     { id: 13, title: "Rutherford Gold Foil Experiment", svg: "rutherford", file: "rutherford-goldfoil.html" },
     { id: 14, title: "Cathode Ray Tube Lab", svg: "cathodeRay", file: "cathode_ray_tube_lab.html" },
-
     { id: 15, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model%203D%20%28Watermelon%29.html" },
     { id: 16, title: "Temperature Scale", svg: "tempScale", file: "temperature-scale.html" },
-   { id: 17, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" }
+    { id: 17, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" },
+    { id: 18, title: "Nuclear Reactor", svg: "nuclear", file: "neuclear-reactor.html" }
   ];
 
   // Card tap karne par asli file ka page khulta hai (container ke andar nahi).
