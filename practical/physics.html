@@ -130,169 +130,105 @@
         @keyframes moving-flower-3 { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(-20deg); } }
         @keyframes light-ans { 0% { opacity: 0; transform: translateY(0vmin); } 25% { opacity: 1; transform: translateY(-8vmin) translateX(-2vmin); } 50% { opacity: 0.5; transform: translateY(-18vmin) translateX(2vmin); } 75% { opacity: 0.9; transform: translateY(-28vmin) translateX(-2vmin); } 100% { opacity: 0; transform: translateY(-35vmin) translateX(2vmin); } }
 
-        /* --- OVERLAY INTERFACE STYLES --- */
-        .app-overlay {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-        }
+        
+      /* --- OVERLAY INTERFACE STYLES --- */
+.app-overlay { position: relative; z-index: 10; width: 100%; text-align: center; padding: 0 16px; }
 
-        /* Aesthetics Glass Buttons */
-        .ui-btn {
-            display: block;
-            width: 100%;
-            padding: 16px 20px;
-            margin: 12px 0;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            text-transform: uppercase;
-        }
+.ui-btn {
+    display: block; width: 100%; padding: 16px 20px; margin: 12px 0;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.5px; color: #fff;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-transform: uppercase;
+}
+.ui-btn:hover {
+    background: rgba(255,107,139,0.25); border-color: rgba(255,107,139,0.5);
+    transform: translateY(-3px); box-shadow: 0 12px 20px rgba(241,66,108,0.3);
+}
+.ui-btn-main {
+    font-size: 18px; padding: 20px;
+    background: linear-gradient(135deg, rgba(255,107,139,0.4), rgba(241,66,108,0.2));
+    border-color: rgba(255,107,139,0.6); box-shadow: 0 0 25px rgba(255,107,139,0.4);
+}
+.ui-btn-back { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); margin-top: 20px; }
 
-        .ui-btn:hover {
-            background: rgba(255, 107, 139, 0.25);
-            border-color: rgba(255, 107, 139, 0.5);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 20px rgba(241, 66, 108, 0.3);
-            width:100%;
-        }
+/* ===== FULLSCREEN MODAL ===== */
+#modal-overlay {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh; height: 100dvh;
+    background: #05070f;
+    z-index: 100;
+    display: none;
+}
+#modal-overlay.active { display: block; }
 
-        .ui-btn-main {
-            font-size: 18px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(255, 107, 139, 0.4), rgba(241, 66, 108, 0.2));
-            border-color: rgba(255, 107, 139, 0.6);
-            box-shadow: 0 0 25px rgba(255, 107, 139, 0.4);
-        }
+.modal-box {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #0b1020, #0f1730);
+    overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 14px 40px;
+    color: #e2e8f0;
+    text-align: left;
+}
+#modal-content { max-width: 900px; margin: 0 auto; }
 
-        .ui-btn-back {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: rgba(239, 68, 68, 0.4);
-            margin-top: 20px;
-        }
-
-        /* Modal Overlay & Card Fixes */
-        #modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 3, 0.8);
-            backdrop-filter: blur(15px);
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        #modal-overlay.active { display: flex; }
-
-        .modal-box {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(255, 107, 139, 0.3);
-            border-radius: 20px;
-            width: auto;
-            max-width: auto;
-            max-height: 100vh;
-            overflow: auto;
-            
-            padding: 25px;
-            color: #e2e8f0;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-
-        .section-box {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .section-box h3 {
-            color: var(--petal-color-1);
-            font-size: 14px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            letter-spacing: 1px;overflow-x: auto;
-        }
-
-        .exp-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .formula-box {
-            background: rgba(0,0,0,0.4);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-family: monospace;overflow-x: auto;
-        }
-        .close-btn-top {
-    display: block;
-    width: 100%;
-    padding: 10px 12px;
-    background: rgba(255, 107, 159, 0.4);
-    color: #fff;
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    border-radius: 25px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 18px;
+.close-btn-top {
+    position: sticky; top: 0; z-index: 5;
+    display: block; width: 100%;
+    margin: 0 0 16px; padding: 14px 12px;
+    background: rgba(244,63,94,0.75);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: #fff; border: none; border-radius: 0 0 18px 18px;
+    font-size: 15px; font-weight: 700; letter-spacing: 1px; cursor: pointer;
 }
 
-.close-btn-top:hover,
-.close-btn:hover {
-    background: rgba(239, 68, 68, 0.35);
+.exp-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 16px; text-align: center; line-height: 1.3; }
+
+.section-box {
+    background: rgba(255,255,255,0.04); border-radius: 14px;
+    padding: 16px; margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow-x: hidden;
+}
+.section-box h3 { color: var(--petal-color-1); font-size: 14px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
+.section-box p, .section-box li { font-size: 14px; line-height: 1.7; }
+.section-box ul { padding-left: 20px; }
+
+.formula-box {
+    background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px;
+    text-align: center; overflow-x: auto; font-size: 14px;
 }
 
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
-        th, td { 
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    padding: 8px; 
-    text-align: center; 
-    color: #ffffff; /* Text ko clean white dikhane ke liye */
+/* Calculations / Result / Procedure text */
+.calc-box { font-size: 14px; line-height: 1.8; text-align: left; overflow-x: hidden; word-break: break-word; }
+.calc-box mjx-container[display="true"] {
+    overflow-x: auto; overflow-y: hidden;
+    max-width: 100%; padding: 6px 0; margin: 6px 0 !important;
 }
+.formula-box mjx-container[display="true"] { overflow-x: auto; max-width: 100%; }
 
-th { 
-    background: rgba(255, 107, 139, 0.4); /* Solid / High Contrast pink background */
-    color: #ffffff;
-    font-weight: 600;
-}
+.circuit-container svg { width: 100%; height: auto; max-height: 70vh; display: block; }
 
-td {
-    background: rgba(255, 255, 255, 0.05); /* Data rows ko dark par visible rakhne ke liye */
-}
+/* Tables */
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+th, td { border: 1px solid rgba(255,255,255,0.2); padding: 8px; text-align: center; color: #fff; }
+th { background: rgba(255,107,139,0.4); font-weight: 600; }
+td { background: rgba(255,255,255,0.05); }
 
+/* Modal khulte hi background animation poori band */
+body.modal-open .night,
+body.modal-open .flowers { display: none !important; }
+body.modal-open { overflow: hidden; }
+</style>  
 
-        .close-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: var(--petal-color-2);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-    </style>
+        
+
+        
+    
 </head>
 <body>
 
@@ -2315,38 +2251,38 @@ The time constant of an RC circuit is the time required for the capacitor to cha
 
         const appContainer = document.getElementById('app-container');
 
-        // LEVEL 1: Clean Single Main Button
         function renderHome() {
             appContainer.innerHTML = `
                 <button class="ui-btn ui-btn-main" onclick="renderBranches()">🌸 PHYSICS MANUAL 🌸</button>
             `;
         }
 
-        // LEVEL 2: Branches (Thermal, Electrical, Optics etc.)
         function renderBranches() {
             const branches = [...new Set(physicsData.map(item => item.branch))];
-            
-            let html = branches.map(b => 
+            let html = branches.map(b =>
                 `<button class="ui-btn" onclick="renderSubBranches('${b}')">${b.toUpperCase()}</button>`
             ).join('');
-
             html += `<button class="ui-btn ui-btn-back" onclick="renderHome()">← BACK TO MAIN</button>`;
             appContainer.innerHTML = html;
         }
 
-        // LEVEL 3: Sub-Branches (Filtered Practicals)
         function renderSubBranches(branch) {
             const filtered = physicsData.filter(d => d.branch === branch);
-
-            let html = filtered.map(exp => 
+            let html = filtered.map(exp =>
                 `<button class="ui-btn" onclick="openModal('${exp.id}')">${exp.title}</button>`
             ).join('');
-
             html += `<button class="ui-btn ui-btn-back" onclick="renderBranches()">← BACK TO BRANCHES</button>`;
             appContainer.innerHTML = html;
         }
 
-        // LEVEL 4: Detail Modal (TERA ORIGINAL WORKING MODAL LOGIC)
+        // **bold**, "* " bullets aur newlines ko HTML me badalta hai
+        function fmt(t) {
+            return String(t || '')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^(\s*)\* /gm, '$1• ')
+                .replace(/\n/g, '<br>');
+        }
+
         function openModal(id) {
             const exp = physicsData.find(e => e.id === id);
             if (!exp) return;
@@ -2355,57 +2291,59 @@ The time constant of an RC circuit is the time required for the capacitor to cha
             if (exp.tables && exp.tables.length > 0) {
                 exp.tables.forEach(t => {
                     tablesHTML += `
-                        <p style="font-size:12px; color:#cbd5e1; margin-top:10px; font-weight:600;">${t.heading}</p>
+                        <p style="font-size:13px; color:#cbd5e1; margin-top:12px; font-weight:600;">${t.heading}</p>
                         <div class="table-responsive">
                             <table>
-                                <thead>
-                                    <tr>${t.headers.map(h => `<th>${h}</th>`).join('')}</tr>
-                                </thead>
-                                <tbody>
-                                    ${t.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
-                                </tbody>
+                                <thead><tr>${t.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                                <tbody>${t.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
                             </table>
-                        </div>
-                    `;
+                        </div>`;
                 });
             }
 
-            let circuitHTML = exp.circuitSvg ? `<div class="section-box"><h3>Diagram</h3><div class="circuit-container">${exp.circuitSvg}</div></div>` : '';
-            let procedureHTML = exp.procedure ? `<div class="section-box"><h3>Procedure</h3><div style="font-size: 13px; line-height: 1.6;">${exp.procedure.replace(/\n/g, '<br>')}</div></div>` : '';
-            let apparatusText = Array.isArray(exp.apparatus) ? exp.apparatus.join(', ') : exp.apparatus;
-            let precautionsList = exp.precautions ? exp.precautions.map(p => `<li>${p}</li>`).join('') : '';
+            const circuitHTML = exp.circuitSvg
+                ? `<div class="section-box"><h3>Diagram</h3><div class="circuit-container">${exp.circuitSvg}</div></div>` : '';
+            const procedureHTML = exp.procedure
+                ? `<div class="section-box"><h3>Procedure</h3><div class="calc-box">${fmt(exp.procedure)}</div></div>` : '';
+            const apparatusText = Array.isArray(exp.apparatus) ? exp.apparatus.join(', ') : exp.apparatus;
+            const precautionsList = exp.precautions ? exp.precautions.map(p => `<li>${p}</li>`).join('') : '';
+            const calcHTML = exp.calculations
+                ? `<div class="section-box"><h3>Calculations</h3><div class="calc-box">${fmt(exp.calculations)}</div></div>` : '';
+            const resultHTML = exp.result
+                ? `<div class="section-box"><h3>Result</h3><div class="calc-box">${fmt(exp.result)}</div></div>` : '';
 
             document.getElementById('modal-content').innerHTML = `
-            <button class="close-btn-top" onclick="closeModal()"><strong>✕
-            Close</strong></button>
+                <button class="close-btn-top" onclick="closeModal()">✕ CLOSE</button>
                 <div class="exp-title">${exp.title}</div>
-                <div class="section-box"><h3>Aim</h3><p>${exp.aim}</p></div>
+                <div class="section-box"><h3>Aim</h3><p>${fmt(exp.aim)}</p></div>
                 <div class="section-box"><h3>Apparatus Required</h3><p>${apparatusText}</p></div>
                 ${circuitHTML}
                 <div class="section-box">
                     <h3>Theory & Formula</h3>
-                    <p style="margin-bottom: 8px;">${exp.theory}</p>
-                    <div class="formula-box">${exp.formula}</div>
+                    <p style="margin-bottom: 10px;">${fmt(exp.theory)}</p>
+                    <div class="formula-box">${exp.formula || ''}</div>
                 </div>
                 ${procedureHTML}
                 <div class="section-box"><h3>Observations & Data</h3>${tablesHTML}</div>
-                <div class="section-box"><h3>Calculations & Result</h3><div class="formula-box">${exp.calculations}</div></div>
-                <div class="section-box"><h3>Result</h3><ul>${exp.result}</ul></div>
+                ${calcHTML}
+                ${resultHTML}
                 <div class="section-box"><h3>Precautions</h3><ul>${precautionsList}</ul></div>
             `;
 
             document.getElementById('modal-overlay').classList.add('active');
+            document.body.classList.add('modal-open');
+            document.querySelector('.modal-box').scrollTop = 0;
 
-            if (window.MathJax) {
-                MathJax.typesetPromise();
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('modal-content')]);
             }
         }
 
         function closeModal() {
             document.getElementById('modal-overlay').classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
 
-        // Load Single Button View initially
         renderHome();
     </script>
 </body>
