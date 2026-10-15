@@ -75,10 +75,9 @@ for(let i=0;i<24;i++){
 bn(new T.ConeGeometry(.28,.7,6),0,3.65,-.12,'Sacrum','5 fused vertebrae (S1-S5), triangular.',{r:[Math.PI,0,0]});
 bn(new T.ConeGeometry(.07,.3,6),0,3.15,-.1,'Coccyx','3-5 fused vertebrae; vestigial tail.',{r:[Math.PI,0,0]});
 const RG=new T.Group();RG.position.z=.22;G.bones.add(RG);
-for(let i=0;i<12;i++){
- const arc=Math.PI*(i<7?1.75:i<10?1.5:1),y=6.95-i*.17,r=.5+.22*Math.sin((i+.5)/12*Math.PI);
- const g=new T.Group();g.rotation.y=-(1.5*Math.PI-arc/2);g.position.y=y;RG.add(g);
- mk(G.bones,new T.TorusGeometry(r,.025,6,28,arc),0xe9e2cf,0,0,0,'Rib '+(i+1)+' (pair)',i<7?'True rib (1-7): attach directly to sternum.':i<10?'False rib (8-10): join via costal cartilage of rib 7.':'Floating rib (11-12): no anterior attachment.',{s:[1,.55,1],r:[Math.PI/2,0,0],p:g})}
+for(let i=0;i<12;i++)[-1,1].forEach(s=>{const y0=6.95-i*.17,rx=.5+.22*Math.sin((i+.5)/12*Math.PI),te=i<7?2.6:i<10?2.35:1.6,pts=[];for(let a=0;a<=14;a++){const th=.1+(te-.1)*a/14;pts.push([s*(.05+rx*Math.sin(th)),y0-.38*Math.pow(th/Math.PI,1.4)*(1+i*.04),-.36*Math.cos(th)])}
+ tb(RG,pts,0xe9e2cf,.021-i*.0006,'Rib '+(i+1)+' (pair)',i<7?'True rib (1-7): attach directly to sternum via own costal cartilage. Head, neck, tubercle, angle, shaft; costal groove carries intercostal vessels.':i<10?'False rib (8-10): join via costal cartilage of rib 7.':'Floating rib (11-12): no anterior attachment.');
+ if(i<10){const e=pts[14],t=i<7?[s*.08,6.85-i*.15,.38]:[s*.1,5.75-(i-7)*.03,.36];tb(RG,[e,[(e[0]+t[0])/2,(e[1]+t[1])/2+.02,(e[2]+t[2])/2+.03],t],0xcfe0e8,.017,'Costal cartilage','Hyaline cartilage joining ribs to sternum; gives the chest its elasticity.')}});
 bn(bx(.22,1.3,.06),0,6.3,.6,'Sternum','Manubrium + Body + Xiphoid. Sternal angle = 2nd rib level (T4/T5).');
 [-1,1].forEach(s=>{
  bn(LB(1,.035,.07),s*.5,7.1,.3,'Clavicle','First bone to ossify; S-shaped; commonly fractured at middle-lateral third.',{r:[0,0,Math.PI/2]});
@@ -137,29 +136,62 @@ for(let i=0;i<24;i++){const y=i<7?7.75-i*.12:i<19?6.85-(i-7)*.15:4.95-(i-19)*.17
 on(bump(new T.SphereGeometry(.2,24,18),.1,30),0xd98f9f,0,8.5,-.28,'Cerebellum','Coordinates balance, posture, fine movement.',{s:[1.4,.7,1]});
 on(cy(.06,.4),0xe6c3a3,0,8.35,-.05,'Brainstem','Midbrain, pons, medulla; centres for breathing and heartbeat.',{r:[.3,0,0]});
 on(cy(.07,1),0xbfd8e8,0,7.3,0,'Trachea','Windpipe, ~12 cm, C-shaped cartilage rings; bifurcates at T4/T5 (carina).');
-[[-1,'Right lung','3 lobes, 2 fissures.'],[1,'Left lung','2 lobes, 1 fissure, cardiac notch + lingula.']].forEach(([s,n,i])=>{
- (s<0?[[6.7,.85,.75,.7,'superior lobe'],[6.2,.8,.5,.5,'middle lobe'],[5.85,.9,.85,.85,'inferior lobe']]:[[6.65,.8,.95,.7,'superior lobe (lingula)'],[5.85,.85,.9,.85,'inferior lobe']]).forEach(l=>on(bump(new T.SphereGeometry(.4,24,18),.03,9),0xe3909b,s*.42,l[0],l[4]=='middle lobe'?.25:l[0]<6?-.05:.08,n+' - '+l[4],i+' Spongy, ~600 g.',{s:[l[1],l[2],l[3]]}));
- on(sp(.17),s<0?0x8a3b2a:0x6a3a7a,s*.42,0,0,'x','x',{s:[0,0,0]}).visible=false;pick.pop()});
-on(new T.ConeGeometry(.27,.65,24),0xd6283a,.1,6.0,.25,'Heart','4 chambers, ~300 g, apex at 5th left intercostal space. SA node = pacemaker.',{r:[0,0,Math.PI+.4]});
-on(sp(.15),0xa8182a,-.04,6.15,.37,'Right ventricle','Forms most of anterior surface; pumps to lungs via pulmonary trunk.');on(sp(.1),0xe04050,.2,6.32,.08,'Left atrium','Receives 4 pulmonary veins; forms most of the base of heart.');
-on(sp(.5),0x8a3b2a,-.3,5.0,.1,'Liver','Largest gland, ~1.4-1.5 kg. Right lobe bigger; makes bile, detoxifies.',{s:[1.2,.6,.8]});
-on(bump(sp(.3),.02,8),0x8a3b2a,.12,5.05,.2,'Liver (left lobe)','Smaller left lobe; falciform ligament separates it from right lobe.',{s:[1.3,.55,.7]});on(sp(.08),0x4f8f3a,-.45,4.8,.35,'Gallbladder','Stores and concentrates bile; Murphy sign when inflamed.',{s:[1,1.4,1]});
+
+const fbm=(x,y,z)=>{let s=0,a=1,f=1;for(let i=0;i<4;i++){s+=a*Math.sin(f*(x*1.7+y*.6)+i)*Math.sin(f*(y*1.5-z*.8)+2*i)*Math.sin(f*(z*1.9+x*.5)+3*i);a*=.55;f*=2.1}return s},cl01=q=>Math.max(0,Math.min(1,q));
+const shapeG=(g,fn,cf)=>{const p=g.attributes.position,v=new T.Vector3(),c=new Float32Array(p.count*3),k=new T.Color();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);fn(v);p.setXYZ(i,v.x,v.y,v.z);cf(k,v);c.set([k.r,k.g,k.b],i*3)}g.setAttribute('color',new T.BufferAttribute(c,3));g.computeVertexNormals();return g};
+const vc=(m,r)=>{m.material=new T.MeshPhysicalMaterial({vertexColors:true,roughness:r,clearcoat:.5,clearcoatRoughness:.3,transparent:true,side:T.DoubleSide});return m};
+const rimA=new T.DirectionalLight(0xffe2d6,.55);rimA.position.set(-3,5,4);S.add(rimA);const rimB=new T.DirectionalLight(0xbcd8ff,.3);rimB.position.set(4,2,-5);S.add(rimB);
+[-1,1].forEach(s=>{const nm=s<0?'Right lung':'Left lung',inf=s<0?'3 lobes, 2 fissures.':'2 lobes, 1 fissure, cardiac notch + lingula.';
+ (s<0?[[6.7,.85,.75,.7,'superior lobe'],[6.2,.8,.5,.5,'middle lobe'],[5.85,.9,.85,.85,'inferior lobe']]:[[6.65,.8,.95,.7,'superior lobe (lingula)'],[5.85,.85,.9,.85,'inferior lobe']]).forEach(l=>{const sup=/superior/.test(l[4]),ling=/lingula/.test(l[4]),inf2=/inferior/.test(l[4]);
+  vc(on(shapeG(new T.SphereGeometry(.4,56,40),v=>{let m=-s*v.x/.4;if(m>.25)v.x=-s*.4*(.25+(m-.25)*.35);
+   if(sup&&v.y>0){const t=1-.4*v.y/.4;v.x*=t;v.z*=t}if(ling&&m>.1&&v.y<0){v.z*=.6;v.x+=s*.05}if(inf2&&v.y<-.2)v.y+=.07*(1-(v.x*v.x+v.z*v.z)/.16);
+   const cb=Math.abs(fbm(v.x*16,v.y*16,v.z*16)),d=1+.025*fbm(v.x*6,v.y*6,v.z*6)-.03*Math.exp(-cb*9)+.012*fbm(v.x*40,v.y*40,v.z*40);v.multiplyScalar(d)},
+   (k,v)=>{const q=cl01(.5+.5*fbm(v.x*11,v.y*11,v.z*11)),g=Math.exp(-Math.abs(fbm(v.x*16,v.y*16,v.z*16))*9),sp2=cl01(fbm(v.x*40,v.y*40,v.z*40)-.5);k.setRGB(.92-.2*q-.35*g-.3*sp2,.6-.17*q-.3*g-.3*sp2,.62-.12*q-.28*g-.25*sp2)}),0xffffff,s*.42,l[0],l[4]=='middle lobe'?.25:l[0]<6?-.05:.08,nm+' - '+l[4],inf+' Spongy, ~600 g. Lobules, visceral pleura, carbon-mottled surface.',{s:[l[1],l[2],l[3]]}),.4);
+  const mt=on(sp(.01),0xffffff,0,0,0,'x','x',{s:[0,0,0]});pick.pop();mt.parent.remove(mt)});
+ let sd=7+s*3;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+ const br=(p,d,len,r,lv)=>{if(lv<1)return;const e=[p[0]+d[0]*len,p[1]+d[1]*len,p[2]+d[2]*len],mid=[(p[0]+e[0])/2+rnd()*.03,(p[1]+e[1])/2,(p[2]+e[2])/2+rnd()*.03];
+  tb(G.organs,[p,mid,e],0xf1e4c8,r,'Bronchial tree ('+(s<0?'right':'left')+')','Main bronchus divides into lobar, segmental bronchi and bronchioles (~23 generations) ending in alveoli. Cartilage rings keep the large airways open.');
+  for(let c=0;c<2;c++){let n=[d[0]+(c?1:-1)*.7+rnd()*.5,d[1]-.15+rnd()*.3,d[2]+rnd()*.6],q=Math.hypot(...n);br(e,n.map(a=>a/q),len*.74,r*.74,lv-1)}};
+ br([s*.3,6.4,.08],[s*.4,-.9,0],.4,.032,4)});
+
+const HM=on(shapeG(new T.SphereGeometry(1,56,42),v=>{const t=(v.y+1)/2,tp=t<.5?.3+1.4*t:1,w=.3*tp;v.x*=w;v.z*=.25*tp*(v.z<0?.85:1);v.y*=.37;v.multiplyScalar(1+.025*fbm(v.x*18,v.y*18,v.z*18))},
+ (k,v)=>{const f=Math.exp(-Math.pow(v.y/.37-.25,2)/.015)*.75+cl01(fbm(v.x*30,v.y*30,v.z*30)-.4)*.25,q=cl01(.5+.5*fbm(v.x*14,v.y*14,v.z*14));k.setRGB(.74-.15*q+f*.18,.15+.04*q+f*.5,.17+f*.25)}),0xffffff,.1,6.0,.25,'Heart','4 chambers, ~300 g, apex at 5th left intercostal space (left ventricle forms apex). SA node = pacemaker. Yellow fat marks the AV groove; coronary arteries (red) and cardiac veins (blue) run on the surface.',{r:[0,0,.5]});vc(HM,.38);
+const hc=(g,c,x,y,z,n,i,sc)=>vc(on(shapeG(g,v=>v.multiplyScalar(1+.04*fbm(v.x*40,v.y*40,v.z*40)),(k,v)=>{const q=cl01(.5+.5*fbm(v.x*30,v.y*30,v.z*30));k.setHex(c);k.multiplyScalar(.85+.2*q)}),0xffffff,x,y,z,n,i,{s:sc,p:HM}),.4);
+hc(new T.SphereGeometry(.15,32,24),0xa8323e,-.1,-.04,.13,'Right ventricle','Forms most of the anterior surface; pumps to lungs via pulmonary trunk. Thinner wall than left ventricle.',[1,1.4,.8]);
+hc(new T.SphereGeometry(.11,32,24),0x9a3d56,-.18,.17,0,'Right atrium','Receives blood from SVC, IVC, coronary sinus. SA node (pacemaker) is here.',[1,1,.9]);
+hc(new T.SphereGeometry(.06,24,18),0x9a3d56,-.12,.3,.14,'Right auricle','Ear-like pouch of the right atrium; pectinate muscles inside.',[1.4,.8,.6]);
+hc(new T.SphereGeometry(.09,32,24),0xb84458,.1,.27,-.12,'Left atrium','Receives 4 pulmonary veins; forms most of the base of heart.',[1.1,.9,.9]);
+hc(new T.SphereGeometry(.05,24,18),0xb84458,.2,.22,.1,'Left auricle','Small pouch of the left atrium; thrombi form here in atrial fibrillation.',[1.3,.8,.7]);
+tb(HM,[[.02,.28,.2],[.04,.1,.245],[.07,-.1,.215],[.09,-.28,.12]],0xd8232f,.011,'Coronary artery (LAD)','Left anterior descending: supplies the front of the left ventricle and septum ("widow maker").');
+tb(HM,[[-.05,.3,.15],[-.21,.2,.1],[-.27,.02,.05],[-.2,-.15,.02]],0xd8232f,.011,'Coronary artery (RCA)','Right coronary artery: supplies right atrium/ventricle, SA and AV node.');
+tb(HM,[[.13,.2,.17],[.15,.0,.15],[.13,-.2,.1]],0x2f6fe0,.012,'Cardiac vein','Great cardiac vein runs beside LAD and drains to the coronary sinus.');
+
+vc(on(shapeG(new T.SphereGeometry(1,56,40),v=>{v.x*=.68;v.y*=.3;v.z*=.42;const t=Math.max(0,v.x/.68);v.y*=1-.62*t;v.z*=1-.35*t;if(v.y<0)v.y*=1-.3*Math.exp(-Math.pow((v.x-.12)/.05,2));v.multiplyScalar(1+.012*fbm(v.x*8,v.y*8,v.z*8))},(k,v)=>{const q=cl01(.5+.5*fbm(v.x*8,v.y*8,v.z*8));k.setRGB(.47-.1*q,.16-.04*q,.12-.03*q)}),0xffffff,-.22,5.0,.1,'Liver','Largest gland, ~1.4-1.5 kg. Big right lobe, smaller left lobe (falciform ligament groove); makes bile, detoxifies.',{r:[0,0,.12]}),.3);
+vc(on(shapeG(new T.SphereGeometry(1,24,18),v=>{const t=(v.y+1)/2;v.x*=.05*(.5+.7*t);v.z*=.05*(.5+.7*t);v.y*=.1},(k,v)=>k.setRGB(.25,.5,.22)),0xffffff,-.42,4.78,.36,'Gallbladder','Stores and concentrates bile; Murphy sign when inflamed.',{r:[0,0,.4]}),.25);
 tb(G.organs,[[.15,4.8,.15],[-.05,4.75,.15],[-.15,4.55,.1],[-.05,4.3,.05]],0xe3a583,.05,'Duodenum','C-shaped, ~25 cm; ampulla of Vater opens into 2nd part.');
 [-1,1].forEach(s=>on(sp(.08),0xe6c15a,s*.3,4.78,-.2,'Suprarenal gland','Cortex (steroids) + medulla (adrenaline).',{s:[1.2,.6,1]}));
-on(sp(.3),0xe8a06a,.38,4.95,.15,'Stomach','J-shaped; fundus, body, pylorus. Parietal cells secrete HCl + intrinsic factor.',{s:[1,1.2,.8]});
+const sweep=(pts,prof,col,n,i)=>{const cv=new T.CatmullRomCurve3(pts.map(V3)),N=60,M=28,fr=cv.computeFrenetFrames(N,false),P=[],C=[],I=[],k=new T.Color();
+for(let a=0;a<=N;a++){const u=a/N,c=cv.getPoint(u),r=prof(u)*Math.pow(Math.sin(Math.PI*(.015+.97*u)),.4),nn=fr.normals[a],bb=fr.binormals[a];for(let b=0;b<=M;b++){const t=b/M*6.2832,cx=Math.cos(t),sy=Math.sin(t),rr=r*(1+.05*fbm(u*9,cx*2,sy*2));P.push(c.x+rr*(cx*nn.x+sy*bb.x),c.y+rr*(cx*nn.y+sy*bb.y),c.z+rr*(cx*nn.z+sy*bb.z));k.setHex(col);k.multiplyScalar(.88+.14*(.5+.5*Math.sin(u*70+cx*3)));C.push(k.r,k.g,k.b)}}
+for(let a=0;a<N;a++)for(let b=0;b<M;b++){const p=a*(M+1)+b;I.push(p,p+M+1,p+1,p+1,p+M+1,p+M+2)}
+const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('color',new T.Float32BufferAttribute(C,3));g.setIndex(I);g.computeVertexNormals();return vc(on(g,0xffffff,0,0,0,n,i),.4)};
+sweep([[.5,5.35,.1],[.55,5.1,.15],[.45,4.82,.2],[.25,4.66,.23],[.02,4.72,.2]],u=>.1+.1*Math.exp(-Math.pow((u-.3)/.25,2))-.05*u,0xe39a88,'Stomach','J-shaped; fundus, body, antrum, pylorus. Mucosa folded into rugae; parietal cells secrete HCl + intrinsic factor.');
 on(sp(.17),0x6a3a7a,.72,5.0,-.1,'Spleen','Largest lymphoid organ; RBC graveyard.',{s:[.8,1.3,.7]});
-[-1,1].forEach(s=>on(sp(.17),0xa83232,s*.3,4.5,-.2,s<0?'Right kidney':'Left kidney','Bean-shaped, T12-L3. Right kidney slightly lower (liver). Nephron = functional unit.',{s:[1,1.5,.8]}));
+[-1,1].forEach(s=>{const K=vc(on(shapeG(new T.SphereGeometry(1,48,36),v=>{const g=Math.exp(-v.y*v.y/.1);v.x*=.14;v.y*=.27;v.z*=.11;const m=-s*v.x;if(m>0)v.x+=s*m*.85*g;v.multiplyScalar(1+.015*fbm(v.x*25,v.y*25,v.z*25))},
+ (k,v)=>{const q=cl01(.5+.5*fbm(v.x*20,v.y*20,v.z*20));k.setRGB(.6-.14*q,.2-.05*q,.17-.04*q)}),0xffffff,s*.3,4.5,-.2,s<0?'Right kidney':'Left kidney','Bean-shaped, T12-L3, ~150 g, 11 cm. Right kidney slightly lower (liver). Cortex, medulla (pyramids), renal pelvis. Nephron = functional unit.',{r:[0,0,-s*.15]}),.3);
+ on(sp(.05),0xe8c47a,-s*.07,-.02,0,'Renal pelvis ('+(s<0?'right':'left')+')','Funnel where minor/major calyces collect urine and drain into the ureter.',{p:K,s:[1,1.5,1]});
+ tb(G.vessels,[[s*.26,4.5,-.2],[s*.15,4.53,-.15],[-.05,4.56,-.1]],0x2f6fe0,.024,'Renal vein','Drains kidney into IVC; left renal vein is longer and passes in front of the aorta.')});
 on(new T.TorusKnotGeometry(.3,.075,160,10,3,4),0xf09aa0,0,3.95,.2,'Small intestine','~6-7 m long; duodenum, jejunum, ileum. Main site of absorption.',{s:[1,.8,.7]});
 [[[-.45,3.5,.15],[-.5,4,.15],[-.5,4.5,.15]],[[-.5,4.5,.15],[-.25,4.35,.2],[.25,4.35,.2],[.5,4.5,.15]],[[.5,4.5,.15],[.5,4,.12],[.45,3.5,.1]],[[.45,3.5,.1],[.3,3.3,.15],[.1,3.35,.15]]].forEach((p,k)=>tb(G.organs,p,0xc98a6b,.07,['Ascending colon','Transverse colon','Descending colon','Sigmoid colon'][k],['Retroperitoneal; hepatic flexure at top.','Intraperitoneal, has mesocolon; hangs lowest.','Retroperitoneal; splenic flexure above.','S-shaped, joins rectum at S3.'][k]));
 on(sp(.1),0xb8795a,-.45,3.45,.15,'Caecum','First part of large intestine; vermiform appendix arises here (McBurney point).');tb(G.organs,[[.1,3.35,.15],[0,3.1,-.05]],0xb8795a,.06,'Rectum','Terminal large intestine; anal canal follows.');
-on(sp(.15),0xe6c15a,0,3.3,.25,'Urinary bladder','Muscular reservoir (detrusor); ~400-600 ml capacity.');
+vc(on(shapeG(new T.SphereGeometry(1,40,30),v=>{const ny=v.y,tp=ny<-.5?.3+1.4*(ny+1):1;v.x*=.17*tp;v.z*=.15*tp;v.y*=.17;v.multiplyScalar(1+.025*fbm(v.x*30,v.y*30,v.z*30))},
+ (k,v)=>{const q=cl01(.5+.5*fbm(v.x*35,v.y*35,v.z*35)),ve=cl01(Math.abs(fbm(v.x*22,v.y*22,v.z*22))<.12?1:0);k.setRGB(.88-.1*q-.15*ve,.6-.1*q-.3*ve,.55-.1*q-.3*ve)}),0xffffff,0,3.3,.25,'Urinary bladder','Muscular reservoir (detrusor, rugae when empty); ~400-600 ml capacity. Trigone = smooth triangle between ureteric openings and urethra.'),.45);
+tb(G.organs,[[0,3.14,.25],[0,2.96,.27],[0,2.8,.3]],0xd49a8a,.022,'Urethra','Carries urine out; ~4 cm (female) / ~20 cm (male); internal + external sphincters.');
 const sk=new T.Mesh(new T.LatheGeometry([[0,3.1],[.8,3.2],[.9,3.9],[.75,4.6],[.8,5.5],[.95,6.5],[1,7.1],[.5,7.5],[.25,7.7],[.3,8],[.62,8.4],[.62,8.9],[.35,9.3],[0,9.35]].map(p=>new T.Vector2(p[0],p[1])),28),
  new T.MeshStandardMaterial({color:0x7cc4ff,transparent:true,opacity:.2,side:T.DoubleSide,depthWrite:false}));sk.scale.z=.75;G.skin.add(sk);
 const lb=(rt,rb,h,x,y,z)=>{const m=new T.Mesh(new T.CylinderGeometry(rt,rb,h,16),sk.material);m.position.set(x,y,z);G.skin.add(m)};
 [-1,1].forEach(s=>{lb(.2,.14,1.75,s*1.1,6.2,0);lb(.14,.09,1.5,s*1.1,4.6,0);lb(.17,.1,.95,s*1.1,3.25,0);lb(.34,.22,1.9,s*.5,2.75,0);lb(.22,.11,1.5,s*.5,1.05,0);const f=new T.Mesh(new T.BoxGeometry(.4,.2,1),sk.material);f.position.set(s*.5,.1,.35);G.skin.add(f)});
 const shift=(pts,dx,dz)=>pts.map(p=>[p[0]+dx,p[1],p[2]+dz]),AR=0xd8232f,VN=0x2f6fe0,CT=0xe8f2fa;
 for(let i=0;i<9;i++){const rm=new T.Mesh(new T.TorusGeometry(.075,.015,6,12),new T.MeshStandardMaterial({color:CT}));rm.position.set(0,7.75-i*.11,0);rm.rotation.x=Math.PI/2;G.organs.add(rm)}
-on(sp(.13),0x5b8de0,-.06,6.05,.3,'Right atrium','Receives blood from SVC, IVC, coronary sinus. SA node (pacemaker) is here.');
 [-1,1].forEach(s=>on(sp(.085),0xffffff,s*.18,8.5,.5,'Eye','Eyeball: 3 layers - fibrous (sclera, cornea), vascular (uvea), neural (retina).'));
 on(sp(.17),0xf08a3c,0,7.9,.1,'Pharynx / larynx','Pharynx: common path of food and air. Larynx (C3-C6) holds vocal cords.',{s:[1,1.3,.8]});
 on(sp(.2),0xe9c46a,0,4.85,0,'Pancreas','Retroperitoneal; exocrine (enzymes) + endocrine (islets of Langerhans).',{s:[2,.4,.6]});
@@ -182,6 +214,43 @@ tb(G.vessels,[[-.16,7.55,.02],[-.14,6.9,.08],[-.1,6.3,.15]],VN,.05,'Superior ven
 tb(G.vessels,[[-.12,6,.1],[-.1,5.3,-.05],[-.06,4.6,-.08],[-.05,4.1,-.08]],VN,.055,'Inferior vena cava','Largest vein; formed at L5; pierces diaphragm at T8.');
 tb(G.vessels,[[.1,6.25,.3],[-.1,6.55,.2],[-.4,6.45,.1]],VN,.04,'Pulmonary artery','Takes deoxygenated blood from right ventricle to lungs (only artery with deoxygenated blood).');
 tb(G.vessels,[[.2,6.25,.2],[.35,6.5,.1],[.5,6.45,.05]],AR,.035,'Pulmonary veins','Bring oxygenated blood to left atrium (only veins with oxygenated blood).');
+
+const rg=(sd)=>()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+const vt=(g,p,d,len,r,lv,col,n,i,rnd)=>{if(lv<1)return;const e=[p[0]+d[0]*len,p[1]+d[1]*len,p[2]+d[2]*len];tb(g,[p,[(p[0]+e[0])/2+rnd()*.03,(p[1]+e[1])/2,(p[2]+e[2])/2+rnd()*.03],e],col,r,n,i);for(let c=0;c<2;c++){const q=[d[0]+(c?1:-1)*.7+rnd()*.5,d[1]-.15+rnd()*.3,d[2]+rnd()*.6],h=Math.hypot(...q);vt(g,e,q.map(a=>a/h),len*.76,r*.75,lv-1,col,n,i,rnd)}};
+[-1,1].forEach(s=>{const r1=rg(11+s*5),r2=rg(31+s*5);
+ vt(G.vessels,[s*.18,6.42,.14],[s*.5,-.8,.05],.34,.02,4,VN,'Pulmonary arterial tree','Pulmonary arteries branch alongside bronchi; carry deoxygenated blood to alveolar capillaries.',r1);
+ vt(G.vessels,[s*.2,6.3,-.03],[s*.5,-.7,-.05],.34,.02,4,AR,'Pulmonary venous tree','Pulmonary veins gather oxygenated blood and return it to the left atrium.',r2);
+ tb(G.vessels,[[s*.1,7.2,-.1],[s*.07,7.9,-.12],[s*.04,8.4,-.08]],AR,.014,'Vertebral artery','Runs through transverse foramina of C6-C1; joins to form the basilar artery.');
+ tb(G.vessels,[[s*.2,8.0,.2],[s*.17,8.2,.4],[s*.1,8.35,.52]],AR,.01,'Facial artery','Branch of external carotid; pulse felt at the mandible edge.');
+ tb(G.vessels,[[s*.2,8.3,.2],[s*.5,8.6,.2],[s*.45,9.0,.1]],AR,.01,'Superficial temporal artery','Pulse in front of the ear; supplies scalp.');
+ tb(G.vessels,[[s*.22,8.0,.17],[s*.19,8.2,.37],[s*.12,8.35,.5]],VN,.009,'Facial vein','Drains face; connects to the cavernous sinus (danger triangle).');
+ tb(G.vessels,[[0,4.1,-.04],[s*.15,3.8,0],[s*.3,3.6,.08]],AR,.035,'Common iliac artery','Aortic bifurcation (L4) divides into internal and external iliac arteries.');
+ tb(G.vessels,[[-.05,4.1,-.08],[s*.2,3.8,-.04],[s*.34,3.6,.04]],VN,.038,'Common iliac vein','Unite at L5 to form the inferior vena cava.');
+ for(let k=0;k<4;k++){tb(G.vessels,[[0,4.3,-.02],[s*(k+1)*.07,4.1,.1],[s*(k+1)*.12,3.95,.22]],AR,.008,'Mesenteric artery branches','Superior mesenteric artery arcades supply the small intestine.');tb(G.vessels,[[-.03,4.3,-.05],[s*(k+1)*.07-.02,4.1,.07],[s*(k+1)*.12-.02,3.95,.19]],VN,.008,'Mesenteric vein branches','Drain the gut to the portal vein.')}});
+for(let k=0;k<12;k++){const a=k/12*6.283;/* circle of Willis */}
+tb(G.vessels,[...Array(11)].map((_,k)=>{const a=k/10*6.283;return[Math.sin(a)*.08,8.49,.02+Math.cos(a)*.11]}),AR,.011,'Circle of Willis','Arterial ring at the brain base joining carotid and vertebrobasilar systems.');
+tb(G.vessels,[[0,4.85,-.03],[.35,4.95,0],[.68,5.0,-.08]],AR,.02,'Splenic artery','Branch of the coeliac trunk; tortuous along the pancreas.');
+tb(G.vessels,[[0,4.8,-.05],[.35,4.9,-.03],[.68,4.97,-.1]],VN,.022,'Splenic vein','Joins superior mesenteric vein behind pancreas to form the portal vein.');
+tb(G.vessels,[[0,4.95,0],[.2,5.02,.1],[.4,5.12,.2]],AR,.012,'Gastric arteries','Left gastric artery supplies lesser curvature of the stomach.');
+tb(G.vessels,[[0,4.7,.02],[-.2,4.85,.12],[-.4,4.97,.12]],VN,.03,'Hepatic portal vein','Brings nutrient-rich blood from gut to the liver.');
+tb(G.vessels,[[.02,4.72,.05],[-.2,4.9,.1],[-.38,5.02,.1]],AR,.015,'Hepatic artery','Supplies oxygenated blood to the liver (25%).');
+tb(G.organs,[[-.4,4.82,.3],[-.25,4.78,.2],[-.05,4.7,.12]],0x4f8f3a,.012,'Bile duct','Cystic + common hepatic ducts join; opens into the duodenum with pancreatic duct.');
+/* skull details */
+[-1,1].forEach(s=>{bn(new T.TorusGeometry(.085,.02,8,20),s*.15,8.42,.46,'Orbit','Bony socket of the eye formed by 7 bones; optic canal at the apex.',{r:[0,s*.2,0]});
+ bn(new T.TorusGeometry(.2,.02,6,16,Math.PI),s*.4,8.33,.2,'Zygomatic arch','Cheekbone arch: zygomatic + temporal bones; masseter attaches here.',{s:[1,.3,1],r:[0,s*Math.PI/2-s*1.2,0]});
+ bn(sp(.05),s*.5,8.38,-.1,'Mastoid process','Bony bump behind the ear; air cells; sternocleidomastoid attaches.',{s:[1,1.3,1]});
+ bn(bx(.2,.025,.05),s*.12,8.56,.52,'Brow ridge','Superciliary arch of the frontal bone.',{r:[0,0,-s*.1]});
+ const e=[s*.52,8.45,0];on(shapeG(new T.SphereGeometry(1,24,18),v=>{v.x*=.012;v.y*=.085;v.z*=.06;v.z+=.012*Math.sin(v.y*40)},(k,v)=>k.setHex(0xe2ae98)),0xffffff,e[0]+s*.03,e[1],e[2],'Ear (auricle)','Pinna: elastic cartilage with helix, antihelix, tragus, concha and lobule; funnels sound to the ear canal.',{});
+ on(new T.TorusGeometry(.06,.01,8,24,5),0xe2ae98,s*.56,8.45,0,'Helix of ear','Outer rim of the pinna.',{r:[0,Math.PI/2,0],s:[1,1.4,1]});on(sp(.022),0xe2ae98,s*.56,8.36,.01,'Ear lobule','Fatty, cartilage-free lower part of the ear.');
+ tb(G.organs,[...Array(48)].map((_,k)=>{const a=k/48*17.5,rr=.03*(1-.55*k/48);return[s*.46+Math.cos(a)*rr,8.43-.002*k,.02+Math.sin(a)*rr]}),0xf0d890,.007,'Cochlea','Snail-shaped inner ear (2.75 turns): organ of Corti converts sound to nerve signals.');
+ [[0,0,0],[Math.PI/2,0,0],[0,Math.PI/2,0]].forEach(r=>on(new T.TorusGeometry(.03,.004,6,16),0xe6d27a,s*.47,8.5,-.04,'Semicircular canals','Three fluid-filled loops detecting head rotation (balance).',{r:r}));
+ on(sp(.03),0xe2ae98,s*.045,8.2,.6,'Nasal ala','Wing of the nostril (alar cartilage).',{s:[1,.8,1]});on(sp(.012),0x3a2018,s*.025,8.18,.67,'Nostril','Naris: opening into the nasal vestibule.');
+ [8.26,8.2,8.14].forEach((y,k)=>on(sp(.03-k*.004),0xe9a0a0,s*.04,y,.46,'Nasal conchae','Superior, middle, inferior turbinates warm, humidify and filter air.',{s:[.4,.5,2]}))});
+on(new T.CylinderGeometry(.015,.035,.2,14),0xe2ae98,0,8.33,.57,'Nose (external)','Upper third bone (nasal bones), lower two thirds cartilage; olfactory epithelium senses smell in the roof of the nasal cavity.',{r:[-.35,0,0]});
+on(sp(.04),0xe2ae98,0,8.22,.64,'Nose tip','Lower lateral (alar) cartilages form the tip.');on(bx(.012,.14,.22),0xbfd8e8,0,8.22,.5,'Nasal septum','Septal cartilage + perpendicular plate of ethmoid + vomer.');
+const sut=(pts,n,i)=>tb(G.bones,pts,0x7a6a48,.005,n,i);
+sut([...Array(21)].map((_,k)=>{const a=-1.4+k*.14;return[.535*Math.sin(a),8.7+.58*Math.cos(a),.12]}),'Coronal suture','Joint between frontal and parietal bones.');
+sut([...Array(17)].map((_,k)=>{const a=-1+k*.125;return[0,8.7+.57*Math.cos(a),.57*Math.sin(a)]}),'Sagittal suture','Joint between the two parietal bones.');
 const heart=pick.find(m=>m.userData.name=='Heart'),lungs=pick.filter(m=>/lung/.test(m.userData.name));
 /* ---- STATE & CAMERA ---- */
 const L={bones:true,organs:true,vessels:true,skin:true};
@@ -190,9 +259,9 @@ const baseR=()=>C.aspect<.8?24:16;
 const V={th:0,el:.1,r:16,t:new T.Vector3(0,4.6,0)},W={th:0,el:.1,r:16,t:new T.Vector3(0,4.6,0)};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 let mode='3D',selm=null,q=null,score=0,tot=0;
-function resize(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();if(!selm)W.r=baseR()}
+function resize(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.near=.05;C.updateProjectionMatrix();if(!selm)W.r=baseR()}
 addEventListener('resize',resize);resize();V.r=W.r;
-function paint(){pick.forEach(m=>{const o=(isB(m)&&L.organs)?.4:1;
+function paint(){pick.forEach(m=>{const o=(isB(m)&&L.organs)?.4:/lung/.test(m.userData.name)?.86:1;
  m.material.opacity=selm&&m!==selm?Math.min(o,.22):o;m.material.emissive.setHex(m===selm?0x8a1c1c:0);m.material.depthWrite=m.material.opacity>.9})}
 function applyL(){Object.keys(L).forEach(k=>G[k].visible=L[k]);document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',L[b.dataset.l]));paint()}
 function sel(m){selm=m;const bb=new T.Box3().setFromObject(m);W.t.copy(bb.getCenter(new T.Vector3()));
@@ -214,10 +283,10 @@ const P=new Map(),RC=new T.Raycaster();let mv=0,t0=0,pd=0;
 const pinch=()=>{if(P.size<2)return 0;const a=[...P.values()];return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])};
 el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);if(P.size==1){mv=0;t0=Date.now()}pd=pinch()});
 el.addEventListener('pointermove',e=>{const p=P.get(e.pointerId);if(!p)return;const dx=e.clientX-p[0],dy=e.clientY-p[1];p[0]=e.clientX;p[1]=e.clientY;mv+=Math.abs(dx)+Math.abs(dy);
- if(P.size==1){W.th-=dx*.008;W.el=clamp(W.el+dy*.008,-1.3,1.45)}else{const d=pinch();if(pd&&d)W.r=clamp(W.r*pd/d,1.5,30);pd=d}});
+ if(P.size==1){W.th-=dx*.008;W.el=clamp(W.el+dy*.008,-1.3,1.45)}else{const d=pinch(),a=[...P.values()];if(pd&&d)zm(pd/d,(a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2);pd=d}});
 const up=e=>{if(e.type=='pointerup'&&P.size==1&&mv<8&&Date.now()-t0<400)tap(e);P.delete(e.pointerId);pd=0};
 el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
-el.addEventListener('wheel',e=>{e.preventDefault();W.r=clamp(W.r*(1+e.deltaY*.001),1.5,30)},{passive:false});
+el.addEventListener('wheel',e=>{e.preventDefault();zm(1+e.deltaY*.001,e.clientX,e.clientY)},{passive:false});
 function tap(e){const r=el.getBoundingClientRect();
  RC.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),C);
  const h=RC.intersectObjects(pick.filter(m=>{let o=m,ok=true;while(o){if(!o.visible)ok=false;o=o.parent}return ok}));
@@ -228,7 +297,7 @@ function tap(e){const r=el.getBoundingClientRect();
 /* ---- UI ---- */
 $('#md').onclick=e=>e.target.dataset.m&&setMode(e.target.dataset.m);
 document.querySelector('.side').onclick=e=>{const v=e.target.dataset.v;if(v)view(v)};
-$('#zi').onclick=()=>W.r=clamp(W.r*.75,1.5,30);$('#zo').onclick=()=>W.r=clamp(W.r*1.3,1.5,30);
+$('#zi').onclick=()=>zm(.75,innerWidth/2,innerHeight/2);$('#zo').onclick=()=>zm(1.3,innerWidth/2,innerHeight/2);
 $('#zout').onclick=()=>clr();
 $('#ch').onclick=e=>{const k=e.target.dataset.l;if(k){L[k]=!L[k];applyL()}};
 const GR=[['Cranium (khopdi)',8,'Frontal, Parietal x2, Temporal x2, Occipital, Sphenoid, Ethmoid'],['Face (chehra)',14,'Maxilla x2, Zygomatic x2, Nasal x2, Lacrimal x2, Palatine x2, Inf. nasal concha x2, Vomer, Mandible'],['Ear ossicles',6,'Malleus x2, Incus x2, Stapes x2'],['Hyoid',1,'U-shaped, no articulation'],['Cervical vertebrae',7,'C1 Atlas, C2 Axis, C7 Vertebra prominens'],['Thoracic vertebrae',12,'Costal facets for ribs'],['Lumbar vertebrae',5,'Largest bodies'],['Sacrum',1,'5 fused vertebrae'],['Coccyx',1,'3-5 fused vertebrae'],['Sternum',1,'Manubrium, Body, Xiphoid'],['Ribs',24,'True 1-7 (14), False 8-10 (6), Floating 11-12 (4)'],['Upper limbs',64,'Har side 32: Clavicle, Scapula, Humerus, Radius, Ulna, 8 Carpals, 5 Metacarpals, 14 Phalanges'],['Lower limbs',62,'Har side 31: Hip bone, Femur, Patella, Tibia, Fibula, 7 Tarsals, 5 Metatarsals, 14 Phalanges']];
@@ -237,6 +306,8 @@ function rl(){let n=0;$('#lb').innerHTML=GR.map((g,i)=>{if(done[i])n+=g[1];retur
 $('#lb').onchange=e=>{done[e.target.dataset.i]=e.target.checked;try{localStorage.setItem('a206',JSON.stringify(done))}catch(x){}rl()};
 $('#lst').onclick=()=>{rl();$('#ls').classList.add('open')};$('#lx').onclick=()=>$('#ls').classList.remove('open');
 /* ---- LOOP ---- */
+const RZ=new T.Raycaster(),vis=m=>{for(let o=m;o;o=o.parent)if(!o.visible)return false;return true};
+function zm(f,cx,cy){W.r=clamp(W.r*f,.4,30);if(f<1){RZ.setFromCamera(new T.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1),C);const h=RZ.intersectObjects(pick.filter(vis))[0];if(h)W.t.lerp(h.point,Math.min(.6,(1-f)*2.2))}else if(!selm)W.t.lerp(new T.Vector3(0,4.6,0),Math.min(.5,(f-1)*1.5))}
 const clk=new T.Clock();
 (function loop(){requestAnimationFrame(loop);const t=clk.getElapsedTime(),f=.12;
  V.th+=(W.th-V.th)*f;V.el+=(W.el-V.el)*f;V.r+=(W.r-V.r)*f;V.t.lerp(W.t,f);
