@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AnatoVerse – 3D 4D 5D Human Anatomy</title>
+<style>
+:root{--bg:#e9eef4;--fg:#13202e;--pn:rgba(255,255,255,.94);--ac:#d6283a;--mu:#5a6b7e;--bd:#cfd8e3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1420;--fg:#e8eef6;--pn:rgba(20,30,44,.94);--mu:#93a4b8;--bd:#2a3a4f}}
+:root[data-theme="dark"]{--bg:#0c1420;--fg:#e8eef6;--pn:rgba(20,30,44,.94);--mu:#93a4b8;--bd:#2a3a4f}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:radial-gradient(ellipse at 50% 35%,#2f69a3 0%,#12345a 55%,#07172b 100%) fixed;color:var(--fg);font:14px/1.4 "Trebuchet MS",system-ui,sans-serif;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+button{font:inherit;color:var(--fg);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:8px 11px;cursor:pointer}
+button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.top{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.top b{font-size:16px;letter-spacing:.2px}
+.seg{display:flex;gap:4px}.seg button{padding:7px 13px;font-weight:700}
+.ban{position:fixed;left:8px;right:60px;top:calc(env(safe-area-inset-top,0px) + 54px);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:7px 11px;font-weight:700;display:none}
+.side{position:fixed;right:8px;top:calc(env(safe-area-inset-top,0px) + 54px);display:flex;flex-direction:column;gap:6px}
+.side button{min-width:48px;padding:8px 6px;font-size:12px}
+.bot{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);display:flex;flex-direction:column;gap:8px}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:11px 13px}
+.card h3{margin:0 0 3px;font-size:16px}.card p{margin:0 0 8px;color:var(--mu);font-size:13px}
+.chips{display:flex;gap:6px;overflow-x:auto}.chips button{white-space:nowrap}
+#ls{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 10px);touch-action:pan-y}
+#ls.open{display:flex}
+#lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+#lb{overflow-y:auto;flex:1}
+.row{display:flex;gap:10px;padding:9px 4px;border-bottom:1px solid var(--bd)}
+.row input{width:20px;height:20px;accent-color:var(--ac);flex:none}
+.row i{font-style:normal;background:var(--ac);color:#fff;border-radius:8px;padding:0 7px;font-size:12px;margin-left:4px}
+.row small{color:var(--mu)}
+[hidden]{display:none!important}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="top"><b>🦴 AnatoVerse</b>
+<div class="seg" id="md"><button data-m="3D" class="on">3D</button><button data-m="4D">4D</button><button data-m="5D">5D</button></div></div>
+<div class="ban" id="ban"></div>
+<div class="side">
+<button data-v="front">Front</button><button data-v="side">Side</button><button data-v="back">Back</button><button data-v="top">Top</button>
+<button id="zi">＋</button><button id="zo">－</button><button data-v="reset">Reset</button></div>
+<div class="bot">
+<div class="card" id="card" hidden><h3 id="nm"></h3><p id="in"></p><button id="zout">Zoom out</button></div>
+<div class="chips" id="ch"><button data-l="bones" class="on">Bones</button><button data-l="organs">Organs</button><button data-l="vessels">Vessels</button><button data-l="skin">Skin</button><button id="lst">206 Tracker</button></div></div>
+<div id="ls"><div id="lh"><b id="cnt">0/206 yaad</b><button id="lx">Band karo</button></div><div id="lb"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=THREE,$=s=>document.querySelector(s),el=$('#c');
+const R=new T.WebGLRenderer({canvas:el,antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new T.Scene(),C=new T.PerspectiveCamera(40,1,.1,100);
+S.add(new T.HemisphereLight(0xffffff,0x667788,.85));
+const dl=new T.DirectionalLight(0xffffff,.8);dl.position.set(3,8,6);S.add(dl);
+const G={bones:new T.Group(),organs:new T.Group(),vessels:new T.Group(),skin:new T.Group()};Object.values(G).forEach(g=>S.add(g));
+const pick=[];
+function mk(g,geo,col,x,y,z,name,info,o={}){
+ const m=new T.Mesh(geo,new T.MeshStandardMaterial({color:col,roughness:.6,transparent:true}));
+ m.position.set(x,y,z);if(o.s)m.scale.set(...o.s);if(o.r)m.rotation.set(...o.r);
+ m.userData={name,info,bs:m.scale.clone()};(o.p||g).add(m);pick.push(m);return m}
+const cy=(r,h)=>new T.CylinderGeometry(r,r,h,10),sp=r=>new T.SphereGeometry(r,16,12),bx=(a,b,c)=>new T.BoxGeometry(a,b,c);
+const LB=(len,rs,re)=>{const h=len/2,P=[[0,-h],[re*.7,-h],[re,-h*.93],[re*1.05,-h*.8],[rs*1.2,-h*.55],[rs,-h*.25],[rs*.88,0],[rs,h*.25],[rs*1.2,h*.55],[re*1.05,h*.8],[re,h*.93],[re*.7,h],[0,h]];return new T.LatheGeometry(P.map(p=>new T.Vector2(p[0],p[1])),14)};
+const bump=(g,a,f)=>{const p=g.attributes.position,v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const n=1+a*Math.sin(f*v.x+1)*Math.sin(f*v.y+2)*Math.sin(f*v.z+3);p.setXYZ(i,v.x*n,v.y*n,v.z*n)}g.computeVertexNormals();return g};
+const V3=a=>new T.Vector3(a[0],a[1],a[2]),tb=(g,pts,col,r,n,i)=>mk(g,new T.TubeGeometry(new T.CatmullRomCurve3(pts.map(V3)),pts.length*8,r,8),col,0,0,0,n,i);
+const bn=(geo,x,y,z,n,i,o)=>mk(G.bones,geo,0xe9e2cf,x,y,z,n,i,o);
+const on=(geo,col,x,y,z,n,i,o)=>mk(G.organs,geo,col,x,y,z,n,i,o);
+/* ---- BONES ---- */
+bn(sp(.5),0,8.7,0,'Cranium (8 bones)','Frontal, Parietal x2, Temporal x2, Occipital, Sphenoid, Ethmoid. Pterion = weakest point (middle meningeal artery).',{s:[1,1.1,1.1]});
+bn(sp(.3),0,8.3,.3,'Face bones (14)','Maxilla x2, Zygomatic x2, Nasal x2, Lacrimal x2, Palatine x2, Inferior nasal concha x2, Vomer, Mandible.',{s:[1,.8,.7]});
+bn(bx(.5,.12,.4),0,8.0,.28,'Mandible','Only movable skull bone. Largest and strongest facial bone.');
+bn(new T.TorusGeometry(.12,.025,6,12,Math.PI),0,7.85,.12,'Hyoid','U-shaped; only bone that does not articulate with any other bone.',{r:[Math.PI/2,0,0]});
+[-1,1].forEach(s=>bn(sp(.045),s*.52,8.6,0,'Ear ossicles (6)','Malleus, Incus, Stapes (x2). Stapes = smallest bone of body.'));
+for(let i=0;i<24;i++){
+ const y=i<7?7.75-i*.12:i<19?6.85-(i-7)*.15:4.95-(i-19)*.17,r=i<7?.1:i<19?.13:.17;
+ const n=i<7?'Cervical C'+(i+1):i<19?'Thoracic T'+(i-6):'Lumbar L'+(i-18);
+ const inf=i==0?'Atlas: no body, no spinous process; carries the skull.':i==1?'Axis: has dens (odontoid process); head rotates here.':i==6?'Vertebra prominens (C7), palpable at neck base.':i<7?'Cervical: 7 vertebrae, transverse foramen present.':i<19?'Thoracic: 12 vertebrae, costal facets for ribs.':'Lumbar: 5 vertebrae, largest bodies, no costal facets.';
+ bn(cy(r,.1),0,y,-.12,n,inf)}
+bn(new T.ConeGeometry(.28,.7,6),0,3.65,-.12,'Sacrum','5 fused vertebrae (S1-S5), triangular.',{r:[Math.PI,0,0]});
+bn(new T.ConeGeometry(.07,.3,6),0,3.15,-.1,'Coccyx','3-5 fused vertebrae; vestigial tail.',{r:[Math.PI,0,0]});
+const RG=new T.Group();RG.position.z=.22;G.bones.add(RG);
+for(let i=0;i<12;i++){
+ const arc=Math.PI*(i<7?1.75:i<10?1.5:1),y=6.95-i*.17,r=.5+.22*Math.sin((i+.5)/12*Math.PI);
+ const g=new T.Group();g.rotation.y=-(1.5*Math.PI-arc/2);g.position.y=y;RG.add(g);
+ mk(G.bones,new T.TorusGeometry(r,.025,6,28,arc),0xe9e2cf,0,0,0,'Rib '+(i+1)+' (pair)',i<7?'True rib (1-7): attach directly to sternum.':i<10?'False rib (8-10): join via costal cartilage of rib 7.':'Floating rib (11-12): no anterior attachment.',{s:[1,.55,1],r:[Math.PI/2,0,0],p:g})}
+bn(bx(.22,1.3,.06),0,6.3,.6,'Sternum','Manubrium + Body + Xiphoid. Sternal angle = 2nd rib level (T4/T5).');
+[-1,1].forEach(s=>{
+ bn(LB(1,.035,.07),s*.5,7.1,.3,'Clavicle','First bone to ossify; S-shaped; commonly fractured at middle-lateral third.',{r:[0,0,Math.PI/2]});
+ bn(new T.CylinderGeometry(.38,.02,.75,3),s*.75,6.5,-.35,'Scapula','Flat triangular bone; spine, acromion, coracoid, glenoid cavity.',{s:[1,1,.12]});
+ bn(LB(1.7,.075,.12),s*1.1,6.2,0,'Humerus','Longest bone of arm. Surgical neck is fracture-prone; radial nerve in spiral groove.');
+ bn(LB(1.5,.04,.085),s*1.16,4.6,0,'Radius','Lateral forearm bone. Colles fracture = distal radius.');
+ bn(LB(1.5,.04,.075),s*1.04,4.6,0,'Ulna','Medial forearm bone. Olecranon forms elbow point.');
+ bn(sp(.13),s*1.1,3.75,0,'Carpals (8)','Scaphoid, Lunate, Triquetrum, Pisiform, Trapezium, Trapezoid, Capitate, Hamate. Scaphoid: most fractured.',{s:[1.3,.8,.7]});
+ bn(bx(.3,.4,.08),s*1.1,3.45,0,'Metacarpals (5)','Five bones of palm.');
+ bn(bx(.3,.5,.06),s*1.1,2.95,0,'Phalanges of hand (14)','Thumb has 2, other 4 fingers have 3 each.');
+ bn(sp(.5),s*.5,3.85,0,'Hip bone','Ilium + Ischium + Pubis fuse at acetabulum (Y-shaped cartilage).',{s:[.95,.85,.3],r:[0,s*.6,0]});
+ bn(LB(1.85,.1,.16),s*.5,2.75,0,'Femur','Longest, strongest bone of the body.');
+ bn(sp(.1),s*.5,1.8,.15,'Patella','Largest sesamoid bone.');
+ bn(LB(1.5,.07,.14),s*.5-.03,1.05,0,'Tibia','Shin bone; weight bearing, medial malleolus.');
+ bn(LB(1.45,.03,.06),s*.5+.12,1.05,0,'Fibula','Lateral, slender; lateral malleolus; non-weight bearing.');
+ bn(bx(.3,.15,.4),s*.5,.2,.1,'Tarsals (7)','Talus, Calcaneus, Navicular, Cuboid, 3 Cuneiforms. Calcaneus = largest tarsal.');
+ bn(bx(.3,.08,.35),s*.5,.08,.45,'Metatarsals (5)','Five long bones of the foot.');
+ bn(bx(.3,.06,.3),s*.5,.06,.75,'Phalanges of foot (14)','Great toe 2, others 3 each.')});
+const rm0=n=>{for(let k=pick.length-1;k>=0;k--)if(pick[k].userData.name==n){pick[k].parent.remove(pick[k]);pick.splice(k,1)}};
+['Cranium (8 bones)','Mandible','Carpals (8)','Metacarpals (5)','Phalanges of hand (14)','Tarsals (7)','Metatarsals (5)','Phalanges of foot (14)'].forEach(rm0);
+const sh=(pa,pl,ta,tl,col,n,i)=>{const m=mk(G.bones,new T.SphereGeometry(.52,24,16,pa*Math.PI,pl*Math.PI,ta*Math.PI,tl*Math.PI),col,0,8.7,0,n,i,{s:[1,1.1,1.1]});m.material.side=T.DoubleSide};
+sh(.3,.4,0,.62,0xf3e9cf,'Frontal bone','Forehead + orbital roof; frontal sinuses; meets parietals at coronal suture.');
+sh(.7,.8,0,.45,0xe8dbb8,'Parietal bone (left)','Roof and sides of skull; sagittal suture between both parietals.');
+sh(1.5,.8,0,.45,0xe8dbb8,'Parietal bone (right)','Roof and sides of skull; lambdoid suture with occipital.');
+sh(.7,.5,.45,.28,0xd9c79e,'Temporal bone (left)','Houses ear ossicles; squamous, petrous, mastoid parts.');
+sh(1.8,.5,.45,.28,0xd9c79e,'Temporal bone (right)','Houses ear ossicles; squamous, petrous, mastoid parts.');
+sh(1.2,.6,.45,.35,0xcdb88c,'Occipital bone','Foramen magnum; occipital condyles articulate with atlas.');
+const dk=new T.MeshStandardMaterial({color:0x2b2419}),wh=new T.MeshStandardMaterial({color:0xfbf8ee}),dm=(geo,x,y,z,m,sc)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);if(sc)o.scale.set(...sc);G.bones.add(o)};
+dm(sp(.04),0,8.2,.55,dk,[1,1.4,.6]);
+for(let k=-5;k<=5;k++){dm(bx(.04,.05,.035),k*.03,8.04,.5-Math.abs(k)*.013,wh);dm(bx(.04,.05,.035),k*.03,7.98,.5-Math.abs(k)*.013,wh)}
+[-1,1].forEach(s=>{dm(sp(.09),s*.15,8.42,.45,dk);
+ bn(bx(.09,.15,.1),s*.06,8.14,.48,'Maxilla','Upper jaw; holds upper teeth; maxillary sinus (largest).');
+ bn(bx(.05,.13,.05),s*.025,8.33,.55,'Nasal bone','Bridge of nose; most commonly fractured facial bone.');
+ bn(sp(.07),s*.3,8.3,.4,'Zygomatic bone','Cheek bone; zygomatic arch joins temporal bone.',{s:[1,.6,.8]});
+ bn(bx(.04,.28,.1),s*.24,8.12,.12,'Mandible','Only movable skull bone; ramus, angle, condyle (TMJ).')});
+bn(new T.TorusGeometry(.3,.03,8,16,Math.PI),0,7.97,.15,'Mandible','Only movable skull bone; strongest facial bone; body + 2 rami.',{s:[.8,1,1],r:[Math.PI/2,0,0]});
+for(let i=0;i<24;i++){const y=i<7?7.75-i*.12:i<19?6.85-(i-7)*.15:4.95-(i-19)*.17,n=i<7?'Cervical C'+(i+1):i<19?'Thoracic T'+(i-6):'Lumbar L'+(i-18);
+ bn(bx(.04,.05,.2),0,y-.01,-.27,n,'Spinous process: posterior projection, felt under the skin.');bn(bx(.36,.03,.05),0,y,-.17,n,'Transverse processes: attach muscles and ribs (thoracic).')}
+[-1,1].forEach(s=>{
+ bn(sp(.1),s*1,7.05,0,'Humerus','Head articulates with glenoid cavity of scapula.');
+ bn(sp(.07),s*1.04,5.4,-.04,'Ulna','Olecranon process = point of elbow.');
+ bn(sp(.1),s*.38,3.72,0,'Femur','Head fits in acetabulum; neck-shaft angle ~125 degrees.');bn(sp(.09),s*.63,3.62,0,'Femur','Greater trochanter: muscle attachment.');
+ [-.07,.07].forEach(d=>bn(sp(.095),s*.5+d,1.87,0,'Femur','Medial and lateral condyles form the knee joint.'));
+ bn(new T.CylinderGeometry(.17,.14,.06,16),s*.5,1.75,0,'Tibia','Tibial plateau supports femoral condyles.');
+ bn(new T.TorusGeometry(.12,.035,8,14),s*.28,3.3,.2,'Hip bone','Obturator foramen between ischium and pubis.');
+ const hx=s*1.1;
+ ['Scaphoid','Lunate','Triquetrum','Pisiform','Trapezium','Trapezoid','Capitate','Hamate'].forEach((n,k)=>bn(sp(.04),hx+s*[.09,.03,-.03,-.09][k%4],k<4?3.78:3.7,k==3?.05:0,n,'Carpal bone. Mnemonic: Some Lovers Try Positions That They Cant Handle (Scaphoid, Lunate, Triquetrum, Pisiform, Trapezium, Trapezoid, Capitate, Hamate).'));
+ [.14,.07,0,-.07,-.12].forEach((o,f)=>{const x=hx+s*o,ml=f?.4:.3;bn(LB(ml,.018,.03),x,3.66-ml/2,0,'Metacarpal '+(f+1),'Palm bone; 1st (thumb) is shortest and most mobile.');
+  let y=3.66-ml-.02;[[.22,'Proximal'],[.15,'Middle'],[.12,'Distal']].forEach((p,j)=>{if(f==0&&j==1)return;bn(LB(p[0],.013,.022),x,y-p[0]/2,0,p[1]+' phalanx (hand)','Thumb has 2 phalanges, other fingers 3 each.');y-=p[0]+.015})});
+ const fx=s*.5;
+ [['Talus',sp(.1),0,.32,-.02,[1,.7,1.2],'Only tarsal with no muscle attachment; transmits body weight to foot.'],['Calcaneus',sp(.12),s*.03,.15,-.2,[.9,.9,1.3],'Largest tarsal; heel bone.'],['Navicular',sp(.07),-s*.05,.2,.15,[1.2,.8,.6],'Boat-shaped; medial arch keystone.'],['Cuboid',bx(.1,.08,.1),s*.08,.12,.15,null,'Lateral tarsal; groove for peroneus longus.'],['Medial cuneiform',bx(.06,.07,.07),-s*.1,.12,.26,null,'Largest cuneiform.'],['Intermediate cuneiform',bx(.06,.07,.07),-s*.03,.12,.26,null,'Smallest cuneiform.'],['Lateral cuneiform',bx(.06,.07,.07),s*.04,.12,.26,null,'Articulates with 3rd metatarsal.']].forEach(a=>bn(a[1],fx+a[2],a[3],a[4],a[0],a[6]+' (7 tarsals: Talus, Calcaneus, Navicular, Cuboid, 3 Cuneiforms)',a[5]?{s:a[5]}:{}));
+ [-.12,-.06,0,.06,.12].forEach((o,f)=>{const x=fx+s*o;bn(LB(.34,.016,.028),x,.08,.5,'Metatarsal '+(f+1),'Five long bones of the foot; 5th has styloid process (Jones fracture).',{r:[Math.PI/2,0,0]});
+  let z=.69;(f?[.1,.07,.06]:[.14,.12]).forEach((l,j)=>{bn(LB(l,.014,.022),x,.07,z+l/2,(f&&j==1?'Middle':j==0?'Proximal':'Distal')+' phalanx (foot)','Great toe 2 phalanges, other toes 3 each.',{r:[Math.PI/2,0,0]});z+=l+.012})})});
+/* ---- ORGANS ---- */
+[-1,1].forEach(s=>on(bump(new T.SphereGeometry(.26,32,24),.12,22),0xe8a3b0,s*.2,8.78,0,'Cerebrum ('+(s<0?'right':'left')+' hemisphere)','Frontal, parietal, temporal, occipital lobes; gyri and sulci. Brain ~1.4 kg.',{s:[1,1,1.9]}));
+on(bump(new T.SphereGeometry(.2,24,18),.1,30),0xd98f9f,0,8.5,-.28,'Cerebellum','Coordinates balance, posture, fine movement.',{s:[1.4,.7,1]});
+on(cy(.06,.4),0xe6c3a3,0,8.35,-.05,'Brainstem','Midbrain, pons, medulla; centres for breathing and heartbeat.',{r:[.3,0,0]});
+on(cy(.07,1),0xbfd8e8,0,7.3,0,'Trachea','Windpipe, ~12 cm, C-shaped cartilage rings; bifurcates at T4/T5 (carina).');
+[[-1,'Right lung','3 lobes, 2 fissures.'],[1,'Left lung','2 lobes, 1 fissure, cardiac notch + lingula.']].forEach(([s,n,i])=>{
+ (s<0?[[6.7,.85,.75,.7,'superior lobe'],[6.2,.8,.5,.5,'middle lobe'],[5.85,.9,.85,.85,'inferior lobe']]:[[6.65,.8,.95,.7,'superior lobe (lingula)'],[5.85,.85,.9,.85,'inferior lobe']]).forEach(l=>on(bump(new T.SphereGeometry(.4,24,18),.03,9),0xe3909b,s*.42,l[0],l[4]=='middle lobe'?.25:l[0]<6?-.05:.08,n+' - '+l[4],i+' Spongy, ~600 g.',{s:[l[1],l[2],l[3]]}));
+ on(sp(.17),s<0?0x8a3b2a:0x6a3a7a,s*.42,0,0,'x','x',{s:[0,0,0]}).visible=false;pick.pop()});
+on(new T.ConeGeometry(.27,.65,24),0xd6283a,.1,6.0,.25,'Heart','4 chambers, ~300 g, apex at 5th left intercostal space. SA node = pacemaker.',{r:[0,0,Math.PI+.4]});
+on(sp(.15),0xa8182a,-.04,6.15,.37,'Right ventricle','Forms most of anterior surface; pumps to lungs via pulmonary trunk.');on(sp(.1),0xe04050,.2,6.32,.08,'Left atrium','Receives 4 pulmonary veins; forms most of the base of heart.');
+on(sp(.5),0x8a3b2a,-.3,5.0,.1,'Liver','Largest gland, ~1.4-1.5 kg. Right lobe bigger; makes bile, detoxifies.',{s:[1.2,.6,.8]});
+on(bump(sp(.3),.02,8),0x8a3b2a,.12,5.05,.2,'Liver (left lobe)','Smaller left lobe; falciform ligament separates it from right lobe.',{s:[1.3,.55,.7]});on(sp(.08),0x4f8f3a,-.45,4.8,.35,'Gallbladder','Stores and concentrates bile; Murphy sign when inflamed.',{s:[1,1.4,1]});
+tb(G.organs,[[.15,4.8,.15],[-.05,4.75,.15],[-.15,4.55,.1],[-.05,4.3,.05]],0xe3a583,.05,'Duodenum','C-shaped, ~25 cm; ampulla of Vater opens into 2nd part.');
+[-1,1].forEach(s=>on(sp(.08),0xe6c15a,s*.3,4.78,-.2,'Suprarenal gland','Cortex (steroids) + medulla (adrenaline).',{s:[1.2,.6,1]}));
+on(sp(.3),0xe8a06a,.38,4.95,.15,'Stomach','J-shaped; fundus, body, pylorus. Parietal cells secrete HCl + intrinsic factor.',{s:[1,1.2,.8]});
+on(sp(.17),0x6a3a7a,.72,5.0,-.1,'Spleen','Largest lymphoid organ; RBC graveyard.',{s:[.8,1.3,.7]});
+[-1,1].forEach(s=>on(sp(.17),0xa83232,s*.3,4.5,-.2,s<0?'Right kidney':'Left kidney','Bean-shaped, T12-L3. Right kidney slightly lower (liver). Nephron = functional unit.',{s:[1,1.5,.8]}));
+on(new T.TorusKnotGeometry(.3,.075,160,10,3,4),0xf09aa0,0,3.95,.2,'Small intestine','~6-7 m long; duodenum, jejunum, ileum. Main site of absorption.',{s:[1,.8,.7]});
+[[[-.45,3.5,.15],[-.5,4,.15],[-.5,4.5,.15]],[[-.5,4.5,.15],[-.25,4.35,.2],[.25,4.35,.2],[.5,4.5,.15]],[[.5,4.5,.15],[.5,4,.12],[.45,3.5,.1]],[[.45,3.5,.1],[.3,3.3,.15],[.1,3.35,.15]]].forEach((p,k)=>tb(G.organs,p,0xc98a6b,.07,['Ascending colon','Transverse colon','Descending colon','Sigmoid colon'][k],['Retroperitoneal; hepatic flexure at top.','Intraperitoneal, has mesocolon; hangs lowest.','Retroperitoneal; splenic flexure above.','S-shaped, joins rectum at S3.'][k]));
+on(sp(.1),0xb8795a,-.45,3.45,.15,'Caecum','First part of large intestine; vermiform appendix arises here (McBurney point).');tb(G.organs,[[.1,3.35,.15],[0,3.1,-.05]],0xb8795a,.06,'Rectum','Terminal large intestine; anal canal follows.');
+on(sp(.15),0xe6c15a,0,3.3,.25,'Urinary bladder','Muscular reservoir (detrusor); ~400-600 ml capacity.');
+const sk=new T.Mesh(new T.LatheGeometry([[0,3.1],[.8,3.2],[.9,3.9],[.75,4.6],[.8,5.5],[.95,6.5],[1,7.1],[.5,7.5],[.25,7.7],[.3,8],[.62,8.4],[.62,8.9],[.35,9.3],[0,9.35]].map(p=>new T.Vector2(p[0],p[1])),28),
+ new T.MeshStandardMaterial({color:0x7cc4ff,transparent:true,opacity:.2,side:T.DoubleSide,depthWrite:false}));sk.scale.z=.75;G.skin.add(sk);
+const lb=(rt,rb,h,x,y,z)=>{const m=new T.Mesh(new T.CylinderGeometry(rt,rb,h,16),sk.material);m.position.set(x,y,z);G.skin.add(m)};
+[-1,1].forEach(s=>{lb(.2,.14,1.75,s*1.1,6.2,0);lb(.14,.09,1.5,s*1.1,4.6,0);lb(.17,.1,.95,s*1.1,3.25,0);lb(.34,.22,1.9,s*.5,2.75,0);lb(.22,.11,1.5,s*.5,1.05,0);const f=new T.Mesh(new T.BoxGeometry(.4,.2,1),sk.material);f.position.set(s*.5,.1,.35);G.skin.add(f)});
+const shift=(pts,dx,dz)=>pts.map(p=>[p[0]+dx,p[1],p[2]+dz]),AR=0xd8232f,VN=0x2f6fe0,CT=0xe8f2fa;
+for(let i=0;i<9;i++){const rm=new T.Mesh(new T.TorusGeometry(.075,.015,6,12),new T.MeshStandardMaterial({color:CT}));rm.position.set(0,7.75-i*.11,0);rm.rotation.x=Math.PI/2;G.organs.add(rm)}
+on(sp(.13),0x5b8de0,-.06,6.05,.3,'Right atrium','Receives blood from SVC, IVC, coronary sinus. SA node (pacemaker) is here.');
+[-1,1].forEach(s=>on(sp(.085),0xffffff,s*.18,8.5,.5,'Eye','Eyeball: 3 layers - fibrous (sclera, cornea), vascular (uvea), neural (retina).'));
+on(sp(.17),0xf08a3c,0,7.9,.1,'Pharynx / larynx','Pharynx: common path of food and air. Larynx (C3-C6) holds vocal cords.',{s:[1,1.3,.8]});
+on(sp(.2),0xe9c46a,0,4.85,0,'Pancreas','Retroperitoneal; exocrine (enzymes) + endocrine (islets of Langerhans).',{s:[2,.4,.6]});
+tb(G.organs,[[0,7.8,-.05],[0,6.8,-.06],[.05,5.6,-.03],[.25,5.15,.1]],0xd98f7d,.045,'Esophagus','~25 cm muscular tube; pierces diaphragm at T10.');
+[-1,1].forEach(s=>{
+ tb(G.organs,[[0,6.85,0],[s*.15,6.7,.05],[s*.3,6.4,.08]],CT,.04,s<0?'Right main bronchus':'Left main bronchus',s<0?'Wider, shorter, more vertical: inhaled foreign bodies lodge here.':'Longer and narrower than the right main bronchus.');
+ tb(G.vessels,[[0,4.8,-.04],[s*.15,4.6,-.1],[s*.3,4.5,-.2]],AR,.02,'Renal artery','Arises from aorta at L1-L2.');
+ tb(G.organs,[[s*.3,4.4,-.2],[s*.28,4,-.1],[s*.15,3.5,.1],[0,3.35,.22]],0xe6c15a,.018,'Ureter','~25 cm muscular tube from renal pelvis to bladder.');
+ const arm=[[s*.1,6.95,.1],[s*.6,7.1,.15],[s*1,6.9,.15],[s*1.1,6.2,.12],[s*1.1,5.4,.1],[s*1,4.6,.1],[s*1.05,3.7,.08],[s*1.12,3,.05]],
+ leg=[[0,4.05,-.04],[s*.3,3.7,.1],[s*.45,3.2,.12],[s*.5,2.6,.12],[s*.5,1.9,.1],[s*.48,1.2,.08],[s*.5,.5,.08],[s*.5,.12,.3],[s*.5,.08,.65]],
+ neck=[[s*.05,7,.1],[s*.15,7.8,.12],[s*.2,8.3,.2]];
+ tb(G.vessels,arm,AR,.022,'Brachial / radial artery','Brachial: felt in cubital fossa (BP). Radial: pulse at wrist.');
+ tb(G.vessels,shift(arm,-s*.07,-.1),VN,.026,'Cephalic / basilic vein','Median cubital vein is used for venepuncture.');
+ tb(G.vessels,leg,AR,.032,'Femoral artery','Continuation of external iliac; pulse at mid-inguinal point.');
+ tb(G.vessels,shift(leg,-s*.08,-.1),VN,.036,'Femoral / great saphenous vein','Great saphenous: longest vein; used for CABG grafts.');
+ tb(G.vessels,neck,AR,.025,'Common carotid artery','Bifurcates at C4 (upper border of thyroid cartilage).');
+ tb(G.vessels,shift(neck,s*.05,-.08),VN,.03,'Internal jugular vein','Drains brain; joins subclavian vein to form brachiocephalic vein.')});
+tb(G.vessels,[[.12,6.15,.2],[.05,6.85,.12],[-.12,7,.02],[-.17,6.7,-.06],[-.04,6.2,-.05],[0,5,-.04],[0,4.1,-.04]],AR,.06,'Aorta','Largest artery; arch gives brachiocephalic, left common carotid, left subclavian. Bifurcates at L4.');
+tb(G.vessels,[[-.16,7.55,.02],[-.14,6.9,.08],[-.1,6.3,.15]],VN,.05,'Superior vena cava','Drains head, neck and arms into right atrium.');
+tb(G.vessels,[[-.12,6,.1],[-.1,5.3,-.05],[-.06,4.6,-.08],[-.05,4.1,-.08]],VN,.055,'Inferior vena cava','Largest vein; formed at L5; pierces diaphragm at T8.');
+tb(G.vessels,[[.1,6.25,.3],[-.1,6.55,.2],[-.4,6.45,.1]],VN,.04,'Pulmonary artery','Takes deoxygenated blood from right ventricle to lungs (only artery with deoxygenated blood).');
+tb(G.vessels,[[.2,6.25,.2],[.35,6.5,.1],[.5,6.45,.05]],AR,.035,'Pulmonary veins','Bring oxygenated blood to left atrium (only veins with oxygenated blood).');
+const heart=pick.find(m=>m.userData.name=='Heart'),lungs=pick.filter(m=>/lung/.test(m.userData.name));
+/* ---- STATE & CAMERA ---- */
+const L={bones:true,organs:true,vessels:true,skin:true};
+const isB=m=>{for(let o=m.parent;o;o=o.parent)if(o===G.bones)return true;return false};
+const baseR=()=>C.aspect<.8?24:16;
+const V={th:0,el:.1,r:16,t:new T.Vector3(0,4.6,0)},W={th:0,el:.1,r:16,t:new T.Vector3(0,4.6,0)};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+let mode='3D',selm=null,q=null,score=0,tot=0;
+function resize(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();if(!selm)W.r=baseR()}
+addEventListener('resize',resize);resize();V.r=W.r;
+function paint(){pick.forEach(m=>{const o=(isB(m)&&L.organs)?.4:1;
+ m.material.opacity=selm&&m!==selm?Math.min(o,.22):o;m.material.emissive.setHex(m===selm?0x8a1c1c:0);m.material.depthWrite=m.material.opacity>.9})}
+function applyL(){Object.keys(L).forEach(k=>G[k].visible=L[k]);document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',L[b.dataset.l]));paint()}
+function sel(m){selm=m;const bb=new T.Box3().setFromObject(m);W.t.copy(bb.getCenter(new T.Vector3()));
+ W.r=clamp(bb.getSize(new T.Vector3()).length()*2.6+1.5,2.6,12);
+ $('#nm').textContent=m.userData.name;$('#in').textContent=m.userData.info;$('#card').hidden=false;paint()}
+function clr(){selm=null;$('#card').hidden=true;W.t.set(0,4.6,0);W.r=baseR();paint()}
+function view(v){if(v=='reset'){clr();W.th=V.th+wrap(0-V.th);W.el=.1;return}
+ const th={front:0,side:Math.PI/2,back:Math.PI}[v];
+ if(v=='top'){W.el=1.45}else{W.th=V.th+wrap(th-V.th);W.el=.1}}
+function ban(msg){const b=$('#ban');b.style.display=msg?'block':'none';b.textContent=msg||''}
+function nextQ(){const pool=[...new Set(pick.filter(m=>m.parent.visible||G.bones.children.includes(m)&&L.bones||RGhas(m)).map(m=>m.userData.name))];
+ clr();q=pool[Math.floor(Math.random()*pool.length)];ban('Dhundo: '+q+'  |  Score '+score+'/'+tot)}
+function RGhas(m){return false}
+function setMode(m){mode=m;document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m==m));q=null;
+ if(m=='4D'){L.bones=true;L.organs=true;L.vessels=true;L.skin=false}if(m=='5D'){L.organs=false;L.vessels=false;L.skin=false;L.bones=true;score=0;tot=0}
+ applyL();clr();ban(m=='4D'?'Live: Heart 72 bpm, Lungs 15/min':'');if(m=='5D')nextQ()}
+/* ---- INPUT ---- */
+const P=new Map(),RC=new T.Raycaster();let mv=0,t0=0,pd=0;
+const pinch=()=>{if(P.size<2)return 0;const a=[...P.values()];return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])};
+el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);if(P.size==1){mv=0;t0=Date.now()}pd=pinch()});
+el.addEventListener('pointermove',e=>{const p=P.get(e.pointerId);if(!p)return;const dx=e.clientX-p[0],dy=e.clientY-p[1];p[0]=e.clientX;p[1]=e.clientY;mv+=Math.abs(dx)+Math.abs(dy);
+ if(P.size==1){W.th-=dx*.008;W.el=clamp(W.el+dy*.008,-1.3,1.45)}else{const d=pinch();if(pd&&d)W.r=clamp(W.r*pd/d,1.5,30);pd=d}});
+const up=e=>{if(e.type=='pointerup'&&P.size==1&&mv<8&&Date.now()-t0<400)tap(e);P.delete(e.pointerId);pd=0};
+el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+el.addEventListener('wheel',e=>{e.preventDefault();W.r=clamp(W.r*(1+e.deltaY*.001),1.5,30)},{passive:false});
+function tap(e){const r=el.getBoundingClientRect();
+ RC.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),C);
+ const h=RC.intersectObjects(pick.filter(m=>{let o=m,ok=true;while(o){if(!o.visible)ok=false;o=o.parent}return ok}));
+ if(!h.length){if(selm&&mode!='5D')clr();return}
+ const m=h[0].object;
+ if(mode=='5D'&&q){tot++;const ok=m.userData.name==q;if(ok)score++;sel(m);ban((ok?'Sahi! ':'Galat, ye '+m.userData.name+' hai. ')+'Score '+score+'/'+tot);q=null;setTimeout(()=>mode=='5D'&&nextQ(),1700);return}
+ sel(m)}
+/* ---- UI ---- */
+$('#md').onclick=e=>e.target.dataset.m&&setMode(e.target.dataset.m);
+document.querySelector('.side').onclick=e=>{const v=e.target.dataset.v;if(v)view(v)};
+$('#zi').onclick=()=>W.r=clamp(W.r*.75,1.5,30);$('#zo').onclick=()=>W.r=clamp(W.r*1.3,1.5,30);
+$('#zout').onclick=()=>clr();
+$('#ch').onclick=e=>{const k=e.target.dataset.l;if(k){L[k]=!L[k];applyL()}};
+const GR=[['Cranium (khopdi)',8,'Frontal, Parietal x2, Temporal x2, Occipital, Sphenoid, Ethmoid'],['Face (chehra)',14,'Maxilla x2, Zygomatic x2, Nasal x2, Lacrimal x2, Palatine x2, Inf. nasal concha x2, Vomer, Mandible'],['Ear ossicles',6,'Malleus x2, Incus x2, Stapes x2'],['Hyoid',1,'U-shaped, no articulation'],['Cervical vertebrae',7,'C1 Atlas, C2 Axis, C7 Vertebra prominens'],['Thoracic vertebrae',12,'Costal facets for ribs'],['Lumbar vertebrae',5,'Largest bodies'],['Sacrum',1,'5 fused vertebrae'],['Coccyx',1,'3-5 fused vertebrae'],['Sternum',1,'Manubrium, Body, Xiphoid'],['Ribs',24,'True 1-7 (14), False 8-10 (6), Floating 11-12 (4)'],['Upper limbs',64,'Har side 32: Clavicle, Scapula, Humerus, Radius, Ulna, 8 Carpals, 5 Metacarpals, 14 Phalanges'],['Lower limbs',62,'Har side 31: Hip bone, Femur, Patella, Tibia, Fibula, 7 Tarsals, 5 Metatarsals, 14 Phalanges']];
+let done={};try{done=JSON.parse(localStorage.getItem('a206')||'{}')}catch(e){}
+function rl(){let n=0;$('#lb').innerHTML=GR.map((g,i)=>{if(done[i])n+=g[1];return `<label class="row"><input type="checkbox" data-i="${i}" ${done[i]?'checked':''}><span><b>${g[0]}</b><i>${g[1]}</i><br><small>${g[2]}</small></span></label>`}).join('');$('#cnt').textContent=n+'/206 yaad'}
+$('#lb').onchange=e=>{done[e.target.dataset.i]=e.target.checked;try{localStorage.setItem('a206',JSON.stringify(done))}catch(x){}rl()};
+$('#lst').onclick=()=>{rl();$('#ls').classList.add('open')};$('#lx').onclick=()=>$('#ls').classList.remove('open');
+/* ---- LOOP ---- */
+const clk=new T.Clock();
+(function loop(){requestAnimationFrame(loop);const t=clk.getElapsedTime(),f=.12;
+ V.th+=(W.th-V.th)*f;V.el+=(W.el-V.el)*f;V.r+=(W.r-V.r)*f;V.t.lerp(W.t,f);
+ C.position.set(V.t.x+V.r*Math.sin(V.th)*Math.cos(V.el),V.t.y+V.r*Math.sin(V.el),V.t.z+V.r*Math.cos(V.th)*Math.cos(V.el));C.lookAt(V.t);
+ const a=mode=='4D',p=(t*1.2)%1,hb=a&&p<.15?Math.sin(p/.15*Math.PI):0,br=a?(Math.sin(t*Math.PI*.5)+1)/2:0;
+ heart.scale.copy(heart.userData.bs).multiplyScalar(1+.15*hb);
+ lungs.forEach(l=>l.scale.set(l.userData.bs.x*(1+.07*br),l.userData.bs.y*(1+.1*br),l.userData.bs.z*(1+.07*br)));
+ RG.scale.setScalar(1+.03*br);
+ R.render(S,C)})();
+applyL();
+</script></body></html>
