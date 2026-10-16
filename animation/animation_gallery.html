@@ -13,8 +13,8 @@
   body {
     margin: 0;
     padding: 20px;
-    background-color: #0b0f19;
-    color: #fff;
+    background-color: #f8fafc;
+    color: #1e293b;
   }
 
   .albums-grid {
@@ -25,24 +25,24 @@
     margin: 0 auto;
   }
 
-  /* CARD STYLING (now a link, opens the actual file page) */
+  /* CARD STYLING */
   .card {
     display: block;
     text-decoration: none;
     color: inherit;
-    background: #0d1117;
+    background: #ffffff;
     border-radius: 18px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e2e8f0;
     -webkit-tap-highlight-color: transparent;
   }
 
   .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(0, 229, 255, 0.2);
+    box-shadow: 0 12px 30px rgba(2, 132, 199, 0.15);
   }
 
   .card-thumbnail {
@@ -50,7 +50,10 @@
     height: 210px;
     position: relative;
     overflow: hidden;
-    background: #eef7ff;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .card-thumbnail svg {
@@ -61,13 +64,13 @@
 
   .card-content {
     padding: 16px;
-    background: #0d1117;
+    background: #ffffff;
   }
 
   .card-title {
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
+    color: #0f172a;
     margin-bottom: 8px;
     line-height: 1.3;
   }
@@ -81,7 +84,7 @@
 
   .card-author {
     font-size: 13px;
-    color: #94a3b8;
+    color: #64748b;
   }
 
   .badge {
@@ -102,9 +105,8 @@
 
 <script>
   const svgThumbnails = {
-    // 1. Water Cycle Graphic
     waterCycle: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="url(#skyGradient)"/>
         <defs>
           <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
@@ -125,377 +127,218 @@
       </svg>
     `,
 
-    // Evaporation vs Boiling Graphic
     evapVsBoil: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0b1329"/>
-        <!-- Beaker 1: Evaporation (Surface level) -->
-        <rect x="40" y="70" width="80" height="80" rx="4" stroke="#38bdf8" stroke-width="2" fill="none"/>
-        <path d="M 40 100 H 120 V 148 H 40 Z" fill="#0284c7" opacity="0.6"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <rect x="40" y="70" width="80" height="80" rx="4" stroke="#0284c7" stroke-width="2" fill="none"/>
+        <path d="M 40 100 H 120 V 148 H 40 Z" fill="#38bdf8" opacity="0.4"/>
         <path d="M 60 95 Q 65 80 60 70" stroke="#ea580c" stroke-width="2" stroke-dasharray="2 2"/>
         <path d="M 100 95 Q 105 80 100 70" stroke="#ea580c" stroke-width="2" stroke-dasharray="2 2"/>
-        <text x="45" y="166" fill="#38bdf8" font-size="10" font-weight="bold">Evaporation</text>
-        <text x="48" y="60" fill="#94a3b8" font-size="8">Surface Only</text>
+        <text x="45" y="166" fill="#0284c7" font-size="10" font-weight="bold">Evaporation</text>
+        <text x="48" y="60" fill="#64748b" font-size="8">Surface Only</text>
         
-        <!-- VS Text -->
         <text x="140" y="115" fill="#ef4444" font-size="16" font-weight="bold">VS</text>
 
-        <!-- Beaker 2: Boiling (Bulk + Bubbles) -->
-        <rect x="180" y="70" width="80" height="80" rx="4" stroke="#38bdf8" stroke-width="2" fill="none"/>
-        <path d="M 180 100 H 260 V 148 H 180 Z" fill="#0284c7" opacity="0.6"/>
-        <circle cx="200" cy="130" r="4" fill="#bae6fd"/>
-        <circle cx="220" cy="115" r="6" fill="#bae6fd"/>
-        <circle cx="240" cy="125" r="5" fill="#bae6fd"/>
-        <path d="M 190 155 L 200 148 L 210 155" stroke="#ef4444" stroke-width="2"/>
-        <path d="M 230 155 L 240 148 L 250 155" stroke="#ef4444" stroke-width="2"/>
-        <text x="200" y="166" fill="#f97316" font-size="10" font-weight="bold">Boiling</text>
-        <text x="195" y="60" fill="#94a3b8" font-size="8">Bulk Process</text>
+        <rect x="180" y="70" width="80" height="80" rx="4" stroke="#0284c7" stroke-width="2" fill="none"/>
+        <path d="M 180 100 H 260 V 148 H 180 Z" fill="#38bdf8" opacity="0.4"/>
+        <circle cx="200" cy="130" r="4" fill="#0284c7"/>
+        <circle cx="220" cy="115" r="6" fill="#0284c7"/>
+        <circle cx="240" cy="125" r="5" fill="#0284c7"/>
+        <text x="200" y="166" fill="#ea580c" font-size="10" font-weight="bold">Boiling</text>
+        <text x="195" y="60" fill="#64748b" font-size="8">Bulk Process</text>
       </svg>
     `,
 
-    // Vacuum Evaporation Graphic
     vacuumEvap: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#09131d"/>
-        <path d="M 90 150 V 80 A 60 60 0 0 1 210 80 V 150 Z" stroke="#38bdf8" stroke-width="3" fill="rgba(56, 189, 248, 0.08)"/>
-        <rect x="70" y="150" width="160" height="12" rx="4" fill="#334155"/>
-        <text x="100" y="32" fill="#38bdf8" font-size="11" font-weight="bold">Low Pressure Chamber</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <path d="M 90 150 V 80 A 60 60 0 0 1 210 80 V 150 Z" stroke="#0284c7" stroke-width="3" fill="rgba(2, 132, 199, 0.08)"/>
+        <rect x="70" y="150" width="160" height="12" rx="4" fill="#64748b"/>
+        <text x="90" y="32" fill="#0369a1" font-size="11" font-weight="bold">Low Pressure Chamber</text>
       </svg>
     `,
 
     chem: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#111827"/>
-        <path d="M 120 140 L 140 70 L 140 40 L 160 40 L 160 70 L 180 140 Z" stroke="#38bdf8" stroke-width="3" fill="#1e293b"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <path d="M 120 140 L 140 70 L 140 40 L 160 40 L 160 70 L 180 140 Z" stroke="#0284c7" stroke-width="3" fill="#e2e8f0"/>
         <path d="M 125 125 L 175 125 L 180 140 L 120 140 Z" fill="#10b981"/>
-        <text x="95" y="30" fill="#10b981" font-size="12" font-weight="bold">Chemical Reaction</text>
+        <text x="95" y="30" fill="#047857" font-size="12" font-weight="bold">Chemical Reaction</text>
       </svg>
     `,
 
-    // Distillation setup
     distil: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#111827"/>
-        
-        <!-- Stand Base & Rod -->
-        <rect x="50" y="165" width="40" height="6" fill="#475569"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <rect x="50" y="165" width="40" height="6" fill="#64748b"/>
         <line x1="70" y1="50" x2="70" y2="165" stroke="#64748b" stroke-width="3"/>
-        
-        <!-- Bunsen Burner & Flame -->
-        <rect x="62" y="145" width="16" height="20" fill="#334155"/>
+        <rect x="62" y="145" width="16" height="20" fill="#475569"/>
         <path d="M 70 145 Q 66 135 70 128 Q 74 135 70 145 Z" fill="#ef4444"/>
-        <path d="M 70 145 Q 68 138 70 133 Q 72 138 70 145 Z" fill="#facc15"/>
-
-        <!-- Round Bottom Flask -->
-        <circle cx="70" cy="110" r="20" stroke="#38bdf8" stroke-width="2" fill="rgba(56, 189, 248, 0.15)"/>
-        <path d="M 65 90 V 65 H 75 V 90" stroke="#38bdf8" stroke-width="2" fill="none"/>
-        <path d="M 55 115 A 18 18 0 0 0 85 115 Z" fill="#0284c7"/> <!-- Boiling Liquid -->
-
-        <!-- Thermometer -->
+        <circle cx="70" cy="110" r="20" stroke="#0284c7" stroke-width="2" fill="rgba(2, 132, 199, 0.1)"/>
+        <path d="M 65 90 V 65 H 75 V 90" stroke="#0284c7" stroke-width="2" fill="none"/>
+        <path d="M 55 115 A 18 18 0 0 0 85 115 Z" fill="#0284c7"/>
         <line x1="70" y1="52" x2="70" y2="98" stroke="#ef4444" stroke-width="1.5"/>
-
-        <!-- Slanted Condenser Outer Jacket -->
-        <path d="M 75 75 L 210 130" stroke="#0284c7" stroke-width="14" opacity="0.4"/>
-        <!-- Inner Vapour Tube -->
-        <path d="M 75 75 L 210 130" stroke="#38bdf8" stroke-width="3"/>
-
-        <!-- Cooling Water Tubes -->
-        <path d="M 190 128 L 195 140" stroke="#0ea5e9" stroke-width="2"/>
-        <path d="M 100 80 L 95 68" stroke="#0ea5e9" stroke-width="2"/>
-
-        <!-- Receiving Flask -->
-        <path d="M 210 135 L 203 165 H 227 L 220 135 Z" stroke="#38bdf8" stroke-width="2" fill="rgba(56, 189, 248, 0.2)"/>
-        <circle cx="215" cy="148" r="1.5" fill="#38bdf8"/> <!-- Drops -->
-        <circle cx="215" cy="155" r="1.5" fill="#38bdf8"/>
-
-        <!-- Label Text -->
-        <text x="75" y="30" fill="#f97316" font-size="11" font-weight="bold">Distillation Setup</text>
-        <text x="125" y="90" fill="#38bdf8" font-size="9">Liebig Condenser</text>
+        <path d="M 75 75 L 210 130" stroke="#0284c7" stroke-width="14" opacity="0.3"/>
+        <path d="M 75 75 L 210 130" stroke="#0284c7" stroke-width="3"/>
+        <text x="75" y="30" fill="#ea580c" font-size="11" font-weight="bold">Distillation Setup</text>
       </svg>
     `,
 
     crystal: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#090d16"/>
-        <polygon points="150,30 200,80 170,150 130,150 100,80" stroke="#818cf8" stroke-width="3" fill="#1e1b4b"/>
-        <text x="90" y="175" fill="#818cf8" font-size="11" font-weight="bold">Crystal Lattice Grid</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <polygon points="150,30 200,80 170,150 130,150 100,80" stroke="#4f46e5" stroke-width="3" fill="#e0e7ff"/>
+        <text x="90" y="175" fill="#4f46e5" font-size="11" font-weight="bold">Crystal Lattice Grid</text>
       </svg>
     `,
 
-    // Carbon Cycle Graphic
-    carbonCycle: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0b1f16"/>
-        <rect x="0" y="150" width="300" height="40" fill="#14532d"/>
-        <rect x="30" y="110" width="10" height="40" fill="#78350f"/>
-        <circle cx="35" cy="95" r="22" fill="#22c55e"/>
-        <rect x="230" y="90" width="14" height="60" fill="#475569"/>
-        <rect x="220" y="70" width="34" height="20" fill="#334155"/>
-        <path d="M 236 70 Q 232 55 240 45" stroke="#94a3b8" stroke-width="4" stroke-dasharray="3 3" fill="none"/>
-        <text x="215" y="35" fill="#94a3b8" font-size="9" font-weight="bold">CO2</text>
-        <path d="M 60 90 Q 100 60 140 85" stroke="#4ade80" stroke-width="2" stroke-dasharray="3 3" fill="none"/>
-        <path d="M 140 85 L 135 78 L 130 88" stroke="#4ade80" stroke-width="2" fill="none"/>
-        <text x="60" y="55" fill="#4ade80" font-size="10" font-weight="bold">Carbon Cycle</text>
-      </svg>
-    `,
-
-    // Magnets Direction Graphic
     magnets: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#111827"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
         <rect x="90" y="80" width="50" height="30" fill="#ef4444"/>
         <rect x="140" y="80" width="50" height="30" fill="#3b82f6"/>
         <text x="105" y="100" fill="#ffffff" font-size="14" font-weight="bold">N</text>
         <text x="158" y="100" fill="#ffffff" font-size="14" font-weight="bold">S</text>
-        <path d="M 190 95 C 220 70 220 120 190 95" stroke="#facc15" stroke-width="1.5" fill="none"/>
-        <path d="M 190 95 C 230 60 230 130 190 95" stroke="#facc15" stroke-width="1.5" fill="none"/>
-        <path d="M 90 95 C 60 70 60 120 90 95" stroke="#facc15" stroke-width="1.5" fill="none"/>
-        <text x="90" y="35" fill="#facc15" font-size="11" font-weight="bold">Magnetic Field Lines</text>
+        <path d="M 190 95 C 220 70 220 120 190 95" stroke="#d97706" stroke-width="1.5" fill="none"/>
+        <text x="90" y="35" fill="#d97706" font-size="11" font-weight="bold">Magnetic Field Lines</text>
       </svg>
     `,
 
-    // Solubility Graphic
     solubility: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0b1329"/>
-        <rect x="110" y="55" width="80" height="100" rx="4" stroke="#38bdf8" stroke-width="2" fill="none"/>
-        <path d="M 110 90 H 190 V 151 H 110 Z" fill="#0284c7" opacity="0.5"/>
-        <circle cx="130" cy="130" r="3" fill="#facc15"/>
-        <circle cx="150" cy="140" r="2.5" fill="#facc15" opacity="0.6"/>
-        <circle cx="165" cy="120" r="3" fill="#facc15" opacity="0.4"/>
-        <circle cx="140" cy="110" r="2" fill="#facc15" opacity="0.2"/>
-        <text x="95" y="40" fill="#38bdf8" font-size="11" font-weight="bold">Solubility &amp; Dissolving</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <rect x="110" y="55" width="80" height="100" rx="4" stroke="#0284c7" stroke-width="2" fill="none"/>
+        <path d="M 110 90 H 190 V 151 H 110 Z" fill="#0284c7" opacity="0.3"/>
+        <circle cx="130" cy="130" r="3" fill="#d97706"/>
+        <circle cx="150" cy="140" r="2.5" fill="#d97706"/>
+        <text x="95" y="40" fill="#0284c7" font-size="11" font-weight="bold">Solubility &amp; Dissolving</text>
       </svg>
     `,
 
-    // Sublimation Graphic
     sublimation: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0e1420"/>
-        <rect x="120" y="120" width="60" height="30" fill="#e2e8f0"/>
-        <path d="M 130 118 Q 128 95 135 75" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="2 3" fill="none"/>
-        <path d="M 150 118 Q 148 90 155 65" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="2 3" fill="none"/>
-        <path d="M 170 118 Q 168 95 175 75" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="2 3" fill="none"/>
-        <text x="90" y="35" fill="#e2e8f0" font-size="11" font-weight="bold">Solid to Gas: Sublimation</text>
-        <text x="115" y="165" fill="#94a3b8" font-size="9">Camphor / Dry Ice</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <rect x="120" y="120" width="60" height="30" fill="#cbd5e1"/>
+        <path d="M 130 118 Q 128 95 135 75" stroke="#64748b" stroke-width="2" stroke-dasharray="2 3" fill="none"/>
+        <text x="90" y="35" fill="#334155" font-size="11" font-weight="bold">Solid to Gas: Sublimation</text>
       </svg>
     `,
 
-    // Solar System Graphic
-    solarSystem: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#05070d"/>
-        <circle cx="150" cy="95" r="18" fill="#facc15"/>
-        <circle cx="150" cy="95" r="35" stroke="#334155" stroke-width="1" fill="none"/>
-        <circle cx="185" cy="95" r="5" fill="#38bdf8"/>
-        <circle cx="150" cy="95" r="60" stroke="#334155" stroke-width="1" fill="none"/>
-        <circle cx="210" cy="95" r="7" fill="#f97316"/>
-        <circle cx="150" cy="95" r="85" stroke="#334155" stroke-width="1" fill="none"/>
-        <circle cx="235" cy="95" r="4" fill="#94a3b8"/>
-        <text x="90" y="30" fill="#facc15" font-size="11" font-weight="bold">Solar System Model</text>
-      </svg>
-    `,
-
-    // Tyndall Effect Graphic
     tyndall: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0a0a12"/>
-        <rect x="90" y="50" width="120" height="110" rx="4" stroke="#38bdf8" stroke-width="2" fill="rgba(56,189,248,0.08)"/>
-        <polygon points="60,90 90,80 90,105" fill="#facc15" opacity="0.9"/>
-        <polygon points="90,80 210,95 90,105" fill="#facc15" opacity="0.25"/>
-        <circle cx="120" cy="95" r="1.5" fill="#f8fafc"/>
-        <circle cx="140" cy="92" r="1.5" fill="#f8fafc"/>
-        <circle cx="160" cy="97" r="1.5" fill="#f8fafc"/>
-        <circle cx="180" cy="93" r="1.5" fill="#f8fafc"/>
-        <text x="95" y="35" fill="#38bdf8" font-size="11" font-weight="bold">Tyndall Effect</text>
-        <text x="95" y="175" fill="#94a3b8" font-size="9">Light Scattering in Colloids</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <rect x="90" y="50" width="120" height="110" rx="4" stroke="#0284c7" stroke-width="2" fill="rgba(2,132,199,0.05)"/>
+        <polygon points="60,90 90,80 90,105" fill="#d97706"/>
+        <polygon points="90,80 210,95 90,105" fill="#d97706" opacity="0.2"/>
+        <text x="95" y="35" fill="#0284c7" font-size="11" font-weight="bold">Tyndall Effect</text>
       </svg>
     `,
 
-    // Rutherford Gold Foil Graphic
     rutherford: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0a0e1a"/>
-        <rect x="20" y="85" width="30" height="20" rx="3" fill="#475569"/>
-        <line x1="50" y1="95" x2="145" y2="95" stroke="#facc15" stroke-width="2" stroke-dasharray="4 3"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <rect x="20" y="85" width="30" height="20" rx="3" fill="#64748b"/>
+        <line x1="50" y1="95" x2="145" y2="95" stroke="#d97706" stroke-width="2" stroke-dasharray="4 3"/>
         <rect x="145" y="45" width="8" height="100" fill="#eab308"/>
         <circle cx="149" cy="95" r="4" fill="#ef4444"/>
-        <line x1="153" y1="95" x2="260" y2="95" stroke="#facc15" stroke-width="2" stroke-dasharray="4 3"/>
-        <line x1="153" y1="95" x2="230" y2="45" stroke="#facc15" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <line x1="145" y1="95" x2="100" y2="150" stroke="#f97316" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <text x="60" y="30" fill="#facc15" font-size="11" font-weight="bold">Rutherford Gold Foil</text>
-        <text x="100" y="175" fill="#94a3b8" font-size="9">Alpha Particle Scattering</text>
+        <text x="60" y="30" fill="#d97706" font-size="11" font-weight="bold">Rutherford Gold Foil</text>
       </svg>
     `,
 
-    // Cathode Ray Tube Graphic
     cathodeRay: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0a0a12"/>
-        <rect x="40" y="70" width="220" height="50" rx="25" stroke="#38bdf8" stroke-width="2" fill="rgba(56,189,248,0.08)"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <rect x="40" y="70" width="220" height="50" rx="25" stroke="#0284c7" stroke-width="2" fill="rgba(2,132,199,0.05)"/>
         <rect x="55" y="85" width="8" height="20" fill="#ef4444"/>
         <rect x="225" y="85" width="8" height="20" fill="#3b82f6"/>
-        <line x1="63" y1="95" x2="225" y2="95" stroke="#a78bfa" stroke-width="2.5" stroke-dasharray="5 3"/>
-        <text x="52" y="135" fill="#ef4444" font-size="9">Cathode (-)</text>
-        <text x="205" y="135" fill="#3b82f6" font-size="9">Anode (+)</text>
-        <text x="65" y="40" fill="#a78bfa" font-size="11" font-weight="bold">Cathode Ray Tube</text>
-        <text x="85" y="170" fill="#94a3b8" font-size="9">Discovery of Electron</text>
+        <line x1="63" y1="95" x2="225" y2="95" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="5 3"/>
+        <text x="65" y="40" fill="#7c3aed" font-size="11" font-weight="bold">Cathode Ray Tube</text>
       </svg>
     `,
 
-    // Thomson Plum Pudding Model Graphic
     thomson: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#1a0f14"/>
-        <circle cx="150" cy="100" r="62" fill="#f87171" opacity="0.35" stroke="#fb7185" stroke-width="3"/>
-        <circle cx="122" cy="82" r="9" fill="#38bdf8"/>
-        <circle cx="168" cy="76" r="9" fill="#38bdf8"/>
-        <circle cx="140" cy="120" r="9" fill="#38bdf8"/>
-        <circle cx="180" cy="116" r="9" fill="#38bdf8"/>
-        <circle cx="112" cy="115" r="9" fill="#38bdf8"/>
-        <text x="118" y="86" fill="#0b1329" font-size="12" font-weight="bold">-</text>
-        <text x="164" y="80" fill="#0b1329" font-size="12" font-weight="bold">-</text>
-        <text x="136" y="124" fill="#0b1329" font-size="12" font-weight="bold">-</text>
-        <text x="176" y="120" fill="#0b1329" font-size="12" font-weight="bold">-</text>
-        <text x="108" y="119" fill="#0b1329" font-size="12" font-weight="bold">-</text>
-        <text x="75" y="28" fill="#fb7185" font-size="11" font-weight="bold">Thomson Plum Pudding Model</text>
-        <text x="85" y="178" fill="#94a3b8" font-size="9">Electrons in a positive sphere</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <circle cx="150" cy="100" r="62" fill="#fca5a5" opacity="0.4" stroke="#f43f5e" stroke-width="3"/>
+        <circle cx="122" cy="82" r="9" fill="#0284c7"/>
+        <circle cx="168" cy="76" r="9" fill="#0284c7"/>
+        <text x="75" y="28" fill="#e11d48" font-size="11" font-weight="bold">Thomson Plum Pudding Model</text>
       </svg>
     `,
 
-    // Temperature Scale Graphic
     tempScale: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0b1329"/>
-        <rect x="140" y="30" width="20" height="110" rx="10" stroke="#38bdf8" stroke-width="2.5" fill="rgba(56,189,248,0.08)"/>
-        <circle cx="150" cy="148" r="16" fill="#ef4444" stroke="#38bdf8" stroke-width="2.5"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <rect x="140" y="30" width="20" height="110" rx="10" stroke="#0284c7" stroke-width="2.5" fill="rgba(2,132,199,0.05)"/>
+        <circle cx="150" cy="148" r="16" fill="#ef4444" stroke="#0284c7" stroke-width="2.5"/>
         <rect x="146" y="70" width="8" height="78" fill="#ef4444"/>
-        <line x1="165" y1="45" x2="180" y2="45" stroke="#94a3b8" stroke-width="1.5"/>
-        <line x1="165" y1="75" x2="180" y2="75" stroke="#94a3b8" stroke-width="1.5"/>
-        <line x1="165" y1="105" x2="180" y2="105" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="186" y="49" fill="#f97316" font-size="10" font-weight="bold">100°C</text>
-        <text x="186" y="109" fill="#38bdf8" font-size="10" font-weight="bold">0°C</text>
-        <text x="40" y="49" fill="#f97316" font-size="10">373 K</text>
-        <text x="40" y="109" fill="#38bdf8" font-size="10">273 K</text>
-        <text x="80" y="22" fill="#38bdf8" font-size="11" font-weight="bold">Temperature Scale</text>
+        <text x="80" y="22" fill="#0284c7" font-size="11" font-weight="bold">Temperature Scale</text>
       </svg>
     `,
 
-    // Bohr Atom Model Graphic
     bohr: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0a1020"/>
-        <circle cx="150" cy="100" r="22" stroke="#334155" stroke-width="1" fill="none"/>
-        <circle cx="150" cy="100" r="42" stroke="#334155" stroke-width="1" fill="none"/>
-        <circle cx="150" cy="100" r="62" stroke="#334155" stroke-width="1" fill="none"/>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f8fafc"/>
+        <circle cx="150" cy="100" r="22" stroke="#cbd5e1" stroke-width="1" fill="none"/>
+        <circle cx="150" cy="100" r="42" stroke="#cbd5e1" stroke-width="1" fill="none"/>
+        <circle cx="150" cy="100" r="62" stroke="#cbd5e1" stroke-width="1" fill="none"/>
         <circle cx="150" cy="100" r="9" fill="#ef4444"/>
-        <circle cx="146" cy="97" r="3" fill="#fca5a5"/>
-        <circle cx="154" cy="103" r="3" fill="#fca5a5"/>
-        <circle cx="172" cy="100" r="4" fill="#38bdf8"/>
-        <circle cx="128" cy="100" r="4" fill="#38bdf8"/>
-        <circle cx="150" cy="58" r="4" fill="#38bdf8"/>
-        <circle cx="150" cy="142" r="4" fill="#38bdf8"/>
-        <circle cx="212" cy="100" r="4" fill="#38bdf8"/>
-        <circle cx="106" cy="144" r="4" fill="#38bdf8"/>
-        <text x="95" y="28" fill="#38bdf8" font-size="11" font-weight="bold">Bohr Atom Model</text>
-        <text x="95" y="180" fill="#94a3b8" font-size="9">Electrons in Energy Shells</text>
+        <text x="95" y="28" fill="#0284c7" font-size="11" font-weight="bold">Bohr Atom Model</text>
       </svg>
     `,
 
-    // NEW: Nuclear Reactor Graphic
     nuclear: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="#0b1220"/>
-        <rect x="95" y="60" width="110" height="95" rx="10" stroke="#38bdf8" stroke-width="3" fill="rgba(56,189,248,0.1)"/>
-        <rect x="108" y="40" width="6" height="55" fill="#94a3b8"/>
-        <rect x="147" y="40" width="6" height="55" fill="#94a3b8"/>
-        <rect x="186" y="40" width="6" height="55" fill="#94a3b8"/>
-        <rect x="120" y="100" width="8" height="45" fill="#facc15"/>
-        <rect x="136" y="100" width="8" height="45" fill="#facc15"/>
-        <rect x="156" y="100" width="8" height="45" fill="#facc15"/>
-        <rect x="172" y="100" width="8" height="45" fill="#facc15"/>
-        <circle cx="150" cy="125" r="3" fill="#ef4444"/>
-        <path d="M 205 110 H 250 V 150" stroke="#0ea5e9" stroke-width="3" fill="none"/>
-        <path d="M 95 130 H 50 V 90" stroke="#ef4444" stroke-width="3" fill="none"/>
-        <text x="85" y="26" fill="#facc15" font-size="11" font-weight="bold">Nuclear Reactor</text>
-        <text x="80" y="177" fill="#94a3b8" font-size="9">Fuel Rods &amp; Control Rods</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <rect x="95" y="60" width="110" height="95" rx="10" stroke="#0284c7" stroke-width="3" fill="rgba(2,132,199,0.05)"/>
+        <rect x="108" y="40" width="6" height="55" fill="#64748b"/>
+        <text x="85" y="26" fill="#d97706" font-size="11" font-weight="bold">Nuclear Reactor</text>
       </svg>
-    `
-   ,
+    `,
 
-    // A380 Walkaround Graphic
     a380: `
-      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="url(#a380Sky)"/>
-        <defs>
-          <linearGradient id="a380Sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0b1329"/>
-            <stop offset="100%" stop-color="#1e3a5f"/>
-          </linearGradient>
-        </defs>
-        <!-- Fuselage (double deck) -->
-        <path d="M 40 110 Q 45 85 85 80 L 200 78 Q 250 80 265 105 Q 250 125 200 128 L 85 128 Q 45 128 40 110 Z" fill="#e2e8f0"/>
-        <path d="M 85 80 Q 110 62 160 66 L 200 78 Z" fill="#cbd5e1"/>
-        <!-- Tail fin -->
-        <path d="M 45 100 L 30 55 L 62 55 L 85 95 Z" fill="#38bdf8"/>
-        <!-- Wing -->
-        <path d="M 150 118 L 195 150 L 175 152 L 120 122 Z" fill="#94a3b8"/>
-        <!-- Engine -->
-        <rect x="150" y="136" width="22" height="10" rx="5" fill="#475569"/>
-        <!-- Windows -->
-        <circle cx="105" cy="92" r="2.5" fill="#0284c7"/>
-        <circle cx="120" cy="92" r="2.5" fill="#0284c7"/>
-        <circle cx="135" cy="92" r="2.5" fill="#0284c7"/>
-        <circle cx="150" cy="92" r="2.5" fill="#0284c7"/>
-        <circle cx="165" cy="92" r="2.5" fill="#0284c7"/>
-        <circle cx="105" cy="110" r="2.5" fill="#0284c7"/>
-        <circle cx="120" cy="110" r="2.5" fill="#0284c7"/>
-        <circle cx="135" cy="110" r="2.5" fill="#0284c7"/>
-        <circle cx="150" cy="110" r="2.5" fill="#0284c7"/>
-        <circle cx="165" cy="110" r="2.5" fill="#0284c7"/>
-        <text x="95" y="28" fill="#38bdf8" font-size="11" font-weight="bold">Airbus A380 Walkaround</text>
-        <text x="90" y="178" fill="#94a3b8" font-size="9">Double-Deck Aircraft Tour</text>
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#e0f2fe"/>
+        <path d="M 40 110 Q 45 85 85 80 L 200 78 Q 250 80 265 105 Q 250 125 200 128 L 85 128 Q 45 128 40 110 Z" fill="#94a3b8"/>
+        <path d="M 45 100 L 30 55 L 62 55 L 85 95 Z" fill="#0284c7"/>
+        <text x="95" y="28" fill="#0284c7" font-size="11" font-weight="bold">Airbus A380 Walkaround</text>
       </svg>
     `, 
-   humanAnatomy: `
-    <svg viewBox="0 0 400 600" width="100%" height="100%" xmlns="http://w3.org">
-      <rect width="100%" height="100%" fill="#f4f7f6"/>
-      <text x="200" y="40" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#2c3e50" text-anchor="middle">HUMAN ANATOMY</text>
-      <path d="M200,80 Q230,80 230,120 Q230,140 250,150 Q280,160 270,250 Q260,320 260,400 Q260,550 250,580 L150,580 Q140,550 140,400 Q140,320 130,250 Q120,160 150,150 Q170,140 170,120 Q170,80 200,80 Z" fill="#e0e7e9" stroke="#bdc3c7" stroke-width="3" opacity="0.6"/>
-      <g id="brain">
-        <path d="M185,115 C175,115 170,105 175,95 C170,90 180,80 190,85 C195,78 205,78 210,85 C220,80 230,90 225,95 C230,105 225,115 215,115 C215,120 185,120 185,115 Z" fill="#ff7675" stroke="#d63031" stroke-width="1.5"/>
-        <line x1="175" y1="210" x2="200" y2="105" stroke="#74b9ff" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <text x="170" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#d63031" text-anchor="end">Brain</text>
-      </g>
-      <g id="lungs">
-        <path d="M195,160 C180,155 160,170 160,200 C160,230 180,240 195,230 Z" fill="#fab1a0" stroke="#e17055" stroke-width="1.5"/>
-        <path d="M205,160 C220,155 240,170 240,200 C240,230 220,240 205,230 Z" fill="#fab1a0" stroke="#e17055" stroke-width="1.5"/>
-        <path d="M200,135 L200,170 M200,170 L185,185 M200,170 L215,185" fill="none" stroke="#7f8c8d" stroke-width="2"/>
-        <line x1="240" y1="190" x2="290" y2="190" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <text x="295" y="195" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#e17055">Lungs</text>
-      </g>
-      <g id="heart">
-        <path d="M195,190 C185,180 180,200 200,215 C220,200 215,180 205,190 Z" fill="#ff7675" stroke="#d63031" stroke-width="1.5"/>
-        <line x1="200" y1="200" x2="110" y2="260" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <text x="105" y="265" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#cc2424" text-anchor="end">Heart</text>
-      </g>
-      <g id="stomach">
-        <path d="M185,245 C165,240 160,270 180,285 C210,290 215,265 195,250" fill="#fdcb6e" stroke="#e67e22" stroke-width="1.5"/>
-        <line x1="175" y1="265" x2="110" y2="310" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <text x="105" y="315" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#e67e22" text-anchor="end">Stomach</text>
-      </g>
-      <g id="intestines">
-        <path d="M170,330 L230,330 L230,295 L170,295 Z" fill="none" stroke="#55efc4" stroke-width="10" stroke-linejoin="round" opacity="0.8"/>
-        <path d="M180,305 Q190,295 200,305 T220,305 T200,315 T180,315 T200,325" fill="none" stroke="#ffeaa7" stroke-width="5" stroke-linecap="round"/>
-        <line x1="225" y1="315" x2="290" y2="315" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <text x="295" y="320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#10ac84">Intestines</text>
-      </g>
-    </svg>
-  `,
 
+    humanAnatomy: `
+      <svg viewBox="0 0 400 450" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#f8fafc"/>
+        <text x="200" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b" text-anchor="middle">HUMAN ANATOMY</text>
+        <path d="M200,65 Q225,65 225,95 Q225,110 245,120 Q270,130 265,210 Q255,270 255,340 Q255,420 245,440 L155,440 Q145,420 145,340 Q145,270 135,210 Q130,130 155,120 Q175,110 175,95 Q175,65 200,65 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/>
+        <!-- Brain -->
+        <circle cx="200" cy="85" r="18" fill="#fca5a5" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="200" y="89" font-family="Arial" font-size="10" font-weight="bold" fill="#b91c1c" text-anchor="middle">Brain</text>
+        <!-- Lungs -->
+        <path d="M185,125 C170,120 155,135 155,155 C155,180 175,190 190,180 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/>
+        <path d="M215,125 C230,120 245,135 245,155 C245,180 225,190 210,180 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/>
+        <!-- Heart -->
+        <circle cx="200" cy="155" r="12" fill="#f43f5e" stroke="#be123c" stroke-width="1.5"/>
+        <text x="200" y="159" font-family="Arial" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">Heart</text>
+        <!-- Stomach -->
+        <path d="M185,210 C170,205 165,225 185,235 C205,240 210,220 195,210" fill="#fde047" stroke="#ca8a04" stroke-width="1.5"/>
+        <!-- Intestines -->
+        <rect x="175" y="260" width="50" height="50" rx="8" fill="#6ee7b7" stroke="#059669" stroke-width="1.5"/>
+        <text x="200" y="289" font-family="Arial" font-size="10" font-weight="bold" fill="#065f46" text-anchor="middle">Intestines</text>
+      </svg>
+    `,
+
+    cellVerse: `
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#f1f5f9"/>
+        <ellipse cx="150" cy="95" rx="90" ry="60" stroke="#0284c7" stroke-width="3" fill="rgba(2, 132, 199, 0.08)"/>
+        <ellipse cx="150" cy="95" rx="45" ry="30" stroke="#10b981" stroke-width="2" fill="rgba(16, 185, 129, 0.15)"/>
+        <circle cx="130" cy="80" r="6" fill="#f59e0b"/>
+        <circle cx="170" cy="115" r="5" fill="#8b5cf6"/>
+        <text x="85" y="28" fill="#0284c7" font-size="11" font-weight="bold">Eukaryotic &amp; Prokaryotic Cell</text>
+      </svg>
+    `
   };
 
-  // ITEMS ARRAY — nayi entries neeche add karein, base URL common hai
   const BASE = "https://2025akshat-lang.github.io/Akshat/animation/files/";
   const AUTHOR = "Class 9th Science Model";
 
@@ -506,26 +349,21 @@
     { id: 4, title: "Crystallization Process", svg: "crystal", file: "crystallization.html" },
     { id: 5, title: "Vacuum Evaporation", svg: "vacuumEvap", file: "vaccum%20evaporation.html" },
     { id: 6, title: "Chromatography", svg: "chem", file: "Chromatography.html" },
-    { id: 7, title: "Carbon Cycle", svg: "carbonCycle", file: "Carbon%20cycle.html" },
+    { id: 7, title: "Eukaryotic & Prokaryotic Cell (CellVerse)", svg: "cellVerse", file: "CellVerse.html" },
     { id: 8, title: "Magnets Direction", svg: "magnets", file: "Magnets%20direction.html" },
     { id: 9, title: "Solubility", svg: "solubility", file: "Solubility.html" },
     { id: 10, title: "Sublimation", svg: "sublimation", file: "Sublimation.html" },
-    { id: 11, title: "Solar System", svg: "solarSystem", file: "solar%20system.html" },
-    { id: 12, title: "Tyndall Effect", svg: "tyndall", file: "tyndall%20effect.html" },
-    { id: 13, title: "Rutherford Gold Foil Experiment", svg: "rutherford", file: "rutherford-goldfoil.html" },
-    { id: 14, title: "Cathode Ray Tube Lab", svg: "cathodeRay", file: "cathode_ray_tube_lab.html" },
-    { id: 15, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model%203D%20%28Watermelon%29.html" },
-    { id: 16, title: "Temperature Scale", svg: "tempScale", file: "temperature-scale.html" },
-    { id: 17, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" },
-    { id: 18, title: "Nuclear Reactor", svg: "nuclear", file: "neuclear-reactor.html" },
-   { id: 19, title: "Airbus A380 Walkaround", svg: "a380", file: "A380%20Walkaround.html" },
-     { id: 20, title: "Human Anatomy", svg: "humanAnatomy", file: "Human%20Anatomy.html" }
-
+    { id: 11, title: "Tyndall Effect", svg: "tyndall", file: "tyndall%20effect.html" },
+    { id: 12, title: "Rutherford Gold Foil Experiment", svg: "rutherford", file: "rutherford-goldfoil.html" },
+    { id: 13, title: "Cathode Ray Tube Lab", svg: "cathodeRay", file: "cathode_ray_tube_lab.html" },
+    { id: 14, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model%203D%20%28Watermelon%29.html" },
+    { id: 15, title: "Temperature Scale", svg: "tempScale", file: "temperature-scale.html" },
+    { id: 16, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" },
+    { id: 17, title: "Nuclear Reactor", svg: "nuclear", file: "neuclear-reactor.html" },
+    { id: 18, title: "Airbus A380 Walkaround", svg: "a380", file: "A380%20Walkaround.html" },
+    { id: 19, title: "Human Anatomy", svg: "humanAnatomy", file: "Human%20Anatomy.html" }
   ];
 
-  // Card tap karne par asli file ka page khulta hai (container ke andar nahi).
-  // target="_blank" => Google Sites ke embed ke andar bhi nayi tab mein khulta hai
-  // (embed ke andar same-tab navigation block ho jata hai).
   function render() {
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = data.map(item => `
