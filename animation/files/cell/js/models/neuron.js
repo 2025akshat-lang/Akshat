@@ -5,11 +5,25 @@
    Dendrites + dendritic spines (opt.color) | Axon hillock (pink) | Axon + neurofilaments (pale violet / white)
    Myelin sheath (cream) | Schwann cell nuclei (brown) | Nodes of Ranvier + Na+ channels (orange / mint)
    Axon terminals + synaptic boutons (pink) + synaptic vesicles (cyan) | Postsynaptic membrane + receptors (teal / gold)
-   Animation: action potential -> node flash -> neurotransmitter release -> receptors glow (7 sec loop) */
+   Extra detail (v2): nuclear pores | rough-ER ribosomes | tapered dendrites + microtubules + mitochondria | axon collateral
+   3 myelin layers + paranodal loops | mitochondria in boutons
+   Animation: action potential -> node flash -> neurotransmitter release -> receptors glow (7 sec loop)
+   360 SPIN: neuron apni lambi axis (axon) par dheere ghoomta hai. Band karna ho to AUTO_SPIN = 0 kar do.
+   Ungli rakhne par ghoomna ruk jata hai, chhodne ke 1.5 sec baad phir shuru. */
 registerCellModel('neuron', (THREE, group, opt) => {
   const T3 = THREE;
-  const root = new T3.Group();            // sab kuch root mein; portrait mein root ghoomta hai
-  group.add(root);
+  const AUTO_SPIN = 0.35;                 // radian/sec (0.35 = ~18 sec mein ek poora chakkar). 0 = band
+  const lay = new T3.Group();             // portrait/landscape layout yahan lagta hai
+  const root = new T3.Group();            // 360 spin yahan lagta hai, sab parts isi mein
+  group.add(lay); lay.add(root);
+  const Y = new T3.Vector3(0, 1, 0);
+  const SP = window.__cvNeuronSpin || (window.__cvNeuronSpin = { held: false, up: -99999, init: false });
+  if (!SP.init) {                         // touch par spin ruke (listener sirf ek baar judta hai)
+    SP.init = true;
+    window.addEventListener('pointerdown', () => { SP.held = true; });
+    const rel = () => { SP.held = false; SP.up = performance.now(); };
+    window.addEventListener('pointerup', rel); window.addEventListener('pointercancel', rel);
+  }
 
   /* ---------- helpers (sirf is file ke andar) ---------- */
   let seed = 11;
@@ -34,9 +48,22 @@ registerCellModel('neuron', (THREE, group, opt) => {
     for (let i = 0; i <= n; i++) { const a = Math.PI / 2 * i / n; P.push(new T3.Vector2(Math.max(0.0001, r * Math.cos(a)), hc + r * Math.sin(a))); }
     return new T3.LatheGeometry(P, 16);
   };
-  const tubeMesh = (pts, r, seg, m) => {
-    const c = new T3.CatmullRomCurve3(pts);
-    root.add(new T3.Mesh(new T3.TubeGeometry(c, seg || 20, r, 6, false), m));
+  const tubeMesh = (pts, r, seg, m, r1) => {   // r1 diya to tube r se r1 tak patla hota hai (taper)
+    const c = new T3.CatmullRomCurve3(pts), n = seg || 20;
+    const g = new T3.TubeGeometry(c, n, r, 6, false);
+    if (r1 != null) {
+      const pos = g.attributes.position;
+      for (let i = 0; i <= n; i++) {
+        const ct = c.getPointAt(i / n), f = 1 - (1 - r1 / r) * i / n;
+        for (let j = 0; j < 7; j++) {
+          const k = i * 7 + j;
+          pos.setXYZ(k, ct.x + (pos.getX(k) - ct.x) * f, ct.y + (pos.getY(k) - ct.y) * f, ct.z + (pos.getZ(k) - ct.z) * f);
+        }
+      }
+      pos.needsUpdate = true;
+      g.computeVertexNormals();
+    }
+    root.add(new T3.Mesh(g, m));
     return c;
   };
   const inst = (geo, m, list) => {        // list = [{p:Vector3, s:number}]
@@ -71,6 +98,14 @@ registerCellModel('neuron', (THREE, group, opt) => {
   }
   inst(sph(0.025, 8, 6), mat(0xffc8ff), chrom);                                    // chromatin
 
+  const pores = [];                       // nuclear pores
+  for (let i = 0; i < 28; i++) {
+    const v = V(rand() - 0.5, rand() - 0.5, rand() - 0.5);
+    if (v.length() < 0.05) v.set(0.3, 0.2, 0.1);
+    pores.push({ p: v.normalize().multiplyScalar(0.36).add(NC) });
+  }
+  inst(sph(0.011, 6, 5), mat(0xe8dcff), pores);
+
   const inSoma = (rmin, rmax) => {        // soma ke andar random jagah (nucleus se bahar)
     const v = V(rand() - 0.5, rand() - 0.5, rand() - 0.5);
     if (v.length() < 0.05) v.set(0.3, 0.3, 0.1);
@@ -100,6 +135,12 @@ registerCellModel('neuron', (THREE, group, opt) => {
       s.position.y = (k - 1) * 0.055;
       g.add(s);
     }
+    for (let k = 0; k < 8; k++) {         // ER par ribosomes (rough)
+      const rb = new T3.Mesh(sph(0.012, 6, 5), mat(0xffe28a));
+      const a = rand() * 6.28, rr = 0.07 * Math.sqrt(rand());
+      rb.position.set(Math.cos(a) * rr, 0.078, Math.sin(a) * rr);
+      g.add(rb);
+    }
     root.add(g);
   }
 
@@ -121,16 +162,22 @@ registerCellModel('neuron', (THREE, group, opt) => {
   inst(sph(0.013, 6, 5), mat(0xffe28a), rib);
 
   /* ---------- 2. DENDRITES + SPINES ---------- */
-  const dmat = mat(COL, 0.95), spines = [];
+  const dmat = mat(COL, 0.7), spines = [];
   const branch = (p0, dir, len, r, depth) => {
     const d = dir.clone().normalize();
     const p3 = p0.clone().add(d.clone().multiplyScalar(len));
     const side = V(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(len * 0.5);
     const p1 = p0.clone().lerp(p3, 0.33).add(side);
     const p2 = p0.clone().lerp(p3, 0.66).sub(side.clone().multiplyScalar(0.6));
-    const c = tubeMesh([p0, p1, p2, p3], r, 14, dmat);
-    add(sph(r * 1.05, 8, 6), dmat, p3.x, p3.y, p3.z);          // joint ka seam chhupane ke liye
-    const ns = depth === 0 ? 4 : 3;
+    const c = tubeMesh([p0, p1, p2, p3], r, 14, dmat, r * 0.72);   // patla hota hua dendrite
+    add(sph(r * 0.76, 8, 6), dmat, p3.x, p3.y, p3.z);          // joint ka seam chhupane ke liye
+    if (depth === 2) {                    // primary dendrite: microtubule + mitochondrion andar
+      tubeMesh(c.getPoints(6).map(p => p.clone().add(V(0.012, 0.01, -0.01))), 0.007, 14, mat(0xffffff, 0.85));
+      const mp = c.getPointAt(0.5), tg = c.getTangentAt(0.5).normalize();
+      const dm = add(capsule(0.12, 0.028), mat(0xf0735f, 0.9), mp.x, mp.y, mp.z);
+      dm.quaternion.setFromUnitVectors(Y, tg);
+    }
+    const ns = depth === 0 ? 5 : 4;
     for (let i = 0; i < ns; i++) {
       const pt = c.getPoint(0.2 + 0.7 * rand());
       const n = V(rand() - 0.5, rand() - 0.5, rand() - 0.5);
@@ -151,7 +198,7 @@ registerCellModel('neuron', (THREE, group, opt) => {
   // Dendritic spines (stalk + head), instanced
   const stalkI = new T3.InstancedMesh(new T3.CylinderGeometry(0.007, 0.007, 0.06, 5), mat(COL), spines.length);
   const headI = new T3.InstancedMesh(sph(0.022, 8, 6), mat(0xd9c6ff), spines.length);
-  const dum = new T3.Object3D(), Y = V(0, 1, 0);
+  const dum = new T3.Object3D();
   spines.forEach((s, i) => {
     dum.scale.set(1, 1, 1);
     dum.quaternion.setFromUnitVectors(Y, s.n);
@@ -183,6 +230,11 @@ registerCellModel('neuron', (THREE, group, opt) => {
     const len = s[1] - s[0], cx = (s[0] + s[1]) / 2;
     const outer = add(capsule(len, 0.15), mat(0xf2e6a0, 0.5), cx, 0, 0); outer.rotation.z = Math.PI / 2;     // myelin
     const inner = add(capsule(len - 0.04, 0.115), mat(0xe0c070, 0.55), cx, 0, 0); inner.rotation.z = Math.PI / 2; // andar ki layer
+    const l3 = add(capsule(len - 0.08, 0.085), mat(0xd4b060, 0.6), cx, 0, 0); l3.rotation.z = Math.PI / 2;   // teesri layer
+    [s[0] + 0.025, s[1] - 0.025].forEach(px => {                                                            // paranodal loops
+      const pr = add(new T3.TorusGeometry(0.078, 0.012, 6, 16), mat(0xe8d890), px, 0, 0);
+      pr.rotation.y = Math.PI / 2;
+    });
     if (i === 1 || i === 3) {             // Schwann cell nucleus
       const sn = add(sph(0.1, 12, 8), mat(0xb88a5c), cx, 0.15, 0.02);
       sn.scale.set(1.3, 0.5, 0.8);
@@ -207,16 +259,29 @@ registerCellModel('neuron', (THREE, group, opt) => {
   const boutonMats = [], vesList = [];
   BP.forEach((b, i) => {
     const mid = V(AX_END, 0, 0).lerp(b, 0.5).add(V(0, (i < 2 ? 0.08 : -0.08), (i % 2 ? 0.06 : -0.06)));
-    tubeMesh([V(AX_END, 0, 0), mid, b.clone().add(V(-0.1, 0, 0))], 0.028, 16, mat(AXC));      // telodendria
+    tubeMesh([V(AX_END, 0, 0), mid, b.clone().add(V(-0.1, 0, 0))], 0.03, 16, mat(AXC), 0.016);      // telodendria
     const bm = mat(0xff7aa8, 0.75, 0xff3d7a, 0);
     add(sph(0.13, 18, 14), bm, b.x, b.y, b.z);                                                 // synaptic bouton
     boutonMats.push(bm);
+    const bmi = add(capsule(0.1, 0.022), mat(0xf0735f), b.x - 0.03, b.y - 0.04, b.z + 0.02);   // bouton ka mitochondrion
+    bmi.rotation.z = 0.8;
     for (let k = 0; k < 7; k++) {                                                              // synaptic vesicles
       const v = V(rand() - 0.5, rand() - 0.5, rand() - 0.5);
       if (v.length() < 0.05) v.set(0.2, 0.1, 0);
       vesList.push({ p: v.normalize().multiplyScalar(0.03 + rand() * 0.06).add(b) });
     }
   });
+  // Axon collateral (node se nikli side-branch) + uska bouton
+  const CB = V(1.25, 0.85, 0.2);
+  tubeMesh([V(0.4, 0, 0), V(0.65, 0.4, 0.1), V(0.95, 0.65, 0.15), CB.clone().add(V(-0.05, -0.05, 0))], 0.03, 20, mat(AXC), 0.02);
+  const cbm = mat(0xff7aa8, 0.75, 0xff3d7a, 0);
+  add(sph(0.11, 16, 12), cbm, CB.x, CB.y, CB.z);
+  boutonMats.push(cbm);
+  for (let k = 0; k < 6; k++) {
+    const v = V(rand() - 0.5, rand() - 0.5, rand() - 0.5);
+    if (v.length() < 0.05) v.set(0.2, 0.1, 0);
+    vesList.push({ p: v.normalize().multiplyScalar(0.03 + rand() * 0.05).add(CB) });
+  }
   inst(sph(0.02, 8, 6), mat(0x7fe8ff, null, 0x2a8aa8, 0.4), vesList);
 
   // Postsynaptic membrane (dome) + receptors
@@ -256,9 +321,10 @@ registerCellModel('neuron', (THREE, group, opt) => {
       // portrait phone par neuron seedha khada ho jaye (soma upar, synapse neeche)
       const portrait = innerWidth / innerHeight < 0.8;
       const tr = portrait ? -Math.PI / 2 : 0, ts = portrait ? 0.85 : 1, k = Math.min(1, dt * 6);
-      root.rotation.z += (tr - root.rotation.z) * k;
-      const sc = root.scale.x + (ts - root.scale.x) * k;
-      root.scale.set(sc, sc, sc);
+      lay.rotation.z += (tr - lay.rotation.z) * k;
+      const sc = lay.scale.x + (ts - lay.scale.x) * k;
+      lay.scale.set(sc, sc, sc);
+      if (AUTO_SPIN && !SP.held && performance.now() - SP.up > 1500) root.rotation.x += dt * AUTO_SPIN;   // 360 spin
 
       mitos.forEach(o => { o.g.position.y = o.y + 0.012 * Math.sin(t * 1.2 + o.ph); });
       cargo.forEach((c, i) => {           // anterograde axonal transport
