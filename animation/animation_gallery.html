@@ -430,6 +430,8 @@
   const BASE = "https://2025akshat-lang.github.io/Akshat/animation/files/";
   const AUTHOR = "Class 9th Science Model";
 
+  // `file`  -> BASE ke andar wali file (relative)
+  // `full`  -> alag repo / alag site ka poora URL (BASE ignore hota hai)
   const data = [
     { id: 1,  title: "Water Cycle Model", svg: "waterCycle", file: "Water_cycle.html" },
     { id: 2,  title: "Evaporation Vs Boiling", svg: "evapVsBoil", file: "Evaporation%20Vs%20boiling.html" },
@@ -449,13 +451,15 @@
     { id: 16, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" },
     { id: 17, title: "Nuclear Reactor", svg: "nuclear", file: "neuclear-reactor.html" },
     { id: 18, title: "Airbus A380 Walkaround", svg: "a380", file: "A380%20Walkaround.html" },
-    { id: 19, title: "Human Anatomy", svg: "humanAnatomy", file: "https://2025akshat-lang.github.io/Human-Anatomy-Education-Platform/" }
+    { id: 19, title: "Human Anatomy", svg: "humanAnatomy", full: "https://2025akshat-lang.github.io/Human-Anatomy-Education-Platform/" }
   ];
 
   function render() {
     const grid = document.getElementById('cardsGrid');
-    grid.innerHTML = data.map((item, index) => `
-      <a class="card" href="${BASE}${item.file}" target="_blank" rel="noopener noreferrer" style="animation-delay: ${Math.min(index, 8) * 0.04}s">
+    grid.innerHTML = data.map((item, index) => {
+      const url = item.full ? item.full : BASE + item.file;
+      return `
+      <a class="card" href="${url}" target="_blank" rel="noopener noreferrer" style="animation-delay: ${Math.min(index, 8) * 0.04}s">
         <div class="card-thumbnail">
           ${svgThumbnails[item.svg] || svgThumbnails.chem}
         </div>
@@ -467,7 +471,8 @@
           </div>
         </div>
       </a>
-    `).join('');
+    `;
+    }).join('');
   }
 
   render();
