@@ -31,9 +31,9 @@ function renderCT(){const r=$('#ctr'),x=r.scrollTop;
 function regParts(parts){CTP=[];const seen=new Set();
  (parts||[]).forEach(p=>{(p.objs||[]).forEach(ob=>ob.traverse(n=>{if(!n.isMesh||seen.has(n))return;seen.add(n);
   const ms=[].concat(n.material);ms.forEach(x=>{x.transparent=true});
-  n.userData={k:p.key,name:p.name,info:p.info,det:p.det,grp:p.grp,op:ms[0].opacity,em:ms[0].emissive?ms[0].emissive.getHex():0};CTP.push(n)}))})}
+  n.userData={k:p.key,name:p.name,info:p.info,det:p.det,grp:p.grp,out:!!(n.userData&&n.userData.out),op:ms[0].opacity,em:ms[0].emissive?ms[0].emissive.getHex():0};CTP.push(n)}))})}
 function showCT(id){clr();closeDock();const d=CELLTYPES.find(c=>c.id===id)||CELLTYPES[0];id=d.id;
- if(id!=='default'&&mode!=='3D')setMode('3D');
+ if(mode!=='3D')setMode('3D');
  CTid=id;clearCT();const dflt=id==='default';
  document.body.classList.toggle('ct',!dflt);
  EU.root.visible=PR.root.visible=dflt;CT.visible=!dflt;
