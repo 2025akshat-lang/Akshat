@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CellVerse</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<canvas id="c"></canvas>
+<div id="lbl"></div>
+<div class="top"><b class="brand">Cell<i>Verse</i></b>
+<div class="seg" id="md"><button data-m="3D" class="on">3D</button><button data-m="4D">4D</button><button data-m="5D">5D</button></div></div>
+<button class="ctbtn" id="ctb" aria-label="Cell types">◧</button>
+<div class="ctd" id="ctd" hidden><div class="oh2"><button class="ar" id="ctl" aria-label="Pichla cell">‹</button><span>CELL TYPES</span><button class="ar" id="ctn" aria-label="Agla cell">›</button></div><div class="ctr" id="ctr"></div></div>
+<div class="side" id="sd">
+<button id="ct">Cut</button>
+<button data-f="both" class="on">Dono</button><button data-f="eu">Eukaryote</button><button data-f="pr">Prokaryote</button>
+<button data-v="front">Front</button><button data-v="side">Side</button><button data-v="top">Top</button>
+<button id="zi">＋</button><button id="zo">－</button><button data-v="reset">Reset</button></div>
+<div class="bot">
+<div class="ban" id="ban"></div>
+<div class="card" id="card" hidden><button id="zout" class="x" aria-label="Band karo">✕</button><h3 id="nm"></h3><p id="in"></p></div>
+<div class="dock" id="dock">
+<button id="dkc" aria-label="Compare"><svg viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Compare</button>
+<button id="dkt" aria-label="Tracker"><svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><path d="m9 9.5 2 2 4-4"/></svg>Tracker</button>
+<button id="dkl" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>Layers</button>
+</div>
+<div class="chips" id="ch" hidden><button data-l="out" class="on">Membrane / Wall</button><button data-l="org" class="on">Organelles</button><button data-l="cyto" class="on">Cytoskeleton</button><button data-l="dna" class="on">DNA</button><button id="cmpb">Compare</button><button id="lst">Tracker</button></div></div>
+<div class="lyp" id="lyp" hidden></div>
+<div class="ov" id="xo"><div class="oh"><span id="xot"></span><button id="xox">Band karo</button></div><div class="ob" id="xob"></div></div>
+<div class="ov" id="cmp"><div class="oh"><span>Prokaryote vs Eukaryote</span><button id="cx">Band karo</button></div><div class="ob"><table>
+<tr><th>Feature</th><th class="pk">Prokaryote (bacteria)</th><th class="ek">Eukaryote (animal)</th></tr>
+<tr><td>Size</td><td>0.1 - 5 µm</td><td>10 - 100 µm</td></tr>
+<tr><td>Nucleus</td><td>Nahi hai; DNA nucleoid region mein, koi membrane nahi</td><td>True nucleus, double nuclear envelope + pores</td></tr>
+<tr><td>DNA</td><td>Single circular chromosome + plasmids; histones nahi (HU proteins)</td><td>Multiple linear chromosomes wrapped on histones; mtDNA bhi</td></tr>
+<tr><td>Ribosomes</td><td>70S (50S + 30S), free in cytoplasm</td><td>80S (60S + 40S), free + bound to RER; mitochondria mein 70S</td></tr>
+<tr><td>Membrane organelles</td><td>Koi nahi (mesosome artefact hai)</td><td>ER, Golgi, mitochondria, lysosome, peroxisome</td></tr>
+<tr><td>Cell wall</td><td>Peptidoglycan (bacteria)</td><td>Animal cell mein nahi; plant: cellulose, fungi: chitin</td></tr>
+<tr><td>Cytoskeleton</td><td>Simple homologs: FtsZ, MreB</td><td>Microtubules, actin, intermediate filaments</td></tr>
+<tr><td>Flagellum</td><td>Rotating flagellin motor (proton-driven), membrane se bahar</td><td>9+2 microtubule axoneme, whip-like, membrane se ghira</td></tr>
+<tr><td>Energy</td><td>Plasma membrane par ETC</td><td>Mitochondria (cristae) mein ETC</td></tr>
+<tr><td>Gene expression</td><td>Transcription + translation saath-saath (coupled)</td><td>Nucleus mein transcription, cytoplasm mein translation</td></tr>
+<tr><td>Division</td><td>Binary fission</td><td>Mitosis / meiosis (spindle, centrosome)</td></tr>
+<tr><td>Origin</td><td>~3.5 billion saal pehle</td><td>~1.5-2 billion saal pehle (endosymbiosis)</td></tr>
+<tr><td>Examples</td><td>E. coli, Bacillus, cyanobacteria, archaea</td><td>Animals, plants, fungi, protists</td></tr></table></div></div>
+<div class="ov" id="ls"><div class="oh"><span id="cnt">0/0 yaad</span><button id="lx">Band karo</button></div><div class="ob" id="lb"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/01-setup.js"></script>
+<script src="js/02-eukaryote.js"></script>
+<script src="js/03-prokaryote.js"></script>
+<script src="js/04-detail-viewer.js"></script>
+<script src="js/05-app.js"></script>
+<script src="js/06-cell-types.js"></script>
+<!-- ===== NAYE CELL MODELS YAHAN ADD KARO (06-cell-types.js ke baad, 07-start.js se pehle) =====
+     Har cell ke liye ek line, jaise:
+<script src="js/models/neuron.js"></script>
+<script src="js/models/rbc.js"></script>
+-->
+<script src="js/models/neuron.js"></script>
+<script src="js/models/neuron-detail.js"></script>
+<script src="js/07-start.js"></script>
+</body></html>
