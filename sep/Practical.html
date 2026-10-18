@@ -13,7 +13,7 @@
   body {
     margin: 0;
     padding: 12px;
-    background-color: #0aa0a;
+    background-color: #0a0a0a;
     color: #fff;
   }
 
@@ -220,6 +220,26 @@
 
   .class-label { color: #9a8c98; font-size: 12px; font-weight: 700; }
   .view-badge { background: #b5ead7; color: #2e6f51; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 12px; }
+
+  /* DOODLE NOTES / MIND MAPS */
+  .notes-card { border-color: #d6e0ff; }
+  .notes-card .floating-file { background: #7b9cff; box-shadow: 0 8px 18px rgba(123,156,255,0.45); }
+  .notes-card .tag-btn { background: #dfe7ff; color: #3f5bd6; }
+  .notes-card .click-text { color: #7b9cff; }
+  .notes-card .card-footer { border-top-color: #d6e0ff; }
+  .notes-card .view-badge { background: #cfe0ff; color: #2c4aa8; }
+
+  .notes-view { display: none; max-width: 900px; margin: 0 auto; background: #0d0d0d; border-radius: 16px; padding: 12px; box-shadow: 0 12px 35px rgba(0,0,0,0.4); animation: fadeIn 0.4s ease-in-out; color: #fff; }
+  @media (min-width: 600px) { .notes-view { padding: 24px; } }
+  .notes-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .note-item { background: #161a2b; border: 1px solid rgba(123,156,255,0.35); border-radius: 14px; padding: 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.25s ease, background 0.25s ease; }
+  .note-item:hover { transform: translateY(-4px); background: #1d2340; }
+  .note-emoji { font-size: 28px; }
+  .note-name { font-size: 15px; font-weight: 700; margin: 0; }
+  .note-type { font-size: 11px; color: #9fb0ee; margin-top: 3px; }
+  .note-frame-wrap { display: none; }
+  .note-frame-wrap iframe { width: 100%; height: 78vh; border: 0; border-radius: 12px; background: #fff; }
+  .open-tab-link { color: #9fb0ee; font-size: 12px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 20px; }
 </style>
 </head>
 <body>
@@ -258,6 +278,35 @@
         <span class="view-badge">VIEW FILE ➔</span>
       </div>
     </a>
+
+    <!-- Doodle Notes & Mind Maps Card (opens inside this page) -->
+    <div class="kids-card notes-card" onclick="openNotes()">
+      <div class="character-container">
+        <div class="floating-file">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </div>
+        <svg class="bob-cut-child" viewBox="0 0 100 100">
+          <path d="M20 50 Q 20 15, 50 15 Q 80 15, 80 50 Q 82 72, 75 72 L 25 72 Q 18 72, 20 50 Z" fill="#3d2314"/>
+          <circle cx="50" cy="52" r="24" fill="#ffd1b3"/>
+          <path d="M26 42 Q 50 30, 74 42 Q 68 28, 50 28 Q 32 28, 26 42 Z" fill="#3d2314"/>
+          <circle cx="42" cy="52" r="3" fill="#222"/>
+          <circle cx="58" cy="52" r="3" fill="#222"/>
+          <circle cx="37" cy="57" r="3" fill="#ffb3b3" opacity="0.6"/>
+          <circle cx="63" cy="57" r="3" fill="#ffb3b3" opacity="0.6"/>
+          <path d="M 45 60 Q 50 65, 55 60" stroke="#cc5555" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M 30 76 Q 50 68, 70 76 L 75 100 L 25 100 Z" fill="#a8c0ff"/>
+        </svg>
+      </div>
+
+      <span class="tag-btn">🧠 Mind Maps</span>
+      <h2 class="kids-title">Doodle Notes</h2>
+      <div class="click-text">✨ Click to Open Notes 📝 ✨</div>
+
+      <div class="card-footer">
+        <span class="class-label">Mind Maps &amp; Revision</span>
+        <span class="view-badge">OPEN ➔</span>
+      </div>
+    </div>
 
   </div>
 
@@ -302,6 +351,21 @@
       <div id="galleryTitle" class="gallery-title">Project Details</div>
     </div>
     <div id="galleryStream" class="gallery-stream"></div>
+  </div>
+
+  <!-- DOODLE NOTES VIEW -->
+  <div id="notesView" class="notes-view">
+    <div class="gallery-header">
+      <button class="back-btn" id="notesBackBtn" onclick="notesBack()">← Back to Overview</button>
+      <div id="notesTitle" class="gallery-title">Doodle Notes</div>
+    </div>
+    <div id="notesList" class="notes-list"></div>
+    <div id="noteFrameWrap" class="note-frame-wrap">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+        <a id="openTabLink" class="open-tab-link" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+      </div>
+      <iframe id="noteFrame" title="Note" loading="lazy" allowfullscreen></iframe>
+    </div>
   </div>
 
 <script>
@@ -384,6 +448,62 @@
     galleryModal.style.display = 'none';
     galleryModal.classList.remove('fire-active', 'science-active');
     document.getElementById('albumsGrid').style.display = 'grid';
+  }
+
+  // --- DOODLE NOTES / MIND MAPS (add new ones to this list) ---
+  // Naam ke spaces ki jagah URL mein %20 lagana hai.
+  const notesData = [
+    { title: "Mixtures Mind Map", emoji: "🧪", type: "Mind Map",
+      url: "https://2025akshat-lang.github.io/Akshat/sep/mixtures.html" },
+    { title: "Neuron Doodle Notes", emoji: "🧠", type: "Doodle Notes",
+      url: "https://2025akshat-lang.github.io/Akshat/sep/Neuron%20Doodle%20Notes.html" },
+    { title: "Class 6th Revision Notes", emoji: "📘", type: "Revision Notes",
+      url: "https://2025akshat-lang.github.io/Akshat/sep/class-6th-revision-notes.html" }
+  ];
+
+  let noteOpen = false;
+
+  function openNotes() {
+    const list = document.getElementById('notesList');
+    list.innerHTML = notesData.map((n, i) => `
+      <div class="note-item" onclick="openNote(${i})">
+        <div class="note-emoji">${n.emoji}</div>
+        <div>
+          <div class="note-name">${n.title}</div>
+          <div class="note-type">${n.type}</div>
+        </div>
+      </div>`).join('');
+    document.getElementById('albumsGrid').style.display = 'none';
+    document.getElementById('noteFrameWrap').style.display = 'none';
+    list.style.display = 'grid';
+    document.getElementById('notesTitle').innerText = 'Doodle Notes';
+    document.getElementById('notesView').style.display = 'block';
+    noteOpen = false;
+    window.scrollTo(0, 0);
+  }
+
+  function openNote(i) {
+    const n = notesData[i];
+    document.getElementById('noteFrame').src = n.url;
+    document.getElementById('openTabLink').href = n.url;
+    document.getElementById('notesTitle').innerText = n.title;
+    document.getElementById('notesList').style.display = 'none';
+    document.getElementById('noteFrameWrap').style.display = 'block';
+    noteOpen = true;
+    window.scrollTo(0, 0);
+  }
+
+  function notesBack() {
+    if (noteOpen) {
+      document.getElementById('noteFrame').src = 'about:blank';
+      document.getElementById('noteFrameWrap').style.display = 'none';
+      document.getElementById('notesList').style.display = 'grid';
+      document.getElementById('notesTitle').innerText = 'Doodle Notes';
+      noteOpen = false;
+    } else {
+      document.getElementById('notesView').style.display = 'none';
+      document.getElementById('albumsGrid').style.display = 'grid';
+    }
   }
 
   renderAlbums();
