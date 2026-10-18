@@ -242,4 +242,7 @@ B.flag=()=>{ttl('Bacterial flagellar motor','Proton se chalne wala rotary motor.
  flow([[1.5,.9,.6],[1.3,.3,.3],[.95,-.1,.0],[1.1,-.7,0]],0x9fe8ff,4,.09,.07,sta);
  ticks.push((dt)=>{rot.rotation.y+=dt*2.6});
  lab('Filament',[3.4,3.7,0],'#f0e090');lab('Hook',[.9,2.5,0],'#e8a33a');lab('L ring',[-.9,1.5,0],'#8ab0f0');lab('P ring',[-.8,.75,0],'#8ab0f0');lab('Stator',[1.5,-.1,0],'#4acfa0');lab('MS ring',[-1.1,0,0],'#e8504a');lab('C ring',[-1.2,-.6,0],'#c87ae0');lab('H+ andar',[1.7,.9,.6],'#9fe8ff');lab('Rod',[.5,1.0,0],'#e8a33a')};
+/* ---- extension API: naye cells apne detail views yahan se jodte hain (js/models/<cell>-detail.js) ---- */
+const DVAPI={part,add,tube,bar,inst,flow,lab,ttl,go,tick:f=>ticks.push(f),cam:c=>{B.cam=c},root:()=>G2};
+window.registerDetail=(k,fn)=>{B[k]=()=>fn(DVAPI)};
 })();
