@@ -86,4 +86,4 @@ td:first-child{font-weight:600;color:var(--hl);width:22%}
 .lyr.on b::after{transform:translateX(14px)}
 .lyr:not(.on) span,.lyr:not(.on) i{opacity:.45}
 /* custom cell (neuron etc.) mein default-cell wale buttons chhup jate hain */
-body.ct [data-f],body.ct [data-m="4D"],body.ct [data-m="5D"]{display:none}
+body.ct [data-f]{display:none}
