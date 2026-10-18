@@ -31,11 +31,11 @@ const pinch=()=>{if(P.size<2)return 0;const a=[...P.values()];return Math.hypot(
 function hits(e){const r=el.getBoundingClientRect();RC.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),C);
  let h=RC.intersectObjects(cur().filter(vis),false);if(CUT.constant<50)h=h.filter(x=>x.point.z<=CUT.constant);
  return h.filter(x=>!x.object.userData.out).concat(h.filter(x=>x.object.userData.out))}
-function tap(e){const h=hits(e);if(!h.length){if(selm&&mode!=='5D')clr();return}
+function tap(e){const h=hits(e);if(!h.length){if(CTid!=='default'&&!CTP.length){ban('Is cell ke parts register nahi hue: neuron.js (naya version) upload karo');return}if(selm&&mode!=='5D')clr();return}
  const now=Date.now(),same=Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<14&&now-lastTap.t<3000,i=same?(lastTap.i+1)%h.length:0;lastTap={x:e.clientX,y:e.clientY,t:now,i:i};
  const m=h[i].object;
  if(mode==='5D'&&q){tot++;const ok=m.userData.name===q;if(ok)score++;sel(m);ban((ok?'Sahi! ':'Galat, ye '+m.userData.name+' hai. ')+'Score '+score+'/'+tot);q=null;setTimeout(()=>mode==='5D'&&nextQ(),1800);return}
- if(m.userData.det){clr();openDV(m.userData.det);return}
+ if(m.userData.det){clr();try{openDV(m.userData.det)}catch(err){window.DVOPEN=false;ban('Detail view "'+m.userData.det+'" nahi mila: neuron-detail.js upload karo ('+err.message+')')}return}
  sel(m)}
 el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);if(P.size===1){mv=0;t0=Date.now()}pd=pinch()});
 const mid2=()=>{const a=[...P.values()];return[(a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2]};
@@ -49,24 +49,27 @@ el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
 el.addEventListener('wheel',e=>{e.preventDefault();zm(1+e.deltaY*.001)},{passive:false});
 /* ---- modes ---- */
 const STEPS=[['nuc,chr','nuo','1. Nucleus: gene ka DNA mRNA mein transcribe hota hai (bacteria mein nucleoid se, bina membrane ke)'],['por','nuo,pr70','2. mRNA nuclear pore se bahar jata hai; bacteria mein ribosome turant mRNA se jud jata hai'],['rib,rer','pr70','3. Ribosome mRNA padhkar protein banata hai (eukaryote: RER par, bacteria: free 70S)'],['rer','pr70','4. Protein RER lumen mein fold + glycosylate hota hai'],['gol,ves','','5. Vesicle protein ko Golgi le jata hai: modify, sort, pack'],['mem,ves','','6. Secretory vesicle membrane se milkar protein bahar nikalta hai (exocytosis)']];
-function setStep(){const s=STEPS[st];hl=new Set((s[0]+','+s[1]).split(',').filter(Boolean));ban('4D | '+s[2]);paint()}
+const STP=()=>CTid==='default'?STEPS:((CTI[CTid]&&CTI[CTid].steps)||[]);
+function setStep(){const A=STP();if(!A.length){hl=new Set();ban('4D | Is cell ke steps jald aayenge');paint();return}const s=A[st%A.length];
+ if(CTid==='default'){hl=new Set((s[0]+','+s[1]).split(',').filter(Boolean));ban('4D | '+s[2])}else{hl=new Set(s.k);ban('4D | '+s.t)}paint()}
 function rest(){ANI.mito.forEach(o=>{o.g.rotation.z=o.rz;o.g.position.y=o.y});ANI.free.forEach(o=>o.m.position.copy(o.b));ANI.pr70.forEach(o=>o.m.position.copy(o.b));ANI.pili.rotation.y=0;ANI.nu.rotation.y=0}
-function nextQ(){const pool=[...new Set(pick.filter(m=>vis(m)&&!m.userData.out).map(m=>m.userData.name))];clr();q=pool[Math.floor(Math.random()*pool.length)];ban('Dhundo: '+q+'  |  Score '+score+'/'+tot)}
+function nextQ(){const pool=[...new Set(cur().filter(m=>vis(m)&&!m.userData.out).map(m=>m.userData.name))];if(!pool.length){ban('5D | Is cell ke parts register nahi hue');return}clr();q=pool[Math.floor(Math.random()*pool.length)];ban('Dhundo: '+q+'  |  Score '+score+'/'+tot)}
 function setMode(m){mode=m;document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));q=null;rest();hl=new Set();clr();ban('');
  if(m==='5D'){L.out=false;L.org=L.cyto=L.dna=true;score=0;tot=0;applyL();nextQ();return}
  L.out=true;if(m==='4D'){L.org=L.cyto=L.dna=true;st=0;stT=0;applyL();setStep();return}
  applyL()}
-function anim(dt,t){ANI.mito.forEach(o=>{o.g.rotation.z=o.rz+.12*Math.sin(t*.8+o.ph);o.g.position.y=o.y+.05*Math.sin(t*1.1+o.ph)});
+function anim(dt,t){if(CTid==='default')animDef(dt,t);
+ stT+=dt;if(stT>3.6){stT=0;st=(st+1)%Math.max(1,STP().length);if(!selm)setStep()}}
+function animDef(dt,t){ANI.mito.forEach(o=>{o.g.rotation.z=o.rz+.12*Math.sin(t*.8+o.ph);o.g.position.y=o.y+.05*Math.sin(t*1.1+o.ph)});
  const jt=o=>o.m.position.set(o.b.x+.05*Math.sin(t*1.3+o.ph),o.b.y+.05*Math.sin(t*1.7+o.ph*2),o.b.z+.05*Math.cos(t*1.5+o.ph));ANI.free.forEach(jt);ANI.pr70.forEach(jt);
  ANI.ves.forEach(o=>{o.u=(o.u+o.sp*dt+1)%1;o.m.position.copy(o.cv.getPoint(o.u))});
- ANI.fla.rotation.y+=dt*9;ANI.pili.rotation.y=.2*Math.sin(t*2);ANI.nu.rotation.y=t*.15;
- stT+=dt;if(stT>3.6){stT=0;st=(st+1)%STEPS.length;if(!selm)setStep()}}
+ ANI.fla.rotation.y+=dt*9;ANI.pili.rotation.y=.2*Math.sin(t*2);ANI.nu.rotation.y=t*.15}
 /* ---- floating labels ---- */
 const LB=[['Nucleus','Nucleus'],['Mitochondrion','Mitochondrion'],['Golgi apparatus','Golgi'],['Rough ER (RER)','RER'],['Smooth ER (SER)','SER'],['Lysosome','Lysosome'],['Peroxisome','Peroxisome'],['Centrosome (2 centrioles)','Centrosome'],['Free ribosomes (80S)','Ribosome 80S'],['Plasma membrane','Plasma membrane'],['Capsule','Capsule'],['Cell wall (peptidoglycan)','Cell wall'],['Nucleoid (circular DNA)','Nucleoid'],['Ribosomes (70S)','Ribosome 70S'],['Plasmid','Plasmid'],['Flagellum','Flagellum'],['Storage granules','Granule'],['Pili / fimbriae','Pili']].map(a=>{const m=pick.find(x=>x.userData.name===a[0]),e=document.createElement('div');e.className='lab';e.textContent=a[1];$('#lbl').appendChild(e);return{m,e}});
 const bbx=new T.Box3(),vv=new T.Vector3();
 function labels(){const on=CAP&&!selm&&mode!=='5D'&&!ov();LB.forEach(l=>{let ok=on&&l.m&&vis(l.m);if(ok){bbx.setFromObject(l.m);bbx.getCenter(vv);if(l.m.userData.top)vv.y=bbx.max.y;vv.project(C);ok=vv.z<1&&Math.abs(vv.x)<1.05&&Math.abs(vv.y)<1.05;if(ok){l.e.style.left=((vv.x+1)/2*innerWidth)+'px';l.e.style.top=((1-vv.y)/2*innerHeight)+'px'}}l.e.style.display=ok?'block':'none'})}
 /* ---- UI wiring ---- */
-$('#md').onclick=e=>{const m=e.target.dataset.m;if(!m||CTid!=='default')return;setMode(m)};
+$('#md').onclick=e=>{const m=e.target.dataset.m;if(!m)return;setMode(m)};
 $('#sd').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.v)view(b.dataset.v);if(b.dataset.f)focus(b.dataset.f)};
 $('#nm').onclick=()=>$('#card').classList.toggle('open');
 $('#ct').onclick=e=>{cut=!cut;CUT.constant=cut?0:99;e.currentTarget.classList.toggle('on',cut)};
