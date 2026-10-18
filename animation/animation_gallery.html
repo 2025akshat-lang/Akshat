@@ -7,11 +7,10 @@
 <style>
   :root {
     --bg-dark: #090d16;
-    --card-bg: rgba(18, 24, 38, 0.75);
+    --card-bg: #121826;
     --border-color: rgba(56, 189, 248, 0.18);
     --hover-border: rgba(56, 189, 248, 0.6);
     --accent-blue: #38bdf8;
-    --accent-glow: rgba(56, 189, 248, 0.25);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
   }
@@ -25,6 +24,7 @@
     margin: 0;
     padding: 30px 20px;
     background: radial-gradient(circle at 50% 0%, #1e293b 0%, #090d16 80%);
+    background-attachment: fixed;
     min-height: 100vh;
     color: var(--text-primary);
   }
@@ -32,58 +32,51 @@
   .albums-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 26px;
+    gap: 22px;
     max-width: 1280px;
     margin: 0 auto;
   }
 
-  /* PREMIUM CARD STYLING */
+  /* LIGHTWEIGHT CARD (no blur / no heavy shadows -> smooth on weak devices) */
   .card {
     display: flex;
     flex-direction: column;
     text-decoration: none;
     color: inherit;
     background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 20px;
+    border-radius: 18px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 1px solid var(--border-color);
-    position: relative;
+    transition: transform 0.25s ease, border-color 0.25s ease;
     -webkit-tap-highlight-color: transparent;
     opacity: 0;
-    animation: fadeInUp 0.6s ease forwards;
+    animation: fadeInUp 0.5s ease forwards;
   }
 
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (hover: hover) {
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--hover-border);
     }
   }
 
-  .card:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: var(--hover-border);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px var(--accent-glow);
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none; opacity: 1; }
   }
 
+  /* Thumbnail box has the SAME ratio as the SVG viewBox -> no empty space on any device */
   .card-thumbnail {
     width: 100%;
-    height: 210px;
+    aspect-ratio: 300 / 190;
     position: relative;
     overflow: hidden;
     background: #0b1329;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 
@@ -91,20 +84,15 @@
     width: 100%;
     height: 100%;
     display: block;
-    transition: transform 0.5s ease;
-  }
-
-  .card:hover .card-thumbnail svg {
-    transform: scale(1.05);
   }
 
   .card-content {
-    padding: 18px 20px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex-grow: 1;
-    background: linear-gradient(180deg, rgba(18, 24, 38, 0.8) 0%, rgba(13, 17, 23, 0.95) 100%);
+    background: #0d1117;
   }
 
   .card-title {
@@ -121,6 +109,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 8px;
+    gap: 8px;
   }
 
   .card-author {
@@ -130,15 +119,15 @@
   }
 
   .badge {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    background: #0284c7;
     color: #ffffff;
     padding: 6px 14px;
     border-radius: 20px;
     font-weight: 600;
     font-size: 11px;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
     text-transform: uppercase;
+    white-space: nowrap;
   }
 </style>
 </head>
@@ -152,13 +141,13 @@
     // 1. Water Cycle
     waterCycle: `
       <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="190" fill="url(#skyGradient)"/>
         <defs>
           <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#0f172a"/>
             <stop offset="100%" stop-color="#1e3a8a"/>
           </linearGradient>
         </defs>
+        <rect width="300" height="190" fill="url(#skyGradient)"/>
         <circle cx="250" cy="45" r="22" fill="#facc15" opacity="0.9"/>
         <path d="M70 50 C70 40 85 30 100 35 C110 25 130 25 140 35 C150 30 165 40 160 50 C170 60 155 75 140 70 L80 70 C70 70 60 60 70 50 Z" fill="#475569"/>
         <line x1="85" y1="75" x2="80" y2="90" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="2 2"/>
@@ -193,44 +182,48 @@
       </svg>
     `,
 
-    // 3. Chemistry (Chromatography)
+    // 3. Chromatography (FIXED: beaker + paper strip + separated spots)
     chem: `
       <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0f172a"/>
-        <path d="M 120 140 L 140 70 L 140 40 L 160 40 L 160 70 L 180 140 Z" stroke="#38bdf8" stroke-width="3" fill="#1e293b"/>
-        <path d="M 125 125 L 175 125 L 180 140 L 120 140 Z" fill="#10b981"/>
-        <text x="85" y="30" fill="#34d399" font-size="12" font-weight="bold">Chromatography</text>
+        <text x="150" y="26" fill="#34d399" font-size="14" font-weight="bold" text-anchor="middle">Chromatography</text>
+        <!-- beaker -->
+        <path d="M95 55 V160 Q95 168 103 168 H197 Q205 168 205 160 V55" stroke="#38bdf8" stroke-width="3" fill="rgba(56,189,248,0.08)"/>
+        <!-- solvent -->
+        <path d="M97 140 H203 V160 Q203 166 197 166 H103 Q97 166 97 160 Z" fill="#0284c7" opacity="0.6"/>
+        <!-- paper strip -->
+        <rect x="132" y="40" width="36" height="115" fill="#f1f5f9"/>
+        <!-- start line -->
+        <line x1="132" y1="132" x2="168" y2="132" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <!-- separated spots -->
+        <circle cx="150" cy="128" r="4" fill="#facc15"/>
+        <ellipse cx="150" cy="106" rx="5" ry="4" fill="#ef4444"/>
+        <ellipse cx="150" cy="82" rx="5" ry="4" fill="#3b82f6"/>
+        <ellipse cx="150" cy="62" rx="5" ry="4" fill="#10b981"/>
+        <!-- arrow -->
+        <path d="M222 130 V60" stroke="#94a3b8" stroke-width="2"/>
+        <polygon points="222,52 217,62 227,62" fill="#94a3b8"/>
+        <text x="232" y="98" fill="#94a3b8" font-size="10">solvent</text>
       </svg>
     `,
 
-    // 4. Distillation Setup (FIXED)
+    // 4. Distillation Setup
     distil: `
       <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#090d16"/>
-        <!-- Stand Base & Rod -->
         <rect x="40" y="165" width="40" height="6" fill="#475569"/>
         <line x1="60" y1="50" x2="60" y2="165" stroke="#64748b" stroke-width="3"/>
-        
-        <!-- Burner & Flame -->
         <rect x="52" y="145" width="16" height="20" fill="#334155"/>
         <path d="M 60 145 Q 56 135 60 128 Q 64 135 60 145 Z" fill="#ef4444"/>
         <path d="M 60 145 Q 58 138 60 133 Q 62 138 60 145 Z" fill="#facc15"/>
-
-        <!-- Flask -->
         <circle cx="60" cy="110" r="22" stroke="#38bdf8" stroke-width="2" fill="rgba(56, 189, 248, 0.15)"/>
         <path d="M 55 90 V 65 H 65 V 90" stroke="#38bdf8" stroke-width="2" fill="none"/>
         <path d="M 43 115 A 20 20 0 0 0 77 115 Z" fill="#0284c7"/>
-
-        <!-- Condenser Tube -->
         <path d="M 65 75 L 200 130" stroke="#0ea5e9" stroke-width="12" opacity="0.35"/>
         <path d="M 65 75 L 200 130" stroke="#38bdf8" stroke-width="3"/>
-
-        <!-- Receiving Flask -->
         <path d="M 200 135 L 192 165 H 218 L 210 135 Z" stroke="#38bdf8" stroke-width="2" fill="rgba(56, 189, 248, 0.25)"/>
         <circle cx="205" cy="148" r="1.5" fill="#38bdf8"/>
         <circle cx="205" cy="155" r="1.5" fill="#38bdf8"/>
-
-        <!-- Text -->
         <text x="80" y="30" fill="#f97316" font-size="12" font-weight="bold">Distillation Setup</text>
         <text x="120" y="85" fill="#38bdf8" font-size="9">Liebig Condenser</text>
       </svg>
@@ -378,24 +371,18 @@
         <path d="M 150 118 L 195 150 L 175 152 L 120 122 Z" fill="#94a3b8"/>
         <text x="75" y="28" fill="#38bdf8" font-size="11" font-weight="bold">Airbus A380 Walkaround</text>
       </svg>
-    `, 
+    `,
 
-    // 17. Human Anatomy (FIXED PERFECT FIT)
+    // 17. Human Anatomy
     humanAnatomy: `
       <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0a0f1d"/>
-        <!-- Human Silhouette -->
         <path d="M150,15 C162,15 162,30 162,35 C175,42 190,48 185,95 C180,130 178,160 172,185 L128,185 C122,160 120,130 115,95 C110,48 125,42 138,35 C138,30 138,15 150,15 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" opacity="0.9"/>
-        <!-- Brain -->
         <circle cx="150" cy="25" r="7" fill="#f43f5e"/>
-        <!-- Lungs -->
         <ellipse cx="140" cy="58" rx="8" ry="12" fill="#fb923c" opacity="0.8"/>
         <ellipse cx="160" cy="58" rx="8" ry="12" fill="#fb923c" opacity="0.8"/>
-        <!-- Heart -->
         <circle cx="152" cy="62" r="5" fill="#ef4444"/>
-        <!-- Stomach -->
         <path d="M142,85 C135,82 135,95 145,98 C155,100 155,90 148,85" fill="#facc15"/>
-        <!-- Intestines -->
         <rect x="140" y="108" width="20" height="18" rx="4" fill="#10b981" opacity="0.8"/>
         <text x="75" y="180" font-family="Arial" font-size="10" font-weight="bold" fill="#38bdf8">Human Anatomy 3D</text>
       </svg>
@@ -411,6 +398,32 @@
         <circle cx="170" cy="110" r="4" fill="#a78bfa"/>
         <text x="65" y="28" fill="#38bdf8" font-size="11" font-weight="bold">Eukaryotic &amp; Prokaryotic Cell</text>
       </svg>
+    `,
+
+    // 19. MolVerse (NEW) - molecules & bonding
+    molVerse: `
+      <svg viewBox="0 0 300 190" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#0b1329"/>
+        <text x="150" y="26" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">Molecules &amp; Bonding</text>
+        <!-- H2O -->
+        <line x1="85" y1="105" x2="55" y2="140" stroke="#94a3b8" stroke-width="4"/>
+        <line x1="85" y1="105" x2="125" y2="135" stroke="#94a3b8" stroke-width="4"/>
+        <circle cx="85" cy="105" r="22" fill="#ef4444"/>
+        <circle cx="55" cy="140" r="12" fill="#e2e8f0"/>
+        <circle cx="125" cy="135" r="12" fill="#e2e8f0"/>
+        <text x="85" y="178" fill="#94a3b8" font-size="11" text-anchor="middle">H₂O</text>
+        <!-- CH4 -->
+        <line x1="215" y1="100" x2="185" y2="70" stroke="#94a3b8" stroke-width="4"/>
+        <line x1="215" y1="100" x2="250" y2="72" stroke="#94a3b8" stroke-width="4"/>
+        <line x1="215" y1="100" x2="188" y2="132" stroke="#94a3b8" stroke-width="4"/>
+        <line x1="215" y1="100" x2="252" y2="130" stroke="#94a3b8" stroke-width="4"/>
+        <circle cx="215" cy="100" r="18" fill="#475569"/>
+        <circle cx="185" cy="70" r="10" fill="#e2e8f0"/>
+        <circle cx="250" cy="72" r="10" fill="#e2e8f0"/>
+        <circle cx="188" cy="132" r="10" fill="#e2e8f0"/>
+        <circle cx="252" cy="130" r="10" fill="#e2e8f0"/>
+        <text x="215" y="178" fill="#94a3b8" font-size="11" text-anchor="middle">CH₄</text>
+      </svg>
     `
   };
 
@@ -418,30 +431,31 @@
   const AUTHOR = "Class 9th Science Model";
 
   const data = [
-    { id: 1, title: "Water Cycle Model", svg: "waterCycle", file: "Water_cycle.html" },
-    { id: 2, title: "Evaporation Vs Boiling", svg: "evapVsBoil", file: "Evaporation%20Vs%20boiling.html" },
-    { id: 3, title: "Distillation Setup Model", svg: "distil", file: "Distillation%20setup.html" },
-    { id: 4, title: "Crystallization Process", svg: "crystal", file: "crystallization.html" },
-    { id: 5, title: "Chromatography", svg: "chem", file: "Chromatography.html" },
-    { id: 6, title: "Eukaryotic & Prokaryotic Cell (CellVerse)", svg: "cellVerse", file: "CellVerse.html" },
-    { id: 7, title: "Magnets Direction", svg: "magnets", file: "Magnets%20direction.html" },
-    { id: 8, title: "Solubility", svg: "solubility", file: "Solubility.html" },
-    { id: 9, title: "Sublimation", svg: "sublimation", file: "Sublimation.html" },
-    { id: 10, title: "Tyndall Effect", svg: "tyndall", file: "tyndall%20effect.html" },
-    { id: 11, title: "Rutherford Gold Foil Experiment", svg: "rutherford", file: "rutherford-goldfoil.html" },
-    { id: 12, title: "Cathode Ray Tube Lab", svg: "cathodeRay", file: "cathode_ray_tube_lab.html" },
-    { id: 13, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model%203D%20%28Watermelon%29.html" },
-    { id: 14, title: "Temperature Scale", svg: "tempScale", file: "temperature-scale.html" },
-    { id: 15, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" },
-    { id: 16, title: "Nuclear Reactor", svg: "nuclear", file: "neuclear-reactor.html" },
-    { id: 17, title: "Airbus A380 Walkaround", svg: "a380", file: "A380%20Walkaround.html" },
-    { id: 18, title: "Human Anatomy", svg: "humanAnatomy", file: "Human%20Anatomy.html" }
+    { id: 1,  title: "Water Cycle Model", svg: "waterCycle", file: "Water_cycle.html" },
+    { id: 2,  title: "Evaporation Vs Boiling", svg: "evapVsBoil", file: "Evaporation%20Vs%20boiling.html" },
+    { id: 3,  title: "Distillation Setup Model", svg: "distil", file: "Distillation%20setup.html" },
+    { id: 4,  title: "Crystallization Process", svg: "crystal", file: "crystallization.html" },
+    { id: 5,  title: "Chromatography", svg: "chem", file: "Chromatography.html" },
+    { id: 6,  title: "Eukaryotic & Prokaryotic Cell (CellVerse)", svg: "cellVerse", file: "CellVerse.html" },
+    { id: 7,  title: "MolVerse – Molecules & Chemical Bonding", svg: "molVerse", file: "MolVerse2.html" },
+    { id: 8,  title: "Magnets Direction", svg: "magnets", file: "Magnets%20direction.html" },
+    { id: 9,  title: "Solubility", svg: "solubility", file: "Solubility.html" },
+    { id: 10, title: "Sublimation", svg: "sublimation", file: "Sublimation.html" },
+    { id: 11, title: "Tyndall Effect", svg: "tyndall", file: "tyndall%20effect.html" },
+    { id: 12, title: "Rutherford Gold Foil Experiment", svg: "rutherford", file: "rutherford-goldfoil.html" },
+    { id: 13, title: "Cathode Ray Tube Lab", svg: "cathodeRay", file: "cathode_ray_tube_lab.html" },
+    { id: 14, title: "Thomson Plum Pudding Model", svg: "thomson", file: "Thomson%20Plum%20Pudding%20Model%203D%20%28Watermelon%29.html" },
+    { id: 15, title: "Temperature Scale", svg: "tempScale", file: "temperature-scale.html" },
+    { id: 16, title: "Bohr Atom Model (Atom Lab 3D)", svg: "bohr", file: "bohr_model_axat.html" },
+    { id: 17, title: "Nuclear Reactor", svg: "nuclear", file: "neuclear-reactor.html" },
+    { id: 18, title: "Airbus A380 Walkaround", svg: "a380", file: "A380%20Walkaround.html" },
+    { id: 19, title: "Human Anatomy", svg: "humanAnatomy", file: "Human%20Anatomy.html" }
   ];
 
   function render() {
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = data.map((item, index) => `
-      <a class="card" href="${BASE}${item.file}" target="_blank" rel="noopener noreferrer" style="animation-delay: ${index * 0.05}s">
+      <a class="card" href="${BASE}${item.file}" target="_blank" rel="noopener noreferrer" style="animation-delay: ${Math.min(index, 8) * 0.04}s">
         <div class="card-thumbnail">
           ${svgThumbnails[item.svg] || svgThumbnails.chem}
         </div>
