@@ -2,31 +2,43 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@400;600&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-:root{--bg0:#0a1424;--bg1:#173556;--pn:rgba(12,24,42,.92);--fg:#e8f0f8;--mu:#97adc6;--bd:#2c4565;--ac:#e0527a;--ac2:#7fd6c2;--hl:#f2c35a;color-scheme:dark}
+:root{--bg0:#0a1424;--bg1:#173556;--pn:rgba(12,24,42,.94);--fg:#e8f0f8;--mu:#97adc6;--bd:#2c4565;--ac:#e0527a;--ac2:#7fd6c2;--hl:#f2c35a;color-scheme:dark}
 *{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
 body{background:radial-gradient(ellipse at 50% 36%,var(--bg1),var(--bg0) 62%,#050d19);color:var(--fg);font:14px/1.4 Figtree,system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
 #c{position:fixed;inset:0;width:100%;height:100%}
 button{font:inherit;color:var(--fg);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:7px 12px;cursor:pointer}
 button.on{background:var(--ac);border-color:var(--ac);color:#fff}
-button:focus-visible,input:focus-visible{outline:2px solid var(--hl);outline-offset:2px}
-.top{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0);display:flex;gap:8px;align-items:center;padding:10px 14px;z-index:3}
-#cr{flex:1;font:800 16px Bricolage Grotesque,sans-serif;color:var(--hl);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-#bk[hidden]{display:none}
-#en{position:fixed;left:14px;top:calc(env(safe-area-inset-top,0) + 58px);width:200px;height:100px;background:var(--pn);border:1px solid var(--bd);border-radius:10px;display:none;z-index:2}
-.bot{position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(env(safe-area-inset-bottom,0) + 12px);display:flex;flex-direction:column;gap:8px;z-index:3;max-width:640px;margin:auto}
-#cap{background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:9px 14px;font:800 16px Bricolage Grotesque,sans-serif;text-align:center}
-#cap b{font-weight:800}#sw{display:none;align-items:center;gap:10px}
-input[type=range]{flex:1;accent-color:var(--ac);height:30px}
-#mt{display:none;height:8px;background:var(--bd);border-radius:6px;overflow:hidden}#mt i{display:block;height:100%;background:var(--hl);width:100%}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:2px solid var(--hl);outline-offset:2px}
+.top{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);display:flex;gap:6px;align-items:center;padding:10px 14px;z-index:3}
+#lg{flex:1;font:800 22px Bricolage Grotesque,sans-serif}#lg i{font-style:normal;color:var(--ac)}
+.top button{font-weight:600;padding:8px 14px}
+.row{position:fixed;left:14px;right:96px;top:calc(env(safe-area-inset-top,0px) + 58px);display:flex;gap:8px;align-items:center;z-index:3}
+#cr{flex:1;font:800 15px Bricolage Grotesque,sans-serif;color:var(--hl);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rt{position:fixed;right:14px;top:calc(env(safe-area-inset-top,0px) + 58px);display:flex;flex-direction:column;gap:8px;z-index:3;width:70px}
+#en{position:fixed;left:14px;top:calc(env(safe-area-inset-top,0px) + 108px);width:260px;height:130px;background:var(--pn);border:1px solid var(--bd);border-radius:10px;display:none;z-index:2}
+#drw{position:fixed;left:14px;top:calc(env(safe-area-inset-top,0px) + 104px);width:min(310px,calc(100% - 100px));max-height:58vh;overflow:auto;touch-action:pan-y;background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:8px;display:none;z-index:5}
+#drw .h{width:100%;text-align:left;font-weight:600;color:var(--hl);background:none;border:0;padding:9px 6px}
+#drw .it{width:100%;text-align:left;margin:0 0 6px;display:block}
+#drw .it small{color:var(--mu)}
+.bot{position:fixed;left:0;right:0;bottom:0;padding:0 14px calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;flex-direction:column;gap:8px;z-index:3;max-width:640px;margin:auto}
+#tc{display:none;background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;max-height:30vh;overflow:auto;touch-action:pan-y;color:var(--fg)}
+#ch{display:flex;flex-direction:column;gap:6px}.rw{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.lb{color:var(--mu);font-size:12px;min-width:62px}
+.rw button{padding:5px 10px}
+#sw{display:none;align-items:center}#sl{flex:1;accent-color:var(--ac);height:30px}
+#cap{background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:9px 14px;font:800 15px Bricolage Grotesque,sans-serif;text-align:center}
 #er{position:fixed;left:8px;right:8px;top:60px;background:#5a1a2a;color:#fff;font:12px monospace;padding:6px 8px;border-radius:8px;z-index:9;display:none}
 </style></head><body>
 <canvas id="c"></canvas><canvas id="en" width="400" height="200"></canvas><div id="er"></div>
-<div class="top"><button id="bk" hidden aria-label="Wapas">←</button><span id="cr"></span><button id="cut">Cut</button></div>
-<div class="bot"><div id="mt"><i></i></div><div id="sw"><input id="sl" type="range" min="0" max="1000" value="0" aria-label="Control"></div><div id="cap"></div></div>
+<div class="top"><b id="lg">Mol<i>Verse</i></b><button data-m="3" class="on">3D</button><button data-m="4">4D</button><button data-m="5">5D</button></div>
+<div class="row"><button id="dr" aria-label="Topics">☰ Topics</button><span id="cr"></span><button id="th">Theory</button></div>
+<div class="rt"><button id="cut">Cut</button><button id="zi">+</button><button id="zo">−</button><button id="rs">Reset</button></div>
+<div id="drw"></div>
+<div class="bot"><div id="tc"></div><div id="ch"></div><div id="sw"><input id="sl" type="range" min="0" max="1000" value="0" aria-label="Control"></div><div id="cap"></div></div>
 <script>
-const T=THREE,$=s=>document.querySelector(s);
+const T=THREE,$=s=>document.querySelector(s),TP={};
 onerror=(m,u,l)=>{const e=$('#er');e.style.display='block';e.textContent='Error: '+m+' (line '+l+')'};
-const R=new T.WebGLRenderer({canvas:$('#c'),antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio||1,2));R.localClippingEnabled=true;
+const R_=new T.WebGLRenderer({canvas:$('#c'),antialias:true,alpha:true});R_.setPixelRatio(Math.min(devicePixelRatio||1,2));R_.localClippingEnabled=true;
 const S=new T.Scene(),C=new T.PerspectiveCamera(42,1,.1,100),W=new T.Group();S.add(W);
 S.add(new T.AmbientLight(0xffffff,.65));const dl=new T.DirectionalLight(0xffffff,.8);dl.position.set(3,5,7);S.add(dl);
 const plane=new T.Plane(new T.Vector3(0,0,-1),99);
@@ -34,73 +46,117 @@ const BL=0x4f8fe8,RD=0xe8504a,TL=0x7fd6c2,AM=0xf2c35a,CC=0x9aa5b4,WH=0xf4f8ff,NU
 const SPH=new T.SphereGeometry(1,28,20),Z=new T.Vector3(0,0,1),Y=new T.Vector3(0,1,0);
 const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),ss=(a,b,x)=>{x=cl((x-a)/(b-a));return x*x*(3-2*x)};
 let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
-let G=null,U=()=>{},pick=[],cur='',stack=[],auto=true,sv=0,rx=.3,ry=.5,rad=9,tm=0,CAPF=()=>'';
+let G=null,U=()=>{},EF=null,AL=0,P={},pick=[],cur='',auto=true,sv=0,rx=.35,ry=.5,rad=9,rad0=9,tm=1.6,ta=0,md=3,CAPF=()=>'';
+const ECV=$('#en').getContext('2d');
 const mat=(c,o)=>new T.MeshStandardMaterial({color:c,transparent:true,opacity:o,roughness:.35,side:T.DoubleSide,depthWrite:false,clippingPlanes:[plane]});
 const mesh=(geo,c,o,p,s,go,solid)=>{const m=new T.Mesh(geo,mat(c,o));m.position.set(p[0],p[1],p[2]);if(s)m.scale.set(s[0],s[1],s[2]);if(solid)m.material.depthWrite=true;m.userData={bo:o,go:go||''};if(go){m.material.emissive.setHex(0x1a2f4a);pick.push(m)}G.add(m);return m};
 const atom=(c,p,r,go)=>mesh(SPH,c,1,p,[r,r,r],go,1);
 const lobe=(c,cen,dir,len,w,o,go)=>{const d=new T.Vector3(...dir).normalize(),m=mesh(SPH,c,o,[cen[0]+d.x*len,cen[1]+d.y*len,cen[2]+d.z*len],[w,w,len],go);m.quaternion.setFromUnitVectors(Z,d);return m};
 const tube=(a,b,r,c,o)=>{const A=new T.Vector3(...a),B=new T.Vector3(...b),d=B.clone().sub(A),m=mesh(new T.CylinderGeometry(r,r,d.length(),10),c,o||1,[0,0,0],null,'',o?0:1);m.position.copy(A.add(B).multiplyScalar(.5));m.quaternion.setFromUnitVectors(Y,d.normalize());return m};
 const setO=(a,k)=>a.forEach(m=>{m.material.opacity=m.userData.bo*k;m.visible=k>.02});
-const grp=f=>{const g=new T.Group(),o=G;G.add(g);G=g;f();G=o;return g};
 const dots=(spec,col)=>{const Bs=[];spec.forEach(s=>{for(let i=0;i<s[6];i++){const g=()=>(rnd()+rnd()+rnd()-1.5)*.9;Bs.push([s[0]+g()*s[3],s[1]+g()*s[4],s[2]+g()*s[5]])}});
  const a=new Float32Array(Bs.length*3),geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(a,3));
  const p=new T.Points(geo,new T.PointsMaterial({color:col||0xffffff,size:.06,transparent:true,opacity:.85,clippingPlanes:[plane]}));G.add(p);
  const f=t=>{for(let i=0;i<Bs.length;i++){const b=Bs[i];a[i*3]=b[0]+.04*Math.sin(t*4+i);a[i*3+1]=b[1]+.04*Math.sin(t*5+i*2);a[i*3+2]=b[2]+.04*Math.sin(t*3+i*3)}geo.attributes.position.needsUpdate=true};f.p=p;f(0);return f};
+const cloud=(N,sz)=>{const a=new Float32Array(N*3),c=new Float32Array(N*3),geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(a,3));geo.setAttribute('color',new T.BufferAttribute(c,3));const p=new T.Points(geo,new T.PointsMaterial({size:sz||.05,vertexColors:true,transparent:true,opacity:.9,clippingPlanes:[plane]}));G.add(p);return{a,c,geo,p}};
 const sg=c=>`<span style="color:${c}">●</span>`,SGc='#7fd6c2',PIc='#f2c35a';
-const NAME={mol:'Ethene (C₂H₄)',atom:'Carbon atom',ch:'C–H bond',cc:'C=C double bond',sigma:'σ bond',pi:'π bond'};
-const B={};
-/* L0: whole molecule */
-B.mol=()=>{rad=9;rx=.35;let ds=[];
- [-1,1].forEach(s=>{atom(CC,[s*.9,0,0],.3,'atom');[.866,-.866].forEach(y=>{const d=[s*.5,y,0],h=[s*.9+d[0]*1.7,y*1.7,0];tube([s*.9,0,0],h,.04,0x556070);atom(WH,h,.2,'ch');lobe(TL,[s*.9,0,0],d,.85,.3,.35,'ch');ds.push([s*.9+d[0]*.85,y*.85,0,.3,.3,.3,16])})});
+const def=(id,nm,th,f,prm,d)=>TP[id]={nm,th,f,prm:prm||(()=>[]),d:d||{}};
+const LAD=(a,b)=>{const c=ECV;c.font='16px sans-serif';for(let n=1;n<=6;n++){const y=30+140/(n*n);c.strokeStyle=(n==a||n==b)?'#f2c35a':'#4a6a90';c.lineWidth=2;c.beginPath();c.moveTo(30,y);c.lineTo(170,y);c.stroke();if(n<4){c.fillStyle='#97adc6';c.fillText('n='+n,175,y+5)}}
+ if(b){c.strokeStyle='#e0527a';c.lineWidth=3;c.beginPath();c.moveTo(100,30+140/(a*a));c.lineTo(100,30+140/(b*b)-6);c.stroke()}};
+
+/* Atomic structure */
+const RF=(n,l,r)=>{const e=Math.exp(-r/n);return n==1?e:n==2?(l?r:2-r)*e:(l==0?27-18*r+2*r*r:l==1?r*(6-r):r*r)*e};
+const AN=(l,m,x,y,z,r)=>{x/=r;y/=r;z/=r;return l==0?1:l==1?[x,y,z][m]:[(3*z*z-1)*.5,x*z,y*z,x*y,(x*x-y*y)*.5][m]*(m?1.7:1)};
+def('orb','Hydrogen orbitals','<b>Quantum numbers:</b> n = shell (size aur energy). l = azimuthal quantum number (shape: 0 = s, 1 = p, 2 = d). m = orientation (−l … +l). Nodes: radial = n − l − 1, angular = l. Dots = jahan electron milne ki probability zyada hai; blue/red = wave ka + / − phase.',()=>{
+ rad=8;rx=.4;const n=P.n,l=P.l,m=P.m,ext=[5.5,16,34][n-1],s=3/ext,N=2800,A=cloud(N,.055),q=()=>(rnd()*2-1)*ext,
+ f=(x,y,z)=>{const r=Math.hypot(x,y,z)+1e-6;return RF(n,l,r)*AN(l,m,x,y,z,r)};
+ let mx=0,k=0,i;for(i=0;i<6000;i++){const v=f(q(),q(),q());mx=Math.max(mx,v*v)}
+ for(i=0;i<9e5&&k<N;i++){const x=q(),y=q(),z=q(),v=f(x,y,z);if(v*v>mx*rnd()){A.a.set([x*s,y*s,z*s],k*3);A.c.set(v>0?[.31,.56,.91]:[.91,.31,.29],k*3);k++}}
+ A.geo.setDrawRange(0,k);atom(NU,[0,0,0],.07);
+ U=()=>{A.p.material.size=.05+.012*Math.sin(tm*3)};EF=()=>LAD(n,0);
+ CAPF=()=>`n=${n} · l=${l} (${'spd'[l]}) · m=${m-l} · nodes ${n-l-1}+${l}<br>${sg('#4f8fe8')} + phase  ${sg('#e8504a')} − phase`},
+ ()=>{P.l=Math.min(P.l,P.n-1);P.m=Math.min(P.m,2*P.l);const r=a=>[...Array(a).keys()];return[['n','n (shell)',[1,2,3].map(v=>[v,''+v])],['l','l (azimuthal)',r(P.n).map(v=>[v,'spd'[v]])],['m','m',r(2*P.l+1).map(v=>[v,''+(v-P.l)])]]},{n:2,l:1,m:0});
+
+def('pauli','Pauli exclusion','<b>Pauli exclusion:</b> ek atom me do electrons ke chaaron quantum numbers (n, l, m, s) same nahi ho sakte. Isliye ek orbital (box) me max 2 electron, ulte spin ke saath. <b>Hund:</b> barabar energy ke orbitals (2p) me pehle sab akele bharte hain, same spin. Box neeche se upar: 1s, 2s, 2p.',()=>{
+ rad=7;rx=.2;const Zn=P.z,bad=P.x&&Zn>1,Sl=[[0,-1.8],[0,-.4],[-1.1,1],[0,1],[1.1,1]];
+ Sl.forEach(s=>mesh(new T.BoxGeometry(.9,.04,.9),TL,.45,[s[0],s[1]-.2,0]));
+ for(let k=0;k<Zn;k++){let b,up;if(k<4){b=k>>1;up=k%2==0}else{const j=k-4;b=2+j%3;up=j<3}if(bad&&k==1)up=true;
+  const s=Sl[b],x=s[0]+(up?-.17:.17),c=bad&&k<2?RD:WH;atom(c,[x,s[1],0],.1);mesh(new T.ConeGeometry(.06,.28,8),bad&&k<2?RD:AM,1,[x,s[1]+.3,0],[1,up?1:-1,1])}
+ const nm='H He Li Be B C N O F Ne'.split(' ')[Zn-1];
+ CAPF=()=>bad?sg('#e8504a')+' same spin ek box me: Pauli mana!':`${nm}: har box me max 2, ulte spin`+(Zn>4?'<br>Hund: p me pehle akele':'')},
+ ()=>[['z','element',[...Array(10).keys()].map(v=>[v+1,'H He Li Be B C N O F Ne'.split(' ')[v]])],['x','mode',[[0,'Normal'],[1,'Pauli ✕']]]],{z:3,x:0});
+
+def('heis','Heisenberg uncertainty','<b>Uncertainty principle:</b> Δx · Δp ≥ ħ/2. Position jitni tight, momentum utna zyada fail jaata hai (aur ulta). Slider se Δx badlo. Isiliye electron nucleus par gir nahi sakta: use tight karoge to momentum (energy) bahut badh jaati hai.',()=>{
+ rad=9;rx=.25;SW(1);const N=420,A=cloud(N,.06),B=cloud(N,.06),Q=[],g=()=>(rnd()+rnd()+rnd()-1.5)*1.2;
+ for(let i=0;i<N;i++){Q.push([g(),g(),g()]);A.c.set([.5,.84,.76],i*3);B.c.set([.95,.76,.35],i*3)}
+ let sx=1,sp=.5;
+ U=()=>{sx=.25+sv;sp=.5/sx;for(let i=0;i<N;i++){const q=Q[i],w=.03*Math.sin(tm*4+i);A.a.set([-2.6+q[0]*sx+w,q[1]*sx,q[2]*sx],i*3);B.a.set([2.6+q[0]*sp,q[1]*sp+w,q[2]*sp],i*3)}A.geo.attributes.position.needsUpdate=true;B.geo.attributes.position.needsUpdate=true};
+ EF=()=>{const c=ECV;c.fillStyle='#7fd6c2';c.fillRect(20,50,sx/1.25*340,24);c.fillStyle='#f2c35a';c.fillRect(20,110,sp/2*340,24);c.fillStyle='#97adc6';c.font='18px sans-serif';c.fillText('Δx',20,44);c.fillText('Δp',20,104)};
+ CAPF=()=>`${sg(SGc)} x ${sx.toFixed(2)}  ${sg(PIc)} p ${sp.toFixed(2)}<br>Δx·Δp = ħ/2`});
+
+def('spec','Hydrogen spectrum','<b>Line spectrum:</b> electron upar ke level n(i) se neeche n(f) par girta hai to photon nikalta hai: E = 13.6 (1/n(f)² − 1/n(i)²) eV. Har n(f) ek series: Lyman (UV), Balmer (visible), Paschen (IR). Lines series limit par ikatthi hoti jaati hain. 4D dabao to animation chalegi.',()=>{
+ rad=8;rx=.5;const nf=P.s,Rr=[.5,1.1,1.8,2.6,3.5,4.4],cnt=Math.min(4,6-nf),nm=['','Lyman','Balmer','Paschen'][nf];
+ atom(NU,[0,0,0],.12);Rr.forEach(r=>mesh(new T.TorusGeometry(r,.012,6,72),0x4a6a90,.8,[0,0,0]));
+ const el=atom(0xffffff,[0,0,0],.1),ph=mesh(SPH,0xffffff,1,[0,0,0],[.12,.12,.12]),lam=(a,b)=>91.13/(1/(b*b)-1/(a*a)),
+ col=l=>l<380||l>750?new T.Color(0xaab4c8):new T.Color().setHSL((750-l)/370*.78,1,.55);
+ let cap='',ni=nf+1;AL=1;
+ EF=()=>{LAD(ni,nf);const lim=13.6/(nf*nf),c=ECV;for(let b=nf+1;b<=nf+cnt;b++){const E=13.6*(1/(nf*nf)-1/(b*b));c.strokeStyle='#'+col(lam(b,nf)).getHexString();c.lineWidth=b==ni?6:2;c.beginPath();c.moveTo(215+E/lim*170,70);c.lineTo(215+E/lim*170,150);c.stroke()}c.fillStyle='#97adc6';c.font='15px sans-serif';c.fillText('limit',360,172)};
+ U=()=>{const u=tm*.5,p=u%1,ti=Math.floor(u)%cnt;ni=nf+1+ti;const lm=lam(ni,nf),a=tm*2.5/ni;
+  const r=p<.3?Rr[ni-1]:p<.55?Rr[ni-1]+(Rr[nf-1]-Rr[ni-1])*ss(.3,.55,p):Rr[nf-1];el.position.set(r*Math.cos(a),r*Math.sin(a),0);
+  const ae=(Math.floor(u)+.55)*2*2.5/ni,d=Rr[nf-1]+(p-.55)/.45*4;ph.visible=p>.55;ph.position.set(d*Math.cos(ae),d*Math.sin(ae),0);ph.material.color.copy(col(lm));ph.material.opacity=1-(p-.55)/.45*.7;
+  cap=sg('#'+col(lm).getHexString())+` n=${ni}→${nf} · ${Math.round(lm)} nm · ${lm>=380&&lm<=750?'visible':lm<380?'UV':'IR'}<br>${nm} series`};
+ CAPF=()=>cap},()=>[['s','series',[[1,'Lyman'],[2,'Balmer'],[3,'Paschen']]]],{s:2});
+
+/* Bonding */
+def('hyb','Hybridization','<b>Hybridization:</b> s aur p orbitals mix hoke naye barabar hybrid orbitals banate hain. sp = 2 lobes, 180°. sp² = 3 lobes, 120°, ek p bacha (π bond ke liye). sp³ = 4 lobes, 109.5°. Bada lobe overlap me behtar, isliye σ bond mazboot. 5D me energy levels ek ho jaate dikhte hain.',()=>{
+ rad=7;rx=.4;const t=P.t,k={sp:2,sp2:3,sp3:4}[t],ex={sp:'C₂H₂, CO₂ · 180°',sp2:'C₂H₄ · 120°',sp3:'CH₄ · 109.5°'}[t],
+ D=t=='sp'?[[1,0,0],[-1,0,0]]:t=='sp2'?[0,120,240].map(a=>[Math.cos(a*Math.PI/180),Math.sin(a*Math.PI/180),0]):[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]];
+ atom(NU,[0,0,0],.2);SW(1);const sS=mesh(SPH,AM,.4,[0,0,0],[.9,.9,.9]),pu=[],hy=[];
+ [[1,0,0],[0,1,0],[0,0,1]].forEach((v,i)=>{const a=lobe(BL,[0,0,0],v,.95,.32,.5),b=lobe(RD,[0,0,0],v.map(q=>-q),.95,.32,.5);if(i<k-1)pu.push(a,b)});
+ D.forEach(d=>hy.push(lobe(TL,[0,0,0],d,1,.45,.65),lobe(RD,[0,0,0],d.map(q=>-q),.35,.18,.5)));
+ U=()=>{const m=ss(.15,.6,sv);setO([sS].concat(pu),1-m);setO(hy,m)};
+ EF=()=>{const c=ECV,m=ss(.15,.6,sv),yh=(140+(k-1)*70)/k;c.lineWidth=4;for(let i=0;i<4;i++){const y=i==0?140+(yh-140)*m:i<k?70+(yh-70)*m:70;c.strokeStyle=i<k&&m>.5?'#7fd6c2':i==0?'#f2c35a':'#4f8fe8';c.beginPath();c.moveTo(30+i*90,y);c.lineTo(80+i*90,y);c.stroke()}};
+ CAPF=()=>{const m=ss(.15,.6,sv);return m<.15?'pehle: 1 s + p orbitals':m<.9?'mix ho rahe hain':sg(SGc)+` ${t} · ${k} hybrid<br>${ex}`}},
+ ()=>[['t','type',['sp','sp2','sp3'].map(v=>[v,v.replace('2','²').replace('3','³')])]],{t:'sp2'});
+
+def('mol','Ethene bonds','<b>Ethene (C₂H₄):</b> har C sp². C–H aur C–C σ bond head-on overlap se bante hain; dono C ke bache p orbitals side-on overlap karke π bond banate hain. Kisi hisse par tap karo to σ aur π alag dikhenge.',()=>{
+ rad=9;rx=.35;const ds=[];
+ [-1,1].forEach(s=>{atom(CC,[s*.9,0,0],.3,'cc');[.866,-.866].forEach(y=>{const d=[s*.5,y,0],h=[s*.9+d[0]*1.7,y*1.7,0];tube([s*.9,0,0],h,.04,0x556070);atom(WH,h,.2,'cc');lobe(TL,[s*.9,0,0],d,.85,.3,.35,'cc');ds.push([s*.9+d[0]*.85,y*.85,0,.3,.3,.3,16])})});
  mesh(SPH,TL,.4,[0,0,0],[1,.35,.35],'cc');[.75,-.75].forEach(z=>{mesh(SPH,AM,.4,[0,0,z],[1.5,.42,.5],'cc');ds.push([0,0,z,1.3,.3,.35,40])});ds.push([0,0,0,.9,.25,.25,50]);
- const f=dots(ds);U=()=>f(tm);CAPF=()=>'Kisi bhi hisse par tap karo'};
-/* L1: carbon atom, hybridization */
-B.atom=()=>{rad=7;rx=.4;atom(NU,[0,0,0],.26);mesh(SPH,0x9fb4d0,.2,[0,0,0],[.5,.5,.5]);
- const s2=[mesh(SPH,AM,.35,[0,0,0],[.9,.9,.9])],pp=[],hy=[],es=[];
- [[1,0,0],[0,1,0]].forEach(v=>{s2.push(lobe(BL,[0,0,0],v,.95,.34,.5),lobe(RD,[0,0,0],v.map(q=>-q),.95,.34,.5))});
- const pz=[lobe(BL,[0,0,0],[0,0,1],.95,.34,.55,'pi'),lobe(RD,[0,0,0],[0,0,-1],.95,.34,.55,'pi')];
- [90,210,330].forEach(a=>{const d=[Math.cos(a*Math.PI/180),Math.sin(a*Math.PI/180),0];hy.push(lobe(TL,[0,0,0],d,1,.45,.65,'sigma'));es.push(mesh(new T.SphereGeometry(.08,10,8),0xffffff,1,d.map(q=>q*1.1),null,'',1))});
- es.push(mesh(new T.SphereGeometry(.08,10,8),0xffffff,1,[0,0,1.1],null,'',1));
- U=()=>{const k=.5-.5*Math.cos(tm*.5),m=ss(.15,.6,k);setO(s2,1-m);setO(hy,m);setO(es,ss(.65,.85,k))};
- CAPF=()=>{const k=.5-.5*Math.cos(tm*.5);return k<.15?'s + p':ss(.15,.6,k)<.9?'s + p → mix':sg(SGc)+' 3 sp²  '+sg(RD)+sg(BL)+' 1 p'}};
-/* L1: C–H head-on overlap */
-B.ch=()=>{rad=7;rx=.3;const cx=-.8;atom(NU,[cx,0,0],.26);const lb=lobe(TL,[cx,0,0],[1,0,0],1,.5,.6,'sigma');
- [[-.5,.866],[-.5,-.866]].forEach(d=>lobe(TL,[cx,0,0],[d[0],d[1],0],1,.4,.2));
- const h=atom(WH,[3,0,0],.2,'sigma'),hc=mesh(SPH,BL,.3,[3,0,0],[.55,.55,.55],'sigma'),ov=mesh(SPH,AM,.6,[0,0,0],[.6,.3,.3],'sigma'),f=dots([[.05,0,0,.5,.2,.2,70]]);
- U=()=>{const k=.5-.5*Math.cos(tm*.6),a=ss(0,.75,k);h.position.x=hc.position.x=3.4-2.7*a;ov.position.x=(h.position.x+cx)/2+.35;setO([ov],ss(.5,.9,k));f.p.material.opacity=ss(.55,.9,k);f(tm)};CAPF=()=>'head-on overlap '+sg(SGc)+' σ'};
-/* L1: C=C, sigma + pi apart */
-B.cc=()=>{rad=8;rx=.3;[-1,1].forEach(s=>{atom(CC,[s*.9,0,0],.3);[.866,-.866].forEach(y=>{const d=[s*.5,y,0],h=[s*.9+d[0]*1.7,y*1.7,0];tube([s*.9,0,0],h,.04,0x556070,.35);atom(WH,h,.2).material.opacity=.35})});
- mesh(SPH,TL,.5,[0,0,0],[1.1,.4,.4],'sigma');const pi=[1,-1].map(z=>mesh(SPH,AM,.55,[0,0,z*.7],[1.6,.42,.5],'pi')),f=dots([[0,0,0,1,.25,.25,50]]);
- U=()=>{const e=ss(.2,.8,.5-.5*Math.cos(tm*.7));pi[0].position.z=.6+1.4*e;pi[1].position.z=-.6-1.4*e;f(tm)};CAPF=()=>sg(SGc)+' σ   +   '+sg(PIc)+' π'};
-/* L2: sigma overlap + energy */
-let ECV=null;
-B.sigma=()=>{rad=8;rx=.25;const a=atom(WH,[0,0,0],.16,''),b=atom(WH,[0,0,0],.16,''),ca=mesh(SPH,BL,.2,[0,0,0],[1.1,1.1,1.1]),cb=mesh(SPH,BL,.2,[0,0,0],[1.1,1.1,1.1]),bc=mesh(SPH,AM,.3,[0,0,0],[1,.55,.55]);
- const N=520,P=new Float32Array(N*3),Q=[],g3=()=>(rnd()+rnd()+rnd()-1.5)*.9;for(let i=0;i<N;i++)Q.push([g3(),g3(),g3(),i%2?1:-1]);
- const geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(P,3));G.add(new T.Points(geo,new T.PointsMaterial({color:0xffffff,size:.07,transparent:true,opacity:.9,clippingPlanes:[plane]})));
- ECV=$('#en').getContext('2d');$('#en').style.display='block';SW(1);let d=3;
- U=()=>{d=3.2-2.7*sv;const h=d*.8,bd=cl((2.3-d)/1.4),pl=.7*bd;a.position.x=ca.position.x=-h;b.position.x=cb.position.x=h;
-  for(let i=0;i<N;i++){const q=Q[i],k=1-.3*bd;P[i*3]=q[3]*h*(1-pl)+q[0]*(1-.25*bd)+.03*Math.sin(tm*4+i);P[i*3+1]=q[1]*k+.03*Math.sin(tm*5+i*2);P[i*3+2]=q[2]*k}
-  geo.attributes.position.needsUpdate=true;bc.scale.x=Math.max(.2,h*.5+.5);setO([bc],bd);
-  const x=ECV,w=400,hh=200;x.clearRect(0,0,w,hh);x.strokeStyle='#2c4565';x.lineWidth=2;x.beginPath();x.moveTo(20,30);x.lineTo(20,170);x.lineTo(380,170);x.stroke();
-  const E=v=>(1-Math.exp(-2.2*(v-.74)))**2-1,X=v=>20+(v-.5)/2.7*350,Yy=v=>30+(.3-E(v))/1.3*140;x.strokeStyle='#7fd6c2';x.beginPath();for(let v=.5;v<=3.2;v+=.03){v<.51?x.moveTo(X(v),Yy(v)):x.lineTo(X(v),Yy(v))}x.stroke();
-  x.fillStyle='#e0527a';x.beginPath();x.arc(X(d),Yy(d),9,0,6.3);x.fill();x.fillStyle='#97adc6';x.font='20px sans-serif';x.fillText('Energy ↓',28,26)};
- CAPF=()=>d>2.4?'door: koi asar nahi':d>1.2?'kheench: energy gir rahi':d>.6?sg(AM)+' BOND: sabse kam energy':'bahut paas: dhakka'};
-/* L2: pi overlap + twist */
-B.pi=()=>{rad=8;rx=.35;SW(1);$('#mt').style.display='block';
- const L=grp(()=>{atom(CC,[0,0,0],.3);lobe(BL,[0,0,0],[0,0,1],.95,.34,.6);lobe(RD,[0,0,0],[0,0,-1],.95,.34,.6)}),Rg=grp(()=>{atom(CC,[0,0,0],.3);lobe(BL,[0,0,0],[0,0,1],.95,.34,.6);lobe(RD,[0,0,0],[0,0,-1],.95,.34,.6)});
- L.position.x=-.9;Rg.position.x=.9;tube([-.9,0,0],[.9,0,0],.06,TL);
- const pi=[1,-1].map(z=>mesh(SPH,AM,.6,[0,0,z*.8],[1.7,.42,.5]));let f=0;
- U=()=>{const ph=sv*Math.PI/2;Rg.rotation.x=ph;f=Math.cos(ph);setO(pi,Math.max(0,f));$('#mt i').style.width=Math.max(0,f)*100+'%'};
- CAPF=()=>f>.85?sg(PIc)+' π bond: side-on overlap':f>.3?'ghoomaya: overlap kam':'π toot gaya (isliye C=C ghoom nahi sakta)'};
+ const f=dots(ds);U=()=>f(tm);CAPF=()=>'Kisi bhi hisse par tap karo'});
+def('cc','C=C: σ + π','<b>C=C double bond</b> = 1 σ (axis par, teal) + 1 π (upar-neeche, amber). π side-on aur kamzor hota hai; use tode bina C=C ghoom nahi sakta, isliye alkenes me cis/trans isomers hote hain.',()=>{
+ rad=8;rx=.3;[-1,1].forEach(s=>{atom(CC,[s*.9,0,0],.3);[.866,-.866].forEach(y=>{const d=[s*.5,y,0],h=[s*.9+d[0]*1.7,y*1.7,0];tube([s*.9,0,0],h,.04,0x556070,.35);atom(WH,h,.2).material.opacity=.35})});
+ mesh(SPH,TL,.5,[0,0,0],[1.1,.4,.4]);const pi=[1,-1].map(z=>mesh(SPH,AM,.55,[0,0,z*.7],[1.6,.42,.5])),f=dots([[0,0,0,1,.25,.25,50]]);
+ U=()=>{const e=ss(.2,.8,.5-.5*Math.cos(ta*.7));pi[0].position.z=.6+1.4*e;pi[1].position.z=-.6-1.4*e;f(tm)};CAPF=()=>sg(SGc)+' σ   +   '+sg(PIc)+' π'});
+
+/* Materials */
+def('mof','Metal-organic framework','<b>MOF</b> = metal node (ion/cluster) + organic linker se bani crystalline jaali, andar khali pore. Linker lamba karo to pore bada: yahi tunability hai. Use hota hai gas storage, CO₂ capture, hawa se paani nikalne me. Chemistry Nobel 2025: Kitagawa, Robson, Yaghi. Slider = linker length.',()=>{
+ rad=11;rx=.5;SW(1);const g=P.g,o=(g-1)/2,ns=[],es=[],ps=[],r=[...Array(g).keys()];
+ r.forEach(i=>r.forEach(j=>r.forEach(k=>{const p=[i-o,j-o,k-o];ns.push([p,atom(TL,[0,0,0],.2)]);
+  [[1,0,0],[0,1,0],[0,0,1]].forEach(d=>{if([i,j,k][d.indexOf(1)]<g-1){const m=mesh(new T.CylinderGeometry(.045,.045,1,8),AM,1,[0,0,0],null,'',1);m.quaternion.setFromUnitVectors(Y,new T.Vector3(...d));es.push([p,d,m])}});
+  if(i<g-1&&j<g-1&&k<g-1)ps.push([[p[0]+.5,p[1]+.5,p[2]+.5],mesh(SPH,BL,.16,[0,0,0],[.4,.4,.4]),atom(WH,[0,0,0],.07)])})));
+ U=()=>{const s=1+1.1*sv;ns.forEach(n=>n[1].position.set(n[0][0]*s,n[0][1]*s,n[0][2]*s));
+  es.forEach(e=>{e[2].position.set((e[0][0]+e[1][0]/2)*s,(e[0][1]+e[1][1]/2)*s,(e[0][2]+e[1][2]/2)*s);e[2].scale.y=s});
+  ps.forEach((p,i)=>{p[1].position.set(p[0][0]*s,p[0][1]*s,p[0][2]*s);p[1].scale.setScalar(s*.38);p[2].position.set(p[0][0]*s+.12*Math.sin(tm*3+i)*s,p[0][1]*s+.12*Math.sin(tm*2+i*2)*s,p[0][2]*s)})};
+ CAPF=()=>`${sg(SGc)} node  ${sg(PIc)} linker  ${sg('#4f8fe8')} pore<br>linker ${(1+1.1*sv).toFixed(1)}× → pore bada`},
+ ()=>[['g','grid',[[2,'2×2×2'],[3,'3×3×3']]]],{g:3});
+
+/* Hub UI */
+const CATS=[['Atomic structure',[['orb'],['pauli'],['heis'],['spec']]],['Bonding',[['hyb'],['mol'],['cc'],[0,'Ionic, covalent, metallic']],[0,'Molecular orbital theory']],['Materials',[['mof']]],['Quantum chemistry',[[0,'Schrödinger, particle in a box'],[0,'DFT basics'],[0,'Aufbau and Hund rules']]]];
+const open_={0:1};
+function drw(){const d=$('#drw');d.innerHTML='';CATS.forEach((c,ci)=>{const h=document.createElement('button');h.className='h';h.textContent=(open_[ci]?'▾ ':'▸ ')+c[0];h.onclick=()=>{open_[ci]=!open_[ci];drw()};d.appendChild(h);
+ if(open_[ci])c[1].concat(c[2]&&c[2][0]===0?[c[2]]:[]).forEach(it=>{const b=document.createElement('button');b.className='it'+(it[0]===cur?' on':'');if(it[0]){b.textContent=TP[it[0]].nm;b.onclick=()=>{load(it[0]);d.style.display='none'}}else{b.disabled=true;b.innerHTML=it[1]+' <small>· jaldi</small>'}d.appendChild(b)})})}
 function SW(on){$('#sw').style.display=on?'flex':'none'}
-/* navigation */
-function load(k){cur=k;while(W.children.length)W.remove(W.children[0]);G=new T.Group();W.add(G);pick=[];U=()=>{};CAPF=()=>'';auto=true;sv=0;
- $('#en').style.display='none';$('#mt').style.display='none';SW(0);$('#sl').value=0;ry=.5;B[k]();
- $('#bk').hidden=!stack.length;$('#cr').textContent=stack.concat(k).map(s=>NAME[s]).join(' › ')}
-function open(k){stack.push(cur);load(k)}
-$('#bk').onclick=()=>{if(stack.length)load(stack.pop())};
+function chips(){const c=$('#ch');c.innerHTML='';TP[cur].prm().forEach(r=>{const d=document.createElement('div');d.className='rw';d.innerHTML=`<span class="lb">${r[1]}</span>`;r[2].forEach(v=>{const b=document.createElement('button');b.textContent=v[1];if(P[r[0]]===v[0])b.className='on';b.onclick=()=>{P[r[0]]=v[0];load(cur,1)};d.appendChild(b)});c.appendChild(d)})}
+function load(k,keep){cur=k;const t=TP[k];if(!keep)P=Object.assign({},t.d);t.prm();
+ while(W.children.length)W.remove(W.children[0]);G=new T.Group();W.add(G);pick=[];U=()=>{};EF=null;AL=0;CAPF=()=>'';auto=true;sv=0;SW(0);$('#sl').value=0;
+ if(!keep)ry=.5;rx=.35;t.f();rad0=rad;chips();drw();$('#cr').textContent=t.nm;$('#tc').innerHTML=t.th}
+$('#dr').onclick=()=>{const d=$('#drw');d.style.display=d.style.display=='block'?'none':'block'};
+$('#th').onclick=e=>{const t=$('#tc'),on=t.style.display!='block';t.style.display=on?'block':'none';e.currentTarget.classList.toggle('on',on)};
+document.querySelectorAll('.top button').forEach(b=>b.onclick=()=>{md=+b.dataset.m;document.querySelectorAll('.top button').forEach(x=>x.classList.toggle('on',x===b))});
 $('#sl').oninput=e=>{auto=false;sv=e.target.value/1000};
 $('#cut').onclick=e=>{const on=plane.constant>50;plane.constant=on?0:99;e.currentTarget.classList.toggle('on',on)};
+$('#zi').onclick=()=>rad=cl(rad*.85,3,20);$('#zo').onclick=()=>rad=cl(rad*1.18,3,20);$('#rs').onclick=()=>{rx=.35;ry=.5;rad=rad0};
 /* input */
 const cv=$('#c'),PT=new Map(),RC=new T.Raycaster();let mv=0,t0=0,pd=0;
 const dist=()=>{const a=[...PT.values()];return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])};
@@ -108,16 +164,17 @@ cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);PT.set(e.pointerId,[e.cli
 cv.onpointermove=e=>{const p=PT.get(e.pointerId);if(!p)return;const dx=e.clientX-p[0],dy=e.clientY-p[1];p[0]=e.clientX;p[1]=e.clientY;mv+=Math.abs(dx)+Math.abs(dy);
  if(PT.size===1){ry+=dx*.008;rx=cl(rx+dy*.008,-1.4,1.4)}else if(PT.size===2){const d=dist();rad=cl(rad*pd/d,3,20);pd=d}};
 cv.onpointerup=cv.onpointercancel=e=>{if(e.type==='pointerup'&&PT.size===1&&mv<8&&Date.now()-t0<450){const r=cv.getBoundingClientRect();RC.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),C);
-  const h=RC.intersectObjects(pick.filter(m=>m.visible&&m.material.opacity>.05),false);if(h.length)open(h[0].object.userData.go)}PT.delete(e.pointerId)};
+  const h=RC.intersectObjects(pick.filter(m=>m.visible&&m.material.opacity>.05),false);if(h.length)load(h[0].object.userData.go)}PT.delete(e.pointerId)};
 cv.addEventListener('wheel',e=>{e.preventDefault();rad=cl(rad*(1+e.deltaY*.001),3,20)},{passive:false});
-function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+function rs(){R_.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 const clk=new T.Clock();let lc='';
-function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05);tm+=dt;
- if(auto)sv=.5-.5*Math.cos(tm*.6);else if(!PT.size){}
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05);ta+=dt;if(md>=4)tm+=dt;
+ if(auto)sv=.5-.5*Math.cos(ta*.6);
  if(cur==='mol'&&!PT.size)ry+=dt*.15;
- const s=.55+.45*Math.sin(tm*3);pick.forEach(m=>{m.material.emissiveIntensity=s});
+ const s=.55+.45*Math.sin(ta*3);pick.forEach(m=>{m.material.emissiveIntensity=s});
  U();W.rotation.set(rx,ry,0);C.position.set(0,0,rad);C.lookAt(0,-rad*.08,0);
+ const sh=EF&&(md==5||AL);$('#en').style.display=sh?'block':'none';if(sh){ECV.clearRect(0,0,400,200);EF()}
  const c=CAPF();if(c!==lc){lc=c;$('#cap').innerHTML=c}
- if(auto&&$('#sw').style.display==='flex')$('#sl').value=sv*1000;R.render(S,C)}
-load('mol');loop();
+ if(auto&&$('#sw').style.display==='flex')$('#sl').value=sv*1000;R_.render(S,C)}
+load('orb');loop();
 </script></body></html>
