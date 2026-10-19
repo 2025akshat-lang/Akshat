@@ -26,12 +26,12 @@ registerCellInfo('muscle', {
       ['H zone', 'Hai', 'Gayab / bahut chhota'],
       ['Filament', 'Nahi badalte', 'Sirf phisalte hain']]) },
   steps: [
-    { k: ['nmj'], t: '1. Motor neuron ka action potential NMJ par ACh chhodta hai; muscle ke AChR khulte hain' },
-    { k: ['sarco', 'ttub'], t: '2. Endplate potential action potential banata hai jo sarcolemma + T-tubule mein tez fail jata hai' },
-    { k: ['ttub'], t: '3. T-tubule ki DHPR RyR1 ko kholti hai: SR se Ca2+ cytosol mein' },
-    { k: ['sarc', 'myosin'], t: '4. Ca2+ troponin C se judta hai: tropomyosin hatti, myosin actin se judta hai' },
-    { k: ['myosin', 'sarc', 'mit'], t: '5. Cross-bridge cycle (ATP): power stroke se thin filaments beech ki taraf phisalte hain: sarcomere chhota' },
-    { k: ['ttub'], t: '6. SERCA Ca2+ ko SR mein wapas dalta hai: tropomyosin dhakti hai, muscle relax' }
+    { ph: 0, k: ['nmj'], t: '1. Motor neuron ka action potential axon se nikalkar axon terminal (bouton) tak pahunchta hai' },
+    { ph: 1, k: ['nmj'], t: '2. Terminal mein Ca2+ aaya: ACh vesicle fuse hue, ACh cleft mein; muscle ke ACh receptor khulte hain (Na+ andar)' },
+    { ph: 2, k: ['sarco', 'ttub'], t: '3. Endplate potential action potential banata hai jo sarcolemma aur T-tubules mein poore fibre mein tez faila' },
+    { ph: 3, k: ['ttub'], t: '4. T-tubule ki DHPR RyR1 ko kholti hai: Sarcoplasmic Reticulum se Ca2+ ka dher cytosol mein' },
+    { ph: 4, k: ['sarc', 'myosin', 'mit'], t: '5. Ca2+ troponin C se juda, tropomyosin hati; cross-bridge cycle (ATP): thin filaments khinche, sarcomere chhota, muscle sikuda' },
+    { ph: 5, k: ['ttub', 'sarc'], t: '6. SERCA Ca2+ ko SR mein wapas dalta hai, AChE ACh todta hai: tropomyosin phir dhakti hai, muscle relax' }
   ],
   tracker: [
     ['Muscle fibre', 'Ek lamba multinucleate cell'], ['Sarcolemma', 'Fibre ki membrane'], ['Sarcoplasm', 'Muscle ka cytoplasm'], ['Myofibril', 'Sarcomere ki laddi'], ['Sarcomere', 'Contraction ki ikaai'],
