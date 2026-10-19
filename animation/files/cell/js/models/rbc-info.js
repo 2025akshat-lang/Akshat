@@ -3,7 +3,7 @@
 const TB = CVKit.table, H = CVKit.h3;
 registerCellInfo('rbc', {
   name: 'Red blood cell',
-  fit: { r: [11, 9], t: [[.7, 0, 0], [.7, 0, 0]] },
+  fit: { r: [12, 10], t: [[0, .3, 0], [.4, 0, 0]] },
   compare: { title: 'RBC: tulna', html:
     H('1. RBC vs Typical animal cell') + TB(['Feature', 'RBC (mature)', 'Typical animal cell'], [
       ['Nucleus', 'Nahi (nikal diya)', 'Hota hai'],
