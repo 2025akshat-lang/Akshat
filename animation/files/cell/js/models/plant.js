@@ -44,6 +44,6 @@ registerCellModel('plant', (THREE, group, opt) => {
   const pg = new T3.CylinderGeometry(.06, .06, .35, 8); pg.rotateZ(PI / 2);
   inst(pg, mat(0xffffff, 0.95), pd);
 
-  return k.result((dt, t) => { v.scale.set(2.3 * (1 + .015 * Math.sin(t * 1.4)), 1.45 * (1 + .02 * Math.sin(t * 1.4)), 1.2); });
+  return k.result((dt, t) => { v.scale.set(2.3 * (1 + .015 * Math.sin(t * 1.4)), 1.45 * (1 + .02 * Math.sin(t * 1.4)), 1.2); }, { rot: PI / 2, scale: .85 });
 });
 /* END OF FILE plant.js */
