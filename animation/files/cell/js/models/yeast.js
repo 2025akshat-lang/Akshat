@@ -39,6 +39,6 @@ registerCellModel('yeast', (THREE, group, opt) => {
   const sc = add(new T3.TorusGeometry(.2, .05, 8, 20), mat(0xffffff, 1), -1.4, 1.65, 1.0); sc.lookAt(-2.4, 3.3, 2.0);
   add(new T3.TorusGeometry(.2, .05, 8, 20), mat(0xffffff, 1), -.4, -1.9, 1.0).lookAt(-.4, -3.8, 2.0);
 
-  return k.result((dt, t) => { bud.scale.set(1.05 * (1 + .02 * Math.sin(t * 1.2)), .95 * (1 + .02 * Math.sin(t * 1.2)), .95); });
+  return k.result((dt, t) => { bud.scale.set(1.05 * (1 + .02 * Math.sin(t * 1.2)), .95 * (1 + .02 * Math.sin(t * 1.2)), .95); }, { rot: PI / 2, scale: .85 });
 });
 /* END OF FILE yeast.js */
