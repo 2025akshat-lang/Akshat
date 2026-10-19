@@ -31,8 +31,9 @@ const PH = {
 };
 
 const D = window.CVDiv = {
+  PH,
   kind: 'mit', ph: 0, p: 0, playing: true, hold: false, speed: 1,
-  list() { return PH[this.kind]; },
+  list() { return this.PH[this.kind]; },
   frac() { const L = this.list(); let t = 0, s = 0; L.forEach((x, i) => { t += x.d; if (i < this.ph) s += x.d; }); return (s + this.p * L[this.ph].d) / t; },
   go(i, hold) { this.ph = clamp(i | 0, 0, this.list().length - 1); this.p = 0; this.playing = true; this.hold = !!hold; this.fire(); },
   fire() { if (this.onChange) this.onChange(); }
