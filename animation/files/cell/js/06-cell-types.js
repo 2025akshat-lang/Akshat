@@ -36,6 +36,7 @@ function showCT(id){clr();closeDock();const d=CELLTYPES.find(c=>c.id===id)||CELL
  if(mode!=='3D')setMode('3D');
  CTid=id;clearCT();const dflt=id==='default';
  document.body.classList.toggle('ct',!dflt);
+ document.body.classList.toggle('dv',id==='mitosis'||id==='meiosis');if(window.dvSync)dvSync();
  EU.root.visible=PR.root.visible=dflt;CT.visible=!dflt;
  if(dflt){ban('');W.t.copy(homeT());W.r=baseR()}
  else{
