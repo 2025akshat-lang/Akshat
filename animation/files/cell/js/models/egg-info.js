@@ -3,7 +3,7 @@
 const TB = CVKit.table, H = CVKit.h3;
 registerCellInfo('egg', {
   name: 'Egg (oocyte)',
-  fit: { r: [12, 10], t: [[0, 0, 0], [0, 0, 0]] },
+  fit: { r: [20, 11], t: [[0, 0, 0], [0, 0, 0]] },
   compare: { title: 'Egg: tulna', html:
     H('1. Egg vs Sperm') + TB(['Feature', 'Egg', 'Sperm'], [
       ['Size', '~ 120 um (sabse bada)', '~ 55 um (sir 5 um)'],
