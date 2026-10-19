@@ -26,6 +26,6 @@ registerCellModel('rbc', (THREE, group, opt) => {
   const sk = new T3.TorusGeometry(.9, .3, 10, 24, 4.4); const s1 = add(sk, mat(0xa83030, 0.85), 3.0, -1.2, 0); s1.rotation.z = .6;
   const s2 = add(new T3.TorusGeometry(.7, .25, 10, 24, 4.0), mat(0xa83030, 0.85), 3.0, 1.4, 0); s2.rotation.z = 2.5;
   return k.result((dt, t) => { hero.rotation.z = .25 + .35 * Math.sin(t * .6); hero.rotation.x = 1.05 + .15 * Math.sin(t * .8);
-    for (let i = 0; i < 8; i++) { const u = (t * .25 + i / 8) % 1; dm.position.set(-3.2 + u * 3.0, o2p[i][1], o2p[i][2]); dm.updateMatrix(); o2.setMatrixAt(i, dm.matrix); } o2.instanceMatrix.needsUpdate = true; });
+    for (let i = 0; i < 8; i++) { const u = (t * .25 + i / 8) % 1; dm.position.set(-3.2 + u * 3.0, o2p[i][1], o2p[i][2]); dm.updateMatrix(); o2.setMatrixAt(i, dm.matrix); } o2.instanceMatrix.needsUpdate = true; }, { rot: PI / 2, scale: .75 });
 });
 /* END OF FILE rbc.js */
