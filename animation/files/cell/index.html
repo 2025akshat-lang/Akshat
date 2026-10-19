@@ -6,15 +6,20 @@
 addEventListener('error',function(e){var m=e.target&&e.target.src?'FILE NAHI MILI: '+e.target.src.split('/').slice(-2).join('/'):(e.message||'error')+' @'+String(e.filename||'').split('/').pop().split('?')[0]+':'+e.lineno;
 var d=document.getElementById('errb');if(!d){d=document.createElement('div');d.id='errb';d.style.cssText='position:fixed;left:8px;right:8px;top:64px;z-index:99;background:#7a1a1a;color:#fff;font:11px/1.35 monospace;padding:6px 8px;border-radius:8px;max-height:30vh;overflow:auto;white-space:pre-wrap';d.onclick=function(){d.remove()};document.body.appendChild(d)}d.textContent+=m+'\n'},true);
 </script>
-<div id="ver" style="position:fixed;top:12px;left:50%;transform:translateX(-50%);font:9px monospace;opacity:.45;pointer-events:none;z-index:3">v7</div>
+<div id="ver" style="position:fixed;top:12px;left:50%;transform:translateX(-50%);font:9px monospace;opacity:.45;pointer-events:none;z-index:3">v8</div>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=8">
 <canvas id="c"></canvas>
 <div id="lbl"></div>
 <div class="top"><b class="brand">Cell<i>Verse</i></b>
 <div class="seg" id="md"><button data-m="3D" class="on">3D</button><button data-m="4D">4D</button><button data-m="5D">5D</button></div></div>
 <button class="ctbtn" id="ctb" aria-label="Cell types">◧</button>
+<button class="dvbtn" id="dvb" aria-label="Live mitosis / meiosis">&#10227; Division</button>
+<div class="dvp" id="dvp"><div class="dvt"><div class="dvk" id="dvk"><button data-k="mit" class="on">Mitosis</button><button data-k="mei">Meiosis</button></div><button id="dvplay" aria-label="Play / pause">&#9208;</button><button id="dvsp" aria-label="Speed">1&times;</button></div>
+<div class="dvr"><svg viewBox="0 0 64 64" width="58" height="58"><g transform="rotate(-90 32 32)"><circle cx="32" cy="32" r="26" fill="none" stroke="#2c4565" stroke-width="5"/><circle id="dvr1" cx="32" cy="32" r="26" fill="none" stroke="#7fd6c2" stroke-width="5" stroke-dasharray="0 164"/><circle id="dvr2" cx="32" cy="32" r="26" fill="none" stroke="#ff7ab0" stroke-width="5" stroke-dasharray="0 164"/></g><circle id="dvmark" cx="32" cy="6" r="4.5" fill="#fff" stroke="#0a1424" stroke-width="1.5"/><text id="dvct" x="32" y="37" text-anchor="middle" fill="#e8f0f8" font-size="14" font-weight="800" font-family="monospace">I</text></svg><div class="dvn" id="dvnm"></div></div>
+<div class="dvph" id="dvph"></div></div>
+
 <div class="ctd" id="ctd" hidden><div class="oh2"><button class="ar" id="ctl" aria-label="Pichla cell">‹</button><span>CELL TYPES</span><button class="ar" id="ctn" aria-label="Agla cell">›</button></div><div class="ctr" id="ctr"></div></div>
 <div class="side" id="sd">
 <button id="ct">Cut</button>
@@ -49,33 +54,37 @@ var d=document.getElementById('errb');if(!d){d=document.createElement('div');d.i
 <tr><td>Examples</td><td>E. coli, Bacillus, cyanobacteria, archaea</td><td>Animals, plants, fungi, protists</td></tr></table></div></div>
 <div class="ov" id="ls"><div class="oh"><span id="cnt">0/0 yaad</span><button id="lx">Band karo</button></div><div class="ob" id="lb"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/01-setup.js?v=7"></script>
-<script src="js/02-eukaryote.js?v=7"></script>
-<script src="js/03-prokaryote.js?v=7"></script>
-<script src="js/04-detail-viewer.js?v=7"></script>
-<script src="js/05-app.js?v=7"></script>
-<script src="js/06-cell-types.js?v=7"></script>
+<script src="js/01-setup.js?v=8"></script>
+<script src="js/02-eukaryote.js?v=8"></script>
+<script src="js/03-prokaryote.js?v=8"></script>
+<script src="js/04-detail-viewer.js?v=8"></script>
+<script src="js/05-app.js?v=8"></script>
+<script src="js/06-cell-types.js?v=8"></script>
 <!-- ===== CELL MODELS (06-cell-types.js ke baad, 07-start.js se pehle). Naya cell: model + detail + info 3 line yahan jodo ===== -->
-<script src="js/models/kit.js?v=7"></script>
-<script src="js/models/neuron.js?v=7"></script>
-<script src="js/models/neuron-detail.js?v=7"></script>
-<script src="js/models/sperm.js?v=7"></script>
-<script src="js/models/sperm-detail.js?v=7"></script>
-<script src="js/models/sperm-info.js?v=7"></script>
-<script src="js/models/plant.js?v=7"></script>
-<script src="js/models/plant-detail.js?v=7"></script>
-<script src="js/models/plant-info.js?v=7"></script>
-<script src="js/models/yeast.js?v=7"></script>
-<script src="js/models/yeast-detail.js?v=7"></script>
-<script src="js/models/yeast-info.js?v=7"></script>
-<script src="js/models/rbc.js?v=7"></script>
-<script src="js/models/rbc-detail.js?v=7"></script>
-<script src="js/models/rbc-info.js?v=7"></script>
-<script src="js/models/muscle.js?v=7"></script>
-<script src="js/models/muscle-detail.js?v=7"></script>
-<script src="js/models/muscle-info.js?v=7"></script>
-<script src="js/models/egg.js?v=7"></script>
-<script src="js/models/egg-detail.js?v=7"></script>
-<script src="js/models/egg-info.js?v=7"></script>
-<script src="js/07-start.js?v=7"></script>
+<script src="js/models/kit.js?v=8"></script>
+<script src="js/models/neuron.js?v=8"></script>
+<script src="js/models/neuron-detail.js?v=8"></script>
+<script src="js/models/sperm.js?v=8"></script>
+<script src="js/models/sperm-detail.js?v=8"></script>
+<script src="js/models/sperm-info.js?v=8"></script>
+<script src="js/models/plant.js?v=8"></script>
+<script src="js/models/plant-detail.js?v=8"></script>
+<script src="js/models/plant-info.js?v=8"></script>
+<script src="js/models/yeast.js?v=8"></script>
+<script src="js/models/yeast-detail.js?v=8"></script>
+<script src="js/models/yeast-info.js?v=8"></script>
+<script src="js/models/rbc.js?v=8"></script>
+<script src="js/models/rbc-detail.js?v=8"></script>
+<script src="js/models/rbc-info.js?v=8"></script>
+<script src="js/models/muscle.js?v=8"></script>
+<script src="js/models/muscle-detail.js?v=8"></script>
+<script src="js/models/muscle-info.js?v=8"></script>
+<script src="js/models/egg.js?v=8"></script>
+<script src="js/models/egg-detail.js?v=8"></script>
+<script src="js/models/egg-info.js?v=8"></script>
+<script src="js/models/division.js?v=8"></script>
+<script src="js/models/division-detail.js?v=8"></script>
+<script src="js/models/division-info.js?v=8"></script>
+<script src="js/models/division-ui.js?v=8"></script>
+<script src="js/07-start.js?v=8"></script>
 </body></html>
