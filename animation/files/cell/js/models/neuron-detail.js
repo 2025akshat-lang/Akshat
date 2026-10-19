@@ -3,6 +3,7 @@
    Keys: n_soma n_dend n_spine n_hill n_axon n_myelin n_node n_syn  (+ nuc, er, golgi, mit, lyso, rib jo core viewer mein hain)
    Cut button (oopar-right) ON = aadha kata hua dikhta hai, OFF = poora. */
 (() => {
+if (typeof registerDetail === 'undefined') throw new Error('04-detail-viewer.js purana hai (registerDetail nahi mila): naya 04-detail-viewer.js upload karo');
 const PI = Math.PI, COL = 0xb58cff, AXC = 0xc9b2ff, MY = 0xf2e6a0;
 const rr = (a, b) => a + (b - a) * rnd();
 const dots = (A, P, n, fn, col, r, op, cut) => { const pts = []; for (let i = 0; i < n; i++) pts.push(fn(i)); return A.inst(sp(r, 6, 5), col, pts, P, op == null ? .95 : op, null, cut); };
@@ -38,6 +39,7 @@ registerDetail('n_soma', A => {
   A.flow([[-1.5, 1.2, -.4], [-.6, .4, -.5], [.6, .1, -.5], [2.0, 0, -.1], [3.6, 0, 0]], 0xffe04a, 6, .09, .05);
   A.lab('Nucleus', [-.1, 1.2, -.2]); A.lab('Nucleolus', [.05, -.35, -.45], '#6a5ab8'); A.lab('Nissl bodies (RER)', [-1.5, 1.7, -.6], '#4aa3e8'); A.lab('Golgi', [1.0, 1.55, -.5], '#f0a050'); A.lab('Mitochondrion', [-.9, -.75, -1.4], '#f0735f'); A.lab('Axon hillock', [2.6, .95, 0], '#ff8fb0'); A.lab('Dendrite', [-3.2, 2.5, 0], '#b58cff'); A.lab('Signal soma se axon', [1.6, -1.0, -.1], '#ffe04a');
   A.go('Nucleus tak zoom ▸', 'nuc');
+  A.go('Network (7,000 synapses) ▸', 'n_net');
 });
 
 /* ============ DENDRITE ============ */
@@ -214,6 +216,7 @@ registerDetail('n_syn', A => {
   A.inst(new T.CylinderGeometry(.07, .07, .25, 8), 0xffd36a, [...Array(9)].map((_, i) => [-1.1 + i * .27, -.62 - Math.abs(i - 4) * .02, -rr(.05, .45)]), PP, .95, null, 1);
   A.lab('Axon terminal', [-2.6, 3.1, 0], '#ff7aa8'); A.lab('Synaptic vesicles', [-.1, 2.9, 0], '#7fe8ff'); A.lab('Docked + SNARE', [-1.9, .75, 0], '#7fe8ff'); A.lab('Ca2+ channels', [1.5, .1, 0], '#ffd36a'); A.lab('Ca2+ andar', [-1.2, 1.05, 0], '#ffee00'); A.lab('Synaptic cleft', [2.3, -.25, 0], '#ffe14d'); A.lab('Neurotransmitter', [-2.0, -.25, 0], '#ffe14d'); A.lab('Receptors', [-.1, -1.5, 0], '#ffd36a'); A.lab('Postsynaptic', [2.2, -1.5, 0], '#4fc3b8'); A.lab('Mitochondrion', [1.4, 2.9, 0], '#f0735f'); A.lab('Endocytosis', [2.3, .55, 0], '#b0b0ff');
   A.go('Postsynaptic spine ▸', 'n_spine');
+  A.go('Network (7,000 synapses) ▸', 'n_net');
 });
 
 /* ============ COMPARE + TRACKER + LAYERS ============ */
@@ -254,14 +257,22 @@ registerCellInfo('neuron', {
     TB(['Type', 'Kaam', 'Shape'], [
       ['Sensory (afferent)', 'Receptor se CNS tak', 'Pseudounipolar'],
       ['Motor (efferent)', 'CNS se muscle/gland tak', 'Multipolar'],
-      ['Interneuron', 'CNS ke andar jodna', 'Multipolar, chhota axon']]) },
+      ['Interneuron', 'CNS ke andar jodna', 'Multipolar, chhota axon']]) +
+    '<h3 style="margin:18px 0 4px;color:#f2c35a">5. Dimaag ke aankde</h3>' +
+    TB(['Cheez', 'Sankhya', 'Matlab'], [
+      ['Neurons', '~ 86 arab', 'Poore dimaag mein'],
+      ['Glial cells', '~ 85 arab', 'Sahara dene wale cells'],
+      ['Synapses / neuron', '~ 7,000 (average)', 'Purkinje cell par ~ 2 lakh'],
+      ['Kul synapses', '~ 10^14', 'Milky Way ke taaron se bhi zyada'],
+      ['Cleft', '20-30 nm', 'Neurotransmitter ki doori']]) },
   steps: [
     { k: ['spine', 'dend'], t: '1. Dendritic spines par neurotransmitter receptors se judta hai: chhota EPSP (graded potential) banta hai' },
     { k: ['dend', 'soma', 'nuc'], t: '2. Dendrite se aaye EPSP/IPSP soma par jama hote hain (summation)' },
     { k: ['hill'], t: '3. Axon hillock par voltage threshold (~ -55 mV) cross hua: Na+ channels khule, action potential shuru' },
     { k: ['axon', 'myelin', 'node'], t: '4. AP axon par aage badhta hai; myelin insulate karta hai, nodes of Ranvier par signal kudta hai (saltatory)' },
     { k: ['term'], t: '5. Terminal mein Ca2+ aaya, synaptic vesicles membrane se mile aur neurotransmitter cleft mein chhoda' },
-    { k: ['post'], t: '6. Neurotransmitter postsynaptic receptors se juda: agle neuron mein naya signal shuru' }
+    { k: ['post'], t: '6. Neurotransmitter postsynaptic receptors se juda: agle neuron mein naya signal shuru' },
+    { k: ['term', 'post', 'axon'], t: '7. Ek neuron ~ 7,000 synapses banata hai; dimaag ke ~ 86 arab neurons milkar ~ 10^14 connections ka jaal (Network detail dekho)' }
   ],
   tracker: [
     ['Soma', 'Cell body: nucleus aur organelles'], ['Nucleus + nucleolus', 'DNA; rRNA/ribosome assembly'], ['Nissl bodies', 'Rough ER + ribosome ke dher'],
@@ -270,7 +281,7 @@ registerCellInfo('neuron', {
     ['Kinesin / dynein', 'Anterograde / retrograde transport'], ['Myelin sheath', 'Schwann cell ke lipid layers: insulation'], ['Schwann cell', 'PNS ka myelin banane wala cell'],
     ['Node of Ranvier', 'Na+ channels ka jhund'], ['Saltatory conduction', 'Node se node kudna'], ['Axon terminal', 'Bouton mein vesicles'], ['Synaptic vesicle', 'Neurotransmitter bhare'],
     ['SNARE proteins', 'Vesicle fusion machinery'], ['Ca2+ channel', 'AP aane par khulta hai'], ['Synaptic cleft', '~20 nm ki khaai'], ['AMPA / NMDA receptor', 'Glutamate receptors; LTP'],
-    ['PSD', 'Postsynaptic density scaffold'], ['Resting potential', '~ -70 mV (Na+/K+ pump)'], ['Action potential', 'All-or-none spike']
+    ['PSD', 'Postsynaptic density scaffold'], ['Axon collaterals', 'Axon ki shakhayen: divergence'], ['~ 7,000 synapses', 'Ek neuron ke average connections'], ['86 billion neurons', 'Insaani dimaag mein'], ['Connectome', 'Dimaag ka poora connection map'], ['Synaptic plasticity', 'Synapse majboot/kamzor: seekhna'], ['Synaptic pruning', 'Bachpan mein extra synapse hatna'], ['Resting potential', '~ -70 mV (Na+/K+ pump)'], ['Action potential', 'All-or-none spike']
   ],
   layers: [
     { id: 'soma', name: 'Soma + organelles', color: '#b58cff', parts: ['soma', 'nuc', 'mito', 'nissl', 'golgi', 'lyso', 'rib'] },
