@@ -31,7 +31,8 @@ const PH = {
 };
 
 const D = window.CVDiv = {
-  PH,
+  PH, META: {},
+  isLive(id) { return id === 'mitosis' || id === 'meiosis' || id === 'cancer' || Object.keys(this.META).some(k => this.META[k].id === id); },
   kind: 'mit', ph: 0, p: 0, playing: true, hold: false, speed: 1,
   list() { return this.PH[this.kind]; },
   frac() { const L = this.list(); let t = 0, s = 0; L.forEach((x, i) => { t += x.d; if (i < this.ph) s += x.d; }); return (s + this.p * L[this.ph].d) / t; },
