@@ -107,6 +107,7 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
     <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></div>
   <div class="row" id="themes"><button id="tdn" aria-label="Smaller text">A&minus;</button><button id="tup" aria-label="Bigger text">A+</button></div>
   <div class="row"><button id="hi" aria-pressed="false">&#2361;&#2367;&#2306;&#2342;&#2368;</button><button id="fs">Fullscreen</button></div>
+  <div class="row"><button id="sPrev">&#9664; Slide</button><button id="sNew" class="go">&#65291; New slide</button><button id="sNext">Slide &#9654;</button></div>
   <div class="row"><button id="prev">Back</button><button id="next" class="go">Next line</button></div>
   <div class="row"><button id="auto">Auto play</button><button id="reset">Restart</button></div>
   <span id="count"></span>
@@ -242,8 +243,8 @@ function makeLine(s){
 }
 async function show(s){
   if(!s)return;
-  if((s.k==='obj'||s.k==='embed')&&window.ToolsAPI){ToolsAPI.step(s);await sleep(300);return}
-  const el=makeLine(s),fx=P[style].fx,d=700/speed();
+  if((s.k==='obj'||s.k==='embed')&&window.ToolsAPI){items.push(ToolsAPI.step(s));await sleep(300);return}
+  const el=makeLine(s),fx=P[style].fx,d=700/speed();items.push(el);
   if(el._media)await el._media;
   const bt=el.offsetTop;
   if(bt+el.offsetHeight>board.scrollTop+board.clientHeight*.6){board.scrollTop=bt-board.clientHeight*.3;await sleep(60)}
@@ -259,24 +260,27 @@ function renderInstant(n){board.innerHTML='';for(let i=0;i<n;i++){const s=lesson
 /* ---------- controls ---------- */
 function ui(){
   const n=lesson?lesson.steps.length:0;
-  $('#count').textContent=n?`${idx} / ${n}`:'';
+  $('#count').textContent=n?(SL.length>1?`Slide ${cs+1}/${SL.length} · `:'')+`${idx} / ${n}`:'';
+  const sp=$('#sPrev'),sn=$('#sNext');if(sp){sp.disabled=cs<=0;sn.disabled=cs>=SL.length-1}
   $('#next').textContent=idx>=n&&n?'Finished':'Next line';
   $('#auto').textContent=auto?'Pause':'Auto play';
 }
 async function next(){
   if(busy||!lesson||idx>=lesson.steps.length){auto=false;ui();return}
+  if(cs!==SL.length-1)goSlide(SL.length-1);
   busy=true;const my=token;toast('');
   try{await show(lesson.steps[idx++])}catch(e){console.error(e)}
   busy=false;ui();
   if(auto&&my===token){await sleep(1000/speed());if(auto&&my===token)next()}
   else if(lesson&&idx>=lesson.steps.length){auto=false;ui()}
 }
+let SL=[null],cs=0,items=[];
 function reset(n=0){
-  token++;busy=false;idx=n;closeTb();window.inkClear&&inkClear();
+  token++;busy=false;idx=n;closeTb();window.inkClear&&inkClear();SL=[null];cs=0;items=[];
   board.innerHTML='';board.scrollTop=0;
   if(lesson&&n)renderInstant(n);
   fit();cur={x:wrap.clientWidth*.3,y:wrap.clientHeight-60};place(cur.x,cur.y);
-  if(lesson&&!n)toast('Board par tap karo');
+  if(lesson)toast('');
   ui();
 }
 function load(id){
@@ -293,6 +297,20 @@ function load(id){
   document.head.appendChild(s);
 }
 
+/* ---------- slides ---------- */
+function saveCur(){SL[cs]={nodes:[...board.childNodes],items,scroll:board.scrollTop,tools:window.ToolsAPI?ToolsAPI.save():null};board.replaceChildren()}
+function loadSl(i){const t=SL[i];cs=i;items=t.items;board.replaceChildren(...t.nodes);board.scrollTop=t.scroll;if(window.ToolsAPI)ToolsAPI.load(t.tools);closeTb();ui()}
+function goSlide(i){if(busy||i<0||i>=SL.length||i===cs)return;saveCur();loadSl(i)}
+function slideStep(d){goSlide(cs+d)}
+function newSlide(){if(busy||!lesson)return;saveCur();SL.push(null);cs=SL.length-1;items=[];board.scrollTop=0;if(window.ToolsAPI)ToolsAPI.load(null);closeTb();ui()}
+function back(){
+  if(!lesson||busy)return;
+  if(cs!==SL.length-1){goSlide(SL.length-1);return}
+  const e=items.pop();
+  if(e){if(e.classList.contains('obj'))ToolsAPI.remove(e);else e.remove();idx=Math.max(0,idx-1);ui()}
+  else if(cs>0){SL.pop();loadSl(SL.length-1)}
+}
+
 /* ---------- menu wiring ---------- */
 const setOpen=o=>{document.body.classList.toggle('open',o);$('#fab').setAttribute('aria-expanded',o)};
 $('#fab').onclick=()=>setOpen(!document.body.classList.contains('open'));
@@ -302,7 +320,10 @@ $('#sheet').addEventListener('change',()=>setOpen(false));
 $('#lesson').onchange=e=>load(e.target.value);
 $('#style').onchange=e=>{style=e.target.value;store.set('style',style);setStyle()};
 $('#next').onclick=()=>{auto=false;next()};
-$('#prev').onclick=()=>{auto=false;if(lesson&&idx>0)reset(idx-1)};
+$('#prev').onclick=()=>{auto=false;back()};
+$('#sNew').onclick=()=>{auto=false;newSlide()};
+$('#sPrev').onclick=()=>goSlide(cs-1);
+$('#sNext').onclick=()=>goSlide(cs+1);
 $('#reset').onclick=()=>{auto=false;reset()};
 $('#auto').onclick=()=>{auto=!auto;ui();if(auto)next()};
 $('#hi').onclick=()=>setHi(!hi);
