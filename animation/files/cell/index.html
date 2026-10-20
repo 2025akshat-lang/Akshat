@@ -6,10 +6,10 @@
 addEventListener('error',function(e){var m=e.target&&e.target.src?'FILE NAHI MILI: '+e.target.src.split('/').slice(-2).join('/'):(e.message||'error')+' @'+String(e.filename||'').split('/').pop().split('?')[0]+':'+e.lineno;
 var d=document.getElementById('errb');if(!d){d=document.createElement('div');d.id='errb';d.style.cssText='position:fixed;left:8px;right:8px;top:64px;z-index:99;background:#7a1a1a;color:#fff;font:11px/1.35 monospace;padding:6px 8px;border-radius:8px;max-height:30vh;overflow:auto;white-space:pre-wrap';d.onclick=function(){d.remove()};document.body.appendChild(d)}d.textContent+=m+'\n'},true);
 </script>
-<div id="ver" style="position:fixed;top:12px;left:50%;transform:translateX(-50%);font:9px monospace;opacity:.45;pointer-events:none;z-index:3">v9</div>
+<div id="ver" style="position:fixed;top:12px;left:50%;transform:translateX(-50%);font:9px monospace;opacity:.45;pointer-events:none;z-index:3">v10</div>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/style.css?v=10">
 <canvas id="c"></canvas>
 <div id="lbl"></div>
 <div class="top"><b class="brand">Cell<i>Verse</i></b>
@@ -54,41 +54,43 @@ var d=document.getElementById('errb');if(!d){d=document.createElement('div');d.i
 <tr><td>Examples</td><td>E. coli, Bacillus, cyanobacteria, archaea</td><td>Animals, plants, fungi, protists</td></tr></table></div></div>
 <div class="ov" id="ls"><div class="oh"><span id="cnt">0/0 yaad</span><button id="lx">Band karo</button></div><div class="ob" id="lb"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/01-setup.js?v=9"></script>
-<script src="js/02-eukaryote.js?v=9"></script>
-<script src="js/03-prokaryote.js?v=9"></script>
-<script src="js/04-detail-viewer.js?v=9"></script>
-<script src="js/05-app.js?v=9"></script>
-<script src="js/06-cell-types.js?v=9"></script>
+<script src="js/01-setup.js?v=10"></script>
+<script src="js/02-eukaryote.js?v=10"></script>
+<script src="js/03-prokaryote.js?v=10"></script>
+<script src="js/04-detail-viewer.js?v=10"></script>
+<script src="js/05-app.js?v=10"></script>
+<script src="js/06-cell-types.js?v=10"></script>
 <!-- ===== CELL MODELS (06-cell-types.js ke baad, 07-start.js se pehle). Naya cell: model + detail + info 3 line yahan jodo ===== -->
-<script src="js/models/kit.js?v=9"></script>
-<script src="js/models/neuron.js?v=9"></script>
-<script src="js/models/neuron-detail.js?v=9"></script>
-<script src="js/models/neuron-net.js?v=9"></script>
-<script src="js/models/sperm.js?v=9"></script>
-<script src="js/models/sperm-detail.js?v=9"></script>
-<script src="js/models/sperm-info.js?v=9"></script>
-<script src="js/models/plant.js?v=9"></script>
-<script src="js/models/plant-detail.js?v=9"></script>
-<script src="js/models/plant-info.js?v=9"></script>
-<script src="js/models/yeast.js?v=9"></script>
-<script src="js/models/yeast-detail.js?v=9"></script>
-<script src="js/models/yeast-info.js?v=9"></script>
-<script src="js/models/rbc.js?v=9"></script>
-<script src="js/models/rbc-detail.js?v=9"></script>
-<script src="js/models/rbc-info.js?v=9"></script>
-<script src="js/models/muscle.js?v=9"></script>
-<script src="js/models/muscle-detail.js?v=9"></script>
-<script src="js/models/muscle-info.js?v=9"></script>
-<script src="js/models/egg.js?v=9"></script>
-<script src="js/models/egg-detail.js?v=9"></script>
-<script src="js/models/egg-info.js?v=9"></script>
-<script src="js/models/division.js?v=9"></script>
-<script src="js/models/division-detail.js?v=9"></script>
-<script src="js/models/division-info.js?v=9"></script>
-<script src="js/models/cancer.js?v=9"></script>
-<script src="js/models/cancer-detail.js?v=9"></script>
-<script src="js/models/cancer-info.js?v=9"></script>
-<script src="js/models/division-ui.js?v=9"></script>
-<script src="js/07-start.js?v=9"></script>
+<script src="js/models/kit.js?v=10"></script>
+<script src="js/models/neuron.js?v=10"></script>
+<script src="js/models/neuron-detail.js?v=10"></script>
+<script src="js/models/neuron-net.js?v=10"></script>
+<script src="js/models/sperm.js?v=10"></script>
+<script src="js/models/sperm-detail.js?v=10"></script>
+<script src="js/models/sperm-info.js?v=10"></script>
+<script src="js/models/plant.js?v=10"></script>
+<script src="js/models/plant-detail.js?v=10"></script>
+<script src="js/models/plant-info.js?v=10"></script>
+<script src="js/models/yeast.js?v=10"></script>
+<script src="js/models/yeast-detail.js?v=10"></script>
+<script src="js/models/yeast-info.js?v=10"></script>
+<script src="js/models/rbc.js?v=10"></script>
+<script src="js/models/rbc-detail.js?v=10"></script>
+<script src="js/models/rbc-info.js?v=10"></script>
+<script src="js/models/muscle.js?v=10"></script>
+<script src="js/models/muscle-detail.js?v=10"></script>
+<script src="js/models/muscle-info.js?v=10"></script>
+<script src="js/models/egg.js?v=10"></script>
+<script src="js/models/egg-detail.js?v=10"></script>
+<script src="js/models/egg-info.js?v=10"></script>
+<script src="js/models/division.js?v=10"></script>
+<script src="js/models/division-detail.js?v=10"></script>
+<script src="js/models/division-info.js?v=10"></script>
+<script src="js/models/cancer.js?v=10"></script>
+<script src="js/models/cancer-detail.js?v=10"></script>
+<script src="js/models/cancer-info.js?v=10"></script>
+<script src="js/models/micro.js?v=10"></script>
+<script src="js/models/micro-info.js?v=10"></script>
+<script src="js/models/division-ui.js?v=10"></script>
+<script src="js/07-start.js?v=10"></script>
 </body></html>
