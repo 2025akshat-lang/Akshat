@@ -75,5 +75,47 @@ registerCellInfo('plantflow', { name: 'Plant water flow', fit,
     { ph: 4, k: ['phl', 'leaf'], t: '5. Phloem: sugar neeche root/fal tak (source se sink)' }],
   tracker: [['Osmosis', 'Kam se zyada concentration ki taraf pani'], ['Active transport', 'ATP se ion pumping'], ['Root hair', 'Surface area badhati'], ['Apoplast', 'Cell wall ka raasta'], ['Symplast', 'Cytoplasm ka raasta'], ['Casparian strip', 'Endodermis ki waterproof patti'], ['Xylem', 'Pani ki nali'], ['Phloem', 'Sugar ki nali'], ['Transpiration', 'Patte se bhaap'], ['Cohesion-tension', 'Pani ke molecules ka jura rehna'], ['Stomata', 'Patte ke ched'], ['Guard cell', 'Stomata kholne wala'], ['Translocation', 'Phloem mein sugar ka jaana'], ['Plasmodesmata', 'Cells ke beech cytoplasm channel']],
   layers: [L('soil', 'Soil', '#8a5a3a', ['soil']), L('wat', 'Pani', '#4ab8f0', ['wat']), L('min', 'Minerals', '#e8d84a', ['min']), L('rh', 'Root hair', '#c8e8b8', ['rh']), L('cor', 'Cortex', '#b8e0a0', ['cor']), L('xyl', 'Xylem', '#5a9ae8', ['xyl']), L('phl', 'Phloem', '#e8b84a', ['phl']), L('leaf', 'Leaf cell', '#6ad07a', ['leaf', 'stm'])] });
+
+registerCellInfo('dnapack', { name: 'DNA packaging', fit,
+  compare: { title: 'DNA packaging: tulna', html: H('1. Packaging ke levels') + TB(['Level', 'Chaudai', 'Kya'], [
+    ['DNA double helix', '2 nm', '0.34 nm per base pair'], ['Nucleosome', '~ 11 nm', 'DNA + 8 histone, ~ 147 bp'], ['Beads-on-string', '11 nm', 'Nucleosome + linker DNA'], ['Chromatin fibre', '30 nm', 'Solenoid / zig-zag'], ['Loops + scaffold', '300 nm', 'Condensin, topo II'], ['Metaphase chromosome', '~ 1400 nm', 'Sabse compact']]) +
+    H('2. Kitna DNA') + TB(['Cheez', 'Maap'], [['Ek cell ka DNA', '~ 2 m (6 arab bp)'], ['Nucleus', '~ 6 um'], ['Compaction', '~ 10,000 guna'], ['Chromosomes', '46 (23 jode)'], ['Sare cells ka DNA', 'Sooraj tak ~ 600 baar aana-jaana']]) +
+    H('3. Euchromatin vs Heterochromatin') + TB(['Feature', 'Euchromatin', 'Heterochromatin'], [['Packing', 'Dhili', 'Kasi'], ['Gene', 'Active', 'Band'], ['Rang (EM)', 'Halka', 'Gehra']]) },
+  steps: [
+    { ph: 0, k: ['dna'], t: '1. DNA double helix: 2 nm chaudi, har base pair 0.34 nm: kul ~ 2 m lamba' },
+    { ph: 1, k: ['nsm'], t: '2. Nucleosome: negative DNA positive histone octamer (8 histone) par ~ 1.65 baar lipta' },
+    { ph: 2, k: ['bds'], t: '3. Beads-on-string: nucleosome dhaage par dohrate, ~ 6-7 guna chhota' },
+    { ph: 3, k: ['fib'], t: '4. Chromatin fibre: moti kundli (30 nm), H1 histone se' },
+    { ph: 4, k: ['chr'], t: '5. Chromosome: loops + scaffold se metaphase ka X, ~ 10,000 guna compact' },
+    { ph: 5, k: ['nuc', 'chr'], t: '6. Nucleus: ~ 6 um mein 46 chromosomes: ~ 2 m DNA samaya hua' }],
+  tracker: [['DNA double helix', 'Do strand ki kundli'], ['Base pair', 'A-T, G-C jodi'], ['Histone', 'DNA lapetne wale + protein'], ['Histone octamer', '8 histone ka gola'], ['Nucleosome', 'DNA + octamer (~ 147 bp)'], ['Linker DNA', 'Nucleosomes ke beech ka DNA'], ['H1 histone', 'Fibre ko kasne wala'], ['Chromatin', 'DNA + protein'], ['Euchromatin', 'Dhila, active'], ['Heterochromatin', 'Kasa, band'], ['Condensin', 'Chromosome condense kare'], ['Chromosome', 'Compact DNA ki ikai'], ['Centromere', 'Do chromatid ka jod'], ['Telomere', 'Chromosome ke sire'], ['Histone code', 'Acetyl/methyl se gene control'], ['Nuclear pore', 'Nucleus ka darwaza']],
+  layers: [L('dna', 'DNA helix', '#f2a02a', ['dna']), L('nsm', 'Nucleosome', '#8a5ad8', ['nsm']), L('bds', 'Beads-on-string', '#e0508a', ['bds']), L('fib', 'Chromatin fibre', '#6a4ac8', ['fib']), L('chr', 'Chromosome', '#9a82f0', ['chr']), L('nuc', 'Nucleus', '#2a7a9a', ['nuc'])] });
+
+registerCellInfo('virus', { name: 'Virus infection', fit,
+  compare: { title: 'Virus: tulna', html: H('1. Virus ka lifecycle') + TB(['Step', 'Kya hota hai'], [
+    ['Attachment', 'Spike receptor se judta'], ['Entry', 'Endocytosis ya membrane fusion'], ['Uncoating', 'Capsid khulta, genome chhootta'], ['Replication', 'Genome ki copies'], ['Translation', 'Host ribosome se viral protein'], ['Assembly', 'Naye virion jud te'], ['Release', 'Budding ya lysis']]) +
+    H('2. Virus vs Bacteria') + TB(['Feature', 'Virus', 'Bacteria'], [['Size', '20-300 nm', '1-5 um'], ['Cell', 'Nahi (acellular)', 'Haan (prokaryote)'], ['Copy', 'Host cell mein hi', 'Khud'], ['Ilaaj', 'Antiviral, vaccine', 'Antibiotic']]) +
+    H('3. Genome ke type') + TB(['Type', 'Example'], [['ssRNA (+)', 'SARS-CoV-2, polio'], ['ssRNA (-)', 'Influenza, rabies'], ['dsDNA', 'Herpes, smallpox'], ['Retrovirus (RNA->DNA)', 'HIV']]) },
+  steps: [
+    { ph: 0, k: ['vir', 'rec', 'cel'], t: '1. Attachment: virus ka spike cell ke receptor (jaise ACE2) se lock-and-key judta' },
+    { ph: 1, k: ['vir', 'end', 'rec'], t: '2. Entry: cell virus ko endocytosis se nigal leti hai (endosome)' },
+    { ph: 2, k: ['rna', 'end'], t: '3. Uncoating: capsid khulta, viral RNA cytoplasm mein' },
+    { ph: 3, k: ['rna', 'rib', 'new', 'nuc'], t: '4. Replication + assembly: host ribosome viral protein banate, RNA copies, naye virions jud te' },
+    { ph: 4, k: ['new', 'cel'], t: '5. Release: naye virus budding/lysis se bahar, agle cells ko infect' }],
+  tracker: [['Virion', 'Poora virus particle'], ['Capsid', 'Genome ka protein khol'], ['Envelope', 'Lipid parat (kuch virus mein)'], ['Spike (S) protein', 'Receptor se judne wala'], ['ACE2', 'SARS-CoV-2 ka receptor'], ['Tropism', 'Kaunsa cell/ang infect'], ['Endocytosis', 'Cell ka nigalna'], ['Membrane fusion', 'Envelope-membrane milna'], ['Uncoating', 'Capsid hatna'], ['RdRp', 'RNA se RNA banane wala enzyme'], ['Reverse transcriptase', 'RNA se DNA (HIV)'], ['Budding', 'Membrane lekar bahar nikalna'], ['Lysis', 'Cell phatna'], ['Mutation', 'Genome mein badlav'], ['Vaccine', 'Immune ko pehle sikhana']],
+  layers: [L('vir', 'Virus', '#e86a8a', ['vir']), L('rec', 'Receptors', '#4ad0f0', ['rec']), L('cel', 'Host cell', '#e8c8a0', ['cel']), L('end', 'Endosome', '#e8c8a0', ['end']), L('rna', 'Viral RNA', '#ffe04a', ['rna']), L('rib', 'Ribosomes', '#4ab8f0', ['rib']), L('new', 'Naye virus', '#e86a8a', ['new']), L('nuc', 'Nucleus', '#8a5ad8', ['nuc'])] });
+
+registerCellInfo('immune', { name: 'Immune fight / CAR-T', fit,
+  compare: { title: 'Immune: tulna', html: H('1. Immune ke do hisse') + TB(['Feature', 'Innate', 'Adaptive'], [['Speed', 'Minutes-ghante', 'Din (pehli baar)'], ['Specific', 'Nahi', 'Haan (antigen)'], ['Memory', 'Nahi', 'Haan'], ['Cells', 'Macrophage, NK, neutrophil', 'T cell, B cell']]) +
+    H('2. T cell ke type') + TB(['Cell', 'Kaam'], [['Cytotoxic (CD8)', 'Infected/cancer cell ko maarta'], ['Helper (CD4)', 'Dusre immune cells ko sanket'], ['Regulatory', 'Immune ko shaant rakhta'], ['Memory', 'Dobara hamle par tez jawab']]) +
+    H('3. CAR-T therapy') + TB(['Step', 'Kya'], [['1', 'Marij se T cells nikalte'], ['2', 'Lab mein CAR gene dalte'], ['3', 'Cells badhate'], ['4', 'Wapas khoon mein'], ['5', 'CAR cancer antigen se judkar maarta']]) },
+  steps: [
+    { ph: 0, k: ['tc', 'car'], t: '1. Scan: CAR-T cell cancer cell dhoondta aur surface par target (antigen) khojta' },
+    { ph: 1, k: ['tc', 'car', 'syn', 'can'], t: '2. Lock-on: CAR antigen se judta, hara immune synapse ring banta' },
+    { ph: 2, k: ['syn', 'gra', 'can'], t: '3. Kill signal: perforin chhed karta, granzyme andar jaakar caspase chalu karta' },
+    { ph: 3, k: ['can', 'nuc', 'blb'], t: '4. Apoptosis: cancer cell sikudta, blebs, DNA tootta (lock ke ~ 9 min baad)' },
+    { ph: 4, k: ['tc', 'blb'], t: '5. T cell agle target ki taraf; apoptotic bodies ko macrophage saaf karte' }],
+  tracker: [['CAR-T cell', 'Engineered killer T cell'], ['CAR', 'Chimeric antigen receptor'], ['Antigen', 'Target pehchan (jaise CD19)'], ['TCR', 'T cell receptor'], ['Immune synapse', 'T cell-target ka jod'], ['Perforin', 'Membrane mein chhed'], ['Granzyme', 'Caspase chalane wala enzyme'], ['Caspase', 'Apoptosis ke enzymes'], ['Apoptosis', 'Programmed cell death'], ['Necrosis', 'Sujan wali maut'], ['Cytotoxic T cell (CD8)', 'Killer T cell'], ['MHC-I', 'Cell ka ID card'], ['Cytokine', 'Immune ke sanket'], ['Macrophage', 'Kachra khane wala'], ['Immunotherapy', 'Immune se ilaaj']],
+  layers: [L('tc', 'T cell', '#2ab8e8', ['tc']), L('car', 'CAR receptors', '#ffe04a', ['car']), L('syn', 'Immune synapse', '#2ad050', ['syn']), L('gra', 'Granules', '#ffe04a', ['gra']), L('can', 'Cancer cell', '#8a5ad8', ['can']), L('nuc', 'Nucleus', '#5a3ab8', ['nuc']), L('blb', 'Blebs', '#8a5ad8', ['blb'])] });
 })();
 /* END OF FILE micro-info.js */
