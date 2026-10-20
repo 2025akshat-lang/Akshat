@@ -41,6 +41,8 @@ body.pen #penbar{display:flex;flex-direction:column;right:auto;left:50%;transfor
 .csw[aria-pressed=true]{background:var(--panel);box-shadow:0 0 0 3px var(--cy)}
 #penbar [data-t][aria-pressed=true],#penbar [data-z][aria-pressed=true]{box-shadow:0 0 0 3px var(--cy)}
 #penbar select{min-height:44px}
+body.pen.penhide #penbar{display:none}
+#penopt{display:none;top:66px;right:66px}body.pen.penhide #penopt{display:block}
 @media (prefers-reduced-motion:reduce){.obj{transition:none}}`;
 document.head.appendChild(st);
 
@@ -208,10 +210,10 @@ function stamp(a){
 /* ---------- steps from lessons ---------- */
 function fromStep(s){
   const W=wrapEl.clientWidth,H=wrapEl.clientHeight,m=Math.min(W,H);
-  if(s.k==='embed'){if(s.src)mk({k:'emb',embed:hostURL(s.src),w:W*.62,h:H*.55,x:W*.19,y:H*.2});return}
+  if(s.k==='embed'){return s.src?mk({k:'emb',embed:hostURL(s.src),w:W*.62,h:H*.55,x:W*.19,y:H*.2}):null}
   let ar=1;const vb=s.svg&&s.svg.match(/viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/);
   if(vb)ar=vb[2]/vb[1];
-  mk({k:'obj',svg:s.svg,src:s.src,alt:s.alt,w:(s.w||.3)*m,ar,x:s.x!=null?s.x*W:undefined,y:s.y!=null?s.y*H:undefined,anim:s.anim,keep:1});
+  return mk({k:'obj',svg:s.svg,src:s.src,alt:s.alt,w:(s.w||.3)*m,ar,x:s.x!=null?s.x*W:undefined,y:s.y!=null?s.y*H:undefined,anim:s.anim,keep:1});
 }
 
 /* ---------- tools sheet ---------- */
@@ -261,10 +263,12 @@ const PAL=['auto','#e53935','#1e88e5','#43a047','#fb8c00','#8e24aa','#fdd835','#
 const SZ=[.0028,.0055,.009,.015,.025],KS=[1,.55,.3,.15];
 let tool='pen',sz=2,col='auto',stab=2,snap=true,dash=false,guard=true,strokes=[],hist=[],live=null,IW=1,IH=1;
 const pb=document.createElement('div');pb.id='penbar';
-pb.innerHTML=`<div class="pr"><button data-t="pen" aria-pressed="true" aria-label="Pen">&#9999;&#65039;</button><button data-t="hl" aria-pressed="false" aria-label="Highlighter">&#128397;</button><button data-t="line" aria-pressed="false" aria-label="Straight line">&#9585;</button><button data-t="erase" aria-pressed="false" aria-label="Eraser">&#9003;</button><span class="gap"></span>${[4,8,12,18,26].map((n,i)=>`<button data-z="${i}" aria-pressed="${i===2}" aria-label="Thickness ${i+1}"><i style="display:inline-block;border-radius:50%;background:currentColor;width:${n}px;height:${n}px"></i></button>`).join('')}<button data-p="min" aria-label="More options">&#9662;</button></div>
+pb.innerHTML=`<div class="pr"><button data-t="pen" aria-pressed="true" aria-label="Pen">&#9999;&#65039;</button><button data-t="hl" aria-pressed="false" aria-label="Highlighter">&#128397;</button><button data-t="line" aria-pressed="false" aria-label="Straight line">&#9585;</button><button data-t="erase" aria-pressed="false" aria-label="Eraser">&#9003;</button><span class="gap"></span><button data-p="min" aria-label="More options" id="pmin">&#9662;</button></div>
+<div class="pr">${[4,8,12,18,26].map((n,i)=>`<button data-z="${i}" aria-pressed="${i===2}" aria-label="Thickness ${i+1}" style="flex:1"><i style="display:inline-block;border-radius:50%;background:currentColor;width:${n}px;height:${n}px"></i></button>`).join('')}</div>
 <div class="pr more">${PAL.map((c,i)=>`<button class="csw" data-c="${c}" aria-pressed="${i===0}" aria-label="Colour ${i+1}" style="color:${c==='auto'?'var(--ink)':c}">&#9679;</button>`).join('')}</div>
 <div class="pr more"><select id="stab" aria-label="Stability"><option value="0">Stability: Off</option><option value="1">Stability: Low</option><option value="2" selected>Stability: High</option><option value="3">Stability: Max</option></select><button data-p="snap" aria-pressed="true">Auto-shape</button><button data-p="dash" aria-pressed="false">Dash</button><button data-p="guard" aria-pressed="true">Palm guard</button></div>
-<div class="pr"><button data-p="undo">&#8630; Undo</button><button data-p="clear">&#128465; Clear</button><span class="gap"></span><button data-p="done" class="go">Done</button></div>`;
+<div class="pr more"><button data-p="sprev" aria-label="Previous slide">&#9664;</button><button data-p="snew">&#65291; New slide</button><button data-p="snext" aria-label="Next slide">&#9654;</button></div>
+<div class="pr"><button data-p="undo">&#8630; Undo</button><button data-p="clear">&#128465; Clear</button><span class="gap"></span><button data-p="done" class="go">Hide</button><button data-p="off">&#10005; Pen off</button></div>`;
 document.body.appendChild(pb);
 const colr=c=>c==='auto'?(getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#fff'):c;
 function sizeInk(){const d=devicePixelRatio||1;IW=wrapEl.clientWidth;IH=wrapEl.clientHeight;ink.width=IW*d;ink.height=IH*d;cx.setTransform(d,0,0,d,0,0);redrawInk()}
@@ -325,11 +329,13 @@ function hit(s,x,y,r){
   return false;
 }
 const snapH=()=>{hist.push(JSON.stringify(strokes));if(hist.length>40)hist.shift()};
+const penopt=mkBtn('fab','&#9881;','Pen options');penopt.id='penopt';document.body.appendChild(penopt);
 function setPen(on){
-  B.classList.toggle('pen',on);penfab.setAttribute('aria-pressed',on);
+  B.classList.toggle('pen',on);B.classList.remove('penhide');penfab.setAttribute('aria-pressed',on);
   if(on){B.classList.remove('open','tools');closeText();pick(null)}
 }
 penfab.onclick=()=>setPen(!B.classList.contains('pen'));
+penopt.onclick=()=>B.classList.remove('penhide');
 const mark=(sel,fn)=>pb.querySelectorAll(sel).forEach(b=>b.setAttribute('aria-pressed',fn(b)));
 pb.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
@@ -340,8 +346,12 @@ pb.addEventListener('click',e=>{
     const p=b.dataset.p;
     if(p==='undo'){if(hist.length){strokes=JSON.parse(hist.pop());redrawInk()}}
     else if(p==='clear'){snapH();strokes=[];redrawInk()}
-    else if(p==='done')setPen(false);
-    else if(p==='min')pb.classList.toggle('min');
+    else if(p==='done')B.classList.add('penhide');
+    else if(p==='off')setPen(false);
+    else if(p==='snew')window.newSlide&&newSlide();
+    else if(p==='sprev')window.slideStep&&slideStep(-1);
+    else if(p==='snext')window.slideStep&&slideStep(1);
+    else if(p==='min'){pb.classList.toggle('min');b.innerHTML=pb.classList.contains('min')?'&#9652;':'&#9662;'}
     else if(p==='snap'){snap=!snap;b.setAttribute('aria-pressed',snap)}
     else if(p==='dash'){dash=!dash;b.setAttribute('aria-pressed',dash)}
     else if(p==='guard'){guard=!guard;b.setAttribute('aria-pressed',guard)}
@@ -388,6 +398,9 @@ ink.addEventListener('pointerup',endInk);ink.addEventListener('pointercancel',en
 /* ---------- hooks used by index.html ---------- */
 window.sizeInk=sizeInk;window.redrawInk=redrawInk;
 window.inkClear=()=>{strokes=[];hist=[];live=null;clearObjs();redrawInk()};
-window.ToolsAPI={step:fromStep};
+window.ToolsAPI={step:fromStep,
+  remove(el){el.remove();objs=objs.filter(x=>x!==el);if(prot===el)prot=null;if(selEl===el)selEl=null},
+  save(){const t={strokes:JSON.stringify(strokes),objs:objs.slice(),prot};objs.forEach(e=>e.remove());objs=[];prot=null;selEl=null;strokes=[];hist=[];live=null;redrawInk();return t},
+  load(t){strokes=t?JSON.parse(t.strokes):[];objs=t?t.objs:[];prot=t?t.prot:null;selEl=null;hist=[];objs.forEach(e=>{e.classList.remove('sel');layer.appendChild(e)});redrawInk()}};
 sizeInk();
 })();
