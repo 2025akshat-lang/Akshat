@@ -9,7 +9,7 @@
 :root{--bg:#0a0f3c;--panel:#141c5a;--ink:#f4f6ff;--mute:#9aa6e8;--cy:#4fd8ff;--rd:#ff5a5a;--yl:#ffd54a;--gr:#6cf29a;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,sans-serif}
-body{display:flex;flex-direction:column;min-height:100vh;padding:10px;gap:10px}
+body{margin:0;height:100dvh;overflow:hidden}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 select,button{font:inherit;font-size:15px;color:var(--ink);background:var(--panel);border:2px solid #2c3a9a;border-radius:10px;padding:6px 12px;min-height:40px}
 select{max-width:100%;flex:1 1 150px}
@@ -17,8 +17,8 @@ button{cursor:pointer}
 button:hover{border-color:var(--cy)}
 button.go{background:var(--yl);color:#1a1a00;border-color:var(--yl);font-weight:700}
 :focus-visible{outline:3px solid var(--cy);outline-offset:2px}
-#wrap{position:relative;flex:1;min-height:420px;border:3px solid #2c3a9a;border-radius:14px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0,#12195f,var(--bg))}
-#board{position:absolute;inset:0;overflow-y:auto;padding:18px 18px 40vh 18px;display:flex;flex-direction:column;gap:14px;scrollbar-width:none}
+#wrap{position:fixed;inset:0;overflow:hidden;background:radial-gradient(120% 90% at 50% 0,#12195f,var(--bg))}
+#board{position:absolute;inset:0;overflow-y:auto;padding:64px 18px 45vh 18px;display:flex;flex-direction:column;gap:14px;scrollbar-width:none}
 .ln{align-self:center;max-width:min(760px,92%);font-size:clamp(20px,3.4vw,30px);line-height:1.35;visibility:hidden;padding:2px 10px}
 .ln small{display:block;font-size:.72em;color:var(--mute)}
 .title{font-size:clamp(26px,4.6vw,42px);color:var(--yl);font-weight:700;text-align:center}
@@ -46,27 +46,35 @@ button.go{background:var(--yl);color:#1a1a00;border-color:var(--yl);font-weight:
 .fx-sparkle{animation:blur var(--d) ease-out both}
 .done{visibility:visible}
 #msg{position:absolute;inset:auto 0 50% 0;text-align:center;color:var(--mute);font-size:20px;padding:0 20px}
-#count{color:var(--mute);margin-left:auto;font-size:14px}
+#count{color:var(--mute);text-align:center;font-size:14px}
+#fab{position:fixed;top:10px;right:10px;z-index:20;width:46px;height:46px;border-radius:50%;padding:0;font-size:22px;opacity:.8}
+#sheetBg{position:fixed;inset:0;z-index:25;background:#0008;display:none}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0 auto;max-width:640px;background:var(--panel);border-top:3px solid #2c3a9a;border-radius:18px 18px 0 0;padding:14px 14px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;transform:translateY(105%);transition:transform .28s ease;visibility:hidden}
+body.open #sheet{transform:none;visibility:visible}
+body.open #sheetBg{display:block}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.grab{width:46px;height:5px;border-radius:3px;background:#2c3a9a;margin:0 auto 2px}
 @media (prefers-reduced-motion:reduce){.dot{animation:none}}
 </style>
 </head>
 <body>
-<div class="bar">
-  <select id="lesson" aria-label="Chapter and lesson"></select>
-  <select id="style" aria-label="Pointer style"></select>
-  <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select>
-</div>
 <div id="wrap">
   <div id="board" tabindex="0" aria-live="polite"></div>
   <div id="msg"></div>
   <svg id="ov" width="100%" height="100%"><polyline id="arm" points=""/></svg>
   <div id="ptr" style="display:none"></div>
 </div>
-<div class="bar">
-  <button id="prev" aria-label="Previous line">Back</button>
-  <button id="next" class="go">Next line</button>
-  <button id="auto">Auto play</button>
-  <button id="reset">Restart</button>
+<button id="fab" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<div id="sheetBg"></div>
+<div id="sheet" role="dialog" aria-label="Controls">
+  <div class="grab"></div>
+  <select id="lesson" aria-label="Chapter and lesson"></select>
+  <div class="row">
+    <select id="style" aria-label="Pointer style"></select>
+    <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select>
+  </div>
+  <div class="row"><button id="prev" aria-label="Previous line">Back</button><button id="next" class="go">Next line</button></div>
+  <div class="row"><button id="auto">Auto play</button><button id="reset">Restart</button></div>
   <span id="count"></span>
 </div>
 
@@ -125,12 +133,12 @@ function place(x,y){
   cur={x,y};
   ptr.style.transform=`translate(${x+p.off[0]}px,${y+p.off[1]}px)`;
   if(style==='arm'){
-    const W=wrap.clientWidth,H=wrap.clientHeight,S={x:0,y:H-30},L=Math.max(W,H)*.55;
+    const H=wrap.clientHeight,S={x:-6,y:H-70};
     let dx=x-S.x,dy=y-S.y,d=Math.hypot(dx,dy)||1;
-    if(d>2*L-4){x=S.x+dx/d*(2*L-4);y=S.y+dy/d*(2*L-4);dx=x-S.x;dy=y-S.y;d=2*L-4}
-    const h=Math.sqrt(Math.max(L*L-d*d/4,0)),mx=S.x+dx/2,my=S.y+dy/2;
+    const L=d*.56+30,h=Math.sqrt(Math.max(L*L-d*d/4,0)),mx=S.x+dx/2,my=S.y+dy/2;
     let px=-dy/d,py=dx/d;if(py<0){px=-px;py=-py}
-    arm.setAttribute('points',`${S.x},${S.y} ${mx+px*h},${my+py*h} ${x},${y}`);
+    let ex=mx+px*h,ey=Math.min(my+py*h,H-10);
+    arm.setAttribute('points',`${S.x},${S.y} ${ex},${ey} ${x},${y}`);
   }
 }
 function moveTo(tx,ty,dur){
@@ -157,7 +165,7 @@ function makeLine(s){
 async function show(s){
   const el=makeLine(s),fx=P[style].fx,d=700/speed();
   const bt=el.offsetTop;
-  if(bt+el.offsetHeight>board.scrollTop+board.clientHeight*.62) board.scrollTop=bt-board.clientHeight*.25;
+  if(bt+el.offsetHeight>board.scrollTop+board.clientHeight*.6){board.scrollTop=bt-board.clientHeight*.3;await sleep(60)}
   const r=el.getBoundingClientRect(),w=wrap.getBoundingClientRect();
   const sx=r.left-w.left+12,ex=r.right-w.left-12,y=r.bottom-w.top+4;
   await moveTo(sx,y,650/speed());
@@ -190,7 +198,7 @@ function reset(n=0){
   board.innerHTML='';board.scrollTop=0;
   if(n)renderInstant(n);
   cur={x:wrap.clientWidth*.3,y:wrap.clientHeight-60};place(cur.x,cur.y);
-  msg.textContent=n||!lesson?'':'Tap "Next line" to begin';
+  msg.textContent=n||!lesson?'':'Board par tap karo';
   ui();
 }
 function load(id){
@@ -211,6 +219,14 @@ board.onclick=()=>{if(!auto)next()};
 addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();auto=false;next()}if(e.key==='ArrowLeft'){$('#prev').click()}});
 addEventListener('resize',()=>place(cur.x,cur.y));
 
+const setOpen=o=>{document.body.classList.toggle('open',o);$('#fab').setAttribute('aria-expanded',o)};
+$('#fab').onclick=()=>setOpen(!document.body.classList.contains('open'));
+$('#sheetBg').onclick=()=>setOpen(false);
+$('#sheet').addEventListener('click',e=>{if(e.target.closest('button'))setOpen(false)});
+$('#sheet').addEventListener('change',()=>setOpen(false));
+addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
 buildMenus();setStyle();
 if(MANIFEST&&MANIFEST.length){load(MANIFEST[0].id)}else{msg.textContent='manifest.js mein koi lesson nahi hai'}
-</script></body></html>
+</script>
+</body>
+</html>
