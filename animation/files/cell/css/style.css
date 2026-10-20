@@ -92,7 +92,7 @@ body.ct [data-f]{display:none}
 .dvbtn{position:fixed;left:calc(max(16px,env(safe-area-inset-left,0px)) + 52px);top:calc(env(safe-area-inset-top,0px) + 54px);height:44px;padding:0 12px;z-index:4;font:700 12px var(--fm)}
 .dvp{display:none;position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:calc(max(16px,env(safe-area-inset-right,0px)) + 62px);top:calc(env(safe-area-inset-top,0px) + 106px);z-index:3;background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:8px 10px}
 body.dv .dvp{display:block}
-.dvt{display:flex;gap:6px;align-items:center}.dvk{display:flex;gap:4px;flex:1}.dvk button{flex:1;padding:6px 4px;font:700 12px var(--fm)}
+.dvt{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.dvk{display:flex;gap:4px;flex:1 1 100%;overflow-x:auto;touch-action:pan-x}.dvk button{flex:none;padding:6px 10px;white-space:nowrap;font:700 12px var(--fm)}
 #dvplay,#dvsp{padding:6px 10px;font:700 13px var(--fm)}
 .dvr{display:flex;align-items:center;gap:8px;margin-top:6px}.dvn b{display:block;font:800 15px/1.2 var(--fd);color:var(--hl)}.dvn small{color:var(--mu);font:500 11px var(--fm)}
 .dvph{display:flex;gap:5px;overflow-x:auto;margin-top:6px;padding-bottom:2px;touch-action:pan-x}
