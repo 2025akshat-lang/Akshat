@@ -29,6 +29,10 @@ button.go{background:var(--yl);color:#1a1a00;border-color:var(--yl);font-weight:
 .def{border:3px solid var(--cy);border-radius:10px;padding:6px 14px}
 .c-cyan{color:var(--cy)}.c-red{color:var(--rd)}.c-yellow{color:var(--yl)}.c-green{color:var(--gr)}
 #ov{position:absolute;inset:0;pointer-events:none}
+#char{position:absolute;left:-12px;bottom:10px;width:96px;height:224px;pointer-events:none;display:none;animation:breathe 3.2s ease-in-out infinite}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+@keyframes breathe{50%{transform:translateY(-3px)}}
 #arm{stroke:var(--rd);stroke-width:12;fill:none;stroke-linejoin:miter;display:none}
 #ptr{position:absolute;left:0;top:0;font-size:42px;line-height:1;will-change:transform}
 .hand{display:block;width:34px;height:34px;border-radius:50%;background:#f7c3a0;border:2px solid #d9906a}
@@ -54,13 +58,25 @@ body.open #sheet{transform:none;visibility:visible}
 body.open #sheetBg{display:block}
 .row{display:flex;gap:8px}.row>*{flex:1}
 .grab{width:46px;height:5px;border-radius:3px;background:#2c3a9a;margin:0 auto 2px}
-@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+@media (prefers-reduced-motion:reduce){.dot,.eye,#char{animation:none}}
 </style>
 </head>
 <body>
 <div id="wrap">
   <div id="board" tabindex="0" aria-live="polite"></div>
   <div id="msg"></div>
+  <svg id="char" viewBox="0 0 120 280" aria-hidden="true">
+    <rect x="30" y="200" width="22" height="80" fill="#1a2470"/><rect x="62" y="200" width="22" height="80" fill="#1a2470"/>
+    <rect x="24" y="118" width="64" height="92" rx="4" fill="#fff5f5"/>
+    <rect x="70" y="118" width="42" height="92" rx="4" fill="#ff5a5a"/><rect x="8" y="118" width="18" height="92" rx="4" fill="#ff5a5a"/>
+    <text x="30" y="168" font-size="15" font-weight="700" fill="#2a2a55" font-family="sans-serif">SCI</text>
+    <rect x="46" y="98" width="16" height="22" fill="#f7c3a0"/>
+    <polygon points="22,40 92,40 92,78 57,102 22,78" fill="#f7c3a0" stroke="#d9906a" stroke-width="2"/>
+    <polygon points="18,50 12,20 30,34 38,6 52,30 66,2 76,30 94,12 96,50 80,38 56,32 34,38" fill="#1a2470"/>
+    <g class="eye"><circle cx="38" cy="62" r="10" fill="#fff" stroke="#333" stroke-width="1.5"/><circle cx="38" cy="62" r="5" fill="#e0334c"/></g>
+    <g class="eye"><circle cx="74" cy="62" r="10" fill="#fff" stroke="#333" stroke-width="1.5"/><circle cx="74" cy="62" r="5" fill="#e0334c"/></g>
+    <path d="M46 82 Q56 91 68 82" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>
   <svg id="ov" width="100%" height="100%"><polyline id="arm" points=""/></svg>
   <div id="ptr" style="display:none"></div>
 </div>
@@ -123,6 +139,7 @@ function setStyle(){
   const p=P[style];
   ptr.innerHTML=p.html;
   arm.style.display=style==='arm'?'block':'none';
+  $('#char').style.display=style==='arm'?'block':'none';
   ptr.style.display='block';
   place(cur.x,cur.y);
 }
@@ -133,9 +150,9 @@ function place(x,y){
   cur={x,y};
   ptr.style.transform=`translate(${x+p.off[0]}px,${y+p.off[1]}px)`;
   if(style==='arm'){
-    const H=wrap.clientHeight,S={x:-6,y:H-70};
+    const H=wrap.clientHeight,S={x:-12+104*.8,y:H-10-224+140*.8};
     let dx=x-S.x,dy=y-S.y,d=Math.hypot(dx,dy)||1;
-    const L=d*.56+30,h=Math.sqrt(Math.max(L*L-d*d/4,0)),mx=S.x+dx/2,my=S.y+dy/2;
+    const L=d*.52+16,h=Math.sqrt(Math.max(L*L-d*d/4,0)),mx=S.x+dx/2,my=S.y+dy/2;
     let px=-dy/d,py=dx/d;if(py<0){px=-px;py=-py}
     let ex=mx+px*h,ey=Math.min(my+py*h,H-10);
     arm.setAttribute('points',`${S.x},${S.y} ${ex},${ey} ${x},${y}`);
