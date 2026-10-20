@@ -5,8 +5,10 @@ if (!D) throw new Error('division.js load nahi hua (division-ui.js usse baad mei
 const q = s => document.querySelector(s);
 const panel = q('#dvp'), chips = q('#dvph'), nm = q('#dvnm'), pl = q('#dvplay'), sp = q('#dvsp'), mark = q('#dvmark'), ctr = q('#dvct'), btn = q('#dvb'), t1 = q('#dvr1'), t2 = q('#dvr2');
 if (!panel || !btn) throw new Error('index.html mein #dvp / #dvb markup nahi mila');
-const SHORT = { mit: ['I', 'P', 'PM', 'M', 'A', 'T', 'C'], mei: ['I', 'P1', 'M1', 'A1', 'T1', 'P2', 'M2', 'A2', 'T2'], can: ['N', 'C', 'R', 'S', 'I'] };
-const ID = { mit: 'mitosis', mei: 'meiosis', can: 'cancer' };
+const SHORT0 = { mit: ['I', 'P', 'PM', 'M', 'A', 'T', 'C'], mei: ['I', 'P1', 'M1', 'A1', 'T1', 'P2', 'M2', 'A2', 'T2'], can: ['N', 'C', 'R', 'S', 'I'] };
+const ID = { mit: 'mitosis', mei: 'meiosis', can: 'cancer' }, SHORT = SHORT0, LAB = { mit: 'Mitosis', mei: 'Meiosis', can: 'Cancer' };
+Object.keys(D.META).forEach(k => { const m = D.META[k]; ID[k] = m.id; SHORT[k] = m.short; LAB[k] = m.label; });
+q('#dvk').innerHTML = Object.keys(ID).map(k => '<button data-k="' + k + '">' + LAB[k] + '</button>').join('');
 const CIRC = 2 * Math.PI * 26, SPEEDS = [.5, 1, 2];
 let drawn = '';
 const inDiv = () => document.body.classList.contains('dv');
