@@ -7,6 +7,8 @@ registerLesson({
     {k:'note',  t:'Force is fixed', h:'बल स्थिर रखा गया'},
     {k:'note',  t:'Car mass is doubled', h:'चलने वाली गाड़ी का द्रव्यमान दुगुना'},
     {k:'note',  t:'Paper cup mass is fixed', h:'कागज़ के कप का द्रव्यमान स्थिर'},
+    {k:'svg', t:'Same force, heavier car: slower', h:'वही बल, भारी गाड़ी: धीमी',
+     svg:'<svg viewBox="0 0 320 110" width="320" role="img" aria-label="Force pushes a car"><rect x="110" y="30" width="110" height="40" rx="8" fill="#1e5fd8"/><circle cx="135" cy="78" r="14" fill="#222"/><circle cx="195" cy="78" r="14" fill="#222"/><path d="M20 50h70" stroke="#c4001d" stroke-width="8"/><path d="M90 34l24 16-24 16z" fill="#c4001d"/><text x="22" y="30" font-size="18" font-family="sans-serif" fill="#222">Force</text></svg>'},
     {k:'note',  t:'Set-up A moves slowly: slow acceleration', c:'red', h:'सेट-अप A धीमी गति से चलता है'},
     {k:'note',  t:'Set-up B moves fast: fast acceleration', c:'green', h:'सेट-अप B तेज़ गति से चलता है'},
     {k:'def',   t:'Conclusion', h:'निष्कर्ष'},
