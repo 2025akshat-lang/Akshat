@@ -35,9 +35,9 @@ body.hi .ln small{display:block}
 .hl1,.hl2,.hl3{color:#111!important}.hl1{background:#ffe14d}.hl2{background:#8dffb0}.hl3{background:#ffb3d1}
 .hl1 small,.hl2 small,.hl3 small{color:#333}
 .sel{outline:3px dashed var(--yl);outline-offset:4px}
-.note{position:absolute;width:180px;background:#fff59d;color:#222;border-radius:6px;box-shadow:0 4px 14px #0007;font:18px/1.3 Kalam,"Baloo 2",cursive;z-index:5}
-.note .nh{display:flex;justify-content:space-between;padding:4px 8px;background:#ffe14d;border-radius:6px 6px 0 0;cursor:move;touch-action:none;font-size:14px}
-.note .x{cursor:pointer;padding:0 6px}.note [contenteditable]{padding:6px 8px;min-height:60px;outline:none;user-select:text;-webkit-user-select:text}
+.snote{position:absolute;width:180px;background:#fff59d;color:#222;border-radius:6px;box-shadow:0 4px 14px #0007;font:18px/1.3 Kalam,"Baloo 2",cursive;z-index:5}
+.snote .nh{display:flex;justify-content:space-between;padding:4px 8px;background:#ffe14d;border-radius:6px 6px 0 0;cursor:move;touch-action:none;font-size:14px}
+.snote .x{cursor:pointer;padding:0 6px}.snote [contenteditable]{padding:6px 8px;min-height:60px;outline:none;user-select:text;-webkit-user-select:text}
 #ink{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;touch-action:none}
 body.pen #ink{pointer-events:auto;cursor:crosshair}
 #char{position:absolute;left:calc(var(--ch)*-.12);bottom:1vh;height:var(--ch);width:calc(var(--ch)*.4286);pointer-events:none;display:none;animation:breathe 3.2s ease-in-out infinite}
@@ -328,7 +328,7 @@ addEventListener('keydown',e=>{
 const tb=$('#tb');let sel=null,st=null,lp=0,tbOpen=false;
 board.addEventListener('contextmenu',e=>e.preventDefault());
 board.addEventListener('pointerdown',e=>{
-  if(document.body.classList.contains('pen')||e.target.closest('.note'))return;
+  if(document.body.classList.contains('pen')||e.target.closest('.snote'))return;
   const ln=e.target.closest('.ln.done');
   st={x:e.clientX,y:e.clientY,moved:false,long:false};
   if(ln)lp=setTimeout(()=>{st&&(st.long=true);openTb(ln)},550);
@@ -383,7 +383,7 @@ tb.addEventListener('click',e=>{
   applyF();
 });
 function addNote(el){
-  const n=document.createElement('div');n.className='note';
+  const n=document.createElement('div');n.className='snote';
   n.innerHTML='<div class="nh"><span>Note</span><span class="x" role="button" aria-label="Delete note">&#10005;</span></div><div contenteditable="true" spellcheck="false">Likho…</div>';
   n.style.left=Math.max(4,Math.min(el.offsetLeft+el.offsetWidth-30,board.clientWidth-190))+'px';
   n.style.top=(el.offsetTop+el.offsetHeight*.6)+'px';
