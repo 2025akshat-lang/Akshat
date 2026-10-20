@@ -16,6 +16,7 @@ registerLesson({
     {k:'eq',    t:'force (F) ∝ acceleration (a)'},
     {k:'eq',    t:'a ∝ F / m'},
     {k:'ans',   t:'a = F / m   or   F = m × a', h:'Newton ka dusra niyam'},
+    {k:'obj',   svg:'<svg viewBox="0 0 160 70"><rect x="10" y="20" width="140" height="30" rx="8" fill="#1e5fd8"/><rect x="40" y="6" width="70" height="22" rx="8" fill="#6fb1ff"/><circle cx="42" cy="54" r="13" fill="#222"/><circle cx="118" cy="54" r="13" fill="#222"/></svg>', w:.4, x:.3, y:.62, anim:'slide'},
     {k:'q',     t:'Heavier mass, same force: what happens?'},
     {k:'ans',   t:'Larger mass gives smaller acceleration', h:'ज़्यादा द्रव्यमान, कम त्वरण'}
   ]
