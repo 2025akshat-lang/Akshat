@@ -19,7 +19,7 @@ const scene = S => {
       mat(col, op, em) { const m = k.mat(col, op == null ? 1 : op, em == null ? col : em, 0); m.transparent = true; m.opacity = op == null ? 1 : op; m.userData = { bo: m.opacity }; if (ck) FOC[ck].push(m); return m; },
       add(geo, col, x, y, z, op, par, em) { const o = k.add(geo, H.mat(col, op, em), x, y, z, par); return o; },
       sph(r, col, x, y, z, op, par) { return H.add(k.sph(r, 14, 10), col, x, y, z, op, par); },
-      tube(pts, r, col, op) { return k.tube(pts, r, 14, H.mat(col, op)); },
+      tube(pts, r, col, op, par) { const m = k.tube(pts, r, 14, H.mat(col, op)); if (par) par.add(m); return m; },
       /* fl: n chhote kan, fn(u,i)->[x,y,z], speed */
       flow(n, r, col, fn, speed, op) { const a = []; for (let i = 0; i < n; i++) a.push(H.sph(r, col, 0, 0, 0, op == null ? .95 : op)); const f = { a, fn, speed, vis: 1, upd(t) { a.forEach((m, i) => { const u = ((i / n) + t * speed) % 1, q = fn(u, i); m.position.set(q[0], q[1], q[2] || 0); const s = f.vis; m.scale.set(s, s, s); }); } }; FL.push(f); return f; },
       cyl(r, len, col, x, y, z, rz, op) { const o = H.add(new T3.CylinderGeometry(r, r, len, 14), col, x, y, z, op); o.rotation.z = rz || 0; return o; },
@@ -241,6 +241,144 @@ scene({
       XW.vis = ph >= 2 ? 1 : .15; XM.vis = ph >= 2 ? 1 : .15; SU.vis = ph === 4 ? 1 : ph === 3 ? .6 : 0; VP.vis = ph >= 3 ? 1 : 0;
       SU.speed = ph === 4 ? .12 : .06; XW.speed = ph === 2 ? .18 : .1;
       CP.forEach((c, i) => { const q_ = ph === 3 ? 1 + .35 * Math.sin(t * 5 + i) : 1; c.scale.set(q_, q_, q_); });
+    };
+  }
+});
+
+/* =============== 6. DNA PACKAGING =============== */
+scene({
+  kind: 'dna', id: 'dnapack', label: 'DNA fit', name: 'DNA packaging (live)', color: '#4ab8f0', short: ['D', 'N', 'B', 'F', 'C', 'U'], scale: .7,
+  phases: [['DNA double helix', '0.34 nm / base pair', 3.2], ['Nucleosome', '~ 147-200 bp lipta', 3.4], ['Beads-on-string', '11 nm fibre', 3.2], ['Chromatin fibre', '30 nm coil', 3.2], ['Chromosome', 'Metaphase, 1400 nm', 3.4], ['Nucleus', '~ 2 m DNA, ~ 6 um', 3.6]],
+  build(H) {
+    const T3 = H.T3, ORG = 0xf2a02a, CYA = 0x2ab8e8, grps = [], cur = [];
+    const G = () => { const g = new T3.Group(); H.k.root.add(g); g.scale.set(.01, .01, .01); grps.push(g); cur.push(0); return g; };
+    /* 0 helix */
+    H.part('dna', 'DNA double helix', 'Do antiparallel strands, 2 nm chaudi, 10.5 base pair per turn, 0.34 nm per base pair. Ek insaan cell mein ~ 6 arab base pair = lagbhag 2 m lamba DNA hai, jo ~ 6 um ke nucleus mein samata hai!', 'dv_chromo');
+    const g0 = G();
+    [0, PI].forEach(o => H.tube([...Array(80)].map((_, i) => { const x = -6 + 12 * i / 79, a = x * 1.9 + o; return [x, 1.1 * Math.cos(a), 1.1 * Math.sin(a)]; }), .13, o ? CYA : ORG, .95, g0));
+    const rung = [0xe0504a, 0x6ad07a, 0xe8d84a, 0x4a7ae0];
+    for (let i = 0; i < 26; i++) { const x = -5.8 + i * .46, a = x * 1.9; const r = H.add(new T3.CylinderGeometry(.06, .06, 2.2, 6), rung[i % 4], x, 0, 0, .9, g0); r.rotation.x = a; }
+    /* 1 nucleosome */
+    H.part('nsm', 'Nucleosome (histone octamer + DNA)', '8 histone proteins (H2A, H2B, H3, H4 x2, positively charged +) ke gird DNA ~ 1.65 baar (147 bp) lipta hai; DNA negatively charged (-) hai isliye chipakta hai. Linker DNA agle nucleosome tak. Histone tail acetylation/methylation se gene on/off.', 'dv_chromo');
+    const g1 = G();
+    const hc = [0x8a5ad8, 0xe0508a, 0x6a4ac8, 0xc858c8];
+    for (let i = 0; i < 8; i++) { const a = i * PI / 4; H.add(new T3.SphereGeometry(.5, 14, 10), hc[i % 4], .62 * Math.cos(a), .62 * Math.sin(a), (i % 2 ? .3 : -.3), .95, g1); }
+    [0, 1].forEach(s => { const R = 1.25 + s * .14; H.tube([[-6, -R, -.4], [-3, -R, -.4], ...[...Array(50)].map((_, i) => { const th = -PI / 2 + i / 49 * 3 * PI; return [R * Math.cos(th), R * Math.sin(th), -.4 + .8 * i / 49]; }), [3, R, .4], [6, R, .4]].map(p => new T3.Vector3(p[0], p[1], p[2])), .09, s ? CYA : ORG, .95, g1); });
+    /* 2 beads on string */
+    H.part('bds', 'Beads-on-string (11 nm fibre)', 'Nucleosomes ek dhaage (linker DNA) par moti ki tarah baar-baar dohrate hain: har ~ 200 bp par ek. DNA ~ 6-7 guna chhota ho jaata hai.', 'dv_chromo');
+    const g2 = G();
+    H.tube([[-6.5, 0, 0], [0, .1, 0], [6.5, 0, 0]].map(p => new T3.Vector3(p[0], p[1], p[2])), .07, CYA, .9, g2);
+    for (let i = 0; i < 5; i++) { const x = -4.8 + i * 2.4; for (let j = 0; j < 4; j++) { const a = j * PI / 2 + .4; H.add(new T3.SphereGeometry(.34, 10, 8), hc[(i + j) % 4], x + .22 * Math.cos(a), .22 * Math.sin(a), 0, .95, g2); } const t = H.add(new T3.TorusGeometry(.62, .08, 8, 20), ORG, x, 0, 0, .9, g2); t.rotation.y = .7; }
+    /* 3 chromatin fibre */
+    H.part('fib', 'Chromatin fibre (30 nm)', 'Nucleosomes kundli (solenoid) banakar 30 nm moti fibre banate hain (H1 linker histone se). Phir loops mein, ~ 10,000 guna tak condensation.', 'dv_chromo');
+    const g3 = G();
+    for (let i = 0; i < 42; i++) { const a = i * .95, x = -4.6 + i * .22; H.add(new T3.SphereGeometry(.3, 10, 8), hc[i % 4], x, .75 * Math.cos(a), .75 * Math.sin(a), .95, g3); }
+    H.tube([[-6.5, 0, 0], [-4.8, .2, 0], [-4.6, .75, 0]].map(p => new T3.Vector3(p[0], p[1], p[2])), .06, CYA, .9, g3);
+    H.tube([[4.7, .5, 0], [5.2, .1, 0], [6.5, .2, 0]].map(p => new T3.Vector3(p[0], p[1], p[2])), .06, CYA, .9, g3);
+    /* 4 chromosome */
+    H.part('chr', 'Chromosome (metaphase)', 'Fibre loops mein scaffold (condensin) par kundlit hokar metaphase chromosome: X-shape, do sister chromatids centromere par juda. Sabse compact roop (~ 10,000 guna chhota), tabhi mitosis mein baant-na aasan.', 'dv_chromo');
+    const g4 = G();
+    [[.6, 0x9a82f0], [-.6, 0xa890f5]].forEach((q, qi) => [1, -1].forEach(sy => { const ang = (sy > 0 ? 1 : -1) * 0, arm = new T3.Group(); arm.position.set(0, 0, 0); g4.add(arm); arm.rotation.z = (sy > 0 ? 0 : PI) + (q[0] > 0 ? -.28 : .28);
+      const cy = H.add(new T3.CylinderGeometry(.42, .42, 3.2, 14), q[1], 0, 1.7, 0, .85, arm);
+      for (let i = 0; i < 14; i++) { const r = H.add(new T3.TorusGeometry(.43, .035, 6, 18), 0xe0d8ff, 0, .2 + i * .2, 0, .95, arm); r.rotation.x = PI / 2; } }));
+    H.add(new T3.SphereGeometry(.34, 12, 10), 0xe8d84a, 0, 0, 0, .95, g4);
+    /* 5 nucleus */
+    H.part('nuc', 'Nucleus (46 chromosomes)', 'Nucleus ~ 6 um chaura: double envelope + pores. Andar 46 chromosomes (23 jode), total ~ 2 m DNA. Interphase mein ye khule (chromatin) rehte, nucleolus rRNA banata.', 'nuc');
+    const g5 = G();
+    const NE = H.add(new T3.SphereGeometry(3.6, 28, 20), 0x2a7a9a, 0, 0, 0, .16, g5); NE.userData.out = true;
+    for (let i = 0; i < 26; i++) { const a = i / 26 * PI * 2; H.add(new T3.SphereGeometry(.1, 8, 6), 0x6ad0e8, 3.6 * Math.cos(a), 3.6 * Math.sin(a), 0, .95, g5); }
+    const XC = [];
+    for (let i = 0; i < 12; i++) { const g = new T3.Group(), a = i / 12 * PI * 2 + .4, r = 1.1 + (i % 3) * .65; g.position.set(r * Math.cos(a), r * Math.sin(a) * .9, ((i * 37) % 10 - 5) * .08); g5.add(g); const cc = [0x8a5ad8, 0x4a9ae8, 0xe0508a, 0x6a7ae0][i % 4]; [.5, -.5].forEach(s => { const c = H.add(new T3.CylinderGeometry(.14, .14, 1.1, 8), cc, 0, 0, 0, .95, g); c.rotation.z = s; }); XC.push(g); }
+    return (ph, p, t, e) => {
+      grps.forEach((g, i) => { const tg = ph === i ? 1 : 0; cur[i] += (tg - cur[i]) * .14; const s = Math.max(.01, cur[i]); g.scale.set(s, s, s); });
+      grps[0].rotation.x = t * .6; grps[3].rotation.x = t * .5; grps[4].rotation.y = Math.sin(t * .6) * .5;
+      XC.forEach((g, i) => { g.rotation.z = t * .3 + i; });
+    };
+  }
+});
+
+/* =============== 7. VIRUS INFECTION =============== */
+scene({
+  kind: 'vir', id: 'virus', label: 'Virus', name: 'Virus infection (live)', color: '#e86a8a', short: ['A', 'E', 'U', 'R', 'X'],
+  phases: [['Attach', 'Spike ↔ receptor'], ['Entry', 'Endocytosis'], ['Uncoating', 'RNA chhootta'], ['Replicate + assemble', 'Cell ki machinery'], ['Release', 'Naye virus']],
+  focus: [['vir', 'rec', 'cel'], ['vir', 'end', 'rec'], ['rna', 'end'], ['rna', 'rib', 'new', 'nuc'], ['new', 'cel']],
+  build(H) {
+    const T3 = H.T3, VC = 0xe86a8a;
+    H.part('cel', 'Host cell (membrane)', 'Mezbaan cell: virus khud cell nahi hai, apni copy banane ke liye ye cell ki machinery (ribosome, energy) hijack karta hai.', 'memb');
+    const CEL = H.add(new T3.SphereGeometry(3.1, 28, 20), 0xe8c8a0, 3.1, 0, -.3, .2); CEL.userData.out = true;
+    H.part('nuc', 'Nucleus', 'Cell ka nucleus. (Kuch virus, jaise influenza, DNA-RNA ke liye nucleus bhi use karte hain; coronavirus cytoplasm mein hi replicate hota hai.)', 'nuc');
+    H.add(new T3.SphereGeometry(1, 18, 14), 0x8a5ad8, 4.4, -.6, -.2, .75);
+    H.part('rec', 'Receptor (e.g. ACE2)', 'Cell ki surface par receptor protein jisse virus ka spike juda (lock-and-key). SARS-CoV-2 ka spike ACE2 se, HIV ka gp120 CD4 se judta hai. Isi se virus ki cell-specificity (tropism) tay hoti.', 'memb');
+    const RC = []; for (let i = 0; i < 9; i++) { const a = PI - .9 + i * .225, x = 3.1 + 3.1 * Math.cos(a), y = 3.1 * Math.sin(a); const g = new T3.Group(); g.position.set(x, y, -.3); g.rotation.z = a - PI / 2; H.k.root.add(g); H.add(new T3.CylinderGeometry(.04, .04, .45, 6), 0x4ad0f0, 0, .22, 0, .95, g); H.add(new T3.SphereGeometry(.1, 8, 6), 0x4ad0f0, 0, .48, 0, .95, g); RC.push(g); }
+    H.part('vir', 'Virus particle (spike + capsid)', 'Virion: RNA/DNA genome + protein capsid (aur kuch mein lipid envelope) + surface spikes. Alag se jeevit nahi: sirf cell ke andar copy banata hai.', 'mit');
+    const V = new T3.Group(); H.k.root.add(V);
+    const SH = H.add(new T3.SphereGeometry(.5, 16, 12), VC, 0, 0, 0, .9, V);
+    for (let i = 0; i < 14; i++) { const u = (i + .5) / 14, ph = Math.acos(1 - 2 * u), th = i * 2.399963, dx = Math.sin(ph) * Math.cos(th), dy = Math.sin(ph) * Math.sin(th), dz = Math.cos(ph); const sp = new T3.Group(); sp.position.set(dx * .5, dy * .5, dz * .5); V.add(sp); sp.rotation.z = Math.atan2(dy, dx) - PI / 2; H.add(new T3.CylinderGeometry(.03, .03, .3, 6), 0xf2c35a, 0, .15, 0, .95, sp); H.add(new T3.SphereGeometry(.08, 8, 6), 0xf2c35a, 0, .32, 0, .95, sp); }
+    H.part('rna', 'Viral RNA (genome)', 'Virus ka genome (mRNA jaisa RNA ya DNA): cell ke ribosome ise padhkar viral protein banate hain, aur RNA polymerase (RdRp) iski copies banata hai.', 'mit');
+    const RN = H.tube([[-.25, 0, 0], [0, .2, .1], [.25, -.1, 0], [.1, -.3, .1], [-.1, .1, -.1]].map(p => new T3.Vector3(p[0], p[1], p[2])), .045, 0xffe04a, .95); RN.parent && 0;
+    RN.position.set(0, 0, 0); V.add(RN);
+    H.part('end', 'Endosome (cell ne nigal liya)', 'Receptor se judne par cell virus ko endocytosis se nigal leti hai (ya envelope virus membrane fusion se). Endosome ka pH girne par virus uncoat hota hai.', 'memb');
+    const EN = H.add(new T3.SphereGeometry(.8, 16, 12), 0xe8c8a0, 0, 0, 0, .3);
+    H.part('rib', 'Ribosome (viral protein banane)', 'Host ribosomes viral mRNA ko padhkar naye viral proteins (capsid, spike, polymerase) banate hain. Cell ka khud ka kaam ruk jaata hai.', 'rib');
+    const RIB = H.flow(24, .08, 0x4ab8f0, (u, i) => [lerp(1.6, 4.2, (i % 6) / 5) + Math.sin(u * 9 + i) * .3, -1.4 + Math.floor(i / 6) * .85 + .3 * Math.cos(u * 7 + i), .2], .15);
+    H.part('new', 'Naye virus (assembly + release)', 'Naye genome + protein cell ke andar jod kar virions banate hain, phir budding (envelope virus) ya cell lysis se bahar. Ek cell se hazaron virus nikalte; ye agle cells ko infect karte.', 'mit');
+    const NV = [[2.2, 1.3], [3.4, 1.9], [4.3, 1.2], [2.6, -1.5], [3.9, -1.9], [5.0, .2], [2.0, -.2]].map(q => { const g = new T3.Group(); H.k.root.add(g); H.add(new T3.SphereGeometry(.34, 12, 10), VC, 0, 0, 0, .95, g); for (let i = 0; i < 6; i++) { const a = i * PI / 3, c = H.add(new T3.SphereGeometry(.07, 6, 5), 0xf2c35a, .38 * Math.cos(a), .38 * Math.sin(a), 0, .95, g); } return { g, b: q }; });
+    return (ph, p, t, e) => {
+      const enter = ph === 0 ? 0 : ph === 1 ? e : 1;
+      let vx = ph === 0 ? lerp(-4.2, -.55, e) : ph === 1 ? lerp(-.55, 1.2, e) : 1.2, vy = 0;
+      if (ph === 0) vy = .3 * Math.sin(t * 2) * (1 - e);
+      V.position.set(vx, vy, 0); V.rotation.z = t * .5;
+      const shell = ph <= 1 ? 1 : ph === 2 ? 1 - e : 0; SH.scale.set(Math.max(.01, shell), Math.max(.01, shell), Math.max(.01, shell));
+      V.children.forEach(c => { if (c !== SH && c !== RN) { const s = Math.max(.01, shell); c.scale.set(s, s, s); } });
+      if (ph >= 2) { const q = ph === 2 ? e : 1; RN.position.set(lerp(0, 1.1, q), lerp(0, .5, q), 0); RN.scale.set(1 + q * .5, 1 + q * .5, 1 + q * .5); V.position.set(vx, vy, 0); V.rotation.z = 0; }
+      { const s = ph === 1 ? .2 + .8 * e : ph === 2 ? 1 - e : 0; EN.scale.set(Math.max(.01, s), Math.max(.01, s), Math.max(.01, s)); EN.position.copy(V.position); }
+      RC.forEach((g, i) => { const nearV = ph <= 1 && Math.abs(g.position.y - vy) < .7; g.scale.set(1, nearV ? 1 + .3 * Math.sin(t * 6) : 1, 1); });
+      RIB.vis = ph === 3 ? 1 : ph === 4 ? .4 : 0;
+      NV.forEach((n, i) => { let s = 0, x = n.b[0], y = n.b[1]; if (ph === 3) s = clamp(e * 1.4 - i * .12, 0, 1); else if (ph === 4) { s = 1; x = lerp(n.b[0], n.b[0] + 4.6, e * 1.0 + 0); y = lerp(n.b[1], n.b[1] * 2.1, e); } n.g.scale.set(Math.max(.01, s), Math.max(.01, s), Math.max(.01, s)); n.g.position.set(x, y, 0); });
+      if (CEL.material.emissive && CEL.material.emissive.setRGB) { CEL.material.emissive.setRGB(1, .2, .2); CEL.material.emissiveIntensity = ph === 4 ? .35 * e : 0; }
+    };
+  }
+});
+
+/* =============== 8. IMMUNE KILLER (CAR-T) =============== */
+scene({
+  kind: 'imn', id: 'immune', label: 'Immune', name: 'Immune fight / CAR-T (live)', color: '#2ab8e8', short: ['S', 'L', 'K', 'A', 'N'],
+  phases: [['Scan', 'T cell target dhoondta'], ['Lock-on', 'Immune synapse'], ['Kill signal', 'Perforin + granzyme'], ['Apoptosis', '~ 9 min mein'], ['Next target', 'T cell aage']],
+  focus: [['tc', 'car'], ['tc', 'car', 'syn', 'can'], ['syn', 'gra', 'can'], ['can', 'nuc', 'blb'], ['tc', 'blb']],
+  build(H) {
+    const T3 = H.T3, PUR = 0x8a5ad8;
+    H.part('can', 'Cancer cell', 'Cancer cell surface par antigen (target, jaise CD19) rakhta hai. T cell iska pata laga kar ise khatam karta hai. Ye cell shape ya jagah se pehchana jaata hai.', 'cn_cycle');
+    const CC = H.add(new T3.SphereGeometry(2.3, 24, 18), PUR, -2.6, -.4, 0, .85);
+    for (let i = 0; i < 12; i++) { const a = i * 2.399963, b = i * .9; H.add(new T3.SphereGeometry(.22, 8, 6), 0xe0507a, -2.6 + 1.5 * Math.cos(a) * Math.cos(b), -.4 + 1.5 * Math.sin(a) * Math.cos(b), 1.4 * Math.sin(b) * .6 + 1.1, .9); }
+    H.part('nuc', 'Nucleus (cancer)', 'Apoptosis mein nucleus ka DNA tukdon mein (fragmentation) toot jaata hai aur nucleus sikud jaata hai.', 'nuc');
+    const NU = H.add(new T3.SphereGeometry(1.05, 16, 12), 0x5a3ab8, -2.6, -.4, -.2, .9);
+    H.part('tc', 'CAR-T / killer T cell', 'Killer (cytotoxic) T cell: apne TCR (ya engineered CAR) se antigen pehchanta hai. CAR-T therapy mein marij ke T cells ko lab mein CAR receptor dekar wapas daala jaata hai. Lee et al., eLife 2020: lock hone ke ~ 9 min baad cancer cell mar jaata hai.', 'n_syn');
+    const TG = new T3.Group(); H.k.root.add(TG); const TB = H.add(new T3.SphereGeometry(1, 18, 14), 0x2ab8e8, 0, 0, 0, .9, TG); H.add(new T3.SphereGeometry(.5, 12, 10), 0x1a5ab8, .1, 0, .1, .95, TG);
+    H.part('car', 'CAR receptor', 'Chimeric Antigen Receptor: antibody ka hissa (scFv) bahar jo cancer antigen se judta, aur andar signalling domains (CD3 + CD28/4-1BB) jo T cell ko activate karte.', 'memb');
+    const CR = []; for (let i = 0; i < 8; i++) { const a = -PI / 2 - .9 + i * .26; const g = new T3.Group(); g.position.set(Math.cos(a) * 1.0, Math.sin(a) * 1.0, 0); g.rotation.z = a - PI / 2; TG.add(g); H.add(new T3.CylinderGeometry(.03, .03, .4, 6), 0xffe04a, 0, .2, 0, .95, g); H.add(new T3.SphereGeometry(.09, 8, 6), 0xffe04a, 0, .42, 0, .95, g); CR.push(g); }
+    H.part('syn', 'Immune synapse', 'T cell aur cancer cell ke beech ka hara ring: adhesion (LFA-1/ICAM) ke bheetar CAR-antigen cluster. Yahin se kill-granules cancer cell mein jaate hain.', 'n_syn');
+    const SY = H.add(new T3.TorusGeometry(.62, .09, 8, 22), 0x2ad050, 0, 0, 0, .95);
+    H.part('gra', 'Cytotoxic granules (perforin + granzyme)', 'Perforin cancer cell ki membrane mein chhed karta hai; granzyme in chhedon se andar jaakar caspases chalu karta hai: cell apoptosis (programmed death) mein chala jaata hai. T cell ye FasL se bhi karta hai.', 'n_syn');
+    const GR = H.flow(14, .09, 0xffe04a, (u, i) => { const q = SY.position; return [lerp(q.x + .1, q.x - 1.3, u) + Math.sin(i) * .15, lerp(q.y + .1, q.y - .6, u) + Math.cos(i * 2) * .2, .5]; }, .25);
+    H.part('blb', 'Apoptotic blebs / bodies', 'Apoptosis mein cell sikud kar membrane ke bulbule (blebs) banata hai aur apoptotic bodies mein toot jaata hai, jinhe macrophage saaf karte hain (sujan nahi hoti, necrosis se alag).', 'mit');
+    const BL = [...Array(9)].map((_, i) => H.add(new T3.SphereGeometry(.3, 10, 8), PUR, 0, 0, 0, .8));
+    const ARR = H.add(new T3.ConeGeometry(.2, .5, 8), 0xf2c35a, 0, 0, 0, .95);
+    return (ph, p, t, e) => {
+      let tx, ty;
+      if (ph === 0) { tx = lerp(5, 1.7, e); ty = lerp(3, .9, e); } else if (ph <= 3) { tx = 1.7; ty = .9; } else { tx = lerp(1.7, 5.5, e); ty = lerp(.9, 3.4, e); }
+      const wob = ph === 0 ? .1 * Math.sin(t * 5) : 0;
+      TG.position.set(tx, ty + wob, 0); TG.rotation.z = Math.atan2(-.5, -1) + .2 * Math.sin(t * 2) * (ph === 0 ? 1 : 0);
+      const stretch = ph === 0 ? 1 + .35 * (1 - e) : 1; TB.scale.set(1.1 * stretch, .95, 1);
+      const cs = ph === 3 ? 1 - .38 * e : ph >= 4 ? .62 : 1; CC.scale.set(cs, cs, cs); NU.scale.set(ph === 3 ? 1 - .45 * e : ph >= 4 ? .55 : 1, ph === 3 ? 1 - .45 * e : ph >= 4 ? .55 : 1, ph === 3 ? 1 - .45 * e : ph >= 4 ? .55 : 1);
+      CC.position.set(-2.6, -.4, 0); if (CC.material.color && CC.material.color.setRGB) { const d = ph === 3 ? e : ph >= 4 ? 1 : 0; CC.material.color.setRGB(lerp(.54, .3, d), lerp(.35, .2, d), lerp(.85, .4, d)); }
+      const dir = [-1, .5]; const len = Math.hypot(dir[0], dir[1]);
+      const cx = -2.6 + (cs * 2.3) * (tx + 2.6) / Math.hypot(tx + 2.6, ty + .4), cy = -.4 + (cs * 2.3) * (ty + .4) / Math.hypot(tx + 2.6, ty + .4);
+      const sx = ph >= 1 && ph <= 3 ? (tx - 1.0 * .98 * .0 + cx) / 2 : tx - .9, sy = ph >= 1 && ph <= 3 ? (ty + cy) / 2 : ty - .55;
+      const syv = ph === 0 ? 0 : ph === 4 ? 1 - e : 1; SY.position.set((tx + cx) / 2 + .02, (ty + cy) / 2, .4); SY.rotation.z = Math.atan2(ty + .4, tx + 2.6); SY.rotation.y = 0; SY.scale.set(Math.max(.01, syv), Math.max(.01, syv), Math.max(.01, syv));
+      GR.vis = ph === 2 ? 1 : ph === 3 ? .3 : 0;
+      CR.forEach((g, i) => { const sc = ph === 1 ? 1 + .3 * Math.sin(t * 7 + i) : 1; g.scale.set(1, sc, 1); });
+      BL.forEach((b, i) => { const a = i / 9 * PI * 2, g = ph === 3 ? clamp(e * 1.5 - .2, 0, 1) : ph === 4 ? 1 : 0, r = cs * 2.3 + .15; b.scale.set(Math.max(.01, g * (.6 + .4 * ((i * 7) % 3) / 2)), Math.max(.01, g * (.6 + .4 * ((i * 7) % 3) / 2)), Math.max(.01, g * .8)); const spread = ph === 4 ? 1 + .5 * e : 1; b.position.set(-2.6 + r * Math.cos(a) * spread, -.4 + r * Math.sin(a) * spread, 0); });
+      const am = ph === 0 ? 1 : 0; ARR.scale.set(Math.max(.01, am), Math.max(.01, am), Math.max(.01, am)); ARR.position.set(tx - 1.1, ty - .9 + .15 * Math.sin(t * 6), .5); ARR.rotation.z = PI / 2 + .5;
     };
   }
 });
