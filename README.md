@@ -33,4 +33,4 @@ https://2025akshat-lang.github.io/Akshat/practical/physics.html
 12. mindmaps
 13. https://2025akshat-lang.github.io/Akshat/mindmap/mixtures.html
 
-14. 
+14. https://2025akshat-lang.github.io/Akshat/sep/Practical.html
