@@ -6,7 +6,7 @@
 addEventListener('error',function(e){var m=e.target&&e.target.src?'FILE NAHI MILI: '+e.target.src.split('/').slice(-2).join('/'):(e.message||'error')+' @'+String(e.filename||'').split('/').pop().split('?')[0]+':'+e.lineno;
 var d=document.getElementById('errb');if(!d){d=document.createElement('div');d.id='errb';d.style.cssText='position:fixed;left:8px;right:8px;top:64px;z-index:99;background:#7a1a1a;color:#fff;font:11px/1.35 monospace;padding:6px 8px;border-radius:8px;max-height:30vh;overflow:auto;white-space:pre-wrap';d.onclick=function(){d.remove()};document.body.appendChild(d)}d.textContent+=m+'\n'},true);
 </script>
-<div id="ver" style="position:fixed;top:12px;left:50%;transform:translateX(-50%);font:9px monospace;opacity:.45;pointer-events:none;z-index:3">v11</div>
+<div id="ver" style="position:fixed;top:12px;left:50%;transform:translateX(-50%);font:9px monospace;opacity:.45;pointer-events:none;z-index:3">v12</div>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="css/style.css?v=11">
