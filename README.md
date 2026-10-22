@@ -1,4 +1,4 @@
-# Akshat
+# Akshat Raj
 1. chemistry:  
 https://2025akshat-lang.github.io/Akshat/practical/Chemistry.html
 
