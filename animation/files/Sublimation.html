@@ -1,363 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Separation Procedure (Interactive Left/Right Nav)</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f1f5f9;
-            margin: 0;
-            padding: 1px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            
-        }
-
-        .main-card {
-            background: #ffffff;
-            width: 100%;
-            max-width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            padding: 1px;
-            text-align: center;
-            border: 1px solid #cbd5e1;
-            overflow: hidden;
-            position: relative;
-          
-          
-        }
-
-        h2 {
-            margin: 5px 0 2px 0;
-            color: #1e293b;
-            font-size: 1.2rem;
-        }
-
-        .phase-header {
-            font-size: 0.85rem;
-            color: #2563eb;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .instruction-badge {
-            display: inline-block;
-            background-color: #e2e8f0;
-            color: #475569;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .step-info {
-            font-size: 0.9rem;
-            color: #c2410c;
-            font-weight: bold;
-            min-height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff7ed;
-            border: 1px solid #ffedd5;
-            border-radius: 8px;
-            padding: 6px 10px;
-            margin-bottom: 10px;
-        }
-
-        .svg-container {
-            width: 100%;
-            background: #fafafa;
-            border-radius: 12px;
-            border: 1px dashed #94a3b8;
-            padding: 1px;
-            position: relative;
-          height: 100vh;
-          overflow:hidden;
-        }
-
-        /* Touch Control Overlay Zone */
-        .touch-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            z-index: 10;
-        }
-        .touch-left {
-            width: 50%;
-            height: 100%;
-            cursor: pointer;
-        }
-        .touch-right {
-            width: 50%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .component {
-            opacity: 0;
-            transform: translateY(8px);
-            transition: all 0.4s ease-in-out;
-        }
-
-        .component.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .label-text {
-            font-size: 11px;
-            font-weight: bold;
-            fill: #0f172a;
-            font-family: sans-serif;
-        }
-
-        .label-sub {
-            font-size: 10px;
-            fill: #64748b;
-            font-family: sans-serif;
-        }
-
-        .label-line {
-            stroke: #94a3b8;
-            stroke-width: 1.2;
-            stroke-dasharray: 2 2;
-        }
-
-        @keyframes flicker {
-            0% { transform: scale(1); opacity: 0.85; }
-            50% { transform: scale(1.08); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.85; }
-        }
-        .animated-flame {
-            transform-origin: center bottom;
-            animation: flicker 0.5s infinite alternate ease-in-out;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Separation of Sand, Salt and Naphthalene</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#14212e;--sub:#4b5b6b;--line:#c5d0db;--accent:#0b6e8a;--cap:#fff6e8;--capline:#f0d9b0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1720;--card:#17212c;--ink:#e8eef4;--sub:#9fb0c0;--line:#2b3a49;--accent:#5cc3df;--cap:#2a2418;--capline:#5a4a28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1720;--card:#17212c;--ink:#e8eef4;--sub:#9fb0c0;--line:#2b3a49;--accent:#5cc3df;--cap:#2a2418;--capline:#5a4a28;color-scheme:dark}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans','Noto Sans Devanagari','Segoe UI',Tahoma,sans-serif}
+.app{height:100%;display:flex;flex-direction:column;gap:6px;padding:8px;max-width:640px;margin:0 auto}
+header{text-align:center;line-height:1.25}
+h1{font-size:15px;margin:0;font-weight:700}
+.hi{font-family:'Noto Sans Devanagari','Noto Sans',sans-serif}
+.sub{font-size:12px;color:var(--sub)}
+.phase{font-size:12px;font-weight:700;color:var(--accent);text-align:center}
+.cap{background:var(--cap);border:1px solid var(--capline);border-radius:10px;padding:7px 10px;text-align:center;min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.cap .en{font-size:12.5px;font-weight:600}
+.cap .hi{font-size:12.5px;color:var(--sub)}
+.bench{position:relative;flex:1;min-height:0;background:#f8fafc;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.bench svg{width:100%;height:100%;display:block}
+.tap{position:absolute;inset:0;display:flex;z-index:5}
+.tap div{flex:1;cursor:pointer}
+.hint{font-size:11px;color:var(--sub);text-align:center}
+.c{opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.c.on{opacity:1;transform:none}
+.len{font:700 11px 'Noto Sans',sans-serif;fill:#14212e}
+.lhi{font:400 9.5px 'Noto Sans Devanagari','Noto Sans',sans-serif;fill:#475569}
+.ll{stroke:#8393a5;stroke-width:1;stroke-dasharray:2 2;fill:none}
+@keyframes fl{from{transform:scale(1)}to{transform:scale(1.1)}}
+.flame{transform-box:fill-box;transform-origin:center bottom;animation:fl .45s infinite alternate ease-in-out}
+@media (prefers-reduced-motion:reduce){.flame{animation:none}.c{transition:none}}
+</style>
 </head>
 <body>
+<div class="app">
+  <header>
+    <h1>Separation of Sand, Salt &amp; Naphthalene</h1>
+    <div class="sub hi">रेत, नमक और नैफ्थलीन का पृथक्करण</div>
+  </header>
+  <div class="phase" id="phase">Phase 1: Sublimation (ऊर्ध्वपातन)</div>
+  <div class="cap"><div class="en" id="en">Tap the right side to begin.</div><div class="hi" id="hi">शुरू करने के लिए दाईं ओर टैप करें।</div></div>
 
-<div class="main-card">
-    <h2>Separation of Sand, Salt & Naphthalene</h2>
-    <div class="phase-header" id="phaseTitle">PHASE 1: SUBLIMATION</div>
-    
-    <div class="instruction-badge" id="badgeText">◀ Tap Left: Back | Tap Right: Next ▶</div>
-    
-    <div class="step-info" id="stepText">
-        Tap Right to start Phase 1!
-    </div>
+  <div class="bench">
+    <div class="tap"><div id="back"></div><div id="next"></div></div>
+    <svg viewBox="0 0 380 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Laboratory apparatus diagram">
+<defs>
+<g id="tripod" fill="none" stroke-linecap="round"><path d="M190 250 L190 346" stroke="#64748b" stroke-width="3.5"/><path d="M134 246 L108 350 M246 246 L272 350" stroke="#334155" stroke-width="5"/><ellipse cx="190" cy="242" rx="64" ry="8" stroke="#334155" stroke-width="5"/></g>
+<g id="gauze"><polygon points="120,246 260,246 238,226 142,226" fill="rgba(148,163,184,.3)" stroke="#334155" stroke-width="2.2" stroke-linejoin="round"/><g stroke="#64748b" stroke-width=".8"><path d="M142 226L120 246M158 226L143 246M174 226L167 246M190 226V246M206 226L213 246M222 226L237 246M238 226L260 246"/><path d="M135 232H245M129 238H251M123 243H257"/></g><ellipse cx="190" cy="236" rx="32" ry="6" fill="#e5e7eb" stroke="#94a3b8"/></g>
+<g id="burner"><path d="M168 350 L172 338 H208 L212 350Z" fill="#475569"/><rect x="184" y="296" width="12" height="42" fill="#94a3b8" stroke="#475569"/><rect x="181" y="314" width="18" height="6" rx="1" fill="#334155"/><rect x="196" y="330" width="16" height="4" fill="#475569"/></g>
+<g id="flame"><path class="flame" d="M190 296 Q180 272 190 250 Q200 272 190 296Z" fill="#fb923c"/><path class="flame" d="M190 296 Q185 281 190 268 Q195 281 190 296Z" fill="#60a5fa"/></g>
+<g id="dish"><path d="M129 207 L120 203 L131 214Z" fill="#fff" stroke="#64748b" stroke-width="1.5"/><path d="M128 210 Q134 236 165 236 H215 Q246 236 252 210Z" fill="#fff" stroke="#64748b" stroke-width="2"/><ellipse cx="190" cy="210" rx="62" ry="7" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<g id="beaker"><path d="M156 262 V344 Q156 350 162 350 H224 Q230 350 230 344 V262" fill="rgba(186,230,253,.25)" stroke="#0369a1" stroke-width="2"/><path d="M151 259 L156 262 M235 259 L230 262" stroke="#0369a1" stroke-width="2" stroke-linecap="round"/><path d="M156 285h9M156 305h9M156 325h9" stroke="#0369a1"/></g>
+</defs>
 
-    <div class="svg-container">
-        <!-- Invisible Touch Zone Overlay -->
-        <div class="touch-overlay">
-            <div class="touch-left" id="btnBack" title="Previous Step"></div>
-            <div class="touch-right" id="btnNext" title="Next Step"></div>
-        </div>
+<g id="g1">
+<g id="a1" class="c"><use href="#tripod"/></g>
+<g id="a2" class="c"><use href="#gauze"/></g>
+<g id="a3" class="c"><use href="#burner"/></g>
+<g id="a4" class="c"><use href="#dish"/><ellipse cx="190" cy="211" rx="54" ry="5" fill="#d6a05a"/><circle cx="165" cy="211" r="2" fill="#fff"/><circle cx="190" cy="212" r="2" fill="#7c4a1e"/><circle cx="215" cy="211" r="2" fill="#fff"/></g>
+<g id="a5" class="c"><path d="M138 204 L184 128 V74 H196 V128 L242 204Z" fill="rgba(186,230,253,.35)" stroke="#0369a1" stroke-width="2"/><ellipse cx="190" cy="204" rx="52" ry="5" fill="none" stroke="#0369a1" stroke-width="1.5"/><ellipse cx="190" cy="72" rx="11" ry="8" fill="#fff" stroke="#94a3b8"/><circle cx="185" cy="69" r="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width=".8"/><circle cx="195" cy="74" r="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width=".8"/></g>
+<g id="a6" class="c"><use href="#flame"/><g fill="none" stroke="#8b5cf6" stroke-width="1.6" stroke-dasharray="4 3" stroke-linecap="round"><path d="M172 200 Q166 175 176 150 T182 128"/><path d="M190 200 Q196 170 188 140 T190 100"/><path d="M208 200 Q214 175 204 150 T198 128"/></g></g>
+<g id="a7" class="c" fill="none"><path d="M181 136 L146 197 M199 136 L234 197" stroke="#6366f1" stroke-width="6" stroke-dasharray="3 3"/><path d="M181 136 L146 197 M199 136 L234 197" stroke="#fff" stroke-width="3.5" stroke-dasharray="3 3"/></g>
+</g>
 
-        <svg viewBox="0 0 380 390" width="100%" height="100%">
-            
-            <!-- PHASE 1: SUBLIMATION -->
-            <g id="phase1Group">
-                <g id="p1_step1" class="component">
-                    <ellipse cx="190" cy="240" rx="65" ry="10" fill="none" stroke="#334155" stroke-width="5"/>
-                    <path d="M 130 242 L 105 340 M 250 242 L 275 340 M 190 248 L 190 330" stroke="#334155" stroke-width="5" stroke-linecap="round"/>
-                    <line x1="120" y1="285" x2="10" y2="285" class="label-line"/>
-                    <text x="12" y="278" class="label-text">1. Tripod Stand</text>
-                </g>
+<g id="g2" style="display:none">
+<g id="b1" class="c"><use href="#beaker"/><path d="M157 292 V344 Q157 349 162 349 H224 Q229 349 229 344 V292Z" fill="#bae6fd" opacity=".75"/><path d="M157 330 V344 Q157 349 162 349 H224 Q229 349 229 344 V330Z" fill="#c8923f"/><path d="M214 246 L197 340" stroke="#0369a1" stroke-width="4" stroke-linecap="round" opacity=".7"/><path d="M214 246 L197 340" stroke="#e0f2fe" stroke-width="1.5"/></g>
+<g id="b2" class="c"><rect x="88" y="356" width="150" height="10" rx="2" fill="#475569"/><rect x="104" y="70" width="8" height="288" fill="#64748b"/><rect x="98" y="170" width="20" height="14" rx="2" fill="#334155"/><path d="M118 177 H167" stroke="#334155" stroke-width="4" stroke-linecap="round"/><use href="#beaker"/><path d="M163 150 H267 L221 216 V268 H209 V216Z" fill="rgba(186,230,253,.4)" stroke="#0369a1" stroke-width="2"/><path d="M171 152 H259 L215 212Z" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/><path d="M215 152 V212" stroke="#e2e8f0"/><ellipse cx="215" cy="177" rx="48" ry="6" fill="none" stroke="#334155" stroke-width="3"/></g>
+<g id="b3" class="c"><path d="M275 80 L224 158" stroke="#0369a1" stroke-width="4" stroke-linecap="round" opacity=".7"/><path d="M275 80 L224 158" stroke="#e0f2fe" stroke-width="1.5"/><path d="M224 158 L222 176" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/><circle cx="215" cy="280" r="3" fill="#38bdf8"/><path d="M157 330 V344 Q157 349 162 349 H224 Q229 349 229 344 V330Z" fill="#7dd3fc" opacity=".8"/></g>
+<g id="b4" class="c"><path d="M190 178 H240 L215 212Z" fill="#c8923f"/><path d="M157 316 V344 Q157 349 162 349 H224 Q229 349 229 344 V316Z" fill="#7dd3fc" opacity=".85"/></g>
+</g>
 
-                <g id="p1_step2" class="component">
-                    <rect x="165" y="325" width="50" height="12" fill="#475569" rx="3"/>
-                    <rect x="183" y="280" width="14" height="45" fill="#64748b"/>
-                    <ellipse cx="190" cy="280" rx="7" ry="2" fill="#334155"/>
-                    <path class="animated-flame" d="M 190 280 Q 178 250 190 232 Q 202 250 190 280 Z" fill="#ef4444"/>
-                    <path class="animated-flame" d="M 190 280 Q 183 258 190 245 Q 197 258 190 280 Z" fill="#f59e0b"/>
-                    <line x1="210" y1="300" x2="280" y2="300" class="label-line"/>
-                    <text x="285" y="300" class="label-text">2. Burner</text>
-                </g>
-
-                <g id="p1_step3" class="component">
-                    <ellipse cx="190" cy="235" rx="75" ry="12" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>
-                    <ellipse cx="190" cy="235" rx="35" ry="6" fill="#94a3b8"/>
-                    <line x1="265" y1="235" x2="280" y2="235" class="label-line"/>
-                    <text x="285" y="236" class="label-text">3. Wire Gauze</text>
-                </g>
-
-                <g id="p1_step4" class="component">
-                    <path d="M 130 230 Q 190 262 250 230 C 255 224 250 220 240 222 Q 190 230 140 222 C 130 220 125 224 130 230 Z" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
-                    <path d="M 145 228 Q 190 248 235 228 Q 190 235 145 228 Z" fill="#d97724"/>
-                    <line x1="135" y1="235" x2="10" y2="235" class="label-line"/>
-                    <text x="12" y="230" class="label-text">4. Dish + Mixture</text>
-                </g>
-
-                <g id="p1_step5" class="component">
-                    <path d="M 184 60 L 184 130 Q 185 155 138 220 Q 190 228 242 220 Q 195 155 196 130 L 196 60 Z" fill="rgba(186, 230, 253, 0.45)" stroke="#0284c7" stroke-width="2"/>
-                    <ellipse cx="190" cy="58" rx="8" ry="6" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
-                    <path d="M 160 190 Q 175 160 186 110" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-                    <path d="M 220 190 Q 205 160 194 110" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-                    <line x1="210" y1="125" x2="280" y2="100" class="label-line"/>
-                    <text x="285" y="98" class="label-text">5. Naphthalene Separated!</text>
-                </g>
-            </g>
-
-            <!-- PHASE 2: FILTRATION -->
-            <g id="phase2Group" style="display:none;">
-                <g id="p2_step1" class="component">
-                    <rect x="120" y="330" width="140" height="15" fill="#475569" rx="3"/>
-                    <rect x="135" y="90" width="10" height="240" fill="#64748b"/>
-                    <rect x="160" y="250" width="60" height="80" fill="rgba(224, 242, 254, 0.5)" stroke="#0284c7" stroke-width="2" rx="4"/>
-                    <line x1="135" y1="200" x2="10" y2="200" class="label-line"/>
-                    <text x="12" y="195" class="label-text">1. Filter Stand & Beaker</text>
-                </g>
-
-                <g id="p2_step2" class="component">
-                    <path d="M 186 160 L 186 230 L 150 160 L 230 160 L 194 230 L 194 160 Z" fill="rgba(186, 230, 253, 0.5)" stroke="#0284c7" stroke-width="2"/>
-                    <path d="M 155 162 L 190 220 L 225 162 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-                    <line x1="225" y1="170" x2="280" y2="170" class="label-line"/>
-                    <text x="285" y="168" class="label-text">2. Funnel + Filter Paper</text>
-                </g>
-
-                <g id="p2_step3" class="component">
-                    <path d="M 170 190 Q 190 215 210 190 Z" fill="#d97724"/>
-                    <rect x="162" y="280" width="56" height="48" fill="#7dd3fc" opacity="0.7" rx="2"/>
-                    <line x1="180" y1="200" x2="10" y2="150" class="label-line"/>
-                    <text x="12" y="145" class="label-text">Sand Left (Residue)</text>
-                    <line x1="210" y1="300" x2="280" y2="300" class="label-line"/>
-                    <text x="285" y="295" class="label-text">3. Sand Separated!</text>
-                </g>
-            </g>
-
-            <!-- PHASE 3: EVAPORATION -->
-            <g id="phase3Group" style="display:none;">
-                <g id="p3_step1" class="component">
-                    <ellipse cx="190" cy="240" rx="65" ry="10" fill="none" stroke="#334155" stroke-width="5"/>
-                    <path d="M 130 242 L 105 340 M 250 242 L 275 340 M 190 248 L 190 330" stroke="#334155" stroke-width="5" stroke-linecap="round"/>
-                    <rect x="165" y="325" width="50" height="12" fill="#475569" rx="3"/>
-                    <rect x="183" y="280" width="14" height="45" fill="#64748b"/>
-                    <path class="animated-flame" d="M 190 280 Q 178 250 190 232 Q 202 250 190 280 Z" fill="#ef4444"/>
-                    <ellipse cx="190" cy="235" rx="75" ry="12" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>
-                    <line x1="120" y1="285" x2="10" y2="285" class="label-line"/>
-                    <text x="12" y="282" class="label-text">1. Heat Setup</text>
-                </g>
-
-                <g id="p3_step2" class="component">
-                    <path d="M 130 230 Q 190 262 250 230 C 255 224 250 220 240 222 Q 190 230 140 222 C 130 220 125 224 130 230 Z" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
-                    <path d="M 145 228 Q 190 248 235 228 Q 190 235 145 228 Z" fill="#38bdf8" opacity="0.8"/>
-                    <path d="M 170 210 Q 165 180 175 160 M 190 210 Q 195 180 185 160 M 210 210 Q 205 180 215 160" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 2" fill="none"/>
-                    <line x1="240" y1="180" x2="280" y2="180" class="label-line"/>
-                    <text x="285" y="178" class="label-text">2. Evaporating Water</text>
-                </g>
-
-                <g id="p3_step3" class="component">
-                    <path d="M 150 232 Q 190 246 230 232 Q 190 236 150 232 Z" fill="#ffffff" stroke="#cbd5e1"/>
-                    <circle cx="170" cy="235" r="2" fill="#cbd5e1"/>
-                    <circle cx="190" cy="237" r="2.5" fill="#cbd5e1"/>
-                    <circle cx="210" cy="235" r="2" fill="#cbd5e1"/>
-                    <line x1="160" y1="235" x2="10" y2="190" class="label-line"/>
-                    <text x="12" y="185" class="label-text">3. Salt Crystals Separated!</text>
-                </g>
-            </g>
-
-        </svg>
-    </div>
+<g id="g3" style="display:none">
+<g id="c1" class="c"><use href="#tripod"/><use href="#gauze"/><use href="#burner"/><use href="#dish"/><ellipse cx="190" cy="211" rx="54" ry="5" fill="#38bdf8" opacity=".85"/></g>
+<g id="c2" class="c"><use href="#flame"/><g fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"><path d="M168 198 Q160 175 172 150 M190 198 Q198 172 186 140 M212 198 Q204 175 216 150"/></g></g>
+<g id="c3" class="c"><ellipse cx="190" cy="211" rx="54" ry="5" fill="#f1f5f9"/><g fill="#fff" stroke="#64748b"><rect x="150" y="209" width="7" height="6"/><rect x="164" y="212" width="7" height="6"/><rect x="180" y="213" width="7" height="6"/><rect x="196" y="212" width="7" height="6"/><rect x="212" y="209" width="7" height="6"/><rect x="226" y="208" width="6" height="6"/></g></g>
+</g>
+<g id="labels"></g>
+</svg>
+  </div>
+  <div class="hint" id="hint">◀ Back (पीछे) &nbsp;|&nbsp; Next (आगे) ▶</div>
 </div>
 
 <script>
-    const masterSteps = [
-        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step1", text: "Step 1: Tripod Stand rakha support ke liye." },
-        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step2", text: "Step 2: Burner flame on ki." },
-        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step3", text: "Step 3: Wire Gauze rakhi." },
-        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step4", text: "Step 4: China dish me 3-mixture dala." },
-        { phase: "PHASE 1: SUBLIMATION", pGroup: 1, cId: "p1_step5", text: "Step 5: Naphthalene sublime ho kar alag hua!" },
-        { phase: "PHASE 2: FILTRATION", pGroup: 2, cId: "p2_step1", text: "Step 6: Sand + Salt me paani milayein, Stand ready karein." },
-        { phase: "PHASE 2: FILTRATION", pGroup: 2, cId: "p2_step2", text: "Step 7: Funnel me Filter Paper lagayein." },
-        { phase: "PHASE 2: FILTRATION", pGroup: 2, cId: "p2_step3", text: "Step 8: Chhana: Sand alag aur Salt Water beaker me aaya!" },
-        { phase: "PHASE 3: EVAPORATION", pGroup: 3, cId: "p3_step1", text: "Step 9: Salt Water ko heat karne ki taiyari." },
-        { phase: "PHASE 3: EVAPORATION", pGroup: 3, cId: "p3_step2", text: "Step 10: Solution boil hone laga, paani steam bana." },
-        { phase: "PHASE 3: EVAPORATION", pGroup: 3, cId: "p3_step3", text: "Step 11: Pure Salt crystals Dish me bach gaye! 🎉" }
-    ];
-
-    let currentStepIndex = -1;
-    const phaseTitle = document.getElementById('phaseTitle');
-    const stepText = document.getElementById('stepText');
-    const badgeText = document.getElementById('badgeText');
-
-    function updateUI() {
-        if (currentStepIndex === -1) {
-            // Initial State
-            document.getElementById('phase1Group').style.display = 'block';
-            document.getElementById('phase2Group').style.display = 'none';
-            document.getElementById('phase3Group').style.display = 'none';
-            
-            document.querySelectorAll('.component').forEach(el => el.classList.remove('visible'));
-            
-            phaseTitle.innerText = "PHASE 1: SUBLIMATION";
-            stepText.innerText = "Tap Right to start Phase 1!";
-            badgeText.innerText = "◀ Tap Left: Back | Tap Right: Next ▶";
-            return;
-        }
-
-        const currentData = masterSteps[currentStepIndex];
-
-        // Group visibility toggle
-        document.getElementById('phase1Group').style.display = currentData.pGroup === 1 ? 'block' : 'none';
-        document.getElementById('phase2Group').style.display = currentData.pGroup === 2 ? 'block' : 'none';
-        document.getElementById('phase3Group').style.display = currentData.pGroup === 3 ? 'block' : 'none';
-
-        // Visibility adjustments up to currentStepIndex
-        masterSteps.forEach((step, idx) => {
-            const element = document.getElementById(step.cId);
-            if (step.pGroup === currentData.pGroup) {
-                if (idx <= currentStepIndex) {
-                    element.classList.add('visible');
-                } else {
-                    element.classList.remove('visible');
-                }
-            } else {
-                element.classList.remove('visible');
-            }
-        });
-
-        // Text Updates
-        phaseTitle.innerText = currentData.phase;
-        stepText.innerText = currentData.text;
-        badgeText.innerText = `Step ${currentStepIndex + 1} of ${masterSteps.length} (Tap Left: Back | Tap Right: Next)`;
-    }
-
-    // Right Touch Area: Forward
-    document.getElementById('btnNext').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (currentStepIndex < masterSteps.length - 1) {
-            currentStepIndex++;
-        } else {
-            currentStepIndex = -1; // Reset to start
-        }
-        updateUI();
-    });
-
-    // Left Touch Area: Backward
-    document.getElementById('btnBack').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (currentStepIndex > -1) {
-            currentStepIndex--;
-        }
-        updateUI();
-    });
+const P1="Phase 1: Sublimation (ऊर्ध्वपातन)",P2="Phase 2: Filtration (निस्यंदन)",P3="Phase 3: Evaporation (वाष्पीकरण)";
+/* [phase, id, title, English, Hindi, ids to switch off] */
+const S=[
+ [1,"a1",P1,"Place the tripod stand on the bench.","तिपाई स्टैंड को मेज़ पर रखें।"],
+ [1,"a2",P1,"Place the wire gauze (with its ceramic centre) on the tripod.","तिपाई पर तार की जाली (बीच में सिरेमिक भाग वाली) रखें।"],
+ [1,"a3",P1,"Place the unlit Bunsen burner under the tripod.","तिपाई के नीचे बनसेन बर्नर रखें (अभी जलाएँ नहीं)।"],
+ [1,"a4",P1,"Put the mixture of sand, salt and naphthalene in the china dish on the gauze.","रेत, नमक और नैफ्थलीन का मिश्रण जाली पर रखी चीनी की प्याली में डालें।"],
+ [1,"a5",P1,"Cover the dish with an inverted funnel and plug the funnel stem with cotton.","प्याली को उल्टी कीप से ढकें और कीप की नली में रुई की डाट लगाएँ।"],
+ [1,"a6",P1,"Light the burner and heat gently. Naphthalene turns to vapour (it is flammable, so keep the flame low).","बर्नर जलाकर धीमी आँच पर गर्म करें। नैफ्थलीन वाष्प बनता है (यह ज्वलनशील है, इसलिए लौ धीमी रखें)।"],
+ [1,"a7",P1,"Switch off the burner and let it cool. Naphthalene sets as solid crystals on the cool funnel walls; sand and salt remain in the dish.","बर्नर बंद करके ठंडा होने दें। नैफ्थलीन ठंडी कीप की दीवारों पर ठोस क्रिस्टल के रूप में जम जाता है; रेत और नमक प्याली में रह जाते हैं।",["a6"]],
+ [2,"b1",P2,"Move the cooled sand and salt into a beaker, add water and stir with a glass rod until the salt dissolves.","ठंडे रेत-नमक मिश्रण को बीकर में डालें, पानी मिलाएँ और काँच की छड़ से हिलाएँ जब तक नमक घुल न जाए।"],
+ [2,"b2",P2,"Fix a ring clamp on the retort stand. Place a cone of filter paper in the funnel and a clean beaker below.","रिटॉर्ट स्टैंड पर रिंग क्लैम्प लगाएँ। कीप में शंकु के आकार का फ़िल्टर पेपर लगाएँ और नीचे साफ़ बीकर रखें।",["b1"]],
+ [2,"b3",P2,"Pour the mixture slowly down a glass rod into the funnel.","मिश्रण को काँच की छड़ के सहारे धीरे-धीरे कीप में डालें।"],
+ [2,"b4",P2,"Sand stays on the filter paper (residue). Salt solution collects in the beaker (filtrate).","रेत फ़िल्टर पेपर पर रह जाती है (अवशेष)। नमक का विलयन बीकर में आ जाता है (निस्यंद)।",["b3"]],
+ [3,"c1",P3,"Pour the salt solution into the china dish on the tripod and gauze.","नमक के विलयन को तिपाई-जाली पर रखी चीनी की प्याली में डालें।"],
+ [3,"c2",P3,"Light the burner and heat gently. Water evaporates as steam.","बर्नर जलाकर धीमी आँच पर गर्म करें। पानी भाप बनकर उड़ता है।"],
+ [3,"c3",P3,"Stop heating when crystals begin to form. The rest dries off, leaving pure salt crystals.","क्रिस्टल बनने लगें तो गर्म करना बंद करें। शेष पानी सूख जाता है और शुद्ध नमक के क्रिस्टल बचते हैं।",["c2"]]
+];
+/* [side, y, English, Hindi, targetX, targetY] */
+const L={
+ a1:[["l",300,"Tripod stand","(तिपाई स्टैंड)",120,310]],
+ a2:[["r",252,"Wire gauze","(तार की जाली)",252,242]],
+ a3:[["r",318,"Bunsen burner","(बनसेन बर्नर)",200,318]],
+ a4:[["l",215,"China dish","(चीनी की प्याली)",126,209],["r",190,"Mixture","(मिश्रण)",228,211]],
+ a5:[["r",110,"Inverted funnel","(उल्टी कीप)",221,165],["l",66,"Cotton plug","(रुई की डाट)",181,70]],
+ a6:[["r",290,"Low flame","(धीमी लौ)",198,276],["l",150,"Vapour","(वाष्प)",178,160]],
+ a7:[["l",150,"Naphthalene","(नैफ्थलीन)",166,165],["r",190,"Residue","(अवशेष)",232,212]],
+ b1:[["r",262,"Glass rod","(काँच की छड़)",207,280],["r",312,"Water + salt","(पानी + नमक)",228,308],["l",332,"Sand","(रेत)",160,338]],
+ b2:[["l",300,"Retort stand","(रिटॉर्ट स्टैंड)",108,300],["l",160,"Ring clamp","(रिंग क्लैम्प)",138,177],["r",125,"Filter paper","(छन्नी पत्र)",225,158],["r",215,"Funnel","(कीप)",237,192],["r",312,"Beaker","(बीकर)",231,306]],
+ b3:[["r",60,"Glass rod","(काँच की छड़)",264,98]],
+ b4:[["r",150,"Sand residue","(अवशेष: रेत)",236,178],["l",332,"Salt solution","(नमक का विलयन)",160,334]],
+ c1:[["l",300,"Tripod stand","(तिपाई स्टैंड)",120,310],["r",318,"Burner","(बर्नर)",200,318],["r",252,"Wire gauze","(तार की जाली)",252,242],["l",190,"China dish","(चीनी की प्याली)",128,209],["r",190,"Salt solution","(नमक का विलयन)",228,211]],
+ c2:[["r",150,"Steam","(भाप)",212,160],["r",290,"Low flame","(धीमी लौ)",198,276]],
+ c3:[["l",190,"Salt crystals","(नमक के क्रिस्टल)",160,212]]
+};
+const NS="http://www.w3.org/2000/svg";
+function mk(t,a,txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt)e.textContent=txt;return e}
+const lab=document.getElementById("labels");
+for(const id in L){
+  const g=mk("g",{id:"L"+id,class:"c"});
+  L[id].forEach(([s,y,en,hi,tx,ty])=>{
+    const x=s==="l"?8:372, an=s==="l"?"start":"end", ex=s==="l"?98:282;
+    g.appendChild(mk("line",{x1:ex,y1:y+6,x2:tx,y2:ty,class:"ll"}));
+    g.appendChild(mk("text",{x:x,y:y,"text-anchor":an,class:"len"},en));
+    g.appendChild(mk("text",{x:x,y:y+12,"text-anchor":an,class:"lhi"},hi));
+  });
+  lab.appendChild(g);
+}
+let i=-1;
+const $=id=>document.getElementById(id);
+const HINT="◀ Back (पीछे) &nbsp;|&nbsp; Next (आगे) ▶";
+function render(){
+  if(i<0){
+    [1,2,3].forEach(p=>$("g"+p).style.display=p===1?"":"none");
+    document.querySelectorAll(".c").forEach(e=>e.classList.remove("on"));
+    $("phase").textContent=P1;
+    $("en").textContent="Tap the right side to begin.";
+    $("hi").textContent="शुरू करने के लिए दाईं ओर टैप करें।";
+    $("hint").innerHTML=HINT;
+    return;
+  }
+  const cur=S[i], off=new Set();
+  S.forEach((s,k)=>{if(k<=i&&s[0]===cur[0]&&s[5])s[5].forEach(x=>off.add(x))});
+  [1,2,3].forEach(p=>$("g"+p).style.display=p===cur[0]?"":"none");
+  S.forEach((s,k)=>{
+    const on=s[0]===cur[0]&&k<=i&&!off.has(s[1]);
+    $(s[1]).classList.toggle("on",on);
+    $("L"+s[1]).classList.toggle("on",k===i);
+  });
+  $("phase").textContent=cur[2];
+  $("en").textContent=cur[3];
+  $("hi").textContent=cur[4];
+  $("hint").innerHTML="Step (चरण) "+(i+1)+" / "+S.length+" &nbsp;|&nbsp; ◀ (पीछे) &nbsp;|&nbsp; (आगे) ▶";
+}
+$("next").addEventListener("click",()=>{i=i<S.length-1?i+1:-1;render()});
+$("back").addEventListener("click",()=>{if(i>-1){i--;render()}});
+render();
 </script>
-
 </body>
 </html>
