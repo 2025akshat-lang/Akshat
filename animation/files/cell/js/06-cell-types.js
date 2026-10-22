@@ -83,3 +83,8 @@ $('#lyp').onclick=e=>{const b=e.target.closest('.lyr');if(!b)return;const k=b.da
  else{const i=CTI[CTid],ly=i.layers.find(a=>a.id===k),on=CTLV[CTid][k]===false;CTLV[CTid][k]=on;
   CTP.forEach(m=>{if(ly.parts.indexOf(m.userData.k)>=0)m.visible=on})}
  drawLy()};
+/* ================= CLEAN VIEW: sab UI chhupao / dikhao ================= */
+$('#hid').onclick=e=>{const c=document.body.classList.toggle('clean');
+ if(c)closeDock();
+ e.currentTarget.textContent=c?'👁‍🗨':'👁';
+ e.currentTarget.setAttribute('aria-label',c?'show UI':'hide UI')};
