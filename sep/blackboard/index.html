@@ -109,6 +109,7 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
   <div class="row"><select id="style" aria-label="Pointer style"></select>
     <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></div>
   <div class="row" id="themes"><button id="tdn" aria-label="Smaller text">A&minus;</button><button id="tup" aria-label="Bigger text">A+</button></div>
+  <div class="row"><button id="tapT" aria-pressed="false">Tap se next: ON</button></div>
   <div class="row"><button id="hi" aria-pressed="false">&#2361;&#2367;&#2306;&#2342;&#2368;</button><button id="fs">Fullscreen</button></div>
   <div class="row"><button id="sPrev">&#9664; Slide</button><button id="sNew" class="go">&#65291; New slide</button><button id="sNext">Slide &#9654;</button></div>
   <div class="row"><button id="prev">Back</button><button id="next" class="go">Next line</button></div>
@@ -325,7 +326,7 @@ function back(){
 const setOpen=o=>{document.body.classList.toggle('open',o);$('#fab').setAttribute('aria-expanded',o)};
 $('#fab').onclick=()=>setOpen(!document.body.classList.contains('open'));
 $('#sheetBg').onclick=()=>setOpen(false);
-$('#sheet').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!['tdn','tup','hi'].includes(b.id)&&!b.classList.contains('sw'))setOpen(false)});
+$('#sheet').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!['tdn','tup','hi','tapT'].includes(b.id)&&!b.classList.contains('sw'))setOpen(false)});
 $('#sheet').addEventListener('change',()=>setOpen(false));
 $('#lesson').onchange=e=>load(e.target.value);
 $('#carrSel').value=store.get('carrier','');
@@ -352,6 +353,14 @@ addEventListener('keydown',e=>{
 
 /* ---------- long-press text toolbar ---------- */
 const tb=$('#tb');let sel=null,st=null,lp=0,tbOpen=false;
+let tapOff=store.get('tapoff','0')==='1';
+function setTap(on){
+  tapOff=on;store.set('tapoff',on?'1':'0');
+  const b=$('#tapT');
+  if(b){b.setAttribute('aria-pressed',on);b.textContent=on?'Tap se next: OFF (free board)':'Tap se next: ON'}
+  const f=$('#tapfab');
+  if(f){f.innerHTML=on?'&#128683;':'&#128070;';f.setAttribute('aria-pressed',on);f.title=on?'Tap-next OFF':'Tap-next ON'}
+}
 board.addEventListener('contextmenu',e=>e.preventDefault());
 board.addEventListener('pointerdown',e=>{
   if(document.body.classList.contains('pen')||e.target.closest('.snote'))return;
@@ -367,7 +376,7 @@ board.addEventListener('pointermove',e=>{
 board.addEventListener('pointercancel',()=>{clearTimeout(lp);st=null});
 board.addEventListener('pointerup',()=>{
   clearTimeout(lp);
-  if(st&&!st.long&&!st.moved){if(tbOpen)closeTb();else if(!auto)next()}
+  if(st&&!st.long&&!st.moved){if(tbOpen)closeTb();else if(!auto&&!tapOff)next()}
   st=null;
 });
 function openTb(el){
@@ -436,6 +445,24 @@ addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{window.sizeIn
 addEventListener('error',()=>toast('Kuch gadbad hui. Menu mein Restart dabao.'));
 addEventListener('unhandledrejection',e=>{console.error(e.reason)});
 setG(g);setTheme(store.get('theme','navy'));
+
+/* floating toggle buttons: tap-next on/off + hide all buttons */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`#tapfab{top:234px}#hidefab{top:290px}
+body.nofab .fab:not(#hidefab){display:none!important}
+body.nofab #hidefab{top:4px;right:4px;width:26px;height:26px;min-height:26px;font-size:13px;opacity:.2}`;
+  document.head.appendChild(css);
+  const mk=(id,html,label)=>{const b=document.createElement('button');b.id=id;b.className='fab';b.innerHTML=html;b.setAttribute('aria-label',label);document.body.appendChild(b);return b};
+  mk('tapfab','&#128070;','Toggle tap to next').onclick=()=>setTap(!tapOff);
+  const h=mk('hidefab','&#128584;','Hide or show buttons');
+  const setHide=on=>{document.body.classList.toggle('nofab',on);h.innerHTML=on?'&#128065;':'&#128584;'};
+  h.onclick=()=>setHide(!document.body.classList.contains('nofab'));
+  setHide(false);
+})();
+$('#tapT').onclick=()=>setTap(!tapOff);
+setTap(tapOff);
+
 document.body.classList.toggle('hi',hi);$('#hi').setAttribute('aria-pressed',hi);
 buildMenu();setStyle();buildChars();
 if(MANI.length){const last=store.get('lesson','');const id=MANI.some(m=>m.id===last)?last:MANI[0].id;$('#lesson').value=id;load(id)}
