@@ -88,3 +88,7 @@ $('#hid').onclick=e=>{const c=document.body.classList.toggle('clean');
  if(c)closeDock();
  e.currentTarget.textContent=c?'👁‍🗨':'👁';
  e.currentTarget.setAttribute('aria-label',c?'show UI':'hide UI')};
+/* ===== side buttons (Cut, Front, +, -...) hide/show ===== */
+$('#sdb').onclick=e=>{const h=document.body.classList.toggle('noside');
+ e.currentTarget.textContent=h?'☰':'⋮';
+ e.currentTarget.classList.toggle('on',h)};
