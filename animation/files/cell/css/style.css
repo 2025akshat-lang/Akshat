@@ -101,3 +101,9 @@ body.dv .dvp{display:block}
 .hidbtn{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);width:44px;height:44px;padding:0;display:grid;place-items:center;font-size:20px;z-index:6;border-radius:50%}
 body.clean .top,body.clean .side,body.clean .ctbtn,body.clean .ctd,body.clean .dvbtn,body.clean .dvp,body.clean .bot,body.clean .lyp,body.clean #ver{display:none!important}
 body.clean .hidbtn{opacity:.35}
+/* ---- side buttons toggle ---- */
+.sidebtn{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 6px + 54px + 560px);display:none}
+body.noside .side{display:none!important}
+.sidebtn{display:grid;place-items:center;width:52px;height:30px;padding:0;font-size:18px;z-index:4;top:calc(env(safe-area-inset-top,0px) + 54px - 36px)}
+body.noside .sidebtn{top:calc(env(safe-area-inset-top,0px) + 54px)}
+body.clean .sidebtn{display:none!important}
