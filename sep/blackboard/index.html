@@ -103,6 +103,7 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
   <div class="grab"></div>
   <select id="lesson" aria-label="Chapter and lesson"></select>
   <div class="row"><select id="charSel" aria-label="Character"></select></div>
+  <div class="row"><select id="carrSel" aria-label="Mindmap helper"><option value="">Mindmap helper: lesson ke hisaab se</option><option value="monkey">Monkey</option><option value="crane">Crane</option><option value="stick">Stick figure</option></select></div>
   <div class="row"><select id="style" aria-label="Pointer style"></select>
     <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></div>
   <div class="row" id="themes"><button id="tdn" aria-label="Smaller text">A&minus;</button><button id="tup" aria-label="Bigger text">A+</button></div>
@@ -243,6 +244,12 @@ function makeLine(s){
 }
 async function show(s){
   if(!s)return;
+  if(s.k==='map'&&window.MindMap){
+    if(items.length||board.childNodes.length)newSlide(true);
+    document.body.classList.add('mm');
+    items.push(await MindMap.run(s));
+    return;
+  }
   if((s.k==='obj'||s.k==='embed')&&window.ToolsAPI){items.push(ToolsAPI.step(s));await sleep(300);return}
   const el=makeLine(s),fx=P[style].fx,d=700/speed();items.push(el);
   if(el._media)await el._media;
@@ -259,6 +266,7 @@ function renderInstant(n){board.innerHTML='';for(let i=0;i<n;i++){const s=lesson
 
 /* ---------- controls ---------- */
 function ui(){
+  document.body.classList.toggle('mm',!!board.querySelector('.mmhost'));
   const n=lesson?lesson.steps.length:0;
   $('#count').textContent=n?(SL.length>1?`Slide ${cs+1}/${SL.length} · `:'')+`${idx} / ${n}`:'';
   const sp=$('#sPrev'),sn=$('#sNext');if(sp){sp.disabled=cs<=0;sn.disabled=cs>=SL.length-1}
@@ -302,7 +310,7 @@ function saveCur(){SL[cs]={nodes:[...board.childNodes],items,scroll:board.scroll
 function loadSl(i){const t=SL[i];cs=i;items=t.items;board.replaceChildren(...t.nodes);board.scrollTop=t.scroll;if(window.ToolsAPI)ToolsAPI.load(t.tools);closeTb();ui()}
 function goSlide(i){if(busy||i<0||i>=SL.length||i===cs)return;saveCur();loadSl(i)}
 function slideStep(d){goSlide(cs+d)}
-function newSlide(){if(busy||!lesson)return;saveCur();SL.push(null);cs=SL.length-1;items=[];board.scrollTop=0;if(window.ToolsAPI)ToolsAPI.load(null);closeTb();ui()}
+function newSlide(force){if((busy&&!force)||!lesson)return;saveCur();SL.push(null);cs=SL.length-1;items=[];board.scrollTop=0;if(window.ToolsAPI)ToolsAPI.load(null);closeTb();ui()}
 function back(){
   if(!lesson||busy)return;
   if(cs!==SL.length-1){goSlide(SL.length-1);return}
@@ -318,6 +326,8 @@ $('#sheetBg').onclick=()=>setOpen(false);
 $('#sheet').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!['tdn','tup','hi'].includes(b.id)&&!b.classList.contains('sw'))setOpen(false)});
 $('#sheet').addEventListener('change',()=>setOpen(false));
 $('#lesson').onchange=e=>load(e.target.value);
+$('#carrSel').value=store.get('carrier','');
+$('#carrSel').onchange=e=>store.set('carrier',e.target.value);
 $('#style').onchange=e=>{style=e.target.value;store.set('style',style);setStyle()};
 $('#next').onclick=()=>{auto=false;next()};
 $('#prev').onclick=()=>{auto=false;back()};
@@ -424,5 +434,6 @@ else toast('manifest.js mein koi lesson nahi hai');
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit();place(cur.x,cur.y)});
 </script>
 <script src="tools.js"></script>
+<script src="mindmap.js"></script>
 </body>
 </html>
