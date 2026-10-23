@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Blackboard Animator</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Kalam:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Kalam:wght@400;700&family=Caveat:wght@500;700&family=Gaegu:wght@400;700&family=Patrick+Hand&family=Indie+Flower&display=swap" rel="stylesheet">
 <style>
 :root{--g:1;--ch:clamp(170px,34vh,420px);--bg:#0a0f3c;--bg2:#12195f;--ink:#fff;--mute:#c5cdf5;--cy:#7fe3ff;--yl:#ffe14d;--gr:#7dffa8;--rd:#ff9a9a;--panel:#141c5a;--edge:#3a4ab8;--pen1:#ffe14d;--pen2:#7fe3ff;--pen3:#ff9a9a;color-scheme:dark}
 [data-theme=black]{--bg:#000;--bg2:#0c0c0c;--mute:#d0d0d0;--cy:#6fe0ff;--gr:#6dff9c;--rd:#ff8f8f;--panel:#1a1a1a;--edge:#666}
@@ -32,9 +32,10 @@ body.hi .ln small{display:block}
 .media{text-align:center}
 .media img,.media svg{display:block;margin:0 auto;max-width:100%;max-height:42vh;height:auto;border-radius:10px;background:#fff}
 .media figcaption,.imgerr{margin-top:6px}
-.hl1,.hl2,.hl3{color:#111!important}.hl1{background:#ffe14d}.hl2{background:#8dffb0}.hl3{background:#ffb3d1}
-.hl1 small,.hl2 small,.hl3 small{color:#333}
+.hl1,.hl2,.hl3,.hl4,.hl5,.hl6{color:#111!important}.hl1{background:#fff59d}.hl2{background:#b9f6ca}.hl3{background:#ffc1e3}.hl4{background:#b3e5fc}.hl5{background:#ffd9a8}.hl6{background:#d7c4ff}
+.hl1 small,.hl2 small,.hl3 small,.hl4 small,.hl5 small,.hl6 small{color:#333}
 .sel{outline:3px dashed var(--yl);outline-offset:4px}
+.mvm{touch-action:none;cursor:move;outline:2px dotted var(--cy);outline-offset:4px}
 .snote{position:absolute;width:180px;background:#fff59d;color:#222;border-radius:6px;box-shadow:0 4px 14px #0007;font:18px/1.3 Kalam,"Baloo 2",cursive;z-index:5}
 .snote .nh{display:flex;justify-content:space-between;padding:4px 8px;background:#ffe14d;border-radius:6px 6px 0 0;cursor:move;touch-action:none;font-size:14px}
 .snote .x{cursor:pointer;padding:0 6px}.snote [contenteditable]{padding:6px 8px;min-height:60px;outline:none;user-select:text;-webkit-user-select:text}
@@ -95,6 +96,7 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
   <button data-a="up" aria-label="Bigger">A+</button>
   <button data-a="b" aria-label="Bold"><b>B</b></button>
   <button data-a="u" aria-label="Underline"><u>U</u></button>
+  <button data-a="mv" aria-label="Move this text">&#10021;</button>
   <button data-a="x" aria-label="Close">&#10005;</button>
 </div>
 
@@ -125,7 +127,7 @@ window.registerLesson=l=>{if(l&&l.id&&Array.isArray(l.steps))LESSONS[l.id]=l};
 const MANI=Array.isArray(window.MANIFEST)?window.MANIFEST:[];
 const board=$('#board'),wrap=$('#wrap'),ptr=$('#ptr'),arm=$('#arm'),msg=$('#msg'),root=document.documentElement;
 const KINDS=['title','eq','note','def','q','ans'];
-const FONTS=['','Kalam,cursive','Caveat,cursive','Georgia,serif'];
+const FONTS=['','Gaegu,cursive','"Patrick Hand",cursive','Kalam,cursive','Caveat,cursive','"Indie Flower",cursive','Georgia,serif'];
 let lesson=null,idx=0,busy=false,auto=false,style=store.get('style','arm'),token=0,hi=store.get('hi','0')==='1',g=parseFloat(store.get('g','1'))||1;
 let cur={x:60,y:300},G={u:1,sx:60,sy:300},CH=null;
 const CHARS=window.CHARS||{};
@@ -355,9 +357,13 @@ board.addEventListener('pointerdown',e=>{
   if(document.body.classList.contains('pen')||e.target.closest('.snote'))return;
   const ln=e.target.closest('.ln.done');
   st={x:e.clientX,y:e.clientY,moved:false,long:false};
-  if(ln)lp=setTimeout(()=>{st&&(st.long=true);openTb(ln)},550);
+  if(ln&&ln._f&&ln._f.mv){st.drag={ln,tx:ln._tx||0,ty:ln._ty||0};st.long=true}
+  else if(ln)lp=setTimeout(()=>{st&&(st.long=true);openTb(ln)},550);
 });
-board.addEventListener('pointermove',e=>{if(st&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>10){st.moved=true;clearTimeout(lp)}});
+board.addEventListener('pointermove',e=>{
+  if(st&&st.drag){const d=st.drag,l=d.ln;l._tx=d.tx+e.clientX-st.x;l._ty=d.ty+e.clientY-st.y;l.style.translate=l._tx+'px '+l._ty+'px';st.moved=true;return}
+  if(st&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>10){st.moved=true;clearTimeout(lp)}
+});
 board.addEventListener('pointercancel',()=>{clearTimeout(lp);st=null});
 board.addEventListener('pointerup',()=>{
   clearTimeout(lp);
@@ -386,7 +392,7 @@ function updTb(){
 }
 function applyF(){
   const el=sel,f=el._f;
-  el.classList.remove('hl1','hl2','hl3');if(f.hl)el.classList.add('hl'+f.hl);
+  el.classList.remove('hl1','hl2','hl3','hl4','hl5','hl6');if(f.hl)el.classList.add('hl'+f.hl);
   el.style.fontFamily=FONTS[f.font]||'';el.style.setProperty('--z',f.z);
   el.style.fontWeight=f.b?'700':'';
   el.style.textDecoration=f.u?'underline':'';
@@ -396,13 +402,14 @@ function applyF(){
 tb.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||!sel)return;
   const f=sel._f,a=b.dataset.a;
-  if(a==='hl')f.hl=(f.hl+1)%4;
+  if(a==='hl')f.hl=(f.hl+1)%7;
   else if(a==='font')f.font=(f.font+1)%FONTS.length;
   else if(a==='up')f.z=Math.min(2.2,+(f.z+.15).toFixed(2));
   else if(a==='dn')f.z=Math.max(.6,+(f.z-.15).toFixed(2));
   else if(a==='b')f.b=f.b?0:1;
   else if(a==='u')f.u=f.u?0:1;
   else if(a==='note'){addNote(sel);closeTb();return}
+  else if(a==='mv'){f.mv=f.mv?0:1;sel.classList.toggle('mvm',!!f.mv);closeTb();return}
   else if(a==='x'){closeTb();return}
   applyF();
 });
@@ -421,6 +428,8 @@ function addNote(el){
 
 
 
+function addNoteFree(){addNote({offsetLeft:board.clientWidth*.3,offsetWidth:0,offsetTop:board.scrollTop+board.clientHeight*.3,offsetHeight:0})}
+
 /* ---------- start-up, resize, safety net ---------- */
 let rt=0;
 addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{window.sizeInk&&sizeInk();fit();place(cur.x,cur.y);posTb()},120)});
@@ -434,6 +443,8 @@ else toast('manifest.js mein koi lesson nahi hai');
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit();place(cur.x,cur.y)});
 </script>
 <script src="tools.js"></script>
+<script src="extras.js"></script>
+<script src="notes.js"></script>
 <script src="mindmap.js"></script>
 </body>
 </html>
