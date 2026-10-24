@@ -8,13 +8,15 @@ body.panmode #panlay{display:block}
 #panfab{top:234px}
 #mmap{position:fixed;right:10px;bottom:10px;z-index:18;width:170px;height:108px;background:var(--panel);border:2px solid var(--edge);border-radius:10px;opacity:.92;touch-action:none}
 #mmap canvas{width:100%;height:100%;display:block;border-radius:8px}
-#mmap button{position:absolute;left:4px;top:4px;min-height:26px;min-width:26px;padding:0 6px;font-size:13px;border-radius:8px}
+#mmap button{position:absolute;top:4px;min-height:26px;min-width:26px;padding:0 6px;font-size:13px;border-radius:8px}
+#mmap .mhome{left:4px}#mmap .mdrag{left:36px;cursor:move;touch-action:none}#mmap .mhide{right:4px}
+#mmap.min{width:44px;height:44px;border-radius:50%}#mmap.min canvas,#mmap.min .mhome,#mmap.min .mdrag{display:none}#mmap.min .mhide{left:9px;top:9px;right:auto}
 body.pen:not(.penhide) #mmap,body.tools #mmap,body.open #mmap{display:none}
 @media (max-width:600px){#mmap{width:120px;height:78px}}`;
 document.head.appendChild(st);
 const lay=document.createElement('div');lay.id='panlay';document.body.appendChild(lay);
 const fab=document.createElement('button');fab.id='panfab';fab.className='fab';fab.innerHTML='&#9995;';fab.setAttribute('aria-label','Pan the board');fab.setAttribute('aria-pressed','false');document.body.appendChild(fab);
-const box=document.createElement('div');box.id='mmap';box.innerHTML='<canvas></canvas><button aria-label="Back to start">&#8962;</button>';document.body.appendChild(box);
+const box=document.createElement('div');box.id='mmap';box.innerHTML='<canvas></canvas><button class="mhome" aria-label="Back to start">&#8962;</button><button class="mdrag" aria-label="Move minimap">&#10303;</button><button class="mhide" aria-label="Hide or show minimap">&#9662;</button>';document.body.appendChild(box);
 const cv=box.querySelector('canvas'),cx=cv.getContext('2d');
 const API=()=>window.ToolsAPI;
 fab.onclick=()=>{const on=!B.classList.contains('panmode');B.classList.toggle('panmode',on);fab.setAttribute('aria-pressed',on)};
@@ -22,12 +24,24 @@ let drag=null;
 lay.addEventListener('pointerdown',e=>{const w=API().world();drag={x:e.clientX,y:e.clientY,px:w.pan[0],py:w.pan[1]};lay.setPointerCapture(e.pointerId);lay.style.cursor='grabbing'});
 lay.addEventListener('pointermove',e=>{if(drag)API().setPan(drag.px-(e.clientX-drag.x),drag.py-(e.clientY-drag.y))});
 const end=()=>{drag=null;lay.style.cursor='grab'};lay.addEventListener('pointerup',end);lay.addEventListener('pointercancel',end);
-box.querySelector('button').onclick=e=>{e.stopPropagation();API().setPan(0,0)};
+box.querySelector('.mhome').onclick=e=>{e.stopPropagation();API().setPan(0,0)};
+const kv={get(k,d){try{const v=localStorage.getItem('bb_'+k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem('bb_'+k,v)}catch(e){}}};
+const hideB=box.querySelector('.mhide'),dragB=box.querySelector('.mdrag');
+function setMin(on){box.classList.toggle('min',on);hideB.innerHTML=on?'&#128506;':'&#9662;';kv.set('mmmin',on?'1':'0');if(!on){size();window.mmUpdate&&mmUpdate()}}
+hideB.onclick=e=>{e.stopPropagation();setMin(!box.classList.contains('min'))};
+const freePos=(l,t)=>{box.style.left=l+'px';box.style.top=t+'px';box.style.right='auto';box.style.bottom='auto'};
+function clampBox(){const r=box.getBoundingClientRect();freePos(Math.max(0,Math.min(innerWidth-r.width,r.left)),Math.max(0,Math.min(innerHeight-r.height,r.top)))}
+try{const p=JSON.parse(kv.get('mmpos','null'));if(p)freePos(p.l,p.t)}catch(e){}
+let mdv=null;
+dragB.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();const r=box.getBoundingClientRect();mdv={dx:e.clientX-r.left,dy:e.clientY-r.top};try{dragB.setPointerCapture(e.pointerId)}catch(_){}});
+dragB.addEventListener('pointermove',e=>{if(mdv)freePos(Math.max(0,Math.min(innerWidth-box.offsetWidth,e.clientX-mdv.dx)),Math.max(0,Math.min(innerHeight-box.offsetHeight,e.clientY-mdv.dy)))});
+const mdEnd=()=>{if(mdv){mdv=null;const r=box.getBoundingClientRect();kv.set('mmpos',JSON.stringify({l:Math.round(r.left),t:Math.round(r.top)}))}};
+dragB.addEventListener('pointerup',mdEnd);dragB.addEventListener('pointercancel',mdEnd);
 
 let T=null,pend=false;
 function size(){const r=box.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0)}
 function draw(){
-  pend=false;if(!API())return;
+  pend=false;if(!API()||box.classList.contains('min'))return;
   const w=API().world(),W=wrap.clientWidth,H=wrap.clientHeight,[px,py]=w.pan;
   const cs=getComputedStyle(document.documentElement),ink=cs.getPropertyValue('--ink').trim()||'#fff';
   let x0=Math.min(0,px),y0=Math.min(0,py),x1=Math.max(W,px+W),y1=Math.max(H,py+H);
@@ -54,7 +68,7 @@ function jump(e){
 let md=false;
 box.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;md=true;box.setPointerCapture(e.pointerId);jump(e)});
 box.addEventListener('pointermove',e=>{if(md)jump(e)});
-box.addEventListener('pointerup',()=>{md=false});
-addEventListener('resize',()=>{size();mmUpdate()});
-size();mmUpdate();
+box.addEventListener('pointerup',()=>{md=false});box.addEventListener('pointercancel',()=>{md=false});addEventListener('blur',()=>{md=false;drag=null});
+addEventListener('resize',()=>{size();mmUpdate();if(box.style.left)clampBox()});
+size();mmUpdate();if(kv.get('mmmin','0')==='1')setMin(true);
 })();
