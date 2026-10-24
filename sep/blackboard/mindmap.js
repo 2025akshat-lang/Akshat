@@ -12,7 +12,10 @@ st.textContent=`.mmhost{position:absolute;left:0;top:0;width:100%;height:100%;po
 .cn{transform-box:fill-box;transform-origin:center}
 .mmpop .cn{animation:mmpop .4s ease-out}
 @keyframes mmpop{0%{transform:scale(.85)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
-body.mm #ptr,body.mm #char,body.mm #arm{visibility:hidden}`;
+body.mm #ptr,body.mm #char,body.mm #arm{visibility:hidden}
+.mmnode{pointer-events:all;cursor:pointer}
+.mmzoom{animation:mmz .35s ease-out}
+@keyframes mmz{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.07)}100%{transform:scale(1);opacity:1}}`;
 document.head.appendChild(st);
 const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
 const sty=(e,o)=>{Object.assign(e.style,o);return e};
@@ -21,10 +24,16 @@ function wrapText(t,max){const out=[];String(t).split('\n').forEach(par=>{let li
 
 async function run(step){
   if(!step.tree)return document.createElement('div');
-  const W=wrap.clientWidth,H=wrap.clientHeight;
+  const W0=wrap.clientWidth,H0=wrap.clientHeight;
   let type=(typeof store!=='undefined'&&store.get('carrier',''))||step.carrier||'monkey';
   if(!['monkey','crane','stick'].includes(type))type='monkey';
   const stick=type==='stick',hang=!stick;
+  /* the map is laid out on a canvas big enough for every box, then scaled to fit this screen: no overlaps on phone, tablet, laptop or smartboard */
+  const t0=flatten(step.tree),ch0={},dp0={};let lf=0,md0=0;
+  t0.forEach(n=>{if(n.from)ch0[n.from]=1});
+  t0.forEach(n=>{dp0[n.id]=n.from?dp0[n.from]+1:0;md0=Math.max(md0,dp0[n.id]);if(!ch0[n.id])lf++});
+  const kk=Math.max(1,lf*150/(W0*.94),(md0+1)*84/(H0*(stick?.68:.6)));
+  const W=W0*kk,H=H0*kk;
   const host=document.createElement('div');host.className='mmhost';
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,preserveAspectRatio:'xMidYMid meet'},host);
   board.appendChild(host);
@@ -43,9 +52,10 @@ async function run(step){
   const lay=()=>{const mc=Math.max(8,Math.min(28,Math.floor((colW*.94-fs)/(fs*.64))));
     nodes.forEach(n=>{n.lines=wrapText(n.t,mc);n.bw=Math.max(...n.lines.map(l=>l.length))*fs*.64+fs*1.5;n.bh=n.lines.length*fs*1.22+fs*.9});
     return Math.max(...nodes.map(n=>n.bh))};
-  for(let i=0;i<10&&lay()>rowH*.8&&fs>9;i++)fs*=.9;
-  lay();
-  nodes.forEach(n=>{n.cx=n.x!=null?n.x*W:Z.x+(n.lx+.5)*colW;n.cy=n.y!=null?n.y*H:Z.y+(n.d+.5)*rowH});
+  const placeN=()=>nodes.forEach(n=>{n.cx=n.x!=null?n.x*W:Z.x+(n.lx+.5)*colW;n.cy=n.y!=null?n.y*H:Z.y+(n.d+.5)*rowH});
+  const overlaps=()=>{for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j];if(Math.abs(a.cx-b.cx)<(a.bw+b.bw)/2+4&&Math.abs(a.cy-b.cy)<(a.bh+b.bh)/2+2)return true}return false};
+  for(let i=0;i<16&&fs>7&&(lay()>rowH*.8||(placeN(),overlaps()));i++)fs*=.92;
+  lay();placeN();
 
   /* ----- container (tray) with shuffled chips ----- */
   const T=stick?{x:W*.2,y:H*.76,w:W*.6,h:H*.16}:{x:W*.05,y:H*.15,w:W*.8,h:H*.17};
@@ -74,6 +84,8 @@ async function run(step){
     }
     n.slot=sty(el('rect',{x:n.cx-n.bw/2,y:n.cy-n.bh/2,width:n.bw,height:n.bh,rx:fs*.5},gS),{fill:'none',stroke:col,strokeWidth:'2.5px',strokeDasharray:'8 6',opacity:.55});
     n.g=el('g',{},gK);const cn=el('g',{class:'cn'},n.g);
+    n.g.addEventListener('pointerdown',e=>{if(n.g.classList.contains('mmnode'))e.stopPropagation()});
+    n.g.addEventListener('pointerup',e=>{if(n.g.classList.contains('mmnode')){e.stopPropagation();zoomNode(n)}});
     sty(el('rect',{x:-n.bw/2,y:-n.bh/2,width:n.bw,height:n.bh,rx:fs*.5},cn),{fill:'var(--panel)',stroke:col,strokeWidth:'3px'});
     n.lines.forEach((l,i)=>{const t=el('text',{x:0,y:-n.bh/2+fs*.45+fs*1.22*(i+.5),'text-anchor':'middle'},cn);t.textContent=l;sty(t,{fill:'var(--ink)',fontSize:fs+'px',fontWeight:600,dominantBaseline:'central'})});
     setChip(n,n.tx,n.ty,tk);
@@ -158,8 +170,20 @@ async function run(step){
   const upd=()=>{if(!held)return;const n=held.n;if(held.free){setChip(n,held.x,held.y,held.s);return}const h=hand(),o=off(n,held.s);setChip(n,h.x+o.x,h.y+o.y,held.s)};
   (function loop(t){if(!live)return;draw(t);upd();requestAnimationFrame(loop)})(performance.now());
 
+  let zg=null;
+  function zoomNode(n){
+    if(zg){zg.remove();zg=null}
+    zg=el('g',{},svg);
+    sty(el('rect',{x:0,y:0,width:W,height:H},zg),{fill:'#000',opacity:.6});
+    const s=Math.min(W*.7/n.bw,H*.45/n.bh,8),c=n.g.cloneNode(true);
+    c.classList.remove('mmnode','mmpop');c.setAttribute('transform',`translate(${W/2} ${H/2}) scale(${s})`);
+    c.firstChild.classList.add('mmzoom');zg.appendChild(c);
+    zg.style.pointerEvents='all';
+    zg.addEventListener('pointerdown',e=>e.stopPropagation());
+    zg.addEventListener('pointerup',e=>{e.stopPropagation();if(zg){zg.remove();zg=null}});
+  }
   const land=n=>{
-    n.slot.style.opacity=0;setChip(n,n.cx,n.cy,1);n.g.classList.add('mmpop');
+    n.g.classList.add('mmnode');n.slot.style.opacity=0;setChip(n,n.cx,n.cy,1);n.g.classList.add('mmpop');
     if(n.cn){n.cn.style.strokeDasharray='none';n.cn.style.opacity=1;n.ar.style.opacity=1}
   };
   const floorW=x=>Math.max(W*.04,Math.min(W*.96,x));
