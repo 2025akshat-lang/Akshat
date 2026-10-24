@@ -297,7 +297,7 @@ function reset(n=0){
 function load(id){
   const m=MANI.find(x=>x.id===id);if(!m)return;
   auto=false;store.set('lesson',id);
-  const ok=()=>{lesson=LESSONS[id]||null;if(lesson)useChar(lesson.char||m.char||store.get('char',''));if(!lesson){toast('Lesson file sahi nahi hai: '+m.file)}reset()};
+  const ok=()=>{lesson=LESSONS[id]||null;if(lesson)useChar(lesson.char||m.char||store.get('char',''));if(m.words&&window.loadWords)loadWords(m.words);if(!lesson){toast('Lesson file sahi nahi hai: '+m.file)}reset()};
   if(LESSONS[id])return ok();
   toast('Loading…');
   const s=document.createElement('script');let done=false;
@@ -449,8 +449,8 @@ setG(g);setTheme(store.get('theme','navy'));
 /* floating toggle buttons: tap-next on/off + hide all buttons */
 (function(){
   const css=document.createElement('style');
-  css.textContent=`#tapfab{top:234px}#hidefab{top:290px}
-body.nofab .fab:not(#hidefab){display:none!important}
+  css.textContent=`#tapfab{top:290px}#hidefab{top:346px}
+body.nofab .fab:not(#hidefab),body.nofab #mmap{display:none!important}
 body.nofab #hidefab{top:4px;right:4px;width:26px;height:26px;min-height:26px;font-size:13px;opacity:.2}`;
   document.head.appendChild(css);
   const mk=(id,html,label)=>{const b=document.createElement('button');b.id=id;b.className='fab';b.innerHTML=html;b.setAttribute('aria-label',label);document.body.appendChild(b);return b};
@@ -462,7 +462,6 @@ body.nofab #hidefab{top:4px;right:4px;width:26px;height:26px;min-height:26px;fon
 })();
 $('#tapT').onclick=()=>setTap(!tapOff);
 setTap(tapOff);
-
 document.body.classList.toggle('hi',hi);$('#hi').setAttribute('aria-pressed',hi);
 buildMenu();setStyle();buildChars();
 if(MANI.length){const last=store.get('lesson','');const id=MANI.some(m=>m.id===last)?last:MANI[0].id;$('#lesson').value=id;load(id)}
@@ -472,7 +471,9 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit();pla
 <script src="tools.js"></script>
 <script src="extras.js"></script>
 <script src="notes.js"></script>
+<script src="canvas.js"></script>
+<script src="smart.js"></script>
 <script src="mindmap.js"></script>
-  <script src="library.js"></script>
+<script src="library.js"></script>
 </body>
 </html>
