@@ -3,6 +3,7 @@ registerLesson({
   id:'temperature',
   title:'Temperature scale and measurement',
   steps:[
+    {k:'section', t:'Questions and answers'},
     {k:'title', t:'Temperature Scales'},
     {k:'note',  t:'Normal human body temperature'},
     {k:'eq',    t:'37 °C = 98.6 °F = 310.15 K'},
@@ -10,7 +11,7 @@ registerLesson({
     {k:'ans',   t:'Ideal body temperature is 37 °C, but the real temperature varies from 36 °C to 42 °C.'},
     {k:'note',  t:'(i) A thermometer placed at the armpit reads about 0.5 to 1 °C lower than in the mouth.'},
     {k:'note',  t:'(ii) It varies with age, time, day and previous activity level.'},
-    {k:'title', t:'Blackboard work summary'},
+    {k:'section', t:'Blackboard work summary (concept map)'},
     {k:'map', carrier:'monkey', tree:{t:'Temperature Measurement', kids:[
       {t:'Method', kids:[
         {t:'Ancient Method', kids:[{t:'Pulse Rate', kids:[{t:'Non-reliable scientific method'}]}]},
