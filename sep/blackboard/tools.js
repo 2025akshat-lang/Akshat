@@ -41,6 +41,7 @@ body.pen #penbar{display:flex;flex-direction:column;right:auto;left:50%;transfor
 .csw[aria-pressed=true]{background:var(--panel);box-shadow:0 0 0 3px var(--cy)}
 #penbar [data-t][aria-pressed=true],#penbar [data-z][aria-pressed=true]{box-shadow:0 0 0 3px var(--cy)}
 #penbar select{min-height:44px}
+#penbar .pr:first-child button{min-width:38px;padding:4px 4px;font-size:15px}
 body.pen.penhide #penbar{display:none}
 #penopt{display:none;top:66px;right:66px}body.pen.penhide #penopt{display:block}
 @media (prefers-reduced-motion:reduce){.obj{transition:none}}`;
@@ -91,8 +92,8 @@ function pick(el){
 function track(el,e,mv,tap){
   const x0=e.clientX,y0=e.clientY;let moved=false;
   try{el.setPointerCapture(e.pointerId)}catch(_){}
-  const m=ev=>{const dx=ev.clientX-x0,dy=ev.clientY-y0;if(!moved&&Math.hypot(dx,dy)<8)return;moved=true;mv(dx,dy)};
-  const u=ev=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);el.removeEventListener('pointercancel',u);window.mmUpdate&&window.mmUpdate();
+  const m=ev=>{if(ev.pointerId!==e.pointerId||el._pin)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;if(!moved&&Math.hypot(dx,dy)<8)return;moved=true;mv(dx,dy)};
+  const u=ev=>{if(ev.pointerId!==e.pointerId)return;el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);el.removeEventListener('pointercancel',u);window.mmUpdate&&window.mmUpdate();
     if(moved)el.classList.toggle('below',el.offsetTop<70);
     if(!moved&&tap&&ev.type==='pointerup')tap(ev)};
   el.addEventListener('pointermove',m);el.addEventListener('pointerup',u);el.addEventListener('pointercancel',u);
@@ -128,7 +129,27 @@ function mk(o){
   el.appendChild(oc);
   if(!emb)el.insertAdjacentHTML('beforeend','<button class="lk" aria-label="Lock">&#128275;</button>');
   layer.appendChild(el);objs.push(el);el._home=null;
+  const pts=new Map();let pin=null;
   el.addEventListener('pointerdown',e=>{
+    pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2&&!el._o.lock){
+      const v=[...pts.values()],tx=el.querySelector('.tx');
+      pin={d:Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1])||1,w:el.offsetWidth,h:el.offsetHeight,fs:tx?parseFloat(getComputedStyle(tx).fontSize):0};
+      el._pin=true;pick(el);
+    }
+  },true);
+  el.addEventListener('pointermove',e=>{
+    if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(!pin||pts.size<2)return;
+    const v=[...pts.values()],k=Math.max(.25,Math.min(6,Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1])/pin.d)),nw=Math.max(40,pin.w*k),tx=el.querySelector('.tx');
+    el.style.width=nw+'px';
+    if(tx)tx.style.fontSize=Math.max(8,pin.fs*k)+'px';
+    else el.style.height=(el._o.keep?nw*el._o.ar:Math.max(24,pin.h*k))+'px';
+  });
+  const pend=e=>{pts.delete(e.pointerId);if(pts.size<2){pin=null;setTimeout(()=>{if(pts.size<2)el._pin=false},60)}};
+  el.addEventListener('pointerup',pend);el.addEventListener('pointercancel',pend);
+  el.addEventListener('pointerdown',e=>{
+    if(el._pin){e.stopPropagation();return}
     if(e.target.closest('.oc'))return;
     const lk=e.target.closest('.lk');
     if(lk){e.stopPropagation();const Lk=!el._o.lock;el._o.lock=Lk;el.classList.toggle('locked',Lk);lk.innerHTML=Lk?'&#128274;':'&#128275;';if(Lk)pick(null);return}
@@ -283,9 +304,9 @@ addEventListener('keydown',e=>{if(e.key==='Delete'&&selEl&&!e.target.isContentEd
 /* ---------- pen ---------- */
 const PAL=['auto','#e53935','#1e88e5','#43a047','#fb8c00','#8e24aa','#fdd835','#00bcd4'];
 const SZ=[.0028,.0055,.009,.015,.025],KS=[1,.55,.3,.15];
-let efil=0,colP='auto',colH='#ffeb3b',tool='pen',sz=2,col='auto',stab=2,snap=true,dash=false,guard=true,strokes=[],hist=[],live=null,IW=1,IH=1,gradOn=false,gradI=0,trail=[],lraf=0;
+let selS=[],selG=null,efil=0,colP='auto',colH='#ffeb3b',tool='pen',sz=2,col='auto',stab=2,snap=true,dash=false,guard=true,strokes=[],hist=[],live=null,IW=1,IH=1,gradOn=false,gradI=0,trail=[],lraf=0;
 const pb=document.createElement('div');pb.id='penbar';
-pb.innerHTML=`<div class="pr"><button data-t="pen" aria-pressed="true" aria-label="Pen">&#9999;&#65039;</button><button data-t="hl" aria-pressed="false" aria-label="Highlighter">&#128397;</button><button data-t="line" aria-pressed="false" aria-label="Straight line">&#9585;</button><button data-t="erase" aria-pressed="false" aria-label="Eraser">&#9003;</button><button data-t="brush" aria-pressed="false" aria-label="Pressure brush">&#128396;</button><button data-t="laser" aria-pressed="false" aria-label="Laser pointer">&#128308;</button><span class="gap"></span><button data-p="min" aria-label="More options" id="pmin">&#9662;</button></div>
+pb.innerHTML=`<div class="pr"><button data-t="pen" aria-pressed="true" aria-label="Pen">&#9999;&#65039;</button><button data-t="hl" aria-pressed="false" aria-label="Highlighter">&#128397;</button><button data-t="line" aria-pressed="false" aria-label="Straight line">&#9585;</button><button data-t="erase" aria-pressed="false" aria-label="Eraser">&#9003;</button><button data-t="brush" aria-pressed="false" aria-label="Pressure brush">&#128396;</button><button data-t="rub" aria-pressed="false" aria-label="Eraser: rubs out only the part you touch" style="font-size:13px;font-weight:700">Rub</button><button data-t="laser" aria-pressed="false" aria-label="Laser pointer">&#128308;</button><button data-t="sel" aria-pressed="false" aria-label="Select a drawing, move it, pinch to zoom">&#11034;</button><span class="gap"></span><button data-p="min" aria-label="More options" id="pmin">&#9662;</button></div>
 <div class="pr">${[4,8,12,18,26].map((n,i)=>`<button data-z="${i}" aria-pressed="${i===2}" aria-label="Thickness ${i+1}" style="flex:1"><i style="display:inline-block;border-radius:50%;background:currentColor;width:${n}px;height:${n}px"></i></button>`).join('')}</div>
 <div class="pr more" id="pal">${PAL.map((c,i)=>`<button class="csw" data-c="${c}" aria-pressed="${i===0}" aria-label="Colour ${i+1}" style="color:${c==='auto'?'var(--ink)':c}">&#9679;</button>`).join('')}</div>
 <div class="pr more"><select id="stab" aria-label="Stability"><option value="0">Stability: Off</option><option value="1">Stability: Low</option><option value="2" selected>Stability: High</option><option value="3">Stability: Max</option></select><button data-p="snap" aria-pressed="true">Auto-shape</button><button data-p="dash" aria-pressed="false">Dash</button><button data-p="guard" aria-pressed="true">Palm guard</button><button data-p="grad" aria-pressed="false">Gradient: off</button><button data-p="ef">Eraser: all</button></div>
@@ -331,7 +352,7 @@ function drawS(s){
   cx.restore();
 }
 const norm=s=>{s.p=s.p.map(p=>[p[0]/IW,p[1]/IH]);if(s.r)s.r=[s.r[0]/IW,s.r[1]/IH];if(s.o)s.o=s.o.map(p=>[p[0]/IW,p[1]/IH]);return s};
-function redrawInk(){cx.clearRect(0,0,IW,IH);strokes.forEach(drawS);if(live&&live.t!=='erase'&&live.t!=='laser')drawS(norm(liveS()));drawTrail();window.mmUpdate&&window.mmUpdate()}
+function redrawInk(){cx.clearRect(0,0,IW,IH);strokes.forEach(drawS);if(live&&live.t!=='erase'&&live.t!=='laser'&&live.t!=='rub')drawS(norm(liveS()));drawTrail();drawOverlay();window.mmUpdate&&window.mmUpdate()}
 const kind=()=>tool==='hl'?'h':(dash?'d':'p');
 function liveS(){const L=live;return{t:L.t==='brush'?'brush':'path',p:L.t==='line'?[L.pts[0],L.raw]:L.pts.slice(),ws:L.ws,gr:gradOn&&L.t!=='line'?gradI:null,c:col,w:SZ[sz],k:kind()}}
 function rdp(p,e){
@@ -374,10 +395,91 @@ function hit(s,x,y,r){
   }
   return false;
 }
+const selPtr=new Map();
+function dense(s){
+  const P=s.p.map(p=>[p[0]*IW,p[1]*IH]);let pts=[];
+  if(s.t==='ell'){const rx=s.r[0]*IW,ry=s.r[1]*IH,c=P[0];for(let i=0;i<=72;i++){const a=i/72*6.2832;pts.push([c[0]+rx*Math.cos(a),c[1]+ry*Math.sin(a)])}}
+  else pts=s.t==='poly'?P.concat([P[0]]):P;
+  const out=[],ws=[];
+  for(let i=0;i<pts.length;i++){
+    const a=pts[i];out.push(a);ws.push(s.ws?s.ws[Math.min(i,s.ws.length-1)]:1);
+    const b=pts[i+1];if(!b)break;
+    const n=Math.floor(dist(a,b)/6);
+    for(let k=1;k<=n;k++){const t=k/(n+1);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);ws.push(s.ws?s.ws[Math.min(i,s.ws.length-1)]:1)}
+  }
+  return{pts:out,ws};
+}
+function rubStroke(s,x,y,r){
+  if(!efOK(s)||!hit(s,x,y,r+4))return[s];
+  if(s.t==='dot')return[];
+  const D=dense(s),runs=[];let run=null;
+  D.pts.forEach((p,i)=>{
+    if(dist(p,[x,y])<r){run=null}
+    else{if(!run){run={p:[],ws:[]};runs.push(run)}run.p.push(p);run.ws.push(D.ws[i])}
+  });
+  const out=[];
+  runs.forEach(rn=>{
+    if(rn.p.length<2)return;
+    const n={t:(s.ws||s.t==='brush')?'brush':'path',p:rn.p.map(p=>[p[0]/IW,p[1]/IH]),c:s.c,w:s.w,k:s.k};
+    if(n.t==='brush')n.ws=rn.ws;
+    if(s.gr!=null)n.gr=s.gr;
+    out.push(n);
+  });
+  return out;
+}
+function rubAt(p){
+  const r=Math.max(18,IW/48);let ch=false;const out=[];
+  strokes.forEach(s=>{const rs=rubStroke(s,p[0],p[1],r);if(rs.length!==1||rs[0]!==s)ch=true;out.push(...rs)});
+  if(ch){strokes=out;if(live)live.ch=true}
+}
+/* select a drawing -> move it, pinch to zoom it */
+function selStart(mode){
+  const v=[...selPtr.values()];
+  selG={mode,orig:selS.map(s=>({p:s.p.map(q=>q.slice()),r:s.r?s.r.slice():null,o:s.o?s.o.map(q=>q.slice()):null})),a:v[0].slice(),d:v[1]?dist(v[0],v[1])||1:1,c:v[1]?[(v[0][0]+v[1][0])/2,(v[0][1]+v[1][1])/2]:null};
+  if(!selPtr.h){snapH();selPtr.h=1}
+}
+function selDown(e){
+  try{ink.setPointerCapture(e.pointerId)}catch(_){}
+  selPtr.set(e.pointerId,[e.clientX+panX,e.clientY+panY]);
+  if(selPtr.size===1){
+    const p=selPtr.get(e.pointerId),r=Math.max(18,IW/60);
+    if(!(selS.length&&selS.some(s=>hit(s,p[0],p[1],r+8)))){const f=[...strokes].reverse().find(s=>hit(s,p[0],p[1],r));selS=f?[f]:[]}
+    redrawInk();
+    if(selS.length)selStart('move');
+  }else if(selPtr.size===2&&selS.length)selStart('pinch');
+}
+function selMove(e){
+  if(!selPtr.has(e.pointerId))return;
+  selPtr.set(e.pointerId,[e.clientX+panX,e.clientY+panY]);
+  if(!selG||!selS.length)return;
+  const v=[...selPtr.values()];
+  if(selG.mode==='move'||v.length<2){
+    const dx=(v[0][0]-selG.a[0])/IW,dy=(v[0][1]-selG.a[1])/IH;
+    selS.forEach((s,i)=>{const o=selG.orig[i];s.p=o.p.map(q=>[q[0]+dx,q[1]+dy]);if(o.o)s.o=o.o.map(q=>[q[0]+dx,q[1]+dy])});
+  }else{
+    const k=Math.max(.2,Math.min(8,dist(v[0],v[1])/selG.d)),c=selG.c;
+    selS.forEach((s,i)=>{const o=selG.orig[i],f=q=>[((q[0]*IW-c[0])*k+c[0])/IW,((q[1]*IH-c[1])*k+c[1])/IH];
+      s.p=o.p.map(f);if(o.o)s.o=o.o.map(f);if(o.r)s.r=[o.r[0]*k,o.r[1]*k]});
+  }
+  redrawInk();
+}
+function selUp(e){
+  selPtr.delete(e.pointerId);
+  if(selPtr.size===0){selG=null;selPtr.h=0}
+  else if(selS.length)selStart('move');
+}
+function drawOverlay(){
+  if(live&&(live.t==='rub'||live.t==='erase')){const r=Math.max(16,IW/55)*(live.t==='rub'?1.2:.6);cx.save();cx.strokeStyle='#999';cx.setLineDash([4,4]);cx.lineWidth=2;cx.beginPath();cx.arc(live.raw[0]-panX,live.raw[1]-panY,r,0,7);cx.stroke();cx.restore()}
+  if(selS.length){
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    selS.forEach(s=>s.p.forEach(p=>{const x=p[0]*IW-panX,y=p[1]*IH-panY;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}));
+    cx.save();cx.strokeStyle='#29b6f6';cx.setLineDash([8,6]);cx.lineWidth=2.5;cx.strokeRect(x0-10,y0-10,x1-x0+20,y1-y0+20);cx.restore();
+  }
+}
 const snapH=()=>{hist.push(JSON.stringify(strokes));if(hist.length>40)hist.shift()};
 const penopt=mkBtn('fab','&#9881;','Pen options');penopt.id='penopt';document.body.appendChild(penopt);
 function setPen(on){
-  B.classList.toggle('pen',on);B.classList.remove('penhide');penfab.setAttribute('aria-pressed',on);
+  B.classList.toggle('pen',on);B.classList.remove('penhide');if(!on){selS=[];selG=null;selPtr.clear();redrawInk()}penfab.setAttribute('aria-pressed',on);
   if(on){B.classList.remove('open','tools');closeText();pick(null)}
 }
 penfab.onclick=()=>setPen(!B.classList.contains('pen'));
@@ -392,7 +494,7 @@ pb.addEventListener('click',e=>{
   if(b.dataset.t){
     const nt=b.dataset.t;
     if(tool==='hl'&&nt!=='hl'){colH=col;col=colP}else if(tool!=='hl'&&nt==='hl'){colP=col;col=colH}
-    tool=nt;mark('[data-t]',x=>x===b);rpal();
+    tool=nt;if(nt!=='sel'){selS=[];selG=null;selPtr.clear()}mark('[data-t]',x=>x===b);rpal();redrawInk();
   }
   else if(b.dataset.z){sz=+b.dataset.z;mark('[data-z]',x=>x===b)}
   else if(b.dataset.c!=null){col=b.dataset.c;mark('.csw',x=>x===b)}
@@ -415,16 +517,20 @@ pb.addEventListener('click',e=>{
 });
 q('#stab').onchange=e=>{stab=+e.target.value};
 ink.addEventListener('pointerdown',e=>{
-  if(!B.classList.contains('pen')||live)return;
+  if(!B.classList.contains('pen'))return;
+  if(tool==='sel'){e.preventDefault();selDown(e);return}
+  if(live){if(performance.now()-live.last>1200)forceEnd();else return}
   if(guard&&e.pointerType==='touch'&&Math.max(e.width||0,e.height||0)>34)return;
   e.preventDefault();try{ink.setPointerCapture(e.pointerId)}catch(_){}
-  const p=[e.clientX+panX,e.clientY+panY];live={id:e.pointerId,t:tool,raw:p,pts:[p],sp:p.slice(),ch:false,ws:[1],wc:1,lp:p,lt:e.timeStamp};
+  const p=[e.clientX+panX,e.clientY+panY];live={id:e.pointerId,t:tool,raw:p,pts:[p],sp:p.slice(),ch:false,ws:[1],wc:1,lp:p,lt:e.timeStamp,last:performance.now()};
   if(tool==='laser'){trail.push([e.clientX,e.clientY,performance.now(),true]);if(!lraf)lraf=requestAnimationFrame(lloop);return}
-  if(tool==='erase')snapH();
+  if(tool==='erase'||tool==='rub'){snapH();if(tool==='rub'){rubAt(p)}redrawInk()}
 });
 ink.addEventListener('pointermove',e=>{
+  if(tool==='sel'||selG){selMove(e);return}
   if(!live||e.pointerId!==live.id)return;
-  const p=[e.clientX+panX,e.clientY+panY];live.raw=p;
+  const p=[e.clientX+panX,e.clientY+panY];live.raw=p;live.last=performance.now();
+  if(live.t==='rub'){rubAt(p);redrawInk();return}
   if(live.t==='laser'){trail.push([e.clientX,e.clientY,performance.now()]);return}
   if(live.t==='brush'){
     const dt=Math.max(1,e.timeStamp-live.lt),v=dist(p,live.lp)/dt;let f;
@@ -433,7 +539,8 @@ ink.addEventListener('pointermove',e=>{
   }
   if(live.t==='erase'){
     const r=Math.max(16,IW/55),n=strokes.length;strokes=strokes.filter(s=>!(efOK(s)&&hit(s,p[0],p[1],r)));
-    if(strokes.length!==n){live.ch=true;redrawInk()}
+    if(strokes.length!==n)live.ch=true;
+    redrawInk();
     return;
   }
   const k=KS[stab];live.sp=[live.sp[0]+(p[0]-live.sp[0])*k,live.sp[1]+(p[1]-live.sp[1])*k];
@@ -444,7 +551,7 @@ function endInk(e){
   if(!live||e.pointerId!==live.id)return;
   const L=live;live=null;
   if(L.t==='laser'){redrawInk();return}
-  if(L.t==='erase'){if(!L.ch)hist.pop();redrawInk();return}
+  if(L.t==='erase'||L.t==='rub'){if(!L.ch)hist.pop();redrawInk();return}
   const pts=L.pts.slice(),ws=L.ws.slice(),last=L.raw;if(dist(pts[pts.length-1],last)>1){pts.push(last);ws.push(L.wc)}
   let s;
   if(L.t==='brush'){
@@ -465,7 +572,13 @@ function endInk(e){
   if(s.t!=='path'&&s.t!=='brush'&&L.t!=='line'&&pts.length>2)s.o=pts.map(p=>p.slice());   /* original handwriting, kept for text recognition */
   snapH();strokes.push(norm(s));redrawInk();
 }
-ink.addEventListener('pointerup',endInk);ink.addEventListener('pointercancel',endInk);
+const forceEnd=()=>{if(live)endInk({pointerId:live.id});selG=null;selPtr.clear();selPtr.h=0};
+const upAll=e=>{if(selG||tool==='sel'){selUp(e);return}endInk(e)};
+ink.addEventListener('pointerup',upAll);ink.addEventListener('pointercancel',upAll);
+ink.addEventListener('lostpointercapture',e=>{if(live&&e.pointerId===live.id)endInk(e)});
+addEventListener('blur',forceEnd);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)forceEnd()});
+setInterval(()=>{if(live&&performance.now()-live.last>5000)forceEnd()},1000);
 
 /* ---------- hooks used by index.html ---------- */
 window.sizeInk=sizeInk;window.redrawInk=redrawInk;
@@ -475,6 +588,7 @@ window.ToolsAPI={step:fromStep,add:mk,pick,
   save(){const t={strokes:JSON.stringify(strokes),objs:objs.slice(),prot,pan:[panX,panY]};objs.forEach(e=>e.remove());objs=[];prot=null;selEl=null;strokes=[];hist=[];live=null;setPan(0,0);return t},
   load(t){strokes=t?JSON.parse(t.strokes):[];objs=t?t.objs:[];prot=t?t.prot:null;selEl=null;hist=[];objs.forEach(e=>{e.classList.remove('sel');layer.appendChild(e)});setPan(t&&t.pan?t.pan[0]:0,t&&t.pan?t.pan[1]:0)},
   setPan,world(){return{strokes,objs,pan:[panX,panY],IW,IH}},
-  ink:{get:()=>strokes,set(a){snapH();strokes=a;redrawInk()},IW:()=>IW,IH:()=>IH}};
+  ink:{get:()=>strokes,set(a){snapH();strokes=a;redrawInk()},IW:()=>IW,IH:()=>IH},
+  unstick(){live=null;selG=null;selS=[];selPtr.clear();selPtr.h=0;gseed=null;pick(null);redrawInk()}};
 sizeInk();
 })();
