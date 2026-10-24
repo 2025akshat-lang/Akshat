@@ -70,7 +70,9 @@ const SH=[
 const ANIMS=['slide','bounce','spin','shake','grow'];
 const COLS=['','#e53935','#1e88e5','#43a047','#fb8c00','#8e24aa'];
 const layer=document.createElement('div');layer.id='objs';wrapEl.insertBefore(layer,ink);
-let objs=[],selEl=null,mode='drag',prot=null,gseed=null,gc=0;
+let objs=[],selEl=null,mode='drag',prot=null,gseed=null,gc=0,panX=0,panY=0;
+const boardEl=document.getElementById('board');
+function setPan(x,y){panX=x;panY=y;const t=`translate(${-x}px,${-y}px)`;layer.style.transform=t;boardEl.style.transform=t;redrawInk();window.mmUpdate&&window.mmUpdate()}
 
 function hostURL(u){
   u=(u||'').trim();if(!u)return '';
@@ -90,7 +92,7 @@ function track(el,e,mv,tap){
   const x0=e.clientX,y0=e.clientY;let moved=false;
   try{el.setPointerCapture(e.pointerId)}catch(_){}
   const m=ev=>{const dx=ev.clientX-x0,dy=ev.clientY-y0;if(!moved&&Math.hypot(dx,dy)<8)return;moved=true;mv(dx,dy)};
-  const u=ev=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);el.removeEventListener('pointercancel',u);
+  const u=ev=>{el.removeEventListener('pointermove',m);el.removeEventListener('pointerup',u);el.removeEventListener('pointercancel',u);window.mmUpdate&&window.mmUpdate();
     if(moved)el.classList.toggle('below',el.offsetTop<70);
     if(!moved&&tap&&ev.type==='pointerup')tap(ev)};
   el.addEventListener('pointermove',m);el.addEventListener('pointerup',u);el.addEventListener('pointercancel',u);
@@ -100,7 +102,7 @@ function mk(o){
   const w=o.w||base,h=o.h||w*(o.ar||1),emb=o.k==='emb';
   const el=document.createElement('div');el.className='obj';el.dataset.k=o.k||'shape';
   const n=(objs.length%5)*18;
-  el.style.cssText=`width:${w}px;height:${h}px;left:${o.x!=null?o.x:(W-w)/2+n}px;top:${o.y!=null?o.y:(H-h)/2+n}px`;
+  el.style.cssText=`width:${w}px;height:${h}px;left:${o.x!=null?o.x:(W-w)/2+n+panX}px;top:${o.y!=null?o.y:(H-h)/2+n+panY}px`;
   el._o={keep:!!o.keep,ar:h/w,rot:0,anim:o.anim||'slide',emb,ang:60};
   const ob=document.createElement('div');ob.className='ob';
   if(o.svg)ob.innerHTML=o.svg;
@@ -315,7 +317,7 @@ function drawTrail(){
 }
 function lloop(){const now=performance.now();trail=trail.filter(p=>now-p[2]<2000);redrawInk();lraf=trail.length?requestAnimationFrame(lloop):0}
 function drawS(s){
-  const P=s.p.map(p=>[p[0]*IW,p[1]*IH]),lwid=Math.max(2.5,s.w*IW)*(s.k==='h'?3.2:1);
+  const P=s.p.map(p=>[p[0]*IW-panX,p[1]*IH-panY]),lwid=Math.max(2.5,s.w*IW)*(s.k==='h'?3.2:1);
   cx.save();cx.strokeStyle=cx.fillStyle=colr(s.c);cx.lineWidth=lwid;cx.lineCap=cx.lineJoin='round';
   if(s.t==='brush'||(s.t==='path'&&s.gr!=null)){if(s.k==='h')cx.globalAlpha=.38;drawVar(s,P,lwid);cx.restore();return}
   if(s.k==='h'){cx.globalAlpha=.38;cx.lineCap='butt'}if(s.k==='d')cx.setLineDash([lwid*2,lwid*2.2]);
@@ -328,8 +330,8 @@ function drawS(s){
   }
   cx.restore();
 }
-const norm=s=>{s.p=s.p.map(p=>[p[0]/IW,p[1]/IH]);if(s.r)s.r=[s.r[0]/IW,s.r[1]/IH];return s};
-function redrawInk(){cx.clearRect(0,0,IW,IH);strokes.forEach(drawS);if(live&&live.t!=='erase'&&live.t!=='laser')drawS(norm(liveS()));drawTrail()}
+const norm=s=>{s.p=s.p.map(p=>[p[0]/IW,p[1]/IH]);if(s.r)s.r=[s.r[0]/IW,s.r[1]/IH];if(s.o)s.o=s.o.map(p=>[p[0]/IW,p[1]/IH]);return s};
+function redrawInk(){cx.clearRect(0,0,IW,IH);strokes.forEach(drawS);if(live&&live.t!=='erase'&&live.t!=='laser')drawS(norm(liveS()));drawTrail();window.mmUpdate&&window.mmUpdate()}
 const kind=()=>tool==='hl'?'h':(dash?'d':'p');
 function liveS(){const L=live;return{t:L.t==='brush'?'brush':'path',p:L.t==='line'?[L.pts[0],L.raw]:L.pts.slice(),ws:L.ws,gr:gradOn&&L.t!=='line'?gradI:null,c:col,w:SZ[sz],k:kind()}}
 function rdp(p,e){
@@ -416,14 +418,14 @@ ink.addEventListener('pointerdown',e=>{
   if(!B.classList.contains('pen')||live)return;
   if(guard&&e.pointerType==='touch'&&Math.max(e.width||0,e.height||0)>34)return;
   e.preventDefault();try{ink.setPointerCapture(e.pointerId)}catch(_){}
-  const p=[e.clientX,e.clientY];live={id:e.pointerId,t:tool,raw:p,pts:[p],sp:p.slice(),ch:false,ws:[1],wc:1,lp:p,lt:e.timeStamp};
-  if(tool==='laser'){trail.push([p[0],p[1],performance.now(),true]);if(!lraf)lraf=requestAnimationFrame(lloop);return}
+  const p=[e.clientX+panX,e.clientY+panY];live={id:e.pointerId,t:tool,raw:p,pts:[p],sp:p.slice(),ch:false,ws:[1],wc:1,lp:p,lt:e.timeStamp};
+  if(tool==='laser'){trail.push([e.clientX,e.clientY,performance.now(),true]);if(!lraf)lraf=requestAnimationFrame(lloop);return}
   if(tool==='erase')snapH();
 });
 ink.addEventListener('pointermove',e=>{
   if(!live||e.pointerId!==live.id)return;
-  const p=[e.clientX,e.clientY];live.raw=p;
-  if(live.t==='laser'){trail.push([p[0],p[1],performance.now()]);return}
+  const p=[e.clientX+panX,e.clientY+panY];live.raw=p;
+  if(live.t==='laser'){trail.push([e.clientX,e.clientY,performance.now()]);return}
   if(live.t==='brush'){
     const dt=Math.max(1,e.timeStamp-live.lt),v=dist(p,live.lp)/dt;let f;
     if(e.pointerType==='pen'&&e.pressure>0)f=.35+1.65*e.pressure;else f=Math.max(.45,Math.min(1.7,1.7-v*.9));
@@ -460,16 +462,19 @@ function endInk(e){
     if(w>40&&h<w*.2){const y=ys.reduce((a,b)=>a+b)/ys.length;s={t:'line',p:[[Math.min(...xs),y],[Math.max(...xs),y]]}}}
   s.c=col;s.w=SZ[sz];s.k=L.t==='hl'?'h':(dash?'d':'p');
   if(gradOn&&(s.t==='path'||s.t==='brush'))s.gr=gradI;
+  if(s.t!=='path'&&s.t!=='brush'&&L.t!=='line'&&pts.length>2)s.o=pts.map(p=>p.slice());   /* original handwriting, kept for text recognition */
   snapH();strokes.push(norm(s));redrawInk();
 }
 ink.addEventListener('pointerup',endInk);ink.addEventListener('pointercancel',endInk);
 
 /* ---------- hooks used by index.html ---------- */
 window.sizeInk=sizeInk;window.redrawInk=redrawInk;
-window.inkClear=()=>{strokes=[];hist=[];live=null;clearObjs();redrawInk()};
+window.inkClear=()=>{strokes=[];hist=[];live=null;clearObjs();setPan(0,0)};
 window.ToolsAPI={step:fromStep,add:mk,pick,
   remove(el){el.remove();objs=objs.filter(x=>x!==el);if(prot===el)prot=null;if(selEl===el)selEl=null},
-  save(){const t={strokes:JSON.stringify(strokes),objs:objs.slice(),prot};objs.forEach(e=>e.remove());objs=[];prot=null;selEl=null;strokes=[];hist=[];live=null;redrawInk();return t},
-  load(t){strokes=t?JSON.parse(t.strokes):[];objs=t?t.objs:[];prot=t?t.prot:null;selEl=null;hist=[];objs.forEach(e=>{e.classList.remove('sel');layer.appendChild(e)});redrawInk()}};
+  save(){const t={strokes:JSON.stringify(strokes),objs:objs.slice(),prot,pan:[panX,panY]};objs.forEach(e=>e.remove());objs=[];prot=null;selEl=null;strokes=[];hist=[];live=null;setPan(0,0);return t},
+  load(t){strokes=t?JSON.parse(t.strokes):[];objs=t?t.objs:[];prot=t?t.prot:null;selEl=null;hist=[];objs.forEach(e=>{e.classList.remove('sel');layer.appendChild(e)});setPan(t&&t.pan?t.pan[0]:0,t&&t.pan?t.pan[1]:0)},
+  setPan,world(){return{strokes,objs,pan:[panX,panY],IW,IH}},
+  ink:{get:()=>strokes,set(a){snapH();strokes=a;redrawInk()},IW:()=>IW,IH:()=>IH}};
 sizeInk();
 })();
