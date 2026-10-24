@@ -45,7 +45,9 @@ body.pen #ink{pointer-events:auto;cursor:crosshair}
 .eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
 #ov{position:absolute;inset:0;pointer-events:none}
 #arm{stroke:var(--armc,#ff5a5a);stroke-width:calc(var(--ch)*.05);fill:none;stroke-linejoin:miter;display:none}
-#ptr{position:absolute;left:0;top:0;font-size:calc(var(--ch)*.19);line-height:1;will-change:transform;pointer-events:none}
+#ptr{position:absolute;left:0;top:0;font-size:calc(var(--ch)*.19);line-height:1;will-change:transform;pointer-events:auto;touch-action:none;cursor:grab}
+#ptr::before{content:'';position:absolute;inset:-14px}
+body.noptr #ptr,body.noptr #arm,body.noptr #char{display:none!important}
 .hand{display:block;width:calc(var(--ch)*.15);height:calc(var(--ch)*.15);border-radius:50%;background:var(--handc,#f7c3a0);border:2px solid #0004}
 .dot{display:block;width:calc(var(--ch)*.08);height:calc(var(--ch)*.08);border-radius:50%;background:#ff3030;box-shadow:0 0 0 4px #ff303055,0 0 18px 6px #ff3030;animation:pulse 1s infinite}
 @keyframes pulse{50%{transform:scale(1.35)}}
@@ -104,16 +106,18 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
 <div id="sheet" role="dialog" aria-label="Controls">
   <div class="grab"></div>
   <select id="lesson" aria-label="Chapter and lesson"></select>
+  <div class="row" style="display:none"><select id="secSel" aria-label="Section"></select></div>
   <div class="row"><select id="charSel" aria-label="Character"></select></div>
   <div class="row"><select id="carrSel" aria-label="Mindmap helper"><option value="">Mindmap helper: lesson ke hisaab se</option><option value="monkey">Monkey</option><option value="crane">Crane</option><option value="stick">Stick figure</option></select></div>
   <div class="row"><select id="style" aria-label="Pointer style"></select>
     <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></div>
   <div class="row" id="themes"><button id="tdn" aria-label="Smaller text">A&minus;</button><button id="tup" aria-label="Bigger text">A+</button></div>
-  <div class="row"><button id="tapT" aria-pressed="false">Tap se next: ON</button></div>
+  <div class="row"><button id="tapT" aria-pressed="false">Tap se next: ON</button><button id="ptrT" aria-pressed="false">Pointer: ON</button></div>
   <div class="row"><button id="hi" aria-pressed="false">&#2361;&#2367;&#2306;&#2342;&#2368;</button><button id="fs">Fullscreen</button></div>
   <div class="row"><button id="sPrev">&#9664; Slide</button><button id="sNew" class="go">&#65291; New slide</button><button id="sNext">Slide &#9654;</button></div>
   <div class="row"><button id="prev">Back</button><button id="next" class="go">Next line</button></div>
   <div class="row"><button id="auto">Auto play</button><button id="reset">Restart</button></div>
+  <div class="row"><button id="unstick">Reset UI (agar kuch atak jaye)</button></div>
   <span id="count"></span>
 </div>
 
@@ -277,27 +281,39 @@ function ui(){
   $('#auto').textContent=auto?'Pause':'Auto play';
 }
 async function next(){
+  if(busy&&Date.now()-busySince>150000)busy=false;   /* safety: never stay stuck */
+  if(lesson)while(idx<lesson.steps.length&&lesson.steps[idx].k==='section')idx++;
   if(busy||!lesson||idx>=lesson.steps.length){auto=false;ui();return}
   if(cs!==SL.length-1)goSlide(SL.length-1);
-  busy=true;const my=token;toast('');
+  busy=true;busySince=Date.now();const my=token;toast('');
+  const before=idx,ref=items,n0=items.length;
   try{await show(lesson.steps[idx++])}catch(e){console.error(e)}
+  for(let i=(items===ref?n0:0);i<items.length;i++)if(items[i]&&items[i]._ix===undefined)items[i]._ix=before;
   busy=false;ui();
   if(auto&&my===token){await sleep(1000/speed());if(auto&&my===token)next()}
   else if(lesson&&idx>=lesson.steps.length){auto=false;ui()}
 }
-let SL=[null],cs=0,items=[];
+let SL=[null],cs=0,items=[],busySince=0;
+function buildSections(){
+  const s=$('#secSel'),secs=lesson?lesson.steps.map((x,i)=>({x,i})).filter(o=>o.x.k==='section'):[];
+  s.innerHTML='';s.parentNode.style.display=secs.length?'flex':'none';
+  if(!secs.length)return;
+  s.innerHTML='<option value="0">Section: shuru se</option>'+secs.map(o=>`<option value="${o.i}">${fmt(o.x.t||'Section')}</option>`).join('');
+}
+function jumpTo(i){if(!lesson)return;auto=false;reset();idx=i;ui()}
 function reset(n=0){
   token++;busy=false;idx=n;closeTb();window.inkClear&&inkClear();SL=[null];cs=0;items=[];
   board.innerHTML='';board.scrollTop=0;
   if(lesson&&n)renderInstant(n);
-  fit();cur={x:wrap.clientWidth*.3,y:wrap.clientHeight-60};place(cur.x,cur.y);
+  let sp=null;try{sp=JSON.parse(store.get('ptrpos','null'))}catch(e){}
+  fit();cur=sp?{x:sp.x*wrap.clientWidth,y:sp.y*wrap.clientHeight}:{x:wrap.clientWidth*.3,y:wrap.clientHeight-60};place(cur.x,cur.y);
   if(lesson)toast('');
   ui();
 }
 function load(id){
   const m=MANI.find(x=>x.id===id);if(!m)return;
   auto=false;store.set('lesson',id);
-  const ok=()=>{lesson=LESSONS[id]||null;if(lesson)useChar(lesson.char||m.char||store.get('char',''));if(m.words&&window.loadWords)loadWords(m.words);if(!lesson){toast('Lesson file sahi nahi hai: '+m.file)}reset()};
+  const ok=()=>{lesson=LESSONS[id]||null;if(lesson)useChar(lesson.char||m.char||store.get('char',''));if(m.words&&window.loadWords)loadWords(m.words);if(!lesson){toast('Lesson file sahi nahi hai: '+m.file)}reset();buildSections()};
   if(LESSONS[id])return ok();
   toast('Loading…');
   const s=document.createElement('script');let done=false;
@@ -318,7 +334,7 @@ function back(){
   if(!lesson||busy)return;
   if(cs!==SL.length-1){goSlide(SL.length-1);return}
   const e=items.pop();
-  if(e){if(e.classList.contains('obj'))ToolsAPI.remove(e);else e.remove();idx=Math.max(0,idx-1);ui()}
+  if(e){if(e.classList.contains('obj'))ToolsAPI.remove(e);else e.remove();idx=e._ix!==undefined?e._ix:Math.max(0,idx-1);ui()}
   else if(cs>0){SL.pop();loadSl(SL.length-1)}
 }
 
@@ -326,9 +342,11 @@ function back(){
 const setOpen=o=>{document.body.classList.toggle('open',o);$('#fab').setAttribute('aria-expanded',o)};
 $('#fab').onclick=()=>setOpen(!document.body.classList.contains('open'));
 $('#sheetBg').onclick=()=>setOpen(false);
-$('#sheet').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!['tdn','tup','hi','tapT'].includes(b.id)&&!b.classList.contains('sw'))setOpen(false)});
+$('#sheet').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!['tdn','tup','hi','tapT','ptrT'].includes(b.id)&&!b.classList.contains('sw'))setOpen(false)});
 $('#sheet').addEventListener('change',()=>setOpen(false));
 $('#lesson').onchange=e=>load(e.target.value);
+$('#secSel').onchange=e=>jumpTo(+e.target.value);
+$('#unstick').onclick=()=>unstick();
 $('#carrSel').value=store.get('carrier','');
 $('#carrSel').onchange=e=>store.set('carrier',e.target.value);
 $('#style').onchange=e=>{style=e.target.value;store.set('style',style);setStyle()};
@@ -379,6 +397,28 @@ board.addEventListener('pointerup',()=>{
   if(st&&!st.long&&!st.moved){if(tbOpen)closeTb();else if(!auto&&!tapOff)next()}
   st=null;
 });
+const bpt=new Map();let bpin=null;
+board.addEventListener('pointerdown',e=>{
+  bpt.set(e.pointerId,[e.clientX,e.clientY]);
+  if(bpt.size===2){
+    const ln=e.target.closest('.ln.done');
+    if(ln){const v=[...bpt.values()];ln._f=ln._f||{hl:0,font:0,z:1,b:0,u:0};bpin={ln,d:Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1])||1,z:ln._f.z||1};clearTimeout(lp);st=null}
+  }
+},true);
+board.addEventListener('pointermove',e=>{
+  if(!bpt.has(e.pointerId))return;bpt.set(e.pointerId,[e.clientX,e.clientY]);
+  if(bpin&&bpt.size===2){const v=[...bpt.values()],z=Math.max(.5,Math.min(3,bpin.z*Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1])/bpin.d));bpin.ln._f.z=z;bpin.ln.style.setProperty('--z',z)}
+});
+const bpEnd=e=>{bpt.delete(e.pointerId);if(bpt.size<2)bpin=null};
+board.addEventListener('pointerup',bpEnd);board.addEventListener('pointercancel',bpEnd);
+function unstick(){
+  busy=false;auto=false;token++;st=null;clearTimeout(lp);bpt.clear();bpin=null;
+  document.body.classList.remove('pen','penhide','tools','open','panmode');
+  closeTb();window.ToolsAPI&&ToolsAPI.unstick&&ToolsAPI.unstick();
+  document.querySelectorAll('.fab[aria-pressed=true]').forEach(b=>b.setAttribute('aria-pressed','false'));
+  ui();toast('UI reset ho gaya');setTimeout(()=>toast(''),1500);
+}
+addEventListener('blur',()=>{st=null;clearTimeout(lp);bpt.clear();bpin=null});
 function openTb(el){
   closeTb();sel=el;tbOpen=true;el.classList.add('sel');
   el._f=el._f||{hl:0,font:0,z:1,b:0,u:0};
@@ -446,22 +486,36 @@ addEventListener('error',()=>toast('Kuch gadbad hui. Menu mein Restart dabao.'))
 addEventListener('unhandledrejection',e=>{console.error(e.reason)});
 setG(g);setTheme(store.get('theme','navy'));
 
+/* pointer (red dot / arm): on-off and drag it anywhere */
+let ptrOn=store.get('ptr','1')==='1',pdrag=false;
+function setPtr(on){
+  ptrOn=on;store.set('ptr',on?'1':'0');document.body.classList.toggle('noptr',!on);
+  const b=$('#ptrT');if(b){b.setAttribute('aria-pressed',!on);b.textContent=on?'Pointer: ON':'Pointer: OFF'}
+  const f=$('#ptrfab');if(f){f.innerHTML=on?'&#128308;':'&#9898;';f.setAttribute('aria-pressed',!on)}
+}
+ptr.addEventListener('pointerdown',e=>{if(busy)return;e.preventDefault();e.stopPropagation();pdrag=true;try{ptr.setPointerCapture(e.pointerId)}catch(_){}});
+ptr.addEventListener('pointermove',e=>{if(!pdrag)return;const r=wrap.getBoundingClientRect();place(e.clientX-r.left,e.clientY-r.top)});
+const pdEnd=()=>{if(pdrag){pdrag=false;store.set('ptrpos',JSON.stringify({x:cur.x/wrap.clientWidth,y:cur.y/wrap.clientHeight}))}};
+ptr.addEventListener('pointerup',pdEnd);ptr.addEventListener('pointercancel',pdEnd);
+
 /* floating toggle buttons: tap-next on/off + hide all buttons */
 (function(){
   const css=document.createElement('style');
-  css.textContent=`#tapfab{top:290px}#hidefab{top:346px}
+  css.textContent=`#tapfab{top:290px}#hidefab{top:346px}#ptrfab{top:402px}
 body.nofab .fab:not(#hidefab),body.nofab #mmap{display:none!important}
 body.nofab #hidefab{top:4px;right:4px;width:26px;height:26px;min-height:26px;font-size:13px;opacity:.2}`;
   document.head.appendChild(css);
   const mk=(id,html,label)=>{const b=document.createElement('button');b.id=id;b.className='fab';b.innerHTML=html;b.setAttribute('aria-label',label);document.body.appendChild(b);return b};
   mk('tapfab','&#128070;','Toggle tap to next').onclick=()=>setTap(!tapOff);
+  mk('ptrfab','&#128308;','Pointer on or off').onclick=()=>setPtr(!ptrOn);
   const h=mk('hidefab','&#128584;','Hide or show buttons');
   const setHide=on=>{document.body.classList.toggle('nofab',on);h.innerHTML=on?'&#128065;':'&#128584;'};
   h.onclick=()=>setHide(!document.body.classList.contains('nofab'));
   setHide(false);
 })();
 $('#tapT').onclick=()=>setTap(!tapOff);
-setTap(tapOff);
+$('#ptrT').onclick=()=>setPtr(!ptrOn);
+setTap(tapOff);setPtr(ptrOn);
 document.body.classList.toggle('hi',hi);$('#hi').setAttribute('aria-pressed',hi);
 buildMenu();setStyle();buildChars();
 if(MANI.length){const last=store.get('lesson','');const id=MANI.some(m=>m.id===last)?last:MANI[0].id;$('#lesson').value=id;load(id)}
