@@ -1,7 +1,7 @@
 /* Yeh ek hi file hai jahan load order likha hai.
    Naya scene/feature banaya? Uski file ka naam neeche sahi list mein ek line add karo. Bas. */
 window.PV_MANIFEST={
-  v:'20261026e',            // har patch ke baad yeh badal do (browser purani cache file na dikhaye)
+  v:'20261030_test',            // har patch ke baad yeh badal do (browser purani cache file na dikhaye)
   useBundle:false,          // true karne par sirf dist/plantverse.bundle.js load hogi (tools/bundle.py se banao)
   bundle:'dist/plantverse.bundle.js',
   core:[
