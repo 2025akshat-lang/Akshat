@@ -383,7 +383,7 @@
     const canvasB = document.getElementById('canvasB');
     const ctxB = canvasB.getContext('2d');
 
-    // Generate random particle positions
+    
     let particlesA = Array.from({length: 40}, () => ({x: Math.random()*80 + 5, y: Math.random()*60 + 40}));
     let particlesB = Array.from({length: 40}, () => ({x: Math.random()*80 + 5, y: Math.random()*60 + 40}));
 
@@ -395,11 +395,11 @@
             ctx.beginPath();
             
             if (idx < dissolvedCount) {
-                // Floating dissolved particles
+                
                 let py = p.y + Math.sin(Date.now()*0.003 + idx)*3;
                 ctx.arc(p.x, py, 2.5, 0, Math.PI*2);
             } else {
-                // Precipitate at bottom
+                
                 let bx = (idx * 2) % 80 + 5;
                 let by = 100 - (Math.floor(idx/20)*4);
                 ctx.arc(bx, by, 2.5, 0, Math.PI*2);
@@ -412,7 +412,7 @@
         temp = parseFloat(temp);
         tempValue.innerText = temp + " °C";
 
-        // Flame effect intensity
+        
         let flameScale = 0.2 + (temp / 80) * 1.1;
         flameA.style.transform = `scale(${flameScale}) rotate(-45deg)`;
         flameB.style.transform = `scale(${flameScale}) rotate(-45deg)`;
@@ -437,7 +437,7 @@
         dotB.setAttribute('cx', xPos);
         dotB.setAttribute('cy', yPosB);
 
-        // Particle dissolution counts (out of 40)
+        
         let countA = Math.floor((solubilityA / 400) * 40);
         let countB = Math.floor((solubilityB / 400) * 40);
 
@@ -449,7 +449,7 @@
         updateGraph(e.target.value);
     });
 
-    // Particle Animation Loop
+    
     setInterval(() => {
         updateGraph(slider.value);
     }, 50);

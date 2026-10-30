@@ -496,7 +496,7 @@
 </div>
 
 <script>
-  // DOM Elements
+  
   const toggleBtn = document.getElementById('toggleBtn');
   const brakeBtn = document.getElementById('brakeBtn');
   const lightBtn = document.getElementById('lightBtn');
@@ -524,7 +524,7 @@
   const scrollingBgFar = document.querySelector('.scrolling-bg-far');
   const scrollingBgNear = document.querySelector('.scrolling-bg-near');
 
-  // Simulator States
+  
   let isMoving = true;
   let isLightOn = false;
   let isCabLightOn = false;
@@ -536,9 +536,9 @@
   let currentNotch = 3;
   let effectiveSpeed = 1.0; 
   const MAX_SPEED_KMH = 120;
-  const MAX_EFFECTIVE_SPEED = 0.3 + (8 * 0.28); // based on notch math
+  const MAX_EFFECTIVE_SPEED = 0.3 + (8 * 0.28); 
 
-  // Web Audio Context
+  
   let audioCtx = null;
   let engineOsc = null;
   let engineGain = null;
@@ -550,11 +550,11 @@
     }
   }
 
-  // Calculate speed factor based on notch
+  
   function calculateTargetSpeed() {
     if (!isMoving) return 0;
     if (isBraking) return 0;
-    if (currentNotch === 0) return 0.1; // Idle coasting
+    if (currentNotch === 0) return 0.1; 
     return 0.3 + (currentNotch * 0.28);
   }
 
@@ -562,7 +562,7 @@
     const val = Math.max(0.05, effectiveSpeed);
     const runState = (isMoving && effectiveSpeed > 0.05) ? 'running' : 'paused';
     
-    // Animate DOM Elements
+    
     wheels.forEach(w => {
       w.style.animationPlayState = runState;
       w.style.animationDuration = (0.8 / val).toFixed(2) + 's';
@@ -581,13 +581,13 @@
       else s.classList.remove('heavy');
     });
 
-    // Speedometer Update
+    
     let currentKmh = Math.round((effectiveSpeed / MAX_EFFECTIVE_SPEED) * MAX_SPEED_KMH);
     if(currentKmh < 0) currentKmh = 0;
     if(!isMoving && effectiveSpeed < 0.1) currentKmh = 0;
     speedValueDisplay.textContent = currentKmh;
 
-    // Sparks Logic
+    
     if (isBraking && effectiveSpeed > 0.15) {
       brakeSparks.classList.add('active');
       speedHud.classList.add('braking');
@@ -596,18 +596,18 @@
       speedHud.classList.remove('braking');
     }
 
-    // Sound logic update
+    
     if (engineOsc && audioCtx) {
       const baseFreq = currentNotch === 0 ? 30 : 35 + (currentNotch * 8);
       engineOsc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
     }
   }
 
-  // Smooth Speed Interpolation Loop
+  
   function physicsLoop() {
     const target = calculateTargetSpeed();
     if (Math.abs(effectiveSpeed - target) > 0.005) {
-      // Brake faster than accelerate
+      
       const accelFactor = isBraking ? 0.08 : 0.03; 
       effectiveSpeed += (target - effectiveSpeed) * accelFactor;
       updateVisualsAndHUD();
@@ -619,7 +619,7 @@
   }
   physicsLoop();
 
-  // Engine Throttle Sound Synthesizer
+  
   function toggleEngineSound() {
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -661,7 +661,7 @@
     clearInterval(trackTimer);
   }
 
-  // Track Rumble
+  
   function startTrackRumble() {
     clearInterval(trackTimer);
     if (!isEngineAudioOn || effectiveSpeed < 0.1) return;
@@ -692,7 +692,7 @@
     }, interval);
   }
 
-  // Brake Hiss Sound
+  
   function playBrakeHiss() {
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -717,7 +717,7 @@
     noise.start();
   }
 
-  // UI Listeners
+  
   toggleBtn.addEventListener('click', () => {
     isMoving = !isMoving;
     toggleBtn.textContent = isMoving ? '⏸️ Pause' : '▶️ Start';
@@ -762,7 +762,7 @@
     nightBtn.classList.toggle('toggle-on', isNight);
   });
 
-  // Horn
+  
   hornBtn.addEventListener('click', () => {
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -773,8 +773,8 @@
 
     osc1.type = 'sawtooth';
     osc2.type = 'sawtooth';
-    osc1.frequency.value = 311; // Eb4
-    osc2.frequency.value = 370; // F#4
+    osc1.frequency.value = 311; 
+    osc2.frequency.value = 370; 
 
     gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.08);
@@ -788,7 +788,7 @@
     osc1.stop(audioCtx.currentTime + 1.8); osc2.stop(audioCtx.currentTime + 1.8);
   });
 
-  // Whistle
+  
   whistleBtn.addEventListener('click', () => {
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -811,7 +811,7 @@
 
   engineSoundBtn.addEventListener('click', toggleEngineSound);
 
-  // Weather System
+  
   const canvas = document.getElementById('weatherCanvas');
   const ctx = canvas.getContext('2d');
   let raindrops = [];

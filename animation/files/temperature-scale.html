@@ -148,8 +148,8 @@ input.main::-moz-range-thumb{width:calc(28px*var(--bs));height:calc(28px*var(--b
 
 <script>
 const $ = id => document.getElementById(id);
-const r2  = n => String(Math.round((n + Number.EPSILON) * 100) / 100);   // trimmed, max 2 decimals
-const fx2 = n => (Math.abs(n) < 0.005 ? 0 : n).toFixed(2);               // fixed 2 decimals (no layout shift)
+const r2  = n => String(Math.round((n + Number.EPSILON) * 100) / 100);   
+const fx2 = n => (Math.abs(n) < 0.005 ? 0 : n).toFixed(2);               
 const fmt = n => String(Math.round(n * 10) / 10);
 const toF = c => c * 9 / 5 + 32, toK = c => c + 273.15;
 const lerp = (a, b, f) => a + (b - a) * f;
@@ -263,8 +263,8 @@ $('mB').onclick = () => mode('body');
 
 
 let raf = null, last = 0, dir = 1;
-const SWEEP = [80, 40, 20, 10, 5];   // seconds for one full bottom-to-top sweep
-let spIdx = 0;                       // default: Very Slow
+const SWEEP = [80, 40, 20, 10, 5];   
+let spIdx = 0;                       
 document.querySelectorAll('#spd .btn').forEach(b => b.onclick = () => {
   spIdx = +b.dataset.s;
   document.querySelectorAll('#spd .btn').forEach(x => x.classList.toggle('on', x === b));
@@ -298,7 +298,7 @@ const P = { phone: { th: 250, bs: .9, ts: .9 }, tablet: { th: 370, bs: 1.15, ts:
 const root = document.documentElement.style;
 let base = P.laptop;
 const pct = v => (v > 0 ? '+' : '') + v + '%';
-function applySize() {                       // sliders are adjustments on top of the base size; 0% = base
+function applySize() {                       
   const a = +$('sTh').value, b = +$('sBs').value, c = +$('sTs').value;
   root.setProperty('--th', base.th * (1 + a / 100));
   root.setProperty('--bs', base.bs * (1 + b / 100));
@@ -307,7 +307,7 @@ function applySize() {                       // sliders are adjustments on top o
 }
 function preset(k) {
   base = P[k];
-  ['sTh', 'sBs', 'sTs'].forEach(id => $(id).value = 0);   // every control starts at zero
+  ['sTh', 'sBs', 'sTs'].forEach(id => $(id).value = 0);   
   applySize();
   document.querySelectorAll('.p').forEach(b => b.classList.toggle('on', b.dataset.p === k));
 }

@@ -1374,7 +1374,7 @@ rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow-x: auto;box-shadow: 0 4px 6
     const digitalDisplay = document.getElementById('digitalDisplay');
     const conditionText = document.getElementById('conditionText');
 
-    // Array of colors representing pH 0 to 14 spectrum
+    
     const phColors = [
         '#e74c3c', '#e67e22', '#f39c12', '#f1c40f', '#fcd017', '#d4efdf', '#a9dfbf', 
         '#2ecc71', '#27ae60', '#1abc9c', '#16a085', '#2980b9', '#3498db', '#8e44ad', '#9b59b6'
@@ -1383,18 +1383,18 @@ rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow-x: auto;box-shadow: 0 4px 6
     function updatePHMeter(val) {
         const ph = parseFloat(val);
         
-        // 1. Update Digital Text Display
+        
         digitalDisplay.textContent = ph.toFixed(1);
 
-        // 2. Rotate Needle (-90 deg for pH 0, 0 deg for pH 7, 90 deg for pH 14)
+        
         const angle = ((ph - 7) / 7) * 90;
         needle.setAttribute('transform', `rotate(${angle}, 300, 180)`);
 
-        // 3. Update Liquid Color based on pH scale index
+        
         const colorIndex = Math.round(ph);
         liquid.setAttribute('fill', phColors[colorIndex]);
 
-        // 4. Update Description text and text color style
+        
         if (ph < 6.5) {
             conditionText.textContent = "Acidic";
             conditionText.style.color = "#e74c3c";
@@ -1407,12 +1407,12 @@ rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow-x: auto;box-shadow: 0 4px 6
         }
     }
 
-    // Event listener for real-time slider updates
+    
     phSlider.addEventListener('input', (e) => {
         updatePHMeter(e.target.value);
     });
 
-    // Initialize on load
+    
     updatePHMeter(7);
 </script>
 
@@ -9305,7 +9305,7 @@ auto;box-shadow: 0 4px 6px;color:#1a73e8;
   document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById('beerLambertChart').getContext('2d');
 
-    // Observation Table 2 Data Points
+    
     const standardData = [
       { x: 0.000, y: 0.00 },
       { x: 0.022, y: 0.63 },
@@ -9320,7 +9320,7 @@ auto;box-shadow: 0 4px 6px;color:#1a73e8;
       { x: 0.220, y: 1.58 }
     ];
 
-    // Unknown Sample Point
+    
     const unknownPoint = [{ x: 0.052, y: 1.04 }];
 
     new Chart(ctx, {
@@ -11281,7 +11281,7 @@ auto;box-shadow: 0 4px 6px;color:#1a73e8;
                     min: 25,
                     max: 57,
                     ticks: {
-                        stepSize: 2 // 1 unit = 2 degree scale visually
+                        stepSize: 2 
                     },
                     title: {
                         display: true,
@@ -11498,7 +11498,7 @@ auto;box-shadow: 0 4px 6px;color:#1a73e8;
 </div>
 
 <script>
-    // Graph 1: Water Equivalent
+    
     const ctx1 = document.getElementById('chartWaterEq').getContext('2d');
     const time1 = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0];
     const coldWater = [31.2, 31.2, 31.2, 31.2, 31.2, 31.2, 31.2, 31.2, 31.2, 31.2, null, null, null, null, null, null, null, null, null, null];
@@ -11525,7 +11525,7 @@ auto;box-shadow: 0 4px 6px;color:#1a73e8;
         }
     });
 
-    // Graph 2: Neutralization
+    
     const ctx2 = document.getElementById('chartNeutralization').getContext('2d');
     const time2 = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0];
     const alkali = [33.5, 33.5, 33.4, 33.4, 33.2, 33.0, 33.0, 33.0, 33.0, 33.0, null, null, null, null, null, null, null, null, null, null];
@@ -14266,7 +14266,7 @@ auto;box-shadow: 0 4px 6px;color:#1a73e8;
 </div>  
   </div>  
   </div>
-  <script>// Main Accordion Toggle (Enhanced Version)
+  <script>
 var coll = document.querySelector(".main-heading");
 if(coll){
   coll.addEventListener("click", function() {
@@ -14277,16 +14277,16 @@ if(coll){
       if (content.style.display === "none") {
         content.style.display = "block";
       } else {
-        // 1. Main container ko hide karo
+        
         content.style.display = "none";
         
-        // 2. FORCE FIX: Saare category sections ko bhi hide karo
+        
         var sections = document.querySelectorAll(".category-section");
         sections.forEach(function(sec) {
           sec.style.display = "none";
         });
         
-        // 3. FORCE FIX: Saare experiment data boxes ko bhi hide karo
+        
         var dataBoxes = document.querySelectorAll(".data-box");
         dataBoxes.forEach(function(box) {
           box.style.display = "none";
@@ -14296,11 +14296,11 @@ if(coll){
   });
 }
 
-// Category Switcher Function
+
 function switchCategory(evt, catId) {
   var i, sections, catBtns;
   
-  // 1. Saare category sections aur unke andar ke data-boxes hide karo
+  
   sections = document.querySelectorAll(".category-section");
   for (i = 0; i < sections.length; i++) {
     sections[i].style.display = "none";
@@ -14311,7 +14311,7 @@ function switchCategory(evt, catId) {
     catBtns[i].classList.remove("active-cat");
   }
 
-  // 2. Sirf targeted section ko show karo
+  
   var activeSec = document.getElementById(catId);
   if (activeSec) {
     activeSec.style.display = "block";
@@ -14321,38 +14321,38 @@ function switchCategory(evt, catId) {
     evt.currentTarget.classList.add("active-cat");
   }
 
-  // 3. Programmatic click safe handle karo (taaki openExp crash na ho)
+  
   if (activeSec) {
     var firstExpBtn = activeSec.querySelector(".exp-btn");
     if (firstExpBtn) {
-      // Direct click() karne ke bajay safely event pass karke trigger karein
+      
       firstExpBtn.dispatchEvent(new Event('click', { bubbles: true }));
     }
   }
 }
 
-// Experiment Switcher Function
+
 function openExp(evt, expId) {
-  if (!evt || !evt.currentTarget) return; // Safety check for event
+  if (!evt || !evt.currentTarget) return; 
   
   var i, dataBox, expBtn;
   var currentCat = evt.currentTarget.closest('.category-section');
   
-  if (!currentCat) return; // Safety check agar parent container Na mile
+  if (!currentCat) return; 
 
-  // Current category ke andar ke saare experiment content hide karo
+  
   dataBox = currentCat.querySelectorAll(".data-box");
   for (i = 0; i < dataBox.length; i++) { 
     dataBox[i].style.display = "none"; 
   }
   
-  // Current category ke saare buttons se active class hatao
+  
   expBtn = currentCat.querySelectorAll(".exp-btn");
   for (i = 0; i < expBtn.length; i++) { 
     expBtn[i].classList.remove("active-btn"); 
   }
   
-  // Specific experiment box ko show karo
+  
   var targetExp = document.getElementById(expId);
   if (targetExp) {
     targetExp.style.display = "block";
@@ -14361,10 +14361,10 @@ function openExp(evt, expId) {
   evt.currentTarget.classList.add("active-btn");
 }
 
-// Fixed function taaki HTML onclick crash na ho
+
 function toggleElementsDatabase() {
     console.log("toggleElementsDatabase function successfully called!");
-    // Agar aapko database toggle karne ka code likhna hai toh yahan likhein
+    
 }
 function toggleMainDatabase() {
     var coll = document.querySelector(".main-heading");

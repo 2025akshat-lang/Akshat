@@ -265,7 +265,7 @@ function preload(src){
 }
 const lowData=navigator.connection&&navigator.connection.saveData;
 const idle=window.requestIdleCallback||(cb=>setTimeout(cb,300));
-function prefetchRest(){            // ek ek karke, bandwidth choke nahi hoti
+function prefetchRest(){            
     if(lowData) return;
     const order=[];
     for(let k=1;k<N;k++) order.push(craftData[(cur+k)%N].realImage);
@@ -284,7 +284,7 @@ craftData.forEach((d,i)=>{
     b.type='button'; b.className='thumb'; b.setAttribute('aria-label',d.fullName);
     b.innerHTML=`<div class="card">${d.thumbSvg}</div><span>${d.name}</span>`;
     b.addEventListener('click',()=>go(i));
-    b.addEventListener('pointerenter',()=>preload(d.realImage));   // hover pe pehle se ready
+    b.addEventListener('pointerenter',()=>preload(d.realImage));   
     box.appendChild(b);
 });
 const thumbs=[...box.children];
@@ -300,7 +300,7 @@ function setBg(grad){
 function go(i, first){
     i=(i+N)%N;
     if(i===cur && !first) return;
-    const my=++req;                         // naye click ka token
+    const my=++req;                         
     const d=craftData[i];
     cur=i;
 
@@ -317,10 +317,10 @@ function go(i, first){
     }
     const spin=setTimeout(()=>{ if(my===req) spinner.classList.add('show'); },220);
 
-    // image ready + animation time dono ka wait
+    
     Promise.all([preload(d.realImage), first?0:wait(320)]).then(([ok])=>{
         clearTimeout(spin);
-        if(my!==req) return;                // purana request, ignore (yahi order bug fix hai)
+        if(my!==req) return;                
         spinner.classList.remove('show');
         titleEl.textContent=d.fullName;
         descEl.textContent=d.description;
@@ -331,7 +331,7 @@ function go(i, first){
         requestAnimationFrame(()=>{
             titleEl.classList.remove('out'); descEl.classList.remove('out'); art.classList.remove('out');
         });
-        // aas-paas wali images pehle se garam
+        
         preload(craftData[(i+1)%N].realImage);
         preload(craftData[(i-1+N)%N].realImage);
     });

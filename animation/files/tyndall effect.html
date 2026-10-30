@@ -116,9 +116,9 @@
     }
 
     function drawBeaker() {
-      // Beaker Fill Glow
+      
       if (mode === 'milk' && laserOn) {
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.25)'; // Beaker volumetric glow
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.25)'; 
       } else if (mode === 'milk') {
         ctx.fillStyle = 'rgba(254, 243, 199, 0.15)';
       } else {
@@ -126,7 +126,7 @@
       }
       ctx.fillRect(220, 100, 300, 240);
       
-      // Beaker Outer Walls
+      
       ctx.strokeStyle = (mode === 'milk' && laserOn) ? '#f87171' : '#64748b';
       ctx.lineWidth = 5;
       ctx.shadowColor = (mode === 'milk' && laserOn) ? '#ef4444' : 'transparent';
@@ -136,19 +136,19 @@
     }
 
     function drawLaserAndRays() {
-      // Laser Gun Body
+      
       ctx.fillStyle = '#334155'; ctx.fillRect(40, 200, 80, 40);
       ctx.fillStyle = '#ef4444'; ctx.fillRect(120, 210, 15, 20);
 
       if (!laserOn) return;
 
-      // Incident Beam Before Beaker
+      
       ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 6;
       ctx.shadowColor = '#ff0000'; ctx.shadowBlur = 15;
       ctx.beginPath(); ctx.moveTo(135, 220); ctx.lineTo(220, 220); ctx.stroke();
 
       if (mode === 'milk') {
-        // High Intensity Central Beam Path
+        
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; ctx.lineWidth = 6;
         ctx.beginPath(); ctx.moveTo(220, 220); ctx.lineTo(520, 220); ctx.stroke();
         
@@ -156,12 +156,12 @@
         ctx.shadowBlur = 30;
         ctx.beginPath(); ctx.moveTo(220, 220); ctx.lineTo(520, 220); ctx.stroke();
       } else {
-        // Barely Visible Ray in Salt
+        
         ctx.strokeStyle = 'rgba(255, 0, 0, 0.15)'; ctx.lineWidth = 2; ctx.shadowBlur = 0;
         ctx.beginPath(); ctx.moveTo(220, 220); ctx.lineTo(520, 220); ctx.stroke();
       }
 
-      // Exit Beam
+      
       ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 6; ctx.shadowBlur = 15;
       ctx.beginPath(); ctx.moveTo(520, 220); ctx.lineTo(760, 220); ctx.stroke();
       ctx.shadowBlur = 0;
@@ -174,39 +174,39 @@
         if (p.y < 112 || p.y > 328) p.vy *= -1;
 
         if (mode === 'salt') {
-          // Tiny Salt Ions - Normal State
+          
           ctx.fillStyle = '#38bdf8';
           ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
         } else {
-          // MILK MODE: SARE PARTICLES GLOW KARENGE
+          
           if (laserOn) {
-            // Radiant Aura for EVERY Particle
+            
             ctx.shadowColor = '#ef4444';
             ctx.shadowBlur = 15 + Math.sin(pulseTime + p.glowPhase) * 5;
             
-            // Draw Rays from Particles to Beaker Walls (Chamchamata Wall Effect)
+            
             ctx.strokeStyle = 'rgba(254, 202, 202, 0.35)';
             ctx.lineWidth = 1;
             
-            // Left & Right Wall Light Impacts
+            
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(220, p.y); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(520, p.y); ctx.stroke();
-            // Top & Bottom Wall Light Impacts
+            
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, 100); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, 340); ctx.stroke();
 
-            // Wall Sparkles / Glow Hits
+            
             ctx.fillStyle = '#fca5a5';
             ctx.fillRect(218, p.y - 2, 4, 4);
             ctx.fillRect(518, p.y - 2, 4, 4);
             ctx.fillRect(p.x - 2, 98, 4, 4);
             ctx.fillRect(p.x - 2, 338, 4, 4);
 
-            // Glowing Particle Center
+            
             ctx.fillStyle = '#ffffff';
             ctx.beginPath(); ctx.arc(p.x, p.y, p.radius + 1, 0, Math.PI * 2); ctx.fill();
           } else {
-            // Off State Milk Particle
+            
             ctx.fillStyle = '#cbd5e1'; ctx.shadowBlur = 0;
             ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
           }
@@ -215,7 +215,7 @@
       ctx.shadowBlur = 0;
     }
 
-    // Micro Zoom Lens Overlay
+    
     function drawMicroZoomLens() {
       const zX = 660, zY = 100, zR = 65;
 
@@ -227,7 +227,7 @@
       ctx.fillText("MICRO ZOOM", zX - 32, zY - 45);
 
       if (mode === 'salt') {
-        // Zoom Salt: Smooth passage between small ions
+        
         ctx.fillStyle = '#38bdf8';
         ctx.beginPath(); ctx.arc(zX - 25, zY - 15, 6, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(zX + 25, zY + 20, 6, 0, Math.PI * 2); ctx.fill();
@@ -237,7 +237,7 @@
           ctx.beginPath(); ctx.moveTo(zX - 60, zY); ctx.lineTo(zX + 60, zY); ctx.stroke();
         }
       } else {
-        // Zoom Milk: Particle Absorb & 360 Wall Bounce
+        
         ctx.fillStyle = '#ffffff'; 
         ctx.shadowColor = '#ef4444'; ctx.shadowBlur = laserOn ? 20 : 0;
         ctx.beginPath(); ctx.arc(zX, zY, 20, 0, Math.PI * 2); ctx.fill();

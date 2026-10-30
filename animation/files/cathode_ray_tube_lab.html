@@ -76,35 +76,35 @@ const scene=new THREE.Scene();scene.background=new THREE.Color(0x070b17);
 const cam=new THREE.PerspectiveCamera(45,1,.1,200);
 scene.add(new THREE.AmbientLight(0xffffff,.55));
 const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(5,10,8);scene.add(dl);
-// floor grid
+
 const grid=new THREE.GridHelper(40,40,0x1f3a66,0x14213d);grid.position.y=-6;scene.add(grid);
 
-const TX=-6.4,AX=6.4,R=2; // cathode x, anode x, tube radius
+const TX=-6.4,AX=6.4,R=2; 
 const mat=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.5,roughness:.4},o));
-// glass tube
+
 const tube=new THREE.Mesh(new THREE.CylinderGeometry(R,R,15,40,1,true),new THREE.MeshPhysicalMaterial({color:0x8fd3ff,transparent:true,opacity:.14,side:THREE.DoubleSide,roughness:.1,depthWrite:false}));
 tube.rotation.z=Math.PI/2;scene.add(tube);
 [-7.5,7.5].forEach(x=>{const c=new THREE.Mesh(new THREE.SphereGeometry(R,32,16,0,Math.PI*2,0,Math.PI/2),tube.material);c.rotation.z=x<0?Math.PI/2:-Math.PI/2;c.position.x=x;scene.add(c);});
 for(let i=-7;i<=7;i+=2){const r=new THREE.Mesh(new THREE.TorusGeometry(R,.015,6,48),new THREE.MeshBasicMaterial({color:0x8fd3ff,transparent:true,opacity:.35}));r.rotation.y=Math.PI/2;r.position.x=i;scene.add(r);}
-// electrodes
+
 const cathode=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,.3,32),mat(0x4a6fff));cathode.rotation.z=Math.PI/2;cathode.position.x=TX-.15;scene.add(cathode);
 const anode=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,.3,32),mat(0xd94a4a,{emissive:0xff2200,emissiveIntensity:0}));anode.rotation.z=Math.PI/2;anode.position.x=AX+.15;scene.add(anode);
-// metal atoms lattice on cathode surface
+
 const latt=[];const am=new THREE.MeshStandardMaterial({color:0x9db4ff,emissive:0x2244ff,emissiveIntensity:.3});
 for(let j=-2;j<=2;j++)for(let k=-2;k<=2;k++){if(j*j+k*k>5)continue;const s=new THREE.Mesh(new THREE.SphereGeometry(.13,12,10),am.clone());s.position.set(TX+.05,j*.32,k*.32);s.userData.p=Math.random()*6;scene.add(s);latt.push(s);}
-// deflection plates (electric)
+
 const plates=new THREE.Group();
 const pTop=new THREE.Mesh(new THREE.BoxGeometry(4,.08,2.2),mat(0xff5555,{emissive:0x550000}));pTop.position.set(.5,1.3,0);
 const pBot=new THREE.Mesh(new THREE.BoxGeometry(4,.08,2.2),mat(0x5577ff,{emissive:0x001155}));pBot.position.set(.5,-1.3,0);
 plates.add(pTop,pBot);plates.visible=false;scene.add(plates);
-// magnets (field along z)
+
 const mags=new THREE.Group();
 const mN=new THREE.Mesh(new THREE.BoxGeometry(4,1.6,.9),mat(0xff6644));mN.position.set(.5,0,2.9);
 const mS=new THREE.Mesh(new THREE.BoxGeometry(4,1.6,.9),mat(0x4488ff));mS.position.set(.5,0,-2.9);
 mags.add(mN,mS);
 for(let i=0;i<5;i++){const a=new THREE.ArrowHelper(new THREE.Vector3(0,0,-1),new THREE.Vector3(-1+i,0,2.2),4.4,0xffcc66,.3,.2);mags.add(a);}
 mags.visible=false;scene.add(mags);
-// HV supply, wires, pump
+
 const hv=new THREE.Mesh(new THREE.BoxGeometry(3,1.5,1.6),mat(0x222a40));hv.position.set(0,5.2,0);scene.add(hv);
 const knob=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.2,16),mat(0xffcc00));knob.rotation.x=Math.PI/2;knob.position.set(0,5.2,.9);scene.add(knob);
 function wire(pts,c){const g=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p)));scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:c})));}
@@ -114,25 +114,25 @@ const pump=new THREE.Mesh(new THREE.CylinderGeometry(.7,.9,1.2,20),mat(0x556070)
 const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,2.4,12),mat(0x778899));pipe.position.set(0,-2.9,0);scene.add(pipe);
 const fan=new THREE.Mesh(new THREE.BoxGeometry(1.1,.06,.2),mat(0xffffff));fan.position.set(0,-3.78,0);scene.add(fan);
 
-// gas atoms (low pressure)
+
 const gas=[];const gg=new THREE.SphereGeometry(.16,14,12);
 for(let i=0;i<60;i++){const m=new THREE.Mesh(gg,new THREE.MeshStandardMaterial({color:0xaaaaaa,emissive:0x000000}));
  const a=Math.random()*6.28,r=Math.sqrt(Math.random())*1.7;
  m.position.set(-5.5+Math.random()*11,Math.cos(a)*r,Math.sin(a)*r);
  m.userData.v=new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(1.2);m.userData.f=0;scene.add(m);gas.push(m);}
 
-// electrons
+
 const N=450;const pos=new Float32Array(N*3).fill(1e5),vel=new Float32Array(N*3),alive=new Uint8Array(N);
 const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
 const cv=document.createElement('canvas');cv.width=cv.height=64;const cx=cv.getContext('2d');
 const gr=cx.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'#fff');gr.addColorStop(.35,'#7fffd0');gr.addColorStop(1,'rgba(0,255,150,0)');cx.fillStyle=gr;cx.fillRect(0,0,64,64);
 const pts=new THREE.Points(geo,new THREE.PointsMaterial({size:.5,map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
 pts.frustumCulled=false;scene.add(pts);
-// beam glow core
+
 const beam=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,12.8,12),new THREE.MeshBasicMaterial({color:0x33ff99,transparent:true,opacity:.2,blending:THREE.AdditiveBlending,depthWrite:false}));
 beam.rotation.z=Math.PI/2;scene.add(beam);
 
-// ---- micro inset: Thomson plum pudding ----
+
 const scene2=new THREE.Scene();scene2.background=new THREE.Color(0x1a0f1f);
 const cam2=new THREE.PerspectiveCamera(40,1,.1,50);cam2.position.set(0,0,5);
 scene2.add(new THREE.AmbientLight(0xffffff,.7));const l2=new THREE.PointLight(0xffffff,1);l2.position.set(3,3,4);scene2.add(l2);
@@ -142,11 +142,11 @@ const els=[];for(let i=0;i<9;i++){const e=new THREE.Mesh(new THREE.SphereGeometr
  const th=Math.acos(2*Math.random()-1),ph=Math.random()*6.28,r=.4+Math.random()*.8;
  e.userData={b:new THREE.Vector3(Math.sin(th)*Math.cos(ph),Math.cos(th),Math.sin(th)*Math.sin(ph)).multiplyScalar(r),p:Math.random()*6};atomG.add(e);els.push(e);}
 
-// ---- labels ----
+
 const labels=[['Cathode (−)',new THREE.Vector3(TX,-1.3,0)],['Anode (+)',new THREE.Vector3(AX,-1.5,0)],['High voltage power supply',new THREE.Vector3(0,6.3,0)],['Vacuum pump',new THREE.Vector3(0,-5.4,0)],['Cathode rays (e⁻)',new THREE.Vector3(0,.7,0)]].map(([t,p])=>{const d=document.createElement('div');d.className='lbl';d.textContent=t;stage.appendChild(d);return{d,p};});
 const mini=document.createElement('div');mini.className='minilbl';stage.appendChild(mini);
 
-// ---- orbit controls (manual) ----
+
 let th=.35,ph=1.2,dist=22;const tgt=new THREE.Vector3(0,.5,0);
 function setCam(){cam.position.set(tgt.x+dist*Math.sin(ph)*Math.sin(th),tgt.y+dist*Math.cos(ph),tgt.z+dist*Math.sin(ph)*Math.cos(th));cam.lookAt(tgt);}
 const ptr=new Map();let pd=0;
@@ -164,7 +164,7 @@ const sheets={tC:document.getElementById('sheetC'),tT:document.getElementById('s
 function openSheet(id){Object.keys(sheets).forEach(k=>{const on=k===id&&!sheets[k].classList.contains('open');sheets[k].classList.toggle('open',on);document.getElementById(k).classList.toggle('on',on);});}
 Object.keys(sheets).forEach(k=>document.getElementById(k).addEventListener('click',()=>openSheet(k)));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{Object.keys(sheets).forEach(k=>{sheets[k].classList.remove('open');document.getElementById(k).classList.remove('on');});}));
-// ---- UI state ----
+
 const S={V:.6,P:12,E:false,B:false,slow:false,hits:0,emit:0};
 const $=id=>document.getElementById(id);
 $('volt').oninput=e=>{S.V=e.target.value/100;$('vo').textContent=e.target.value;};
@@ -183,7 +183,7 @@ function updInfo(){
 }
 updInfo();
 
-// ---- simulation ----
+
 let acc=0;
 function spawn(){for(let i=0;i<N;i++)if(!alive[i]){const a=Math.random()*6.28,r=Math.sqrt(Math.random())*.25;
  pos[i*3]=TX+.2;pos[i*3+1]=Math.cos(a)*r;pos[i*3+2]=Math.sin(a)*r;vel[i*3]=.5;vel[i*3+1]=vel[i*3+2]=0;alive[i]=1;return;}}
@@ -205,7 +205,7 @@ function step(dt){
   pos[k]=x;pos[k+1]=y;pos[k+2]=z;}
  geo.attributes.position.needsUpdate=true;
  S.n=n;
- // gas wander
+ 
  gas.forEach((m,i)=>{m.visible=i<S.P;const p=m.position,v=m.userData.v;p.addScaledVector(v,dt);
   if(p.x<-5.8||p.x>5.8)v.x*=-1;if(Math.hypot(p.y,p.z)>1.8){v.y*=-1;v.z*=-1;}
   m.userData.f=Math.max(0,m.userData.f-dt*2.5);const f=m.userData.f;m.material.emissive.setRGB(0,f*.9,f*.5);m.scale.setScalar(1+f*.8);});
@@ -220,16 +220,16 @@ function tick(t,dt){
  beam.scale.y=beam.visible?1:0;
  latt.forEach(m=>{const p=Math.sin(t*.004*(1+S.V*4)+m.userData.p);m.position.x=TX+.05+p*.04*S.V;m.material.emissiveIntensity=.3+S.V*.9*(.5+.5*p);});
  fan.rotation.y+=dt*8;knob.rotation.z=-S.V*4;
- // inset
+ 
  atomG.rotation.y+=dt*.6;els.forEach(e=>{const u=e.userData,p=Math.sin(t*.003+u.p);e.position.copy(u.b).multiplyScalar(1+p*.12);});
- // labels
+ 
  const w=stage.clientWidth,h=stage.clientHeight;
  labels.forEach(({d,p})=>{proj.copy(p).project(cam);const vis=proj.z<1;d.style.display=vis?'block':'none';d.style.left=((proj.x+1)/2*w)+'px';d.style.top=((1-proj.y)/2*h)+'px';});
  $('hud').textContent='Electrons in tube: '+(S.n||0)+'  |  Anode hits: '+S.hits;
  const s=Math.min(130,w*.33);mini.style.opacity=1;mini.style.top=(8+s+14)+'px';mini.style.transform='none';mini.textContent='Thomson model (zoom)';
- // watermark parallax (drifts slightly as the view rotates)
+ 
  wm.style.transform='translate('+(Math.sin(th)*6).toFixed(1)+'px,'+((ph-1.2)*6).toFixed(1)+'px)';
- // render
+ 
  setCam();
  renderer.setViewport(0,0,w,h);renderer.setScissor(0,0,w,h);renderer.render(scene,cam);
  renderer.setViewport(w-s-8,h-s-8,s,s);renderer.setScissor(w-s-8,h-s-8,s,s);renderer.clearDepth();renderer.render(scene2,cam2);

@@ -780,7 +780,7 @@
 
 
   <script>
-    // 1. SWITCH BETWEEN TABS (3 TABS)
+    
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
@@ -797,7 +797,7 @@
       }
     }
 
-    // 2. TOGGLE FLIP CARDS ON CLICK
+    
     const academicCard = document.getElementById('academicCard');
     academicCard.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -816,14 +816,14 @@
       certCard.classList.toggle('is-flipped');
     });
 
-    // CLOSE CARDS ON CLICK OUTSIDE
+    
     document.addEventListener('click', () => {
       academicCard.classList.remove('is-flipped');
       expCard.classList.remove('is-flipped');
       certCard.classList.remove('is-flipped');
     });
 
-    // 3. OPEN CERTIFICATE LIGHTBOX
+    
     function openSelectedCertificate() {
       const selectedUrl = document.getElementById('certSelector').value;
       const modal = document.getElementById('certModal');

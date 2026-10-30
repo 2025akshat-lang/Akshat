@@ -14,8 +14,15 @@
     else if(v==='spots')ov=dots(P,7,'#fdd835',.7)+dots(P,3.5,'#5d4037');
     else if(v==='powder')ov=`<ellipse cx="45" cy="30" rx="16" ry="8" fill="#fff" opacity=".8"/><ellipse cx="82" cy="42" rx="14" ry="7" fill="#fff" opacity=".8"/>`;
     else if(v==='mosaic')ov=dots([[30,32],[55,22],[70,44],[92,30],[48,46]],9,'#c5e1a5',.85);
+    else if(v==='purple'){base='#2e7d32';ov=`<rect x="0" y="0" width="120" height="70" fill="#6a1b9a" opacity=".38"/>`}
+    else if(v==='tip'){base='#66bb6a';ov=`<ellipse cx="108" cy="35" rx="16" ry="13" fill="#6d4c41"/><path d="M96 24 Q108 35 96 46" fill="none" stroke="#6d4c41" stroke-width="5"/>`}
+    else if(v==='bleach')ov=`<ellipse cx="50" cy="26" rx="14" ry="8" fill="#fff9c4" opacity=".9"/><ellipse cx="82" cy="45" rx="11" ry="7" fill="#fff9c4" opacity=".9"/>`;
+    else if(v==='rust'){base='#66bb6a';ov=dots([[30,30],[38,40],[48,28],[58,44],[66,32],[76,40],[86,28],[94,38],[52,36],[72,24]],2.6,'#e65100')}
+    else if(v==='blight')ov=`<ellipse cx="45" cy="30" rx="19" ry="11" fill="#4e342e" opacity=".85"/><ellipse cx="86" cy="42" rx="14" ry="9" fill="#4e342e" opacity=".85"/>`;
+    else if(v==='holes')ov=dots([[35,30],[55,42],[72,28],[90,38],[62,34]],5,'var(--panel2)');
+    else if(v==='angular')ov=`<polygon points="38,30 52,25 57,36 44,41" fill="#6d4c41" opacity=".85"/><polygon points="72,44 86,40 90,51 76,54" fill="#6d4c41" opacity=".85"/>`;
     else if(v==='curl'){tf=' translate(0 9) scale(1 .7)';ov=dots([[40,35],[55,35],[70,35],[85,35]],2.2,'#212121')}
-    return `<g transform="translate(${dx} 0)"><clipPath id="${id}"><path d="${LEAF}"/></clipPath><g transform="${tf}"><path d="${LEAF}" fill="${base}"/><g clip-path="url(#${id})">${ov}</g>${v==='healthy'||v==='edge'||v==='wilt'||v==='curl'||v==='spots'||v==='powder'||v==='mosaic'||v==='pale'?ve('#2e7d32',1.2):''}</g></g>`}
+    return `<g transform="translate(${dx} 0)"><clipPath id="${id}"><path d="${LEAF}"/></clipPath><g transform="${tf}"><path d="${LEAF}" fill="${base}"/><g clip-path="url(#${id})">${ov}</g>${v!=='interv'?ve('#2e7d32',1.2):''}</g></g>`}
   function draw(){
     const hi=PV.lang&&PV.lang()==='hi',x=hi?1:0,head=`<span class="pv-x" role="button" aria-label="Close">×</span><b>${L('Plant health','पौधे का स्वास्थ्य')}</b>`,
       tabs=`<div class="pv-seg">${TABS.map(t=>`<button data-tab="${t[0]}" aria-pressed="${t[0]===tab}">${hi?t[2]:t[1]}</button>`).join('')}</div>`;

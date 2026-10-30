@@ -1312,7 +1312,7 @@ function absorbanceRel(compound,wavelength){
 }
 function samplePeaks(){
  const chem={c18:1,c8:.82,phenyl:1.05,cyano:.9}[S.column], eff=S.particle===3?.88:1;
- if(!S.compounds){ // fallback default trio if no library preset chosen
+ if(!S.compounds){ 
    let base=[{rt:2.1,h:1.0,w:.13},{rt:4.35,h:.72,w:.18},{rt:6.8,h:.52,w:.22}];
    return base.map((p,i)=>({rt:p.rt*chem*eff,h:p.h*(S.uv===210?1.2:S.uv===280?.78:1)*(1+S.inj/100),w:p.w*(S.particle===3?.72:1),name:'Peak '+(i+1),tailFactor:S.tailFactor}));
  }
@@ -1386,12 +1386,12 @@ function computeSST(){
  S.integrated.forEach((p,i)=>{
    const tf=p.tailFactor||1;
    const frontSigma=p.w/Math.sqrt(tf), tailSigma=p.w*tf;
-   const w05=2.355*((frontSigma+tailSigma)/2);     // FWHH, half-height width
-   p.N=5.54*Math.pow(p.rt/w05,2);                   // theoretical plates (USP half-height method)
-   const k=2.448;                                    // z at 5% height
+   const w05=2.355*((frontSigma+tailSigma)/2);     
+   p.N=5.54*Math.pow(p.rt/w05,2);                   
+   const k=2.448;                                    
    const front005=frontSigma*k, tail005=tailSigma*k;
-   p.T=(front005+tail005)/(2*front005);              // USP tailing factor
-   p.kprime=(p.rt-t0)/t0;                            // capacity/retention factor
+   p.T=(front005+tail005)/(2*front005);              
+   p.kprime=(p.rt-t0)/t0;                            
    const wBase=4*((frontSigma+tailSigma)/2);
    if(i>0){
      const prev=S.integrated[i-1];
@@ -1530,7 +1530,7 @@ function drawPdaSpectrum(t){
  ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.beginPath();
  wavelengths.forEach((wl,i)=>{ const x=45+(wl-200)/200*(w-55), y=h-32-(row[i]/(maxA*1.15))*(h-45); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
  ctx.stroke();
- // simple purity heuristic: compare spectral shape at leading edge, apex, trailing edge of nearest peak
+ 
  const nearest=S.peaks.reduce((a,b)=>Math.abs(a.rt-t)<Math.abs(b.rt-t)?a:b,S.peaks[0]);
  let purityNote='No eluting peak at this time slice.';
  if(nearest&&Math.abs(nearest.rt-t)<nearest.w*3){
@@ -1613,10 +1613,10 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeSidenav();} }
 
 
 Object.assign(S,{
-  solventLevel:100,          // % — 0 = dry run / empty bottle
-  lampOn:true,               // UV/Vis lamp power state
-  columnState:'installed',   // 'installed' | 'reversed' | 'missing'
-  solventType:'water',       // drives UV cut-off conflict check
+  solventLevel:100,          
+  lampOn:true,               
+  columnState:'installed',   
+  solventType:'water',       
   activeErrors:[],
   _leakTimerSet:false
 });
@@ -1745,7 +1745,7 @@ function onSolventTypeChange(){
 
 const _calcPressure_p1=calcPressure;
 calcPressure=function(t){
-  if(S.solventLevel<=0) return 0; // pump cavitation / air lock — no hydraulic pressure can build
+  if(S.solventLevel<=0) return 0; 
   let p=_calcPressure_p1(t);
   if(S.columnState==='missing') p*=0.15;
   if(S.columnState==='reversed') p*=1.9;
@@ -1753,9 +1753,9 @@ calcPressure=function(t){
 };
 const _signalAt_p1=signalAt;
 signalAt=function(t){
-  if(!S.lampOn) return 0; // no light source through flow cell
+  if(!S.lampOn) return 0; 
   const cutoff=SOLVENT_CUTOFF[S.solventType]||0;
-  if(S.uv<cutoff) return 2.6+Math.sin(t*4)*0.01; // detector saturated / pinned high
+  if(S.uv<cutoff) return 2.6+Math.sin(t*4)*0.01; 
   let y=_signalAt_p1(t);
   if(S.lampHours>1800){ const age=(S.lampHours-1800)/200; y+=age*0.03*Math.sin(t*53)+age*0.02*Math.sin(t*97); }
   return Math.max(0,y);
@@ -1971,7 +1971,7 @@ function finishEquilibration(code,wasRunning){
     toast('Additional fault still active — continue diagnostics','warning');
     log('Re-equilibration complete but additional fault(s) remain active','warning');
     updateErrBanner();
-    openRepairConsole(); // hand off directly to the next active fault
+    openRepairConsole(); 
   }
 }
 
@@ -2051,13 +2051,13 @@ updateSysLight(S.power?'green':'red');
 
 
 Object.assign(S,{
-  dwellVolume:0.45,             // mL, representative low-pressure mixer/dwell volume
-  columnLength:0.150,           // m
-  columnID:0.0046,              // m
-  columnPorosity:0.40,          // packed-bed interstitial porosity
-  rawData:[],                   // detector output: [time, absorbance]
-  pressureData:[],              // [time, bar]
-  detectorSampleInterval:0.01,  // min
+  dwellVolume:0.45,             
+  columnLength:0.150,           
+  columnID:0.0046,              
+  columnPorosity:0.40,          
+  rawData:[],                   
+  pressureData:[],              
+  detectorSampleInterval:0.01,  
   nextDetectorT:0,
   analytes:[],
   currentSample:null,
@@ -2096,46 +2096,46 @@ function columnSpec(){
 function mobilePhaseViscosity(){
   const T=clamp(+S.temp||40,20,80);
   const xB=clamp((+S.b||0)/100,0,1);
-  const muA20=1.002, muB20=.369;       // mPa·s, water / ACN at ~20 °C
+  const muA20=1.002, muB20=.369;       
   const mu20=Math.exp((1-xB)*Math.log(muA20)+xB*Math.log(muB20));
-  const tempFactor=Math.exp(-0.025*(T-20)); // compact temperature dependence
-  return Math.max(.16,mu20*tempFactor);     // mPa·s
+  const tempFactor=Math.exp(-0.025*(T-20)); 
+  return Math.max(.16,mu20*tempFactor);     
 }
 function columnVoidVolume(){
   const c=columnSpec();
-  // For equilibration we use the requested fluid-accessible column volume
-  // (geometric volume × ~0.70 porosity), independently of the packed-bed
-  // porosity used by the Kozeny-Carman pressure model.
+  
+  
+  
   const eps=Number.isFinite(S.columnVolumePorosity)?S.columnVolumePorosity:.70;
-  return Math.PI*(c.id/2)**2*c.length*eps*1e6; // mL
+  return Math.PI*(c.id/2)**2*c.length*eps*1e6; 
 }
 function linearVelocity(flow){
   const c=columnSpec();
-  const q=Math.max(0,flow)*1e-6/60; // m3/s
+  const q=Math.max(0,flow)*1e-6/60; 
   return q/(Math.PI*(c.id/2)**2);
 }
 function hydraulicPressure(t){
   if(S.solventLevel<=0 || S.pumpFlow<=0 || S.columnState==='missing' || S.purgeValveOpen || S.airLocked) return 0;
   const c=columnSpec();
   const dp=Math.max(1e-6,(+S.particle||5)*1e-6);
-  const mu=mobilePhaseViscosity()*1e-3; // Pa·s
+  const mu=mobilePhaseViscosity()*1e-3; 
   const v=linearVelocity(S.pumpFlow);
-  // Kozeny-Carman packed-bed pressure drop:
-  // ΔP = 180 μ L v (1-ε)^2 / (dp^2 ε^3)
+  
+  
   let pPa=180*mu*c.length*v*Math.pow(1-c.porosity,2)/
           (dp*dp*Math.pow(c.porosity,3));
   let pBar=pPa/1e5*c.perm;
   if(S.faults.clog)pBar*=2.9;
   if(S.columnState==='reversed')pBar*=1.9;
   if(S.faults.bubble)pBar*=1+0.10*Math.sin((t||0)*17);
-  // Dual-piston crossover ripple: stroke frequency rises with flow.
-  // t is simulator minutes; stroke volume is representative of a small analytical pump.
+  
+  
   const strokeVol=.025;
   const strokeHz=Math.max(.2,S.pumpFlow/strokeVol/60);
   const rippleAmp=S.faults.bubble?.025:.008;
   pBar*=1+rippleAmp*Math.sin(2*Math.PI*strokeHz*(t||0)*60)+.003*Math.sin(2*Math.PI*strokeHz*2*(t||0)*60+.7);
   if(S.leakRate>0)pBar*=Math.max(0,1-S.leakRate);
-  // seal wear adds a small pressure-dependent drift
+  
   if(Number.isFinite(S.pumpSealWear))pBar*=1+Math.max(0,100-S.pumpSealWear)*0.0015;
   return Math.max(0,pBar);
 }
@@ -2163,7 +2163,7 @@ function gradientAtSystem(t){
 }
 function flowIntegral(t0,t1){
   if(t1<=t0)return 0;
-  // mL traversed through the mixer between two instrument times.
+  
   const n=Math.max(4,Math.ceil((t1-t0)/.02));
   const h=(t1-t0)/n;
   let sum=0;
@@ -2177,11 +2177,11 @@ function systemTimeForDwell(columnTime){
   const target=Math.max(0,S.dwellVolume);
   if(target<=0)return columnTime;
   let hi=columnTime,lo=0;
-  // If the run is shorter than the dwell time, gradient at t=0 is used.
+  
   if(flowIntegral(0,hi)<target)return 0;
   for(let i=0;i<28;i++){
     const mid=(lo+hi)/2;
-    // volume delivered from mid -> columnTime
+    
     if(flowIntegral(mid,columnTime)>target)lo=mid; else hi=mid;
   }
   return (lo+hi)/2;
@@ -2197,7 +2197,7 @@ function analyteK(analyte,bPct){
   const c=columnSpec();
   const refB=finiteOr(analyte.refB,50);
   const kRef=Math.max(.05,finiteOr(analyte.kRef,1));
-  // RP-like gradient retention: increasing organic weakens retention.
+  
   const gamma=finiteOr(analyte.gradientSensitivity,.018);
   const k=kRef*Math.exp(-gamma*(bPct-refB))*c.retention;
   return clamp(k,.01,250);
@@ -2239,8 +2239,8 @@ function updateAnalyteTransport(dt){
   for(const a of S.analytes){
     if(a.eluted)continue;
     const k=analyteK(a,cond.b);
-    // Solute velocity = mobile-phase velocity / (1+k).
-    a.progress+=u/(1+k)*dt*60; // m; dt is minutes
+    
+    a.progress+=u/(1+k)*dt*60; 
     if(a.progress>=L){
       a.eluted=true;
       a.rt=S.t;
@@ -2262,13 +2262,13 @@ function analyteSignal(t,a){
 function detectorBaseline(t){
   const g=columnConditions(t);
   let base=.012+.0006*g.b+.00012*t;
-  // Slow lamp/thermal baseline wander; aged lamps become progressively less stable.
+  
   const age=Math.max(0,(S.lampHours-1500)/500);
   base += (.0007 + age*.0025)*Math.sin(t*.75) + age*.0012*Math.sin(t*.17);
   return base;
 }
 function detectorNoise(t){
-  // Detector shot/electronic noise, with a marked increase after 1500 lamp hours.
+  
   const age=Math.max(0,(S.lampHours-1500)/500);
   let sigma=.00075 + age*.0035;
   let n=(Math.random()-.5)*2*sigma;
@@ -2284,7 +2284,7 @@ function detectorSignalAt(t){
   const cutoff=SOLVENT_CUTOFF[S.solventType]||0;
   if(S.uv<cutoff)return 2.6+detectorNoise(t);
   let y=detectorBaseline(t)+detectorNoise(t);
-  // Injection solvent / refractive-index shock at the dynamically calculated t0.
+  
   if(S.solventFront){
     const sf=S.solventFront, dt=t-sf.t0, sig=dt<0?sf.width*.65:sf.width;
     y += sf.height*Math.exp(-.5*Math.pow(dt/sig,2));
@@ -2359,7 +2359,7 @@ function detectAndIntegrateRaw(){
   for(let i=2;i<data.length-2;i++){
     const y=data[i][1];
     if(y<=data[i-1][1]||y<data[i+1][1])continue;
-    // Local prominence against a ±0.25 min neighborhood.
+    
     let l=Math.max(0,i-Math.ceil(.25/S.detectorSampleInterval));
     let r=Math.min(data.length-1,i+Math.ceil(.25/S.detectorSampleInterval));
     const localMin=Math.min(...data.slice(l,r+1).map(p=>p[1]));
@@ -2380,7 +2380,7 @@ function detectAndIntegrateRaw(){
     ));
     const w50=widthAtFraction(data,pi,li,ri,.50);
     const w05=widthAtFraction(data,pi,li,ri,.05);
-    // Match the raw-data peak to the nearest simulated analyte identity.
+    
     let nearest=S.analytes.reduce((a,b)=>!a||Math.abs((b.rt??1e9)-peak[0])<Math.abs((a.rt??1e9)-peak[0])?b:a,null);
     const compound=nearest?.compound||null;
     return {
@@ -2460,7 +2460,7 @@ function startRun(){
     return;
   }
   if(!S.queue.length){
-    // Preserve single-run behavior when the queue is empty.
+    
     S.queue=[{id:S.activePreset?SAMPLE_LIBRARY[S.activePreset].label:'UNKNOWN-01',
               conc:25,volume:S.inj,status:'QUEUED',implicit:true}];
     renderQueue();
@@ -2476,8 +2476,8 @@ function runLoop(ts=performance.now()){
   const dt=Math.min(.05,Math.max(.008,(ts-lastFrame)/1000||.016));
   lastFrame=ts;
   S.elapsed+=dt;
-  // Simulator clock is 1:1 with the physical minute axis; frame dt is seconds.
-  const simDt=dt*(S.simRate||.9); // accelerated simulator clock: ~0.9 min / real second
+  
+  const simDt=dt*(S.simRate||.9); 
   S.t=Math.min(S.runtime,S.t+simDt);
   const cond=columnConditions(S.t);
   S.pumpFlow=Math.max(0,cond.flow);
@@ -2519,7 +2519,7 @@ function stopRun(){
 }
 function finishRun(){
   S.running=false;S.pumpFlow=0;$('svgRoot').classList.remove('running');stopPumpAudio();
-  // Final detector samples exactly through the run endpoint.
+  
   S.t=S.runtime;appendDetectorSamples();
   setState('DATA PROCESSING');
   S.integrated=detectAndIntegrateRaw();

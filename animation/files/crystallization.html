@@ -229,12 +229,12 @@
         let currentStep = 0;
         let animationTime = 0;
 
-        // Six stages, verified against NCERT Class 9 "Is Matter Around Us Pure"
-        // and standard CBSE lab-manual sources for this exact activity
-        // (1 g copper sulfate in 25 mL water + a drop of dilute H2SO4):
-        // dissolve -> heat to saturation -> filter HOT -> slow undisturbed
-        // cooling -> pure crystals form (mother liquor left behind) -> filter & dry.
-        // Note the real order: the solution is saturated BEFORE filtering, not after.
+        
+        
+        
+        
+        
+        
         const stepsData = [
             {
                 title: "Dissolving the Impure Sample",
@@ -364,21 +364,21 @@
             ctx.stroke();
         }
 
-        // Draw Retort Stand for Funnel Support
+        
         function drawRetortStand() {
-            // Heavy Metal Base Plate
+            
             ctx.fillStyle = '#334155';
             ctx.fillRect(350, 348, 60, 10);
 
-            // Vertical Metallic Rod
+            
             ctx.fillStyle = '#64748b';
             ctx.fillRect(375, 140, 6, 208);
 
-            // Clamp Bosshead on rod
+            
             ctx.fillStyle = '#475569';
             ctx.fillRect(371, 163, 14, 15);
 
-            // Horizontal Ring Arm supporting the Funnel
+            
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 4;
             ctx.beginPath();
@@ -388,7 +388,7 @@
         }
 
         function drawFunnelWithPaper(topY) {
-            // Funnel outline
+            
             ctx.strokeStyle = '#cbd5e1';
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -398,7 +398,7 @@
             ctx.closePath();
             ctx.stroke();
 
-            // Filter Paper Cone
+            
             ctx.strokeStyle = '#f8fafc';
             ctx.fillStyle = 'rgba(255,255,255,0.15)';
             ctx.beginPath();
@@ -434,7 +434,7 @@
             ctx.translate(-canvas.width / 2, -canvas.height / 2 - 20);
 
             switch (currentStep) {
-                case 0: { // Dissolving the impure sample (1g CuSO4 + 25mL water + drop dil. H2SO4)
+                case 0: { 
                     drawBeaker(250, 190, 100, 90, 55, `rgba(2, 132, 199, ${0.3 + Math.sin(animationTime * 0.05) * 0.15})`);
 
                     let rodX = 300 + Math.sin(animationTime * 0.08) * 15;
@@ -445,7 +445,7 @@
                     ctx.lineTo(rodX, 230);
                     ctx.stroke();
 
-                    // a drop of dilute sulfuric acid falling in
+                    
                     const dropCycle = animationTime % 90;
                     if (dropCycle < 60) {
                         ctx.fillStyle = 'rgba(226, 232, 240, 0.9)';
@@ -454,7 +454,7 @@
                         ctx.fill();
                     }
 
-                    // undissolved powder specks fading out over time
+                    
                     const speckAlpha = Math.max(0, 0.6 - animationTime * 0.005);
                     if (speckAlpha > 0) {
                         ctx.fillStyle = `rgba(30, 64, 175, ${speckAlpha})`;
@@ -467,17 +467,17 @@
                     break;
                 }
 
-                case 1: { // Heating to saturation (in a water bath, BEFORE filtering)
+                case 1: { 
                     drawBurner(300, 270, true);
-                    // outer water-bath beaker
+                    
                     drawBeaker(230, 195, 140, 80, 45, 'rgba(56, 189, 248, 0.35)');
-                    // inner beaker with the copper sulfate solution
+                    
                     drawBeaker(255, 175, 90, 75, 45, `rgba(2, 132, 199, ${0.5 + Math.sin(animationTime * 0.05) * 0.15})`);
 
                     drawSteamWisp(270, 195, 0);
                     drawSteamWisp(300, 195, 25);
 
-                    // extra copper sulfate being added and stirred in until saturated
+                    
                     const addCycle = animationTime % 80;
                     if (addCycle < 30) {
                         ctx.fillStyle = '#1e40af';
@@ -497,14 +497,14 @@
                     break;
                 }
 
-                case 2: { // Filtering while hot
+                case 2: { 
                     drawRetortStand();
                     let dripFill = Math.min(40, animationTime * 0.15);
                     drawBeaker(260, 280, 80, 75, dripFill, '#0284c7');
                     drawFunnelWithPaper(170);
                     drawSteamWisp(300, 170, 10);
 
-                    // a couple of dark specks caught on the paper (insoluble impurity)
+                    
                     ctx.fillStyle = '#78350f';
                     ctx.beginPath();
                     ctx.arc(292, 195, 2, 0, Math.PI * 2);
@@ -520,7 +520,7 @@
                     break;
                 }
 
-                case 3: { // Slow undisturbed cooling
+                case 3: { 
                     drawBeaker(250, 200, 100, 100, 60, '#0284c7');
 
                     ctx.strokeStyle = '#cbd5e1';
@@ -539,8 +539,8 @@
                     break;
                 }
 
-                case 4: { // Pure crystals separate from mother liquor — contrast slow vs fast cooling
-                    // Slow cooling beaker (correct method) on the left
+                case 4: { 
+                    
                     drawBeaker(200, 200, 90, 100, 45, 'rgba(2, 132, 199, 0.55)');
                     const growth = Math.min(1, animationTime / 60);
                     drawCrystalCluster(225, 285, 11 * growth);
@@ -554,7 +554,7 @@
                     ctx.fillStyle = '#7dd3fc';
                     ctx.fillText('slow cooling: large, pure crystals', 190, 320);
 
-                    // Fast-cooling beaker (what NOT to do) on the right, faded/crossed
+                    
                     ctx.save();
                     ctx.globalAlpha = 0.6;
                     drawBeaker(340, 210, 70, 85, 35, 'rgba(2, 132, 199, 0.4)');
@@ -566,7 +566,7 @@
                         ctx.fill();
                     });
                     ctx.restore();
-                    // red cross over the fast-cooling beaker
+                    
                     ctx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
@@ -579,17 +579,17 @@
                     break;
                 }
 
-                case 5: { // Filtering and drying the crystals
+                case 5: { 
                     drawRetortStand();
                     drawFunnelWithPaper(170);
                     drawBeaker(260, 280, 80, 75, 30, 'rgba(2, 132, 199, 0.35)');
 
-                    // crystals resting in the filter paper
+                    
                     drawCrystalCluster(295, 195, 8);
                     drawCrystalCluster(308, 198, 6);
                     drawCrystalCluster(285, 200, 5);
 
-                    // a folded filter paper with a crystal being pressed dry, off to the side
+                    
                     ctx.strokeStyle = '#f8fafc';
                     ctx.lineWidth = 2;
                     ctx.beginPath();

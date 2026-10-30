@@ -1,4 +1,4 @@
-/* Manifest ki files ko PARALLEL download karta hai par ORDER mein chalata hai (async=false). file:// par bhi chalta hai.
+/* Manifest ki files ko PARALLEL download karta hai par ORDER mein chalata hai (async=false). file:
    PV_MANIFEST.useBundle=true -> sirf ek bundle file load hogi (GitHub par sabse tez). */
 (function(){
   const M=window.PV_MANIFEST,v=M.v?'?v='+M.v:'',list=M.useBundle?[M.bundle]:[].concat(M.core,M.features,M.boot).map(f=>'js/'+f);

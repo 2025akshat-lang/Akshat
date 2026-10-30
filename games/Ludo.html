@@ -557,10 +557,10 @@
     </div>
 
     <script>
-        // Web Audio API Effects
+        
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-                // 🔊 Loud & Crisp Token Movement Sound
+                
         function playStepSound() {
             try {
                 if (typeof audioCtx !== 'undefined' && audioCtx) {
@@ -572,12 +572,12 @@
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
 
-                    // Crisp Wood/Pop Pitch
+                    
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
                     osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.12);
 
-                    // Volume Boost (Increased to 0.8 for loud pop)
+                    
                     gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
 
@@ -605,7 +605,7 @@
             osc.stop(audioCtx.currentTime + 0.18);
         }
 
-        // Full Board Path Coordinates
+        
         const redPath = [
             [7,2], [7,3], [7,4], [7,5], [7,6], [6,7], [5,7], [4,7], [3,7], [2,7], [1,7],
             [1,8], [1,9], [2,9], [3,9], [4,9], [5,9], [6,9], [7,10], [7,11], [7,12], [7,13], [7,14], [7,15],
@@ -705,7 +705,7 @@
                 activePlayers = ['red', 'green', 'yellow', 'blue'];
             }
 
-            // Bind click handlers to all tokens
+            
             for (let id in positions) {
                 let elem = document.getElementById(id);
                 if (elem) {
@@ -741,7 +741,7 @@
                     turnIndicator.innerText = `${currentColor.toUpperCase()}'s Turn: Click a highlighted token.`;
                     moveableTokens.forEach(id => document.getElementById(id).classList.add('highlight'));
 
-                    // Auto move if AI turn
+                    
                     if (isAITurn()) {
                         setTimeout(() => aiMakeMove(moveableTokens), 800);
                     }
@@ -881,19 +881,19 @@
                 if (cell) cell.appendChild(token);
             }
         }
-                // --- BRAINSTORMING POWER-UP & DICE LOGIC ---
+                
         let currentDiceMode = 'normal';
-        let shields = {}; // Tracks shield status per token
-        const powerupCells = ["7,5", "9,11", "5,9", "11,7"]; // Fixed board cells with Mystery Power-ups
+        let shields = {}; 
+        const powerupCells = ["7,5", "9,11", "5,9", "11,7"]; 
 
-        // Set Dice Mode Selection
+        
         function setDiceMode(mode) {
             currentDiceMode = mode;
             document.querySelectorAll('.dice-type-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`dice-${mode}`).classList.add('active');
         }
 
-        // Custom Dice Generator
+        
         function getRandomDiceRoll() {
             if (currentDiceMode === 'risky') {
                 const riskyValues = [0, 0, 2, 4, 6, 8];
@@ -902,10 +902,10 @@
                 const safeValues = [1, 2, 3, 3, 4, 5];
                 return safeValues[Math.floor(Math.random() * safeValues.length)];
             }
-            return Math.floor(Math.random() * 6) + 1; // Normal Dice
+            return Math.floor(Math.random() * 6) + 1; 
         }
 
-        // Highlight Power-up Cells on Board
+        
         function markPowerCells() {
             powerupCells.forEach(cellKey => {
                 if (gridCells[cellKey]) {
@@ -915,7 +915,7 @@
         }
         markPowerCells();
 
-        // Power-Up Handler when Token Lands on Special Cell
+        
         function checkPowerup(tokenId) {
             let color = tokenId.split('-')[0];
             let pos = positions[tokenId];
@@ -940,7 +940,7 @@
             }
         }
 
-        // Random Swap Logic
+        
         function swapWithRandomEnemy(myTokenId) {
             let myColor = myTokenId.split('-')[0];
             let enemyTokens = Object.keys(positions).filter(id => !id.startsWith(myColor) && positions[id] >= 0);
@@ -955,12 +955,12 @@
                 renderSingleToken(targetEnemy);
             }
         }
-                // --- 🚀 BOOST TILES & ⏳ TIMER LOGIC ---
-        const boostCells = ["4,7", "12,9", "7,12", "9,4"]; // Fast Forward Tiles
+                
+        const boostCells = ["4,7", "12,9", "7,12", "9,4"]; 
         let turnTimer = null;
         let timeLeft = 10;
 
-        // Highlight Boost Tiles on Board
+        
         function markBoostCells() {
             boostCells.forEach(cellKey => {
                 if (gridCells[cellKey]) {
@@ -970,7 +970,7 @@
         }
         setTimeout(markBoostCells, 500);
 
-        // Turn Timer Functions
+        
         function startTurnTimer() {
             clearInterval(turnTimer);
             timeLeft = 10;
@@ -990,7 +990,7 @@
             }, 1000);
         }
 
-        // Check for Speed Boost Tile
+        
         async function checkBoost(tokenId) {
             let color = tokenId.split('-')[0];
             let pos = positions[tokenId];
@@ -1009,25 +1009,25 @@
             }
         }
 
-        // Hooking into turn system for Timer
+        
         const baseUpdateTurnUI = updateTurnUI;
         updateTurnUI = function() {
             baseUpdateTurnUI();
             startTurnTimer();
         };
 
-        // Hooking into token move to check Boost
+        
         const baseCheckCutting = checkCutting;
         checkCutting = function(movedId) {
             let cutResult = baseCheckCutting(movedId);
             checkBoost(movedId);
             return cutResult;
         };
-                // --- 💣 LANDMINE & 🔥 RAGE MODE LOGIC ---
-        let activeLandmines = {}; // Stores landmine locations on board
+                
+        let activeLandmines = {}; 
         let rageMode = { 'red': false, 'green': false, 'yellow': false, 'blue': false };
 
-        // Check & Trigger Landmines
+        
         function handleLandmine(tokenId) {
             let color = tokenId.split('-')[0];
             let pos = positions[tokenId];
@@ -1035,7 +1035,7 @@
             let [r, c] = paths[color][pos];
             let cellKey = `${r},${c}`;
 
-            // Plant Mine on trap spots
+            
             if (cellKey === "8,8" || cellKey === "6,6") {
                 if (!activeLandmines[cellKey]) {
                     activeLandmines[cellKey] = color;
@@ -1045,22 +1045,22 @@
                 }
             }
 
-            // Explode Mine if stepped on enemy's mine
+            
             if (activeLandmines[cellKey] && activeLandmines[cellKey] !== color) {
                 delete activeLandmines[cellKey];
                 gridCells[cellKey].classList.remove('landmine-cell');
                 
-                positions[tokenId] = -1; // Send back to base
+                positions[tokenId] = -1; 
                 renderSingleToken(tokenId);
                 playStepSound();
                 
-                // Activate Rage Mode for the trapped player
+                
                 rageMode[color] = true;
                 turnIndicator.innerText = `💥 BOOM! ${color.toUpperCase()} stepped on Mine! Rage Mode Activated!`;
             }
         }
 
-        // Apply Rage multiplier on roll
+        
         const rageRollDice = rollDice;
         rollDice = function() {
             let currentColor = activePlayers[turnIndex];
@@ -1074,7 +1074,7 @@
             rageRollDice();
         };
 
-        // Hook landmine trigger inside move logic
+        
         const mineCheckCutting = checkCutting;
         checkCutting = function(movedId) {
             let res = mineCheckCutting(movedId);
@@ -1082,14 +1082,14 @@
                 
             let currentColor = movedId.split('-')[0];
             if (rageMode[currentColor]) {
-                rageMode[currentColor] = false; // Reset Rage after move
+                rageMode[currentColor] = false; 
             }
             return res;
         };
-                // --- 🏆 CLEAN SOUNDS & LEADERBOARD SYSTEM (NO TELEPORT BUG) ---
+                
         let scores = { 'red': 0, 'green': 0, 'yellow': 0, 'blue': 0 };
 
-        // Safe Web Audio Sound Effect
+        
         function playCustomSound(type) {
             try {
                 if (typeof audioCtx !== 'undefined' && audioCtx) {
@@ -1119,7 +1119,7 @@
             } catch(e) {  }
         }
 
-        // Clean Win Condition Check
+        
         function checkWinCondition(color) {
             if (!paths[color]) return;
             let allHome = [1,2,3,4].every(i => {
@@ -1135,8 +1135,8 @@
             }
         }
 
-        // Attach safely to your existing turn/move execution logic
-        // Call this helper inside your main move complete function:
+        
+        
         function onMoveComplete(movedId, wereTokensCut) {
             if (wereTokensCut) {
                 playCustomSound('cut');

@@ -61,7 +61,7 @@ registerDetail('n_dend', A => {
   const PS = A.part('Dendritic spines', 'Chhote kante jaise ubhaar (head + neck). Har spine par ek excitatory synapse. Seekhne par spines ka aakar aur sankhya badalti hai. Tap karke aur andar dekho.', 1, 'n_spine');
   [-.8, .4, 1.6, 2.8].forEach((x, i) => { A.add(new T.CylinderGeometry(.06, .09, .55, 8), 0xd9c6ff, x, .95, 0, { op: .95 }, PS); A.add(sp(.2 + (i % 2) * .05, 14, 10), 0xd9c6ff, x, 1.35, 0, { op: .95 }, PS); A.add(new T.CylinderGeometry(.14, .14, .04, 12), 0x7a1a3a, x, 1.54 + (i % 2) * .05, 0, { op: .95 }, PS); });
   A.flow([[3.2, .3, -.1], [.8, .1, -.15], [-1.6, 0, -.1]], 0xffe04a, 6, .1, .05);
-  // cross-section disc (kata hua tukda, seedha saamne se)
+  
   const PX = A.part('Cross-section (kata hua tukda)', 'Dendrite ko lambai mein kaatkar seedha dekhne par: bahari membrane, andar microtubules (cyan), neurofilaments (safed), mitochondrion aur ER.');
   A.add(new T.CircleGeometry(.8, 40), 0xe4d8ff, -3.6, 0, 0, { op: .35 }, PX);
   A.add(new T.RingGeometry(.76, .85, 40), COL, -3.6, 0, .01, { op: .95 }, PX);

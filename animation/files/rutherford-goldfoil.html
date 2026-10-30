@@ -56,7 +56,7 @@ let th=.8,ph=1.15,rad=38;
 function cp(){cam.position.set(rad*Math.sin(ph)*Math.cos(th),rad*Math.cos(ph),rad*Math.sin(ph)*Math.sin(th));cam.lookAt(0,0,0)}
 function rs(){const w=vw.clientWidth,h=vw.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 new ResizeObserver(rs).observe(vw);
-// ---- कैमरा नियंत्रण और टैप (orbit + tap) ----
+
 const ptr=new Map();let pd=0,dn=null,mv=0;
 vw.onpointerdown=e=>{vw.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);dn=[e.clientX,e.clientY];mv=0};
 vw.onpointerup=e=>{if(ptr.size==1&&mv<6)pick(e.clientX,e.clientY);ptr.delete(e.pointerId);pd=0};
@@ -66,11 +66,11 @@ vw.onpointermove=e=>{if(!ptr.has(e.pointerId))return;const o=ptr.get(e.pointerId
  ptr.set(e.pointerId,[e.clientX,e.clientY]);
  if(ptr.size==2){mv+=9;const [a,b]=[...ptr.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pd)rad=Math.min(80,Math.max(5,rad*pd/d));pd=d}};
 vw.onwheel=e=>{e.preventDefault();rad=Math.min(80,Math.max(5,rad*(1+e.deltaY*.001)))};
-// ---- पर्दा और स्रोत ----
+
 const scr=new THREE.Mesh(new THREE.SphereGeometry(24,28,18),new THREE.MeshBasicMaterial({color:0x8866ff,wireframe:true,transparent:true,opacity:.09}));sc.add(scr);
 const scrHit=new THREE.Mesh(new THREE.SphereGeometry(24,16,10),new THREE.MeshBasicMaterial({visible:false,side:THREE.BackSide}));sc.add(scrHit);
 const src=new THREE.Mesh(new THREE.CylinderGeometry(.6,.9,1.6,16),new THREE.MeshStandardMaterial({color:0x888899}));src.rotation.z=Math.PI/2;src.position.x=-19;sc.add(src);
-// ---- परमाणु ----
+
 let nuc=[],LN=1,LM=1,nucM,cloudM,thE,thO=[],eg=[];const egrp=new THREE.Group();sc.add(egrp);
 const o3=new THREE.Object3D(),sph=new THREE.SphereGeometry(1,16,12);
 const cloudMat=new THREE.MeshBasicMaterial({color:0xffcc33,transparent:true,opacity:.07,depthWrite:false});
@@ -96,7 +96,7 @@ function sizes(){const atom=F.mode=='atom',cs=F.thom?.9:atom?3.2:.95,per=atom?P.
  thE.visible=!!F.thom;egrp.visible=!F.thom;
  cloudM.visible=!!(F.cloud||F.thom);cloudMat.color.set(F.thom?0xff4466:mat>=0?M[mat][2]:0x5599ff);cloudMat.opacity=F.thom?.26:.07;
  scr.visible=!!F.zns;src.visible=F.mode=='foil'}
-// ---- α-कण, ग्लो, पथ, चमक ----
+
 const pool=[...Array(MAXP)].map(()=>({on:0,x:0,y:0,z:0,vx:0,vy:0,vz:0,tr:[],mr:9}));
 const heads=new THREE.InstancedMesh(sph,new THREE.MeshBasicMaterial({color:0xffffff}),MAXP);
 const glow=new THREE.InstancedMesh(sph,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.22,blending:THREE.AdditiveBlending,depthWrite:false}),MAXP);
@@ -144,7 +144,7 @@ function draw(){
     tp.set(A,b);tp.set(B,b+3);tc[b]=tc[b+3]=col.r*f;tc[b+1]=tc[b+4]=col.g*f;tc[b+2]=col.b*f}else tp.fill(0,b,b+6)}});
  heads.instanceMatrix.needsUpdate=glow.instanceMatrix.needsUpdate=true;heads.instanceColor.needsUpdate=glow.instanceColor.needsUpdate=true;
  tgeo.attributes.position.needsUpdate=tgeo.attributes.color.needsUpdate=true}
-// ---- सूचना पट्ट ----
+
 function graph(){const c=$('#gr'),g=c.getContext('2d'),W=c.width,H=c.height;g.clearRect(0,0,W,H);g.fillStyle='#0a0716';g.fillRect(0,0,W,H);
  const X=r=>36+r/2*(W-42),Y=a=>H-20-a/180*(H-28);
  g.strokeStyle='#8878b8';g.strokeRect(36,8,W-42,H-28);g.fillStyle='#d8d0f5';g.font='13px sans-serif';
@@ -154,7 +154,7 @@ function graph(){const c=$('#gr'),g=c.getContext('2d'),W=c.width,H=c.height;g.cl
 function info(){const T1=st.tot||1,pc=x=>(100*x/T1).toFixed(1),r0=2*1.44*P.Z/P.E;
  $('#hud').innerHTML=`छोड़े गए कण (Fired): <b>${st.tot}</b><br>सीधे निकले (Straight, &lt;10°): ${st.s} (${pc(st.s)}%)<br>विचलित (Deflected, 10°–90°): ${st.d} (${pc(st.d)}%)<br>वापस लौटे (Rebounded, &gt;90°): ${st.bk} (${pc(st.bk)}%)`;
  $('#r0').innerHTML=`निकटतम दूरी (Distance of Closest Approach)<br>r₀ = 2kZe² ÷ E = <b>${r0.toFixed(1)} fm</b> (= ${r0.toFixed(1)}×10⁻¹⁵ m)<br>सीधी टक्कर (b = 0) पर α-कण नाभिक के इतने पास पहुँचकर लौटता है।`}
-// ---- टैप पर नाम ----
+
 const rc=new THREE.Raycaster(),V=new THREE.Vector3();
 function s2(p){V.set(p[0],p[1],p[2]).project(cam);return[(V.x+1)/2*vw.clientWidth,(1-V.y)/2*vw.clientHeight]}
 function near(L,x,y,t){let b=null,bd=t;for(const it of L){const s=s2(it.p),d=Math.hypot(s[0]-x,s[1]-y);if(d<bd){bd=d;b=it}}return b}
@@ -178,12 +178,12 @@ function pick(px,py){$('#toast').style.display='none';const r=vw.getBoundingClie
  else nm=NM[h.t];
  tip.innerHTML=`<b>${nm[0]}</b>${nm[1]}`;tip.style.display='block';
  tip.style.left=Math.min(Math.max(4,x+10),Math.max(4,W-240*ZZ))+'px';tip.style.top=Math.min(Math.max(50,y-10),H-90)+'px';clearTimeout(pick.h);pick.h=setTimeout(()=>tip.style.display='none',6000)}
-// ---- मुख्य चक्र ----
+
 let last=performance.now(),fc=0;
 function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000)*P.speed;last=t;
  step(dt);draw();cp();R.render(sc,cam);
  if(++fc%8==0){if(F.cnt||F.r0)info();if(F.graph)graph()}}
-// ---- नियंत्रण वृक्ष ----
+
 const sl=(n,k,mn,mx,s,m,note)=>({t:'sl',n,k,mn,mx,s,m,note});
 const tg=(n,k)=>({t:'tg',n,k});
 const ac=(n,f,on)=>({t:'ac',n,f,on});
@@ -239,7 +239,7 @@ const ROOT={n:T('नियंत्रण सेटिंग्स','Control Set
   {n:T('जाँचें','Test Yourself'),hide:()=>!F.quiz,k:[
    pg(T('प्रश्नोत्तरी — 5 प्रश्न','Quiz — 5 Questions'),()=>`<div class="pg" id="qz">${QZ.map((q,i)=>`<div class="q"><b>${i+1}. ${q[0]}</b>${q[1].map((o,j)=>`<button data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div>`).join('')}<p id="qs"></p></div>`,b=>{let sc=0,done={};b.querySelectorAll('.q button').forEach(x=>x.onclick=()=>{const i=+x.dataset.q,j=+x.dataset.o;if(done[i]!=null)return;done[i]=j;const ok=j==QZ[i][2];if(ok)sc++;x.classList.add(ok?'ok':'no');if(!ok)b.querySelector(`[data-q="${i}"][data-o="${QZ[i][2]}"]`).classList.add('ok');b.querySelector('#qs').innerHTML=`अंक (Score): <b>${sc} / ${QZ.length}</b>`})})]},
   {n:T('निर्देश','Instructions'),k:[pg(T('कैसे उपयोग करें','How to Use'),()=>`<div class="pg"><ul><li>किसी भी भाग पर टैप करें, उसका नाम दिखेगा। (Tap any part to see its name.)</li><li>एक उँगली से घुमाएँ, दो उँगलियों से ज़ूम करें। (Drag with one finger to rotate; pinch to zoom.)</li><li>हरा पथ = सीधा, पीला = हल्का मुड़ाव, नारंगी = बड़ा मुड़ाव, गुलाबी = वापसी। (Green = straight, yellow = slight bend, orange = large bend, pink = rebound.)</li><li>सभी नियंत्रण नियंत्रण सेटिंग्स में हैं। (All controls are inside Control Settings.)</li></ul></div>`)]}]}]};
-// ---- मेनू प्रदर्शन ----
+
 let path=[];const cur=()=>path.reduce((n,i)=>n.k[i],ROOT);
 function ap(){sizes();render()}
 function render(){const n=cur(),s=$('#sheet');s.innerHTML='';

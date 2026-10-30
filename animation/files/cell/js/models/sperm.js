@@ -7,10 +7,10 @@ registerCellModel('sperm', (THREE, group, opt) => {
 
   
   setPart('head', 'Head (nucleus + acrosome)', 'Sir: andar ghana haploid nucleus (23 chromosome, protamine se pack) aur aage acrosome cap jisme enzyme (hyaluronidase, acrosin) bhare hain.', 's_head', 'head');
-  add(sph(1, 24, 18), mat(0x3a56c8, 0.92), 3.55, 0, 0).scale.set(0.8, 0.5, 0.34);                 // Nucleus - neela
+  add(sph(1, 24, 18), mat(0x3a56c8, 0.92), 3.55, 0, 0).scale.set(0.8, 0.5, 0.34);                 
   const ch = []; for (let i = 0; i < 40; i++) { const v = k.V(k.rand() - .5, k.rand() - .5, k.rand() - .5).multiplyScalar(1.5); ch.push({ p: [3.5 + v.x * .8 * .8, v.y * .5 * .8, v.z * .34 * .8] }); }
-  k.inst(sph(0.03, 6, 5), mat(0x9fb4ff), ch);                                                     // chromatin dane
-  add(sph(1, 24, 18), mat(0x7fc8ff, 0.5), 3.98, 0, 0).scale.set(0.5, 0.56, 0.4);                  // Acrosome - halka neela
+  k.inst(sph(0.03, 6, 5), mat(0x9fb4ff), ch);                                                     
+  add(sph(1, 24, 18), mat(0x7fc8ff, 0.5), 3.98, 0, 0).scale.set(0.5, 0.56, 0.4);                  
 
   
   setPart('neck', 'Neck + centrioles', 'Gardan: proximal centriole (zygote ke pehle cell division ke liye) aur distal centriole jisse tail ka axoneme nikalta hai.', 'cen', 'neck');

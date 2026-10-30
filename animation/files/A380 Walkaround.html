@@ -301,9 +301,9 @@ function setView(){cY=Math.cos(S.yaw);sY=Math.sin(S.yaw);cE=Math.cos(S.el);sE=Ma
 const acT=p=>{const px=-8,pz=GZ,dx=p[0]-px,dz=p[2]-pz;return[px+dx*cP-dz*sP,p[1],pz+dx*sP+dz*cP+S.lift]};
 const vt=p=>{const z=p[2]-oz,x1=p[0]*cY-p[1]*sY,y1=p[0]*sY+p[1]*cY;return[x1,z*cE+y1*sE,y1*cE-z*sE]};
 const sc=v=>{const s=PF/(PF+v[2]),k=K*S.zoom*s;return[CX+S.px+v[0]*k,CY+S.py-v[1]*k]};
-const W=p=>sc(vt(p));            // ground-fixed point to screen
-const WA=p=>sc(vt(acT(p)));      // aircraft-fixed point to screen
-const D=[];                      // draw list for the aircraft layer
+const W=p=>sc(vt(p));            
+const WA=p=>sc(vt(acT(p)));      
+const D=[];                      
 const pathOf=pts=>'M'+pts.map(q=>f1(q[0])+' '+f1(q[1])).join('L');
 function face(f,ac=true){
   const V=f.p.map(p=>vt(ac?acT(p):p));
@@ -450,7 +450,7 @@ function fans(){
   const nF=[1,0,0];
   A.NACC.forEach((c,k)=>{
     const cc=vt(acT([c.x,c.y,c.z])),c2=vt(acT([c.x+1,c.y,c.z]));
-    if(c2[2]-cc[2]>=0)return;                    // inlet faces away from camera
+    if(c2[2]-cc[2]>=0)return;                    
     const n=S.n1[k],pts=[],sp=[];
     for(let i=0;i<16;i++){const a=i*Math.PI/8;pts.push(sc(vt(acT([c.x,c.y+1.55*Math.sin(a),c.z+1.55*Math.cos(a)]))))}
     const spin=n>25?.35:1;

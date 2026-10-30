@@ -54,7 +54,7 @@ function discTex(){const c=document.createElement('canvas');c.width=c.height=512
  const q=x.createRadialGradient(256,256,0,256,256,225);q.addColorStop(0,'#ff8696');q.addColorStop(1,'#d91e3a');x.fillStyle=q;x.beginPath();x.arc(256,256,225,0,7);x.fill();
  x.strokeStyle='rgba(255,225,230,.25)';for(let i=0;i<40;i++){const a=Math.random()*6.28;x.beginPath();x.moveTo(256,256);x.lineTo(256+Math.cos(a)*220,256+Math.sin(a)*220);x.stroke()}
  return new THREE.CanvasTexture(c)}
-// flesh = positive charge sphere
+
 const sm=new THREE.MeshPhysicalMaterial({color:S.sc,transparent:true,opacity:S.op,roughness:.35,depthWrite:false});
 const sphere=new THREE.Mesh(new THREE.SphereGeometry(1,64,48),sm);sphere.renderOrder=1;g.add(sphere);
 const rm=new THREE.MeshStandardMaterial({map:rindTex(),roughness:.35});
@@ -67,7 +67,7 @@ const wm=new THREE.MeshBasicMaterial({color:S.sc,wireframe:true,transparent:true
 const wire=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),wm);g.add(wire);
 const am=new THREE.MeshBasicMaterial({color:S.sc,transparent:true,opacity:.12,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false});
 const aura=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),am);g.add(aura);
-// electrons = seeds
+
 const eg=new THREE.SphereGeometry(1,24,16);
 const em=new THREE.MeshStandardMaterial({color:S.ec,emissive:S.ec,roughness:.25});
 const tex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),q=x.createRadialGradient(32,32,0,32,32,32);q.addColorStop(0,'rgba(255,255,255,1)');q.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=q;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();

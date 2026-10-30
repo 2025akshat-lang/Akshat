@@ -1323,7 +1323,7 @@ const PV_LABHI={'Petals':'दल','Carpel':'अंडप','Stamens':'पुं�
   const V=[['Front',0,0,'F'],['Side',0,Math.PI/2,'S'],['Top',Math.PI/2-.05,0,'T']];let i=-1,raf=0;
   const b=PV.ui.addTool({id:'pv-view',label:'Camera view: front / side / top',html:'F',onClick:()=>{
     if(!H||st.lv!==1)return;i=(i+1)%3;const v=V[i];b.textContent=v[3];b.title=v[0];go(v[1],v[2])}});
-  function go(x,y){cancelAnimationFrame(raf);const t0=performance.now(),x0=H.rotX,y0=H.rotY,dy=Math.atan2(Math.sin(y-y0),Math.cos(y-y0));
+  function go(x,y){cancelAnimationFrame(raf);if(PV.rm&&PV.rm()){H.rotX=x;H.rotY=y;return}const t0=performance.now(),x0=H.rotX,y0=H.rotY,dy=Math.atan2(Math.sin(y-y0),Math.cos(y-y0));
     (function s(now){const k=Math.min(1,(now-t0)/450),e=k*k*(3-2*k);H.rotX=x0+(x-x0)*e;H.rotY=y0+dy*e;if(k<1)raf=requestAnimationFrame(s)})(t0)}
   PV.after('show',n=>{b.hidden=n!==1});
 })();
@@ -1821,8 +1821,15 @@ climb:{k:'a',n:['Climbing plants','आरोही पौधे'],f:[['Crowded p
     else if(v==='spots')ov=dots(P,7,'#fdd835',.7)+dots(P,3.5,'#5d4037');
     else if(v==='powder')ov=`<ellipse cx="45" cy="30" rx="16" ry="8" fill="#fff" opacity=".8"/><ellipse cx="82" cy="42" rx="14" ry="7" fill="#fff" opacity=".8"/>`;
     else if(v==='mosaic')ov=dots([[30,32],[55,22],[70,44],[92,30],[48,46]],9,'#c5e1a5',.85);
+    else if(v==='purple'){base='#2e7d32';ov=`<rect x="0" y="0" width="120" height="70" fill="#6a1b9a" opacity=".38"/>`}
+    else if(v==='tip'){base='#66bb6a';ov=`<ellipse cx="108" cy="35" rx="16" ry="13" fill="#6d4c41"/><path d="M96 24 Q108 35 96 46" fill="none" stroke="#6d4c41" stroke-width="5"/>`}
+    else if(v==='bleach')ov=`<ellipse cx="50" cy="26" rx="14" ry="8" fill="#fff9c4" opacity=".9"/><ellipse cx="82" cy="45" rx="11" ry="7" fill="#fff9c4" opacity=".9"/>`;
+    else if(v==='rust'){base='#66bb6a';ov=dots([[30,30],[38,40],[48,28],[58,44],[66,32],[76,40],[86,28],[94,38],[52,36],[72,24]],2.6,'#e65100')}
+    else if(v==='blight')ov=`<ellipse cx="45" cy="30" rx="19" ry="11" fill="#4e342e" opacity=".85"/><ellipse cx="86" cy="42" rx="14" ry="9" fill="#4e342e" opacity=".85"/>`;
+    else if(v==='holes')ov=dots([[35,30],[55,42],[72,28],[90,38],[62,34]],5,'var(--panel2)');
+    else if(v==='angular')ov=`<polygon points="38,30 52,25 57,36 44,41" fill="#6d4c41" opacity=".85"/><polygon points="72,44 86,40 90,51 76,54" fill="#6d4c41" opacity=".85"/>`;
     else if(v==='curl'){tf=' translate(0 9) scale(1 .7)';ov=dots([[40,35],[55,35],[70,35],[85,35]],2.2,'#212121')}
-    return `<g transform="translate(${dx} 0)"><clipPath id="${id}"><path d="${LEAF}"/></clipPath><g transform="${tf}"><path d="${LEAF}" fill="${base}"/><g clip-path="url(#${id})">${ov}</g>${v==='healthy'||v==='edge'||v==='wilt'||v==='curl'||v==='spots'||v==='powder'||v==='mosaic'||v==='pale'?ve('#2e7d32',1.2):''}</g></g>`}
+    return `<g transform="translate(${dx} 0)"><clipPath id="${id}"><path d="${LEAF}"/></clipPath><g transform="${tf}"><path d="${LEAF}" fill="${base}"/><g clip-path="url(#${id})">${ov}</g>${v!=='interv'?ve('#2e7d32',1.2):''}</g></g>`}
   function draw(){
     const hi=PV.lang&&PV.lang()==='hi',x=hi?1:0,head=`<span class="pv-x" role="button" aria-label="Close">×</span><b>${L('Plant health','पौधे का स्वास्थ्य')}</b>`,
       tabs=`<div class="pv-seg">${TABS.map(t=>`<button data-tab="${t[0]}" aria-pressed="${t[0]===tab}">${hi?t[2]:t[1]}</button>`).join('')}</div>`;
@@ -2217,7 +2224,7 @@ PV.theory.add({id:'flower',i:'🌸',n:['Flower, fruit and seed','पुष्प
   
   const F=[['Roots','जड़ें','↓',2,-3.2],['Shoot','तना व फूल','↑',2,2.6],['Whole','पूरा पौधा','⇅',1,0]];let k=-1,raf=0;
   const b=PV.ui.addTool({id:'pv-focus',label:'Focus: roots / shoot / whole',html:'⇅',onClick:()=>{if(!H||st.lv!==1)return;k=(k+1)%3;const f=F[k];b.textContent=f[2];b.title=PV.L(f[0],f[1]);go(f[3],f[4])}});
-  function go(z,y){cancelAnimationFrame(raf);const t0=performance.now(),z0=H.zoom,x0=H.panX||0,y0=H.panY||0;
+  function go(z,y){cancelAnimationFrame(raf);if(PV.rm&&PV.rm()){H.zoom=z;H.panX=0;H.panY=y;setCamH();return}const t0=performance.now(),z0=H.zoom,x0=H.panX||0,y0=H.panY||0;
     (function s(now){const t=Math.min(1,(now-t0)/450),e=t*t*(3-2*t);H.zoom=z0+(z-z0)*e;H.panX=x0*(1-e);H.panY=y0+(y-y0)*e;setCamH();if(t<1)raf=requestAnimationFrame(s)})(t0)}
   PV.after('show',n=>{b.hidden=n!==1});
 })();
@@ -2749,6 +2756,99 @@ PV.theory.add({id:'sci',i:'👩‍🔬',n:['Scientists and classic experiments',
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__num';b.textContent=name();b.onclick=()=>{q=null;PV.sim.open('numericals')};n.insertBefore(b,n.firstChild)});
   PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__num"]');if(b)b.textContent=name()});
   PV.numericals={gen:G};
+})();
+
+
+
+
+(function(){
+  const L=PV.L,KEY='pv_a11y',root=document.documentElement;let o={rm:false,big:false,hc:false};
+  try{const j=localStorage.getItem(KEY);if(j)Object.assign(o,JSON.parse(j));else if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)o.rm=true}catch(e){}
+  PV.rm=()=>o.rm;
+  const live=document.createElement('div');live.id='pv-live';live.className='pv-sr';live.setAttribute('aria-live','polite');document.body.appendChild(live);
+  const say=t=>{live.textContent='';setTimeout(()=>{live.textContent=t},30)};
+  function apply(){['rm','big','hc'].forEach(k=>root.classList.toggle('pv-'+k,!!o[k]));try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
+    if(o.rm){try{auto=false}catch(e){}if(H&&H.auto)H.auto=false;if(typeof S!=='undefined'&&S)S.tick=null}}
+  
+  function freeze(){if(!H||H._a11y)return;H._a11y=1;const f=H.apply;H.apply=function(V,t){return f.call(this,V,o.rm?0:t)}}
+  PV.after('initH',freeze);PV.after('openHome',freeze);
+  
+  const el=PV.ui.addPanel('pv-a11y',''),tx=PV.ui.addPanel('pv-textalt','');tx.classList.add('pv-sim');tx.setAttribute('role','region');
+  PV.sim.reg('a11y',el,build);PV.sim.reg('textalt',tx,buildText);
+  const hb=PV.ui.addTopButton('♿',()=>{el.hidden||tx.hidden?(PV.sim.open('a11y')):PV.sim.hideAll()});hb.setAttribute('aria-label','Accessibility settings');hb.title='Accessibility (?)';
+  const SW=[['rm','Reduce motion','गति कम करें'],['big','Large buttons and text (smart board)','बड़े बटन व अक्षर (स्मार्ट बोर्ड)'],['hc','High contrast','उच्च कंट्रास्ट']];
+  function build(){const hi=PV.lang&&PV.lang()==='hi';
+    el.innerHTML=`<span class="pv-x" role="button" tabindex="0" aria-label="Close">×</span><b>${L('Accessibility','सुगम्यता')}</b>`
+      +SW.map(s=>`<label class="pv-row"><input type="checkbox" data-o="${s[0]}" ${o[s[0]]?'checked':''}> ${hi?s[2]:s[1]}</label>`).join('')
+      +`<div class="pv-nav"><button data-t="1">${L('Text version of this screen','इस स्क्रीन का पाठ संस्करण')}</button></div>
+      <p><u>${L('Keyboard','कीबोर्ड')}</u><br>${L('Arrow keys rotate. + and − zoom. 0 resets. [ and ] step through plant parts. Esc closes panels or goes back. ? opens this panel. Tab moves between buttons.','तीर वाली कुंजियाँ घुमाती हैं। + और − ज़ूम करती हैं। 0 रीसेट करता है। [ और ] पौधे के भागों में आगे-पीछे ले जाती हैं। Esc पैनल बंद करता है या पीछे जाता है। ? यह पैनल खोलता है। Tab बटनों के बीच जाता है।')}</p>
+      <p class="pv-note">${L('Names and descriptions never depend on colour alone. Settings are saved on this device.','नाम और विवरण केवल रंग पर निर्भर नहीं हैं। सेटिंग इसी उपकरण पर सहेजी जाती हैं।')}</p>`}
+  el.addEventListener('change',e=>{const k=e.target.dataset.o;if(k){o[k]=e.target.checked;apply()}});
+  el.addEventListener('click',e=>{if(e.target.closest('[data-t]'))PV.sim.open('textalt')});
+  
+  function buildText(){const hi=PV.lang&&PV.lang()==='hi',x=hi?1:0;let h='',t='';
+    if(st.lv===1&&H){t=L('Whole plant: parts','पूरा पौधा: भाग');
+      h=Object.keys(PV_INFO).filter(id=>H.parts[id]).map(id=>{const d=PV_INFO[id];return `<h4>${PV.name(id)}</h4><p>${d.sci}. ${x?d.ah:d.a} ${x?d.fh:d.f}</p>`}).join('')}
+    else if(st.lv===3&&S){t=S.title;h=(S.note?`<p>${S.note}</p>`:'')+S.parts.map(p=>`<h4>${p.name}</h4><p>${p.desc||''}</p>`).join('')}
+    else if(st.lv===2){const d=DIA[st.part];t=(P[st.part]&&P[st.part].name)||st.part;h=d?'<p>'+d.spots.map(s=>s[1]).join(', ')+'</p>':''}
+    tx.innerHTML=`<span class="pv-x" role="button" tabindex="0" aria-label="Close">×</span><h3 style="margin:0">${t}</h3>${h||`<p>${L('Open a plant part first.','पहले पौधे का कोई भाग खोलें।')}</p>`}`}
+  
+  PV.after('selectH',()=>{if(H&&H.sel&&PV_INFO[H.sel]){const d=PV_INFO[H.sel],hi=PV.lang&&PV.lang()==='hi';say(PV.name(H.sel)+'. '+(hi?d.fh:d.f))}});
+  PV.after('pick',()=>{if(S&&sel&&S.byId[sel])say(S.byId[sel].name+'. '+(S.byId[sel].desc||''))});
+  PV.after('openScene',()=>{if(S)say(S.title);if(o.rm&&S)S.tick=null;focusable(R&&R.domElement,S&&S.title)});
+  PV.after('openHome',()=>{focusable(H&&H.renderer&&H.renderer.domElement,L('3D plant','3D पौधा'))});
+  function focusable(c,label){if(!c)return;c.tabIndex=0;c.setAttribute('role','application');c.setAttribute('aria-label',(label||'3D')+'. '+L('Arrow keys rotate, plus and minus zoom.','तीर कुंजियाँ घुमाती हैं, + और − ज़ूम करती हैं।'))}
+  
+  const parts=()=>Object.keys(PV_INFO).filter(id=>H&&H.parts[id]&&H.parts[id].meshes.length);
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey||e.metaKey||e.altKey)return;const tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT')return;const k=e.key;
+    if(k==='?'){PV.sim.panels.a11y.el.hidden?PV.sim.open('a11y'):PV.sim.hideAll();e.preventDefault();return}
+    if(k==='Escape'){const open=Object.keys(PV.sim.panels).some(n=>!PV.sim.panels[n].el.hidden);if(open)PV.sim.hideAll();else if(st.lv>1){const c=document.getElementById('close');if(c&&!c.hidden)c.click()}return}
+    if((tg==='BUTTON'||tg==='A')&&k!=='[' && k!==']')return;
+    const l1=st.lv===1&&H,l3=st.lv===3&&S,d={ArrowLeft:[-.15,0],ArrowRight:[.15,0],ArrowUp:[0,-.1],ArrowDown:[0,.1]}[k];
+    if(d&&(l1||l3)){if(l1){H.rotY+=d[0];H.rotX=Math.max(-1.2,Math.min(1.2,H.rotX+d[1]))}else{rotY+=d[0];rotX=Math.max(-1.2,Math.min(1.2,rotX+d[1]))}e.preventDefault();return}
+    if(k==='+'||k==='='){zoomBy(1.2);return}if(k==='-'||k==='_'){zoomBy(1/1.2);return}
+    if(k==='0'){if(l1)resetH();else if(l3)resetView();return}
+    if(l1&&(k==='['||k===']')){const a=parts();if(!a.length)return;let i=a.indexOf(H.sel);i=k===']'?(i+1)%a.length:(i<=0?a.length-1:i-1);PV.selectPart(a[i]);e.preventDefault()}});
+  apply();
+})();
+
+
+
+
+Object.assign(PV_HEALTH,{
+p:{k:'s',v:'purple',n:['Phosphorus deficiency','फॉस्फोरस की कमी'],f:[['Little available phosphorus; cold soil also locks it up.','उपलब्ध फॉस्फोरस कम; ठंडी मिट्टी में भी यह बँध जाता है।'],['Older leaves turn dark green or purplish and growth is stunted.','पुरानी पत्तियाँ गहरी हरी या बैंगनी पड़ती हैं और वृद्धि रुकती है।'],['Phosphorus is part of ATP, nucleic acids and membranes. With less of it growth slows, sugars build up and purple pigment can form.','फॉस्फोरस ATP, न्यूक्लीक अम्ल और झिल्लियों का भाग है। कम होने पर वृद्धि धीमी होती है, शर्कराएँ जमती हैं और बैंगनी वर्णक बन सकता है।'],['Cold weather alone can turn leaves purple, so check soil temperature too.','केवल ठंड से भी पत्तियाँ बैंगनी हो सकती हैं, इसलिए मिट्टी का तापमान भी देखें।']]},
+mg:{k:'s',v:'interv',n:['Magnesium deficiency','मैग्नीशियम की कमी'],f:[['Little magnesium, common in sandy or acidic soil.','मैग्नीशियम कम, रेतीली या अम्लीय मिट्टी में आम।'],['Older leaves: yellow between veins while veins stay green.','पुरानी पत्तियाँ: शिराओं के बीच पीला, शिराएँ हरी।'],['Magnesium sits at the centre of chlorophyll and moves from old to young leaves, so old leaves lose it first.','मैग्नीशियम क्लोरोफिल के केंद्र में होता है और पुरानी से नई पत्तियों में जाता है, इसलिए पुरानी पत्तियाँ पहले खोती हैं।'],['It looks like iron deficiency. Iron shows on young leaves, so check which leaves are affected.','यह आयरन की कमी जैसा दिखता है। आयरन नई पत्तियों में दिखता है, इसलिए देखें कौन-सी पत्तियाँ प्रभावित हैं।']]},
+ca:{k:'s',v:'tip',n:['Calcium deficiency','कैल्शियम की कमी'],f:[['Low calcium, or uneven watering that stops calcium reaching fruits and tips.','कैल्शियम कम, या असमान सिंचाई जिससे कैल्शियम फलों व सिरों तक नहीं पहुँचता।'],['Young leaves and growing tips distort and die back; tomato fruit shows blossom-end rot.','नई पत्तियाँ और वर्धी सिरे विकृत होकर सूखते हैं; टमाटर में फल के निचले सिरे पर सड़न।'],['Calcium builds cell walls and moves poorly in the phloem, so new tissue suffers first.','कैल्शियम कोशिका भित्ति बनाता है और फ्लोएम में कम चलता है, इसलिए नया ऊतक पहले प्रभावित होता है।'],['Salt damage and drought can also scorch tips.','नमक की क्षति और सूखा भी सिरे झुलसा सकते हैं।']]},
+sun:{k:'s',v:'bleach',n:['Sunscald (too much light)','धूप से झुलसना (अधिक प्रकाश)'],f:[['Sudden strong sun or heat, especially for plants moved out of shade.','अचानक तेज़ धूप या गर्मी, खासकर छाया से निकाले गए पौधों में।'],['Leaves and fruits on the sunny side show pale, bleached or papery patches.','धूप वाली ओर के पत्तों और फलों पर हल्के, विरंजित या कागज़-जैसे धब्बे।'],['Too much light overloads chlorophyll and forms damaging oxygen compounds, so tissue dies.','अधिक प्रकाश क्लोरोफिल पर भार डालता है और हानिकारक ऑक्सीजन यौगिक बनाता है, जिससे ऊतक मर जाता है।'],['Fungal spots can look similar. Sunscald appears only on exposed parts.','कवक के धब्बे भी ऐसे दिख सकते हैं। धूप की क्षति केवल खुले भागों पर आती है।']]},
+salt:{k:'s',v:'edge',n:['Salt stress','लवण तनाव'],f:[['Salty soil or irrigation water.','खारी मिट्टी या सिंचाई का पानी।'],['Leaf tips and edges turn brown, older leaves first, and growth is slow.','पत्ती के सिरे और किनारे भूरे होते हैं, पुरानी पत्तियाँ पहले, और वृद्धि धीमी।'],['Salt lowers the soil’s water potential so roots take up less water, and too much Na⁺ and Cl⁻ harms cells.','नमक मिट्टी का जल विभव घटाता है, इसलिए जड़ें कम पानी सोखती हैं, और अधिक Na⁺ व Cl⁻ कोशिकाओं को नुकसान पहुँचाते हैं।'],['Potassium shortage and drought also scorch edges, so test the water or soil.','पोटैशियम की कमी और सूखा भी किनारे झुलसाते हैं, इसलिए पानी या मिट्टी की जाँच करें।']]},
+frost:{k:'s',v:'blight',n:['Frost or cold injury','पाला या ठंड की क्षति'],f:[['Temperature near or below freezing.','तापमान हिमांक के पास या नीचे।'],['Leaves and shoots turn dark and water-soaked, then dry and brown.','पत्तियाँ और प्ररोह काले व पानी-भीगे होकर फिर सूखकर भूरे हो जाते हैं।'],['Ice forms in or between cells and damages membranes, so cells leak.','कोशिकाओं के भीतर या बीच बर्फ़ बनती है और झिल्लियाँ टूटती हैं, इसलिए कोशिकाएँ रिसती हैं।'],['Late blight looks similar in cool, wet weather. Frost hits many plants at once in the same pattern.','ठंडे, नम मौसम में पिछेता झुलसा भी ऐसा दिखता है। पाला कई पौधों को एक साथ, एक-से पैटर्न में मारता है।']]},
+blight:{k:'d',v:'blight',n:['Late blight of potato','आलू का पिछेता झुलसा'],f:[['Phytophthora infestans (an oomycete), in cool, wet weather.','फाइटोफ्थोरा इन्फेस्टैंस (ऊमाइसीट), ठंडे, नम मौसम में।'],['Leaves: dark water-soaked blotches with a pale edge; tubers rot.','पत्तियाँ: पीले किनारे वाले काले, पानी-भीगे धब्बे; कंद सड़ते हैं।'],['It grows between and inside cells, kills them, and makes new spores quickly in humid air.','यह कोशिकाओं के बीच और भीतर बढ़कर उन्हें मारता है और नम हवा में तेज़ी से नए बीजाणु बनाता है।'],['Frost injury and some bacterial diseases look alike. A lab test confirms.','पाले की क्षति और कुछ जीवाणु रोग भी ऐसे दिखते हैं। पुष्टि प्रयोगशाला में होती है।']]},
+rust:{k:'d',v:'rust',n:['Rust fungus','रस्ट कवक (गेरुआ)'],f:[['Rust fungi, with spores carried by wind.','रस्ट कवक, जिसके बीजाणु हवा से फैलते हैं।'],['Leaves: small orange-brown powdery pustules.','पत्तियाँ: छोटी नारंगी-भूरी चूर्णी फुंसियाँ।'],['The fungus feeds on living cells and breaks the surface to release spores, which cuts photosynthesis.','कवक जीवित कोशिकाओं से भोजन लेता है और सतह फोड़कर बीजाणु छोड़ता है, जिससे प्रकाश-संश्लेषण घटता है।'],['Dust or insect eggs can look similar. Rust leaves orange powder on a finger.','धूल या कीट के अंडे भी ऐसे लगते हैं। रस्ट उँगली पर नारंगी चूर्ण छोड़ता है।']]},
+bact:{k:'d',v:'angular',n:['Bacterial leaf blight','जीवाणु पर्ण झुलसा'],f:[['Bacteria entering through stomata or wounds, spread by splashing rain.','जीवाणु रंध्रों या घावों से घुसते हैं और बारिश की छींटों से फैलते हैं।'],['Leaves: angular, water-soaked spots stopped by veins, later brown.','पत्तियाँ: शिराओं से रुके कोणीय, पानी-भीगे धब्बे, बाद में भूरे।'],['Bacteria multiply between cells and make membranes leak.','जीवाणु कोशिकाओं के बीच बढ़ते हैं और झिल्लियों को रिसने वाला बनाते हैं।'],['Fungal spots can be angular too. A lab test is needed to be sure.','कवक के धब्बे भी कोणीय हो सकते हैं। पक्का करने के लिए प्रयोगशाला जाँच चाहिए।']]},
+cater:{k:'d',v:'holes',n:['Chewing insects','कुतरने वाले कीट'],f:[['Caterpillars, beetles and grasshoppers.','इल्लियाँ, भृंग और टिड्डे।'],['Leaves with holes or ragged edges.','छेद वाली या कटे-फटे किनारों वाली पत्तियाँ।'],['Their mouthparts remove leaf tissue, so there is less area for photosynthesis, and wounds invite disease.','उनके मुखांग पत्ती का ऊतक हटाते हैं, इसलिए प्रकाश-संश्लेषण का क्षेत्र घटता है, और घाव रोगों को न्योता देते हैं।'],['Hail or mechanical damage can look similar. Look for insects or droppings.','ओले या यांत्रिक चोट भी ऐसी दिख सकती है। कीट या उनकी बीट खोजें।']]},
+nema:{k:'d',v:'wilt',n:['Root-knot nematodes','जड़-गाँठ सूत्रकृमि'],f:[['Tiny soil worms (Meloidogyne) that enter roots.','मिट्टी के सूक्ष्म कृमि (मेलॉइडोगाइनी) जो जड़ों में घुसते हैं।'],['Roots form swollen galls; above ground the plant is stunted, yellow and wilts.','जड़ों पर फूली गाँठें बनती हैं; ऊपर पौधा बौना, पीला और मुरझाया दिखता है।'],['The worms make root cells feed them and form galls that block water and mineral uptake.','कृमि जड़ की कोशिकाओं से भोजन लेते हैं और गाँठें बनाते हैं जो पानी और खनिज का अवशोषण रोकती हैं।'],['Above-ground signs look like drought or deficiency. Only digging up the roots shows the galls.','ऊपर के लक्षण सूखे या कमी जैसे दिखते हैं। गाँठें जड़ें खोदने पर ही दिखती हैं।']]},
+damp:{k:'d',v:'wilt',n:['Damping-off of seedlings','पौध का गलन (डैम्पिंग-ऑफ)'],f:[['Soil fungi and oomycetes in cold, wet, crowded seedbeds.','ठंडी, नम, भीड़-भरी नर्सरी में मिट्टी के कवक और ऊमाइसीट।'],['Seedling stems rot at soil level and the seedling falls over.','पौध का तना मिट्टी के स्तर पर सड़ता है और पौध गिर जाती है।'],['The pathogen rots the young stem base, so water and food cannot pass.','रोगजनक कोमल तने के आधार को सड़ाता है, इसलिए पानी और भोजन आगे नहीं जा पाते।'],['Overwatering or sowing too deep can also kill seedlings.','अधिक पानी या बहुत गहरी बुवाई से भी पौध मर सकती है।']]}});
+(function(){
+  const L=PV.L,el=PV.ui.addPanel('pv-hmatch','');let sym=null,age=null;
+  const AGE={n:'old',mg:'old',k:'old',p:'old',fe:'young',ca:'young'};
+  const SY=[['yellow','Yellow or pale leaves','पीली या हल्की पत्तियाँ',['n','mg','fe','root','mosaic']],['spots','Spots or patches','धब्बे या चकत्ते',['spot','bact','rust','blight','mosaic']],
+    ['wilt','Wilting or drooping','मुरझाना या झुकना',['wilt','root','nema','damp']],['edge','Dry brown edges or tips','सूखे भूरे किनारे या सिरे',['k','salt','ca','sun']],
+    ['holes','Holes or chewed leaves','छेद या कुतरी पत्तियाँ',['cater']],['coat','White powder, sticky or curling','सफ़ेद चूर्ण, चिपचिपा या मुड़ना',['mildew','aphid','mosaic']],
+    ['purple','Purple or dark tint','बैंगनी या गहरा रंग',['p','frost']],['dark','Dark, water-soaked or burnt patches','काले, पानी-भीगे या जले धब्बे',['blight','frost','bact','sun']]];
+  function draw(){const hi=PV.lang&&PV.lang()==='hi',x=hi?1:0,head=`<span class="pv-x" role="button" tabindex="0" aria-label="Close">×</span><b>${L('Symptom helper','लक्षण सहायक')}</b>`;
+    if(!sym){el.innerHTML=head+`<p>${L('What do you see?','आप क्या देख रहे हैं?')}</p>`+SY.map(s=>`<button class="pv-opt" data-s="${s[0]}">${s[1+x]}</button>`).join('');return}
+    if(!age){el.innerHTML=head+`<p>${L('Which leaves are affected?','कौन-सी पत्तियाँ प्रभावित हैं?')}</p>`+[['old','Older (lower) leaves','पुरानी (नीचे की) पत्तियाँ'],['young','Younger (top) leaves','नई (ऊपर की) पत्तियाँ'],['any','Whole plant or not sure','पूरा पौधा या पक्का नहीं']].map(a=>`<button class="pv-opt" data-a="${a[0]}">${a[1+x]}</button>`).join('')+`<div class="pv-nav"><button data-r="1">◀ ${L('Back','वापस')}</button></div>`;return}
+    const c=SY.find(s=>s[0]===sym)[3].filter(id=>PV_HEALTH[id]),fit=id=>age==='any'||!AGE[id]||AGE[id]===age,a=c.filter(fit),b=c.filter(id=>!fit(id));
+    const item=(id,less)=>`<p><b>${PV_HEALTH[id].n[x]}</b>${less?' <span class="pv-sci">'+L('less likely for these leaves','इन पत्तियों के लिए कम संभावित')+'</span>':''}<br>${PV_HEALTH[id].f[3][x]}</p>`;
+    el.innerHTML=head+`<p><u>${L('Possible causes (not a diagnosis)','संभावित कारण (निदान नहीं)')}</u></p>`+a.map(id=>item(id)).join('')+b.map(id=>item(id,1)).join('')
+      +`<p class="pv-note">${L('Several causes can look alike. Check the soil, roots, weather and spread over time, and ask an expert or a lab before treating a real crop. Open “Plant health” for full cards.','कई कारण एक जैसे दिख सकते हैं। असली फसल का उपचार करने से पहले मिट्टी, जड़ें, मौसम और फैलाव देखें, और विशेषज्ञ या प्रयोगशाला से पूछें। पूरे कार्ड के लिए “पौधे का स्वास्थ्य” खोलें।')}</p><div class="pv-nav"><button data-r="1">◀ ${L('Start again','फिर से')}</button></div>`}
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.s){sym=b.dataset.s;age=null}else if(b.dataset.a)age=b.dataset.a;else if(b.dataset.r){sym=null;age=null}else return;draw()});
+  PV.sim.reg('hmatch',el,draw);
+  const name=()=>L('🔎 Symptom helper','🔎 लक्षण सहायक');
+  PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__hmatch';b.textContent=name();b.onclick=()=>{sym=null;age=null;PV.sim.open('hmatch')};n.insertBefore(b,n.firstChild)});
+  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__hmatch"]');if(b)b.textContent=name()});
 })();
 
 

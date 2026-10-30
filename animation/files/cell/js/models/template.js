@@ -4,12 +4,12 @@
    3. index.html mein 07-start.js se pehle <script src="js/models/neuron.js"></script> jodo
    Agar id CELLTYPES mein nahi hai to wahan {id,name,color} ki ek line add karo. */
 registerCellModel('neuron', (THREE, group, opt) => {
-  // opt.color = slider ka rang, opt.name = cell ka naam
+  
   const body = new THREE.Mesh(
     new THREE.SphereGeometry(1.5, 32, 24),
     new THREE.MeshStandardMaterial({ color: opt.color, roughness: 0.5, transparent: true, opacity: 0.8 })
   );
-  group.add(body);            // jo bhi group mein add hoga wahi 3D view mein dikhega
+  group.add(body);            
 
-  return { tick: (dt, t) => { group.rotation.y += dt * 0.3; } };   // animation optional hai
+  return { tick: (dt, t) => { group.rotation.y += dt * 0.3; } };   
 });

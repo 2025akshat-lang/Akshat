@@ -219,8 +219,8 @@
     pressureSlider.addEventListener('input', (e) => {
       const p = parseFloat(e.target.value);
       
-      // Calculate Boiling Point roughly based on pressure
-      // Normal: 1 atm = 100°C, Low: 0.1 atm = ~45°C
+      
+      
       const bp = Math.round(40 + (p - 0.1) * (60 / 0.9));
 
       pressureVal.innerText = `${p.toFixed(1)} atm ${p < 1.0 ? '(Vacuum On)' : '(Normal)'}`;
@@ -231,11 +231,11 @@
       boilVal.innerText = `${bp} °C`;
 
       if (p <= 0.3) {
-        // High Vacuum State
+        
         statusMsg.innerText = `⚡ Wah! Pressure bohot kam ho gaya! Ab doodh sirf ${bp}°C par hi bina jale boil hone laga aur Milk Powder ban raha hai!`;
         statusMsg.style.color = "#059669";
         
-        // Evaporation Animation Active
+        
         milk.style.height = "15%";
         powder.style.opacity = "1";
         
@@ -243,7 +243,7 @@
         vapours.forEach(v => v.style.display = 'block');
 
       } else if (p < 1.0) {
-        // Medium Vacuum State
+        
         statusMsg.innerText = `🌀 Pressure kam ho raha hai... Boiling temperature girkar ${bp}°C aa gaya hai!`;
         statusMsg.style.color = "#d97706";
 
@@ -254,7 +254,7 @@
         vapours.forEach(v => v.style.display = 'block');
 
       } else {
-        // Normal State
+        
         statusMsg.innerText = "Pressure normal hai. Doodh ko boil karne ke liye 100°C chahiye (Ghar wala tareeka - Milk jal sakta hai).";
         statusMsg.style.color = "#1e293b";
 

@@ -67,7 +67,7 @@
         let activeStage = 'loop';
         let cycleTimer = 0;
 
-        // Particle Pools
+        
         let vaporParticles = [];
         let transpParticles = [];
         let rainParticles = [];
@@ -75,7 +75,7 @@
         let infiltrationParticles = [];
         let groundwaterFlow = [];
 
-        // 1. Evaporation Particles (Ocean -> Cloud)
+        
         for(let i=0; i<30; i++) {
             vaporParticles.push({
                 x: 30 + Math.random() * 90,
@@ -85,7 +85,7 @@
             });
         }
 
-        // 2. Transpiration Particles (Plant -> Cloud)
+        
         for(let i=0; i<20; i++) {
             transpParticles.push({
                 x: 175 + Math.random() * 12,
@@ -95,7 +95,7 @@
             });
         }
 
-        // 3. Condensation Particles
+        
         for(let i=0; i<30; i++) {
             condensationParticles.push({
                 x: 170 + Math.random() * 120,
@@ -105,16 +105,16 @@
             });
         }
 
-        // 4. Rain Particles
+        
         for(let i=0; i<45; i++) {
             rainParticles.push({
                 x: 180 + Math.random() * 110,
                 y: 70 + Math.random() * 100,
-                speed: 2.5 + Math.random() * 2 // Slower rain drop speed
+                speed: 2.5 + Math.random() * 2 
             });
         }
 
-        // 5. Infiltration Particles
+        
         for(let i=0; i<25; i++) {
             infiltrationParticles.push({
                 x: 160 + Math.random() * 120,
@@ -123,7 +123,7 @@
             });
         }
 
-        // 6. Underground Stream Flowing Back to Ocean
+        
         for(let i=0; i<20; i++) {
             groundwaterFlow.push({
                 x: 140 + Math.random() * 140,
@@ -138,14 +138,14 @@
             const w = canvas.width;
             const h = canvas.height;
 
-            // Sky
+            
             let skyGrad = ctx.createLinearGradient(0, 0, 0, h);
             skyGrad.addColorStop(0, '#0f172a');
             skyGrad.addColorStop(1, '#1e293b');
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, w, h);
 
-            // Sun
+            
             ctx.fillStyle = '#f59e0b';
             ctx.shadowColor = '#f59e0b';
             ctx.shadowBlur = 15;
@@ -154,19 +154,19 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Ocean
+            
             ctx.fillStyle = '#0284c7';
             ctx.fillRect(10, 220, 130, 50);
 
-            // Soil
+            
             ctx.fillStyle = '#15803d';
             ctx.fillRect(140, 220, w - 150, 50);
 
-            // Soil Deep Layer
+            
             ctx.fillStyle = '#78350f';
             ctx.fillRect(140, 240, w - 150, 30);
 
-            // Tree (Transpiration Source)
+            
             ctx.fillStyle = '#166534';
             ctx.beginPath();
             ctx.arc(180, 195, 14, 0, Math.PI * 2);
@@ -174,14 +174,14 @@
             ctx.fillStyle = '#451a03';
             ctx.fillRect(178, 205, 4, 15);
 
-            // Groundwater Reservoir
+            
             ctx.fillStyle = '#0369a1';
             ctx.fillRect(10, 270, w - 20, 30);
             ctx.fillStyle = '#f8fafc';
             ctx.font = '10px Segoe UI';
             ctx.fillText('Underground Aquifer / Return Flow ➔', 120, 288);
 
-            // Mountain
+            
             ctx.fillStyle = '#475569';
             ctx.beginPath();
             ctx.moveTo(210, 220);
@@ -189,7 +189,7 @@
             ctx.lineTo(w - 20, 220);
             ctx.fill();
 
-            // Clouds
+            
             cloudPulse += 0.02;
             let cloudDark = (activeStage === 'rain' || (autoLoop && cycleTimer > 350 && cycleTimer < 580));
             ctx.fillStyle = cloudDark ? '#475569' : '#e2e8f0';
@@ -206,11 +206,11 @@
             drawTerrain();
 
             if (autoLoop) {
-                cycleTimer = (cycleTimer + 1) % 850; // Increased timer for slower, peaceful transitions
+                cycleTimer = (cycleTimer + 1) % 850; 
                 updateStageTextByTimer(cycleTimer);
             }
 
-            // --- 1. EVAPORATION ANIMATION ---
+            
             if (activeStage === 'evap' || (autoLoop && cycleTimer < 250)) {
                 ctx.fillStyle = '#38bdf8';
                 vaporParticles.forEach(p => {
@@ -226,9 +226,9 @@
                 });
             }
 
-            // --- 2. TRANSPIRATION ANIMATION ---
+            
             if (activeStage === 'transp' || (autoLoop && cycleTimer >= 100 && cycleTimer < 320)) {
-                ctx.fillStyle = '#4ade80'; // Greenish hue for plant vapor
+                ctx.fillStyle = '#4ade80'; 
                 transpParticles.forEach(tp => {
                     tp.y -= tp.speed;
                     tp.x += Math.cos(tp.y * 0.05) * 0.3;
@@ -242,7 +242,7 @@
                 });
             }
 
-            // --- 3. CONDENSATION ANIMATION ---
+            
             if (activeStage === 'cond' || (autoLoop && cycleTimer >= 220 && cycleTimer < 450)) {
                 condensationParticles.forEach(cp => {
                     cp.alpha += 0.01;
@@ -256,7 +256,7 @@
                 ctx.globalAlpha = 1.0;
             }
 
-            // --- 4. PRECIPITATION (RAIN) ANIMATION ---
+            
             if (activeStage === 'rain' || (autoLoop && cycleTimer >= 380 && cycleTimer < 620)) {
                 ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = 2;
@@ -273,11 +273,11 @@
                 });
             }
 
-            // --- 5. INFILTRATION & GROUNDWATER RETURN ---
+            
             if (activeStage === 'infil' || (autoLoop && cycleTimer >= 520)) {
                 ctx.fillStyle = '#38bdf8';
                 
-                // Vertical Seepage
+                
                 infiltrationParticles.forEach(ip => {
                     ip.y += ip.speed;
                     if(ip.y > 270) {
@@ -289,7 +289,7 @@
                     ctx.fill();
                 });
 
-                // Horizontal Return Stream back to Ocean
+                
                 groundwaterFlow.forEach(gw => {
                     gw.x -= gw.speed;
                     if(gw.x < 20) gw.x = 270;

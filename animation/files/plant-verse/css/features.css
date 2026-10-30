@@ -42,3 +42,13 @@
 .pv-star{float:left;border:0;background:none;font-size:20px;line-height:1;padding:0 8px 0 0;color:var(--accent);cursor:pointer}
 .pv-cnt{float:right;color:var(--accent);font:700 11px var(--mono)}
 .pv-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.pv-tags button{min-height:34px;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:0 10px;font-size:12px}
+
+.pv-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pv-rm *,.pv-rm *::before,.pv-rm *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.pv-big button,.pv-big .x{min-height:56px}.pv-big .tools button,.pv-big .top>.x{min-width:56px;min-height:56px}
+.pv-big .chip{min-height:56px;font-size:17px;padding:0 22px}.pv-big .pv-panel,.pv-big .pv-panel p{font-size:15.5px}.pv-big .lab,.pv-big #lbl{font-size:15px}
+.pv-big .pv-row{font-size:15px;margin-top:14px}.pv-row input[type=checkbox]{width:22px;height:22px;vertical-align:middle;accent-color:var(--accent);margin-right:8px}
+html.pv-hc,html.pv-hc:root,html.pv-hc:root[data-theme]{--fg:#000;--muted:#1a1a1a;--line:#000;--panel:#fff;--panel2:#fff;--panel3:#e8e8e8;--bg:#fff;--accent:#0b5d1e;--accent-ink:#fff}
+html.pv-hc button,html.pv-hc .pv-panel,html.pv-hc .lab{border-color:#000!important}
+.pv-textalt h4,#pv-textalt h4{margin:10px 0 0;font-size:13px}

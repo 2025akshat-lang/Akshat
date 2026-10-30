@@ -64,10 +64,10 @@
         window.addEventListener('resize', resize);
 
         const particles = [];
-        const MAX_PARTICLES = 250; // Performance Cap to prevent lag
+        const MAX_PARTICLES = 250; 
         let flashOpacity = 0;
 
-        // --- Optimized Web Audio API ---
+        
         let audioCtx = null;
 
         function playExplosionSound() {
@@ -80,7 +80,7 @@
 
             const now = audioCtx.currentTime;
 
-            // 1. Sharp Crackle Snap
+            
             const snapBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
             const snapData = snapBuffer.getChannelData(0);
             for (let i = 0; i < snapBuffer.length; i++) {
@@ -102,7 +102,7 @@
             snapGain.connect(audioCtx.destination);
             snapNode.start(now);
 
-            // 2. Heavy Bass Thump
+            
             const osc = audioCtx.createOscillator();
             const oscGain = audioCtx.createGain();
 
@@ -119,7 +119,7 @@
             osc.stop(now + 0.22);
         }
 
-        // --- Fast Particle Engine ---
+        
         class FireworkSpark {
             constructor(x, y, hue) {
                 this.x = x;
@@ -163,9 +163,9 @@
 
         function createExplosion(x, y) {
             const baseHue = Math.random() * 360;
-            const particleCount = 45; // Balanced particle count
+            const particleCount = 45; 
 
-            // If too many particles, remove older ones to save memory
+            
             if (particles.length + particleCount > MAX_PARTICLES) {
                 particles.splice(0, particleCount);
             }
@@ -180,22 +180,22 @@
         }
 
         function animate() {
-            // Trail blend
+            
             ctx.globalCompositeOperation = 'source-over';
             ctx.fillStyle = 'rgba(5, 2, 10, 0.25)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Screen flash
+            
             if (flashOpacity > 0) {
                 ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 flashOpacity -= 0.04;
             }
 
-            // High-performance additive glow blending
+            
             ctx.globalCompositeOperation = 'lighter';
 
-            // Draw & Update particles
+            
             for (let i = particles.length - 1; i >= 0; i--) {
                 particles[i].update();
                 particles[i].draw();
@@ -208,7 +208,7 @@
             requestAnimationFrame(animate);
         }
 
-        // Touch & Click Event Handling
+        
         window.addEventListener('pointerdown', (e) => {
             createExplosion(e.clientX, e.clientY);
         });

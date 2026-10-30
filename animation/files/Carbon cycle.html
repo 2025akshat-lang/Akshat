@@ -123,7 +123,7 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // Step Data
+    
     const steps = [
       {
         title: "☁️ Step 1: Atmosphere CO₂",
@@ -166,7 +166,7 @@
       });
     }
 
-    // Particles Setup
+    
     const particles = [];
     for(let i=0; i<40; i++) {
       particles.push({
@@ -180,40 +180,40 @@
 
     let time = 0;
 
-    // Main Draw Function
+    
     function draw() {
       time += 0.03;
       const w = canvas.width;
       const h = canvas.height;
 
-      // Sky
+      
       const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.7);
       skyGrad.addColorStop(0, '#38bdf8');
       skyGrad.addColorStop(1, '#bae6fd');
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, w, h * 0.7);
 
-      // Sun
+      
       ctx.fillStyle = '#fde047';
       ctx.beginPath();
       ctx.arc(w * 0.15, h * 0.15, 25, 0, Math.PI * 2);
       ctx.fill();
 
-      // Land Green Hill
+      
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
       ctx.ellipse(w * 0.3, h * 0.75, w * 0.45, h * 0.25, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Underground Layer
+      
       ctx.fillStyle = '#78350f';
       ctx.fillRect(0, h * 0.75, w * 0.65, h * 0.25);
 
-      // Ocean Water
+      
       ctx.fillStyle = '#0284c7';
       ctx.fillRect(w * 0.6, h * 0.65, w * 0.4, h * 0.35);
 
-      // Water Waves Effect
+      
       ctx.fillStyle = '#38bdf8';
       for(let x = w * 0.6; x < w; x += 30) {
         let waveY = h * 0.65 + Math.sin(time + x) * 3;
@@ -222,16 +222,16 @@
         ctx.fill();
       }
 
-      // --- DRAW 3D-STYLE OBJECTS ---
-      // 1. Factory
+      
+      
       let facX = w * 0.12;
       let facY = h * 0.62;
       ctx.fillStyle = '#475569';
-      ctx.fillRect(facX, facY, 45, 35); // main building
+      ctx.fillRect(facX, facY, 45, 35); 
       ctx.fillStyle = '#334155';
-      ctx.fillRect(facX + 25, facY - 25, 12, 25); // chimney
+      ctx.fillRect(facX + 25, facY - 25, 12, 25); 
 
-      // Factory Smoke Animation
+      
       if(steps[currentStep].focus === 'factory' || currentStep === 0) {
         ctx.fillStyle = 'rgba(100, 116, 139, 0.6)';
         for(let i=0; i<3; i++) {
@@ -242,26 +242,26 @@
         }
       }
 
-      // 2. Tree
+      
       let treeX = w * 0.38;
       let treeY = h * 0.6;
       ctx.fillStyle = '#854d0e';
-      ctx.fillRect(treeX, treeY, 12, 30); // Trunk
+      ctx.fillRect(treeX, treeY, 12, 30); 
       ctx.fillStyle = '#15803d';
       ctx.beginPath();
-      ctx.arc(treeX + 6, treeY - 15, 25, 0, Math.PI * 2); // Leaves
+      ctx.arc(treeX + 6, treeY - 15, 25, 0, Math.PI * 2); 
       ctx.fill();
 
-      // 3. Animal (Cow)
+      
       let cowX = w * 0.48;
       let cowY = h * 0.68;
       ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(cowX, cowY, 22, 14); // body
+      ctx.fillRect(cowX, cowY, 22, 14); 
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(cowX - 6, cowY - 4, 8, 8); // head
-      ctx.fillRect(cowX + 3, cowY + 5, 5, 5); // spots
+      ctx.fillRect(cowX - 6, cowY - 4, 8, 8); 
+      ctx.fillRect(cowX + 3, cowY + 5, 5, 5); 
 
-      // --- FOCUS HIGHLIGHT & ARROW EFFECTS ---
+      
       ctx.lineWidth = 3;
       let currentFocus = steps[currentStep].focus;
 
@@ -279,14 +279,14 @@
         drawAnimatedArrow(w * 0.8, h * 0.3, w * 0.8, h * 0.65, '#ef4444');
       }
 
-      // --- ANIMATED CO₂ PARTICLES ---
+      
       ctx.fillStyle = '#ef4444';
       particles.forEach((p, idx) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
 
-        // CO2 Label on particle
+        
         if(idx % 4 === 0) {
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 9px sans-serif';
@@ -294,7 +294,7 @@
           ctx.fillStyle = '#ef4444';
         }
 
-        // Particle Movement Logic according to Step
+        
         if(currentFocus === 'tree') {
           p.x += (treeX + 6 - p.x) * 0.02;
           p.y += (treeY - 15 - p.y) * 0.02;
@@ -315,7 +315,7 @@
       requestAnimationFrame(draw);
     }
 
-    // Helper: Draw Pulsing Glow
+    
     function drawGlowCircle(x, y, radius, color) {
       ctx.save();
       ctx.strokeStyle = color;
@@ -326,7 +326,7 @@
       ctx.restore();
     }
 
-    // Helper: Draw Moving Arrow
+    
     function drawAnimatedArrow(fromX, fromY, toX, toY, color) {
       ctx.save();
       ctx.strokeStyle = color;
@@ -338,7 +338,7 @@
       ctx.lineTo(toX, toY);
       ctx.stroke();
 
-      // Arrowhead
+      
       let angle = Math.atan2(toY - fromY, toX - fromX);
       ctx.beginPath();
       ctx.moveTo(toX, toY);

@@ -269,7 +269,7 @@
     </div>
 
     <script>
-        // Water Level Variables
+        
         let evapHeight = 75;
         let boilHeight = 75;
 
@@ -279,7 +279,7 @@
         const evapWrapper = document.getElementById('evap-wrapper');
         const boilWrapper = document.getElementById('boil-wrapper');
 
-        // WEB AUDIO API FOR BUBBLE SOUNDS (Offline & Instant)
+        
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -309,7 +309,7 @@
         }
 
         function triggerBoilingAudioBurst() {
-            // Plays a burst of rapid bubble pops
+            
             for (let i = 0; i < 6; i++) {
                 setTimeout(() => {
                     playSingleBubbleSound();
@@ -317,33 +317,33 @@
             }
         }
 
-        // Tap Event Listeners
+        
         document.getElementById('boil-card').addEventListener('click', () => {
             triggerBoilingAudioBurst();
         });
 
         document.getElementById('evap-card').addEventListener('click', () => {
-            // Completely silent on evaporation tap!
+            
         });
 
 
-        // 1. DYNAMIC WATER LEVEL DECREASE (VOLUME REDUCTION)
+        
         setInterval(() => {
-            // Evaporation Decreases SLOWLY
+            
             evapHeight -= 0.10;
-            if (evapHeight <= 6) evapHeight = 75; // Loop reset
+            if (evapHeight <= 6) evapHeight = 75; 
             evapWater.style.height = evapHeight + 'px';
 
-            // Boiling Decreases FAST
+            
             boilHeight -= 0.60;
-            if (boilHeight <= 6) boilHeight = 75; // Loop reset
+            if (boilHeight <= 6) boilHeight = 75; 
             boilWater.style.height = boilHeight + 'px';
 
-            // Pass water height to CSS for bubbles
+            
             boilContainer.style.setProperty('--boil-water-h', boilHeight + 'px');
         }, 150);
 
-        // 2. CLEAR VISIBLE EVAPORATION STEAM (Slow & Gentle)
+        
         setInterval(() => {
             if (evapHeight < 10) return;
             const steam = document.createElement('div');
@@ -358,7 +358,7 @@
             setTimeout(() => steam.remove(), 2300);
         }, 380);
 
-        // 3. BOILING BUBBLES
+        
         setInterval(() => {
             if (boilHeight < 10) return;
             const bubble = document.createElement('div');
@@ -373,7 +373,7 @@
             setTimeout(() => bubble.remove(), 800);
         }, 100);
 
-        // 4. BOILING STEAM (Fast & Dense)
+        
         setInterval(() => {
             if (boilHeight < 10) return;
             const steam = document.createElement('div');

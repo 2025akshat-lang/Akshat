@@ -164,7 +164,7 @@
 </div>
 
 <script>
-  // Variable yahan add kar
+  
 const adCanvas = document.createElement("canvas"); 
 adCanvas.width = 512; adCanvas.height = 1024;
 const adCtx = adCanvas.getContext("2d");
@@ -180,7 +180,7 @@ const adData = [
 
 const LANES = [-2.8, 0, 2.8];
 const TRACK_LEN = 30;
-const INVERT_HORIZONTAL_SWIPE = true; // if reversed on your device set false
+const INVERT_HORIZONTAL_SWIPE = true; 
 
 let scene, camera, renderer;
 let playerGroup, playerBodyGroup, shadowMesh;
@@ -203,7 +203,7 @@ let distanceTraveled = 0, nextObstacleSpawn = 10;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playTone(freq1, freq2, duration, type='square', vol=0.1) {
-  if(audioCtx.state === 'suspended') audioCtx.resume(); // Browser policy bypass
+  if(audioCtx.state === 'suspended') audioCtx.resume(); 
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = type;
@@ -221,7 +221,7 @@ function playCrash() {
   const bufferSize = audioCtx.sampleRate * dur;
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1; // White noise
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1; 
   const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
@@ -230,7 +230,7 @@ function playCrash() {
   noise.start();
 }
 const gameSounds = {
-  // Baaki sounds ke liye purana playTone sahi hai
+  
   jump: () => playTone(300, 600, 0.15, 'sine', 0.2),
   coin: () => { 
     playTone(987, 987, 0.1, 'sine', 0.15); 
@@ -241,7 +241,7 @@ const gameSounds = {
     playTone(400, 400, 0.15, 'square', 0.15);
   },
 
-  // --- ASLI POLICE SIREN (Continuous Sound) ---
+  
   sirenOn: false,
   audioCtx: null,
   osc: null,
@@ -251,24 +251,24 @@ const gameSounds = {
     if (this.sirenOn) return;
     this.sirenOn = true;
 
-    // 1. Audio Context setup (Sirf ek baar)
+    
     if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // 2. Oscillator aur Gain Node banao
+    
     this.osc = this.audioCtx.createOscillator();
     this.gainNode = this.audioCtx.createGain();
 
-    this.osc.type = 'sawtooth'; // Yeh 'sawtooth' wave police siren ke liye best hai
+    this.osc.type = 'sawtooth'; 
     this.osc.connect(this.gainNode);
     this.gainNode.connect(this.audioCtx.destination);
     
     this.gainNode.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
 
-    // 3. Frequency Sweep (Wooo-Wooo wala magic)
+    
     const now = this.audioCtx.currentTime;
     this.osc.frequency.setValueAtTime(800, now);
     
-    // Ye loop chalta rahega jab tak siren on hai
+    
     const sweep = () => {
       if (!this.sirenOn) return;
       const t = this.audioCtx.currentTime;
@@ -370,7 +370,7 @@ let fireGroup, torchLight;
 function createTorch() {
   const torch = new THREE.Group();
   
-  // 1. Lakdi ki dandi (Stick)
+  
   const stick = new THREE.Mesh(
     new THREE.CylinderGeometry(0.05, 0.03, 0.8), 
     new THREE.MeshStandardMaterial({color: 0x4e2710})
@@ -378,18 +378,18 @@ function createTorch() {
   stick.position.y = 0.1;
   torch.add(stick);
 
-  // 2. Real Fire Cluster (Multiple layers for organic fire look)
+  
   fireGroup = new THREE.Group();
   fireGroup.position.y = 0.55;
 
-  // Outer Red-Orange Flame
+  
   const outerFlame = new THREE.Mesh(
     new THREE.ConeGeometry(0.16, 0.38, 6),
     new THREE.MeshBasicMaterial({color: 0xff3300, transparent: true, opacity: 0.95})
   );
   fireGroup.add(outerFlame);
 
-  // Inner Bright Yellow Flame
+  
   const innerFlame = new THREE.Mesh(
     new THREE.ConeGeometry(0.1, 0.26, 6),
     new THREE.MeshBasicMaterial({color: 0xffcc00, transparent: true, opacity: 0.95})
@@ -397,7 +397,7 @@ function createTorch() {
   innerFlame.position.y = 0.04;
   fireGroup.add(innerFlame);
 
-  // Top White-Hot Core Sparkle
+  
   const flameCore = new THREE.Mesh(
     new THREE.SphereGeometry(0.05, 6, 6),
     new THREE.MeshBasicMaterial({color: 0xffffff})
@@ -407,12 +407,12 @@ function createTorch() {
 
   torch.add(fireGroup);
 
-  // 3. PointLight for realistic glowing environment
+  
   torchLight = new THREE.PointLight(0xff5500, 2.2, 4);
   torchLight.position.y = 0.6;
   torch.add(torchLight);
 
-  // Player ke haath ki position
+  
   torch.position.set(0.45, 0.7, 0.3); 
   playerGroup.add(torch);
 }
@@ -658,7 +658,7 @@ function createRainSystem(){
 function createPoliceJeep(){
   policeJeep = new THREE.Group();
 
-  // 1. Gaadi ki Main Body
+  
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(1.6, 0.7, 2.6),
     new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
@@ -666,7 +666,7 @@ function createPoliceJeep(){
   body.position.set(0, 0.5, 0);
   policeJeep.add(body);
 
-  // 2. Cabin (Upar ka hissa)
+  
   const cabin = new THREE.Mesh(
     new THREE.BoxGeometry(1.3, 0.6, 1.4),
     new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
@@ -674,20 +674,20 @@ function createPoliceJeep(){
   cabin.position.set(0, 1.15, -0.1);
   policeJeep.add(cabin);
 
-  // 3. Kaale Shishe (Windows for 3D depth)
+  
   const glassMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.1 });
   
-  // Peeche ka shisha
+  
   const rearGlass = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.4, 0.1), glassMat);
   rearGlass.position.set(0, 1.15, -0.76); 
   policeJeep.add(rearGlass);
 
-  // Side ke shishe
+  
   const sideGlass = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.4, 1.2), glassMat);
   sideGlass.position.set(0, 1.15, -0.1);
   policeJeep.add(sideGlass);
 
-  // 4. Bumper (Peeche wala kaala bumper)
+  
   const bumper = new THREE.Mesh(
     new THREE.BoxGeometry(1.65, 0.2, 0.2),
     new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 })
@@ -695,7 +695,7 @@ function createPoliceJeep(){
   bumper.position.set(0, 0.25, -1.25);
   policeJeep.add(bumper);
 
-  // 5. Taillights (Peeche ki laal batti)
+  
   const tailLightMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   const tl1 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 0.1), tailLightMat);
   tl1.position.set(-0.6, 0.55, -1.26);
@@ -703,7 +703,7 @@ function createPoliceJeep(){
   tl2.position.set(0.6, 0.55, -1.26);
   policeJeep.add(tl1, tl2);
 
-  // 6. Tyres (Chaar Pahiye)
+  
   const wheelGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.2, 16);
   wheelGeo.rotateZ(Math.PI / 2);
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
@@ -720,7 +720,7 @@ function createPoliceJeep(){
     policeJeep.add(wheel);
   });
 
-  // 7. Chamakti hui Police Siren Batti
+  
   const lightBar = new THREE.Mesh(
     new THREE.BoxGeometry(0.8, 0.15, 0.25),
     new THREE.MeshStandardMaterial({
@@ -875,7 +875,7 @@ function createSpinnerArm(x,z){
 }
 
 function createAutoRickshaw(x, z) {
-  // Ek chhota canvas banakar us par auto ka emoji draw kar rahe hain
+  
   const canvas = document.createElement('canvas');
   canvas.width = 128;
   canvas.height = 128;
@@ -886,12 +886,12 @@ function createAutoRickshaw(x, z) {
   ctx.textBaseline = 'middle';
   ctx.fillText('👻', 64, 64);
 
-  // Canvas ko Three.js ki texture mein convert kiya
+  
   const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
   
   const sprite = new THREE.Sprite(material);
-  sprite.scale.set(3.0, 3.0, 1); // Auto ka size set karne ke liye
+  sprite.scale.set(3.0, 3.0, 1); 
   
   sprite.position.set(x, 1.2, z);
   sprite.userData = { type: "auto" };
@@ -904,7 +904,7 @@ function createAutoRickshaw(x, z) {
 
 
 function createTrain(x, z) {
-  // Ek canvas banakar us par train ka emoji draw kar rahe hain
+  
   const canvas = document.createElement('canvas');
   canvas.width = 128;
   canvas.height = 128;
@@ -915,12 +915,12 @@ function createTrain(x, z) {
   ctx.textBaseline = 'middle';
   ctx.fillText('🚊', 64, 64);
 
-  // Canvas ko Three.js texture mein convert kiya
+  
   const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
   
   const sprite = new THREE.Sprite(material);
-  sprite.scale.set(4.5, 4.5, 1); // Train badi hoti hai, isliye scale bada rakha hai
+  sprite.scale.set(4.5, 4.5, 1); 
   
   sprite.position.set(x, 1.8, z);
   sprite.userData = { type: "train" };
@@ -1086,16 +1086,16 @@ function animate(){
 }
 
 function updateGameLogic(){
-  // FIX 1: Score ko direct distanceTraveled se link kar diya taaki day-1 se count ho
+  
   distanceTraveled += speed;
   score = Math.floor(distanceTraveled * 4.25); 
 
-  // FIX 2: Level 3 ka score 200 se badha kar 1000 kar diya hai
+  
   if (score > 1100 && currentLevel === 1) { 
     currentLevel = 2; 
     showLevelUpBanner("LEVEL 2 • TRAFFIC CHAOS"); 
   }
-  else if (score > 1000 && currentLevel === 2) { // Yahan pehle 200 tha!
+  else if (score > 1000 && currentLevel === 2) { 
     currentLevel = 3; 
     showLevelUpBanner("LEVEL 3 • NIGHT RUSH"); 
   }
@@ -1172,22 +1172,22 @@ function updateGameLogic(){
     nextObstacleSpawn += Math.max(14, 25-currentLevel*3) + Math.random()*8;
   }
 
-    policeActive = score < 300 && !isGameOver; // Testing ke liye threshold
+    policeActive = score < 300 && !isGameOver; 
   policeJeep.visible = policeActive;
   showBossIndicator(policeActive);
 
   if (policeActive) {
-    // FIXED: Siren ko safely call karne ka logic (Freeze hone se bachaane ke liye)
+    
     if (typeof gameSounds !== 'undefined' && gameSounds.playSiren) {
       gameSounds.playSiren();
     }
     
-    // Gaadi ko smooth movement dena
+    
     const targetZ = -1.5; 
     policeJeep.position.z += (targetZ - policeJeep.position.z) * 0.05;
     policeJeep.position.x += (playerGroup.position.x - policeJeep.position.x) * 0.08;
     
-    // Red-Blue Light Flashing Effect
+    
     if (policeJeep.userData && policeJeep.userData.lightBar) {
       const isRed = Math.sin(Date.now() * 0.015) > 0;
       const colorHex = isRed ? 0xff0000 : 0x0044ff;
@@ -1196,7 +1196,7 @@ function updateGameLogic(){
       policeJeep.userData.lightBar.material.emissive.setHex(colorHex);
     }
   } else {
-    // Game normal rahne par siren off
+    
     if (typeof gameSounds !== 'undefined' && gameSounds.stopSiren) {
       gameSounds.stopSiren();
     }

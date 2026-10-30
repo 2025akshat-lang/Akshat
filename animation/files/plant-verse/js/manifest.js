@@ -1,8 +1,7 @@
-/* Yeh ek hi file hai jahan load order likha hai.
-   Naya scene/feature banaya? Uski file ka naam neeche sahi list mein ek line add karo. Bas. */
+
 window.PV_MANIFEST={
-  v:'20261026e',            // har patch ke baad yeh badal do (browser purani cache file na dikhaye)
-  useBundle:false,          // true karne par sirf dist/plantverse.bundle.js load hogi (tools/bundle.py se banao)
+  v:'20261027a',            
+  useBundle:false,          
   bundle:'dist/plantverse.bundle.js',
   core:[
     'core/pv.js',
@@ -20,8 +19,8 @@ window.PV_MANIFEST={
     'data/level2/buds.js',
     'data/level2/surface.js',
     'data/level2/habit.js',
-    'scenes/_engine.js',
-    'scenes/_helpers.js',
+    'scenes/engine.js',
+    'scenes/shared-helpers.js',
     'scenes/stem/stem-dicot.js',
     'scenes/stem/stem-wood.js',
     'scenes/root/root-cross.js',
@@ -40,7 +39,7 @@ window.PV_MANIFEST={
     'scenes/stem/bud-apical.js',
     'scenes/misc/habit.js',
     'scenes/fruit-seed/seed-mono.js',
-    'scenes/_variants.js',
+    'scenes/variants.js',
     'app/state.js',
     'plant3d/helpers.js',
     'plant3d/stages.js',
@@ -92,7 +91,9 @@ window.PV_MANIFEST={
     'features/p12-eco-econ.js',
     'features/p12-path-prac-sci.js',
     'features/p12-numericals.js',
-    // 'features/my-feature.js',   <- naye features yahan (core ke baad, boot se pehle load honge)
+    'features/p13-accessibility.js',
+    'features/p13-health-more.js',
+    
   ],
   boot:['app/boot.js']
 };
