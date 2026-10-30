@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plantverse</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/controls.css">
+<link rel="stylesheet" href="css/svg.css">
+<link rel="stylesheet" href="css/features.css">
+</head><body>
+<div class="app">
+  <header class="top">
+    <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-5 6-8 10-10"/></svg></div>
+    <div id="brandbox" hidden><div class="brand">PLANTVERSE</div><div class="badge">PROCEDURAL 3D</div></div>
+    <div class="seg" id="seg" role="group" aria-label="Choose layer">
+      <button data-f="all" aria-pressed="true">Whole</button>
+      <button data-f="shoot" aria-pressed="false">Shoot</button>
+      <button data-f="root" aria-pressed="false">Roots</button>
+      <button data-f="repro" aria-pressed="false">Flower &amp; Fruit</button>
+    </div>
+  </header>
+  <section class="hd">
+    <div><div class="crumb" id="crumb"></div><h1 id="ttl"></h1><p id="sub"></p></div>
+    <button class="x" id="close" hidden aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </section>
+  <main class="stage">
+    <div id="v1" class="view"></div>
+    <div id="v2" class="view" hidden></div>
+    <div id="v3" class="view" hidden><div id="lbl" hidden></div></div>
+    <div class="tools" id="tools" hidden>
+      <button id="lblt" aria-label="Labels on/off" aria-pressed="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></button>
+      <button id="t3d" aria-label="3D detail on/off" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg></button>
+      <button id="zin" aria-label="Zoom in">+</button>
+      <button id="zout" aria-label="Zoom out">&minus;</button>
+      <button id="rst" aria-label="Reset view"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+    <div class="card" id="card"></div>
+  </main>
+  <nav class="chips" id="chips" aria-label="Parts"></nav>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/manifest.js"></script>
+<script src="js/loader.js"></script>
+</body></html>

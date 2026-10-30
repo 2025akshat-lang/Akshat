@@ -1,0 +1,29 @@
+
+
+.part,.spot{cursor:pointer}
+.part{transition:opacity .25s,filter .25s}
+.part:hover,.part:focus-visible{filter:drop-shadow(0 0 7px var(--accent))}
+.part.dim{opacity:.2}
+.soil{fill:var(--soil)}
+.soilline{stroke:var(--root);stroke-width:1.5;stroke-dasharray:3 4;fill:none;opacity:.7}
+.leafp{fill:var(--leaf);stroke:var(--leaf2);stroke-width:1.5}
+.vein{stroke:var(--leaf2);fill:none;stroke-linecap:round;stroke-width:2}
+.stemp{stroke:var(--stem);fill:none;stroke-linecap:round}
+.petalp{fill:var(--petal);opacity:.92}
+.pollen{fill:var(--pollen)}
+.fruitp{fill:var(--fruit)}
+.fleshp{fill:var(--flesh)}
+.corep{fill:var(--core)}
+.seedp{fill:var(--seedc)}
+.rootp{stroke:var(--root);fill:none;stroke-linecap:round}
+.lead{stroke:var(--muted);stroke-width:1;fill:none}
+.ann,.tag,.spt{font:600 10px var(--mono);fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round;letter-spacing:.04em}
+.tag{font-size:11px;font-weight:700;letter-spacing:.12em}
+.spt{fill:var(--pollen);font-size:10.5px}
+.cut{stroke:var(--pollen);stroke-width:1.6;stroke-dasharray:5 4;fill:none}
+.hit{fill:transparent}
+.pulse{fill:none;stroke:var(--pollen);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:pl 1.8s ease-out infinite}
+.core{fill:var(--pollen)}
+@keyframes pl{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+@media (prefers-reduced-motion: reduce){.pulse{animation:none}}
+@media (max-width:380px){.seg button{padding:8px 7px;font-size:12px}h1{font-size:20px}}

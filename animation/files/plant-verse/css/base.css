@@ -1,0 +1,9 @@
+
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]:not([hidden=until-found i]){display:none!important}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 14px/1.45 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.part:focus-visible,.spot:focus-visible{outline:2px solid var(--pollen);outline-offset:2px}
