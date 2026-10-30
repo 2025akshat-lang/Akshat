@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://2025akshat-lang.github.io/Akshat/sitemap.xml

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art & Craft Interactive Showcase</title>
+<link rel="preconnect" href="https://i.postimg.cc" crossorigin>
+<style>
+:root{
+    --accent:#ffbb33;
+    --speed:.7s;
+    --ease:cubic-bezier(.22,.8,.26,1);
+    --bounce:cubic-bezier(.34,1.56,.64,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+html,body{min-height:100%;overflow-x:hidden;overscroll-behavior-x:none}
+body{background:#111;color:#fff;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+
+
+.bg{position:fixed;inset:0;z-index:-2}
+.bg-layer{position:absolute;inset:0;opacity:0;transition:opacity 1s ease}
+.bg-layer.on{opacity:1}
+.vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(ellipse at 70% 50%,transparent 30%,rgba(0,0,0,.35) 100%)}
+
+
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;position:relative;z-index:10}
+.logo{font-size:24px;font-weight:700;letter-spacing:1px}
+.nav-links{display:flex;gap:30px;list-style:none}
+.nav-links a{color:rgba(255,255,255,.85);text-decoration:none;font-weight:500;position:relative;padding-bottom:3px}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--accent);
+    transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.btn-gallery{border:1px solid rgba(255,255,255,.6);padding:8px 20px;border-radius:20px;color:#fff;text-decoration:none;font-size:14px;
+    transition:background .3s,color .3s,transform .3s}
+.btn-gallery:hover{background:#fff;color:#111;transform:translateY(-2px)}
+
+
+.shapes{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.shape{position:absolute;font-size:clamp(40px,8vw,80px);opacity:.18;transition:opacity .5s ease;
+    animation:float 9s ease-in-out infinite;user-select:none}
+.shape.hide{opacity:0}
+.shape:nth-child(1){top:10%;left:5%}
+.shape:nth-child(2){top:52%;left:2%;animation-delay:-3s;animation-duration:11s}
+.shape:nth-child(3){top:76%;left:42%;animation-delay:-6s;animation-duration:10s}
+.shape:nth-child(4){top:14%;right:5%;animation-delay:-2s;animation-duration:12s}
+@keyframes float{
+    0%,100%{transform:translate3d(0,0,0) rotate(-8deg)}
+    50%{transform:translate3d(0,-22px,0) rotate(10deg)}
+}
+
+
+.hero{display:flex;justify-content:space-between;align-items:center;min-height:calc(100vh - 80px);
+    padding:20px 80px 170px;position:relative;z-index:2;gap:40px}
+.content{flex:1;max-width:560px}
+.counter{display:flex;align-items:center;gap:12px;font-size:13px;letter-spacing:3px;margin-bottom:18px;color:rgba(255,255,255,.8)}
+.counter b{font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums}
+.counter i{display:block;height:2px;width:70px;background:rgba(255,255,255,.25);position:relative;overflow:hidden;border-radius:2px}
+.counter i::after{content:"";position:absolute;inset:0;background:var(--accent);transform-origin:left;
+    transform:scaleX(var(--p,.11));transition:transform .6s var(--ease)}
+
+.txt{transition:transform .8s var(--bounce),opacity .45s ease}
+.txt.out{opacity:0;transform:translate3d(0,16px,0)}
+h1.txt{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.1;margin-bottom:15px;text-shadow:0 4px 18px rgba(0,0,0,.25)}
+p.txt{font-size:clamp(.9rem,2vw,1rem);line-height:1.65;color:rgba(255,255,255,.92);margin-bottom:26px}
+p.txt.out{transition-delay:0s}
+
+
+.controls{display:flex;gap:10px;margin-bottom:18px}
+.ctrl{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1);
+    color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .25s,background .25s}
+.ctrl:hover{background:rgba(255,255,255,.28);transform:scale(1.08)}
+.ctrl:active{transform:scale(.94)}
+
+
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 12px calc(6px + env(safe-area-inset-bottom));
+    background:rgba(0,0,0,.28);border-top:1px solid rgba(255,255,255,.18);border-radius:22px 22px 0 0;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.selectors{display:flex;gap:12px;overflow-x:auto;padding:12px 6px 8px;justify-content:safe center;
+    overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none}
+.selectors::-webkit-scrollbar{display:none}
+.selectors::-webkit-scrollbar{height:6px}
+.selectors::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:3px}
+.thumb{flex:0 0 85px;height:100px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:6px 4px;color:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,.15);scroll-snap-align:center;
+    transition:transform .45s var(--bounce),border-color .3s,background .3s,box-shadow .3s}
+.thumb:hover{transform:translateY(-5px)}
+.thumb:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.thumb.active{border:2px solid var(--accent);background:rgba(255,255,255,.18);
+    box-shadow:0 0 18px color-mix(in srgb,var(--accent) 60%,transparent);transform:translateY(-4px) scale(1.04)}
+.thumb .card{width:100%;height:62px;border-radius:8px;overflow:hidden;background:#1a1a24}
+.thumb .card svg{display:block}
+.thumb span{font-size:8.5px;font-weight:700;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+
+
+.visual{flex:1;height:74vh;display:flex;justify-content:center;align-items:center;position:relative;touch-action:pan-y}
+.glow{position:absolute;width:80%;aspect-ratio:1;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,color-mix(in srgb,var(--accent) 55%,transparent) 0%,transparent 65%);
+    opacity:.55;animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(.92);opacity:.4}50%{transform:scale(1.05);opacity:.65}}
+.tilt{max-height:100%;max-width:100%;display:flex;transform-style:preserve-3d;transition:transform .6s var(--ease);will-change:transform}
+.tilt.moving{transition:transform .12s linear}
+.art{max-width:100%;max-height:70vh;object-fit:contain;border-radius:22px;
+    box-shadow:0 18px 40px rgba(0,0,0,.4);
+    transition:transform .85s var(--bounce),opacity .45s ease}
+.art.out{opacity:0;transform:scale(.65) rotate(-7deg) translate3d(0,24px,0)}
+.spinner{position:absolute;width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:var(--accent);
+    opacity:0;pointer-events:none;transition:opacity .25s}
+.spinner.show{opacity:1;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spark{position:absolute;left:50%;top:50%;font-size:22px;pointer-events:none;opacity:0;z-index:3;
+    animation:spark .95s var(--ease) forwards}
+@keyframes spark{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
+    25%{opacity:1}
+    100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.15) rotate(var(--r))}
+}
+
+
+@media (max-width:768px){
+    nav{padding:15px 20px}
+    .nav-links{display:none}
+    .hero{flex-direction:column-reverse;justify-content:flex-end;padding:6px 16px 170px;min-height:auto;gap:14px}
+    .visual{width:100%;height:50vh}
+    .art{max-height:48vh}
+    .content{width:100%;max-width:100%;text-align:center}
+    .counter,.controls{justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="bg"><div class="bg-layer on" id="bgA"></div><div class="bg-layer" id="bgB"></div></div>
+<div class="vignette"></div>
+
+<nav>
+    <div class="logo">ART & CRAFT</div>
+    <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Creations</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+    <a href="#" class="btn-gallery">View Gallery</a>
+</nav>
+
+<div class="shapes" aria-hidden="true">
+    <div class="shape">🎨</div><div class="shape">🎨</div><div class="shape">🎨</div><div class="shape">🎨</div>
+</div>
+
+<main class="hero">
+    <div class="content">
+        <div class="counter"><b id="cur">01</b><i id="bar"></i><span id="tot">09</span></div>
+        <h1 class="txt" id="title">Mixed Painting</h1>
+        <p class="txt" id="description"></p>
+        <div class="controls">
+            <button class="ctrl" id="prev" aria-label="Previous">‹</button>
+            <button class="ctrl" id="next" aria-label="Next">›</button>
+        </div>
+    </div>
+
+    <div class="visual" id="visual">
+        <div class="glow"></div>
+        <div class="spinner" id="spinner"></div>
+        <div id="sparks"></div>
+        <div class="tilt" id="tilt">
+            <img id="main-art" class="art" alt="Art piece" decoding="async" draggable="false">
+        </div>
+    </div>
+</main>
+
+<footer class="dock"><div class="selectors" id="selectors"></div></footer>
+
+<script>
+const craftData = [
+    {name:"Mixed Art",fullName:"Mixed Painting",accent:"#99f2c8",
+     description:"A creative fusion of multiple painting techniques and textures, blending vibrant colors and expressive strokes into a unique masterpiece.",
+     bgGradient:"linear-gradient(135deg, #1f4037, #99f2c8)",symbol:"🎨",
+     realImage:"https://i.postimg.cc/hPSf0bZ9/20260419-164908.avif",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#2d3748"/><path d="M15,65 Q35,25 55,50 T85,30 L85,65 Z" fill="#99f2c8"/><circle cx="35" cy="35" r="8" fill="#ffbb33"/></svg>`},
+    {name:"Gond Painting",fullName:"Gond Traditional Art",accent:"#ffbb33",
+     description:"Traditional tribal art from central India characterized by intricate patterns, vibrant natural colors, and deep connection with nature and folklore.",
+     bgGradient:"linear-gradient(135deg, #d38312, #a83279)",symbol:"🌿",
+     realImage:"https://i.postimg.cc/tTN918jM/20260426-140333.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#4a2e18"/><ellipse cx="50" cy="40" rx="30" ry="15" fill="#ffbb33"/><path d="M30,40 L15,25 M70,40 L85,25" stroke="#ff5722" stroke-width="4"/></svg>`},
+    {name:"Dot Painting",fullName:"Dot Art Masterpiece",accent:"#7fa8ff",
+     description:"Meticulously crafted using fine dotting techniques to build complex geometrical patterns, symmetry, and depth through vibrant colors.",
+     bgGradient:"linear-gradient(135deg, #4b6cb7, #182848)",symbol:"⚪",
+     realImage:"https://i.postimg.cc/2jd1vXGz/Adobe-Scan-28-Aug-2026-1.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#182848"/><circle cx="50" cy="40" r="22" fill="none" stroke="#4b6cb7" stroke-width="4" stroke-dasharray="4,4"/><circle cx="50" cy="40" r="8" fill="#ffbb33"/></svg>`},
+    {name:"Madhubani",fullName:"Madhubani Folk Painting",accent:"#f5af19",
+     description:"Classic Mithila painting style featuring rich cultural motifs, fine line work, and traditional storytelling themes passed down through generations.",
+     bgGradient:"linear-gradient(135deg, #f12711, #f5af19)",symbol:"🦚",
+     realImage:"https://i.postimg.cc/v8749Sh8/Adobe-Scan-28-Aug-2026-2.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#5c1d1d"/><path d="M50,15 L65,55 L35,55 Z" fill="#f5af19"/><circle cx="50" cy="30" r="6" fill="#f12711"/></svg>`},
+    {name:"Mandala Art",fullName:"Mandala Art",accent:"#fcb045",
+     description:"An intricate spiritual and geometric design symbolizing balance, cosmic harmony, and deep meditative focus drawn with absolute precision.",
+     bgGradient:"linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)",symbol:"⭕",
+     realImage:"https://i.postimg.cc/DfQSsYgH/IMG-20260828-WA0002.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#3a1c57"/><circle cx="50" cy="40" r="25" fill="none" stroke="#fcb045" stroke-width="3"/><circle cx="50" cy="40" r="12" fill="none" stroke="#fd1d1d" stroke-width="2"/></svg>`},
+    {name:"Warli Art",fullName:"Warli Tribal Art",accent:"#9fd3e6",
+     description:"Indigenous tribal folk art using fundamental geometric shapes like circles, triangles, and squares to depict daily life, rituals, and nature.",
+     bgGradient:"linear-gradient(135deg, #3a6073, #16222a)",symbol:"🪵",
+     realImage:"https://i.postimg.cc/7P157Q98/IMG-20260828-WA0004.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#16222a"/><circle cx="50" cy="30" r="6" fill="#fff"/><polygon points="45,38 55,38 58,60 42,60" fill="#fff"/></svg>`},
+    {name:"Tissue Flower",fullName:"Tissue Paper Flower Craft",accent:"#ffd1e0",
+     description:"Delicate handmade floral craft sculpted from soft tissue paper, capturing soft textures and vibrant decorative presentation.",
+     bgGradient:"linear-gradient(135deg, #ff758c, #ff7eb3)",symbol:"🌸",
+     realImage:"https://i.postimg.cc/Wpmdrfnx/IMG-20260828-WA0005.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#5a1835"/><circle cx="50" cy="40" r="18" fill="#ff758c"/><circle cx="50" cy="40" r="6" fill="#ffbb33"/></svg>`},
+    {name:"Waste Flower",fullName:"Waste Paper Flower Craft",accent:"#d6ff9e",
+     description:"Eco-friendly sustainable craft transforming discarded paper into charming, decorative flowers with a creative touch.",
+     bgGradient:"linear-gradient(135deg, #56ab2f, #a8e063)",symbol:"♻️",
+     realImage:"https://i.postimg.cc/FFbYcnpN/IMG-20260828-WA0007.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#1f3a15"/><path d="M50,20 Q65,40 50,60 Q35,40 50,20" fill="#a8e063"/><circle cx="50" cy="40" r="5" fill="#56ab2f"/></svg>`},
+    {name:"Wooden Cutlery",fullName:"Wooden Cutlery Painting",accent:"#f3d9b1",
+     description:"Hand-painted wooden cutlery featuring intricate traditional patterns and vibrant artistic motifs, blending functional utility with classic folk art aesthetics.",
+     bgGradient:"linear-gradient(135deg, #8B4513, #D2B48C)",symbol:"🪵",
+     realImage:"https://i.postimg.cc/gjC0P8qS/IMG-20260828-WA0009.jpg",
+     thumbSvg:`<svg viewBox="0 0 100 80" width="100%" height="100%"><rect width="100" height="80" fill="#8B4513"/><path d="M45,15 L55,15 L55,65 L45,65 Z" fill="#D2B48C"/><circle cx="50" cy="25" r="5" fill="#f12711"/></svg>`}
+];
+
+const $ = id => document.getElementById(id);
+const titleEl=$('title'), descEl=$('description'), art=$('main-art'), box=$('selectors'),
+      spinner=$('spinner'), tilt=$('tilt'), visual=$('visual'),
+      curEl=$('cur'), totEl=$('tot'), bar=$('bar');
+const shapes=[...document.querySelectorAll('.shape')];
+const sparks=$('sparks');
+function burst(sym){
+    for(let k=0;k<8;k++){
+        const s=document.createElement('span');
+        s.className='spark';
+        s.textContent=k%2?'✨':sym;
+        const a=k/8*Math.PI*2, r=90+Math.random()*60;
+        s.style.cssText=`--dx:${Math.cos(a)*r}px;--dy:${Math.sin(a)*r}px;--r:${(Math.random()*80-40)|0}deg`;
+        sparks.appendChild(s);
+        setTimeout(()=>s.remove(),1000);
+    }
+}
+const layers=[$('bgA'),$('bgB')];
+const root=document.documentElement;
+const N=craftData.length;
+const pad=n=>String(n).padStart(2,'0');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const FALLBACK='data:image/svg+xml;utf8,'+encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" rx="20" fill="#222"/><text x="200" y="160" fill="#aaa" font-size="18" text-anchor="middle" font-family="sans-serif">Image load nahi hui</text></svg>');
+
+
+const cache=new Map();
+function preload(src){
+    if(cache.has(src)) return cache.get(src);
+    const p=new Promise(res=>{
+        const im=new Image();
+        im.decoding='async';
+        im.onload=()=>(im.decode?im.decode().catch(()=>{}):Promise.resolve()).then(()=>res(true));
+        im.onerror=()=>{cache.delete(src);res(false)};
+        im.src=src;
+    });
+    cache.set(src,p);
+    return p;
+}
+const lowData=navigator.connection&&navigator.connection.saveData;
+const idle=window.requestIdleCallback||(cb=>setTimeout(cb,300));
+function prefetchRest(){            // ek ek karke, bandwidth choke nahi hoti
+    if(lowData) return;
+    const order=[];
+    for(let k=1;k<N;k++) order.push(craftData[(cur+k)%N].realImage);
+    (function next(){
+        const src=order.shift(); if(!src) return;
+        preload(src).then(()=>idle(next));
+    })();
+}
+
+
+let cur=0, req=0, layerIdx=0, busy=false;
+totEl.textContent=pad(N);
+
+craftData.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='thumb'; b.setAttribute('aria-label',d.fullName);
+    b.innerHTML=`<div class="card">${d.thumbSvg}</div><span>${d.name}</span>`;
+    b.addEventListener('click',()=>go(i));
+    b.addEventListener('pointerenter',()=>preload(d.realImage));   // hover pe pehle se ready
+    box.appendChild(b);
+});
+const thumbs=[...box.children];
+
+function setBg(grad){
+    const nxt=layers[1-layerIdx];
+    nxt.style.background=grad;
+    nxt.classList.add('on');
+    layers[layerIdx].classList.remove('on');
+    layerIdx=1-layerIdx;
+}
+
+function go(i, first){
+    i=(i+N)%N;
+    if(i===cur && !first) return;
+    const my=++req;                         // naye click ka token
+    const d=craftData[i];
+    cur=i;
+
+    thumbs.forEach((t,k)=>t.classList.toggle('active',k===i));
+    thumbs[i].scrollIntoView({behavior:first?'auto':'smooth',inline:'center',block:'nearest'});
+    root.style.setProperty('--accent',d.accent);
+    bar.style.setProperty('--p',(i+1)/N);
+    curEl.textContent=pad(i+1);
+    setBg(d.bgGradient);
+
+    if(!first){
+        titleEl.classList.add('out'); descEl.classList.add('out'); art.classList.add('out');
+        shapes.forEach(s=>s.classList.add('hide'));
+    }
+    const spin=setTimeout(()=>{ if(my===req) spinner.classList.add('show'); },220);
+
+    // image ready + animation time dono ka wait
+    Promise.all([preload(d.realImage), first?0:wait(320)]).then(([ok])=>{
+        clearTimeout(spin);
+        if(my!==req) return;                // purana request, ignore (yahi order bug fix hai)
+        spinner.classList.remove('show');
+        titleEl.textContent=d.fullName;
+        descEl.textContent=d.description;
+        art.alt=d.fullName;
+        art.src=ok?d.realImage:FALLBACK;
+        shapes.forEach(s=>{s.textContent=d.symbol;s.classList.remove('hide')});
+        if(!first) burst(d.symbol);
+        requestAnimationFrame(()=>{
+            titleEl.classList.remove('out'); descEl.classList.remove('out'); art.classList.remove('out');
+        });
+        // aas-paas wali images pehle se garam
+        preload(craftData[(i+1)%N].realImage);
+        preload(craftData[(i-1+N)%N].realImage);
+    });
+}
+
+
+$('prev').addEventListener('click',()=>go(cur-1));
+$('next').addEventListener('click',()=>go(cur+1));
+addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight') go(cur+1);
+    else if(e.key==='ArrowLeft') go(cur-1);
+});
+let sx=0;
+visual.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+visual.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50) go(cur+(dx<0?1:-1));
+},{passive:true});
+
+
+if(matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(prefers-reduced-motion:reduce)').matches){
+    let raf=0,tx=0,ty=0;
+    visual.addEventListener('pointermove',e=>{
+        const r=visual.getBoundingClientRect();
+        tx=((e.clientX-r.left)/r.width-.5)*14;
+        ty=((e.clientY-r.top)/r.height-.5)*-14;
+        tilt.classList.add('moving');
+        if(!raf) raf=requestAnimationFrame(()=>{
+            tilt.style.transform=`perspective(900px) rotateY(${tx}deg) rotateX(${ty}deg)`;
+            raf=0;
+        });
+    });
+    visual.addEventListener('pointerleave',()=>{
+        tilt.classList.remove('moving');
+        tilt.style.transform='';
+    });
+}
+
+
+art.fetchPriority='high';
+go(0,true);
+idle(prefetchRest);
+</script>
+</body>
+</html>

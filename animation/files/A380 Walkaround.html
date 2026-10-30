@@ -1,0 +1,627 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>A380 Walkaround</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#eef2f7; --panel:#e3e9f1; --line:#c3cedc; --line2:#8fa0b6;
+  --fg:#17202e; --dim:#52607a; --accent:#0a62b0; --menu:#f7f9fc; --on:rgba(10,98,176,.12);
+  --ui:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --head:'IBM Plex Sans Condensed','Arial Narrow',Arial,sans-serif;
+}
+body[data-mode="night"]{
+  --bg:#06080c; --panel:#0a0e14; --line:#1f2733; --line2:#334055;
+  --fg:#d7deea; --dim:#8a95a8; --accent:#7fd0ff; --menu:#0d121a; --on:rgba(127,208,255,.1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:12px;display:flex;flex-direction:column}
+body[data-mode="night"]{color-scheme:dark}
+.plate{position:relative;flex:1 1 auto;min-height:220px;background:var(--panel);overflow:hidden}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.bar{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;align-items:center;justify-content:space-between;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.bar>*{pointer-events:auto}
+.title{font:600 17px/1 var(--head);letter-spacing:.02em}
+.title small{font:400 9px var(--ui);letter-spacing:.14em;color:var(--dim);margin-left:8px;text-transform:uppercase}
+.seg{display:flex;border:1px solid var(--line2);background:var(--menu);border-radius:3px;overflow:hidden}
+.seg button{font:500 12px/1 var(--ui);color:var(--dim);background:transparent;border:0;padding:0 14px;min-height:36px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.tag{position:absolute;font:400 10px/1.4 var(--ui);letter-spacing:.06em;color:var(--dim);pointer-events:none}
+.bl{left:max(16px,env(safe-area-inset-left,0px));bottom:6px;max-width:34%}
+.br{right:max(16px,env(safe-area-inset-right,0px));bottom:6px;max-width:64%;text-align:right;color:var(--fg)}
+.bl b{color:var(--accent);font-weight:500}
+.dock{flex:none;background:var(--menu);border-top:1px solid var(--line2);padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:8px}
+.effect{display:flex;gap:10px;align-items:baseline;font-size:12px;line-height:1.4;min-height:34px}
+.effect b{flex:none;font:500 9px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.effect span{min-width:0;color:var(--fg)}
+.tabs{display:flex;gap:6px}
+.tab{flex:1 1 0;font:500 12px/1 var(--ui);color:var(--dim);background:transparent;border:1px solid var(--line2);border-radius:3px;min-height:40px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--accent);border-color:var(--accent);background:var(--on)}
+.panel{max-height:min(36vh,300px);overflow:auto;display:flex;flex-direction:column;gap:12px;padding-block:2px}
+.panel[hidden]{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{flex:1 1 130px;justify-content:center;font:400 12px/1 var(--ui);color:var(--dim);background:transparent;border:1px solid var(--line2);padding:8px 10px;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;min-height:42px;align-items:center;border-radius:3px;text-align:center}
+.chip kbd{font:400 9px var(--ui);color:var(--dim);border:1px solid var(--line);padding:1px 4px;border-radius:2px}
+.chip small{font-size:9px;color:var(--dim)}
+.chip:hover{color:var(--fg);border-color:var(--dim)}
+.chip:focus-visible,.seg button:focus-visible,.tab:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip.on{color:var(--fg);border-color:var(--accent);background:var(--on)}
+.chip.on kbd{color:var(--accent);border-color:var(--accent)}
+.sliders{display:grid;gap:6px 24px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.sl{display:grid;grid-template-columns:86px 1fr 48px;gap:10px;align-items:center;color:var(--dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.sl output{color:var(--fg);text-align:right;font-variant-numeric:tabular-nums;text-transform:none}
+input[type=range]{width:100%;accent-color:var(--accent);min-width:0;height:30px}
+@media (max-width:560px){.chip kbd{display:none}.bl{display:none}.br{max-width:94%;font-size:9px}.title small{display:none}.chip{flex-basis:100px}.sl{grid-template-columns:78px 1fr 44px}}
+</style>
+<div class="plate" id="plate">
+  <svg id="stage" viewBox="0 0 1000 540" role="img" aria-label="Interactive Airbus A380 model">
+   <defs>
+    <radialGradient id="gW"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".3" stop-color="#e8f3ff" stop-opacity=".55"/><stop offset="1" stop-color="#bfe0ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gR"><stop offset="0" stop-color="#ff8a7a" stop-opacity="1"/><stop offset=".3" stop-color="#ff3b2a" stop-opacity=".55"/><stop offset="1" stop-color="#ff2a1a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gG"><stop offset="0" stop-color="#9dffb8" stop-opacity="1"/><stop offset=".3" stop-color="#30e070" stop-opacity=".55"/><stop offset="1" stop-color="#20d060" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gA"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".9"/><stop offset=".4" stop-color="#ffb454" stop-opacity=".35"/><stop offset="1" stop-color="#ff9a30" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gH"><stop offset="0" stop-color="#ff7a30" stop-opacity=".55"/><stop offset="1" stop-color="#ff5a10" stop-opacity="0"/></radialGradient>
+   </defs>
+   <g id="gGround"></g><g id="gBody"></g><g id="gFx"></g><g id="gLab"></g>
+  </svg>
+  <div class="bar">
+   <div class="title">Airbus A380-800<small>Fig 1</small></div>
+   <div class="seg" role="group" aria-label="Display mode"><button id="mDay" aria-pressed="true">Day</button><button id="mNight" aria-pressed="false">Night</button></div>
+  </div>
+  <div class="tag bl" id="hint"></div><div class="tag br" id="status"></div>
+</div>
+<div class="dock" id="dock">
+  <div class="effect" aria-live="polite"><b>Effect</b><span id="effTxt">Tap any button below. What it does is written here.</span></div>
+  <div class="tabs" role="tablist">
+   <button class="tab" role="tab" data-tab="ph" aria-selected="true">Phases</button>
+   <button class="tab" role="tab" data-tab="sys" aria-selected="false">Systems</button>
+   <button class="tab" role="tab" data-tab="lt" aria-selected="false">Lights</button>
+   <button class="tab" role="tab" data-tab="dsp" aria-selected="false">Display</button>
+  </div>
+  <div class="panel" id="p-ph"><div class="chips" id="rPh"></div></div>
+  <div class="panel" id="p-sys" hidden><div class="chips" id="rSys"></div>
+   <div class="sliders">
+    <label class="sl" for="sDoor">Doors<input id="sDoor" type="range" min="0" max="100" value="0"><output id="oDoor">0%</output></label>
+    <label class="sl" for="sCut">Cutaway<input id="sCut" type="range" min="0" max="100" value="0"><output id="oCut">off</output></label>
+    <label class="sl" for="sFlap">Flaps<input id="sFlap" type="range" min="0" max="4" step="1" value="0"><output id="oFlap">0</output></label></div></div>
+  <div class="panel" id="p-lt" hidden><div class="chips" id="rLt"></div></div>
+  <div class="panel" id="p-dsp" hidden>
+   <div class="sliders">
+    <label class="sl" for="sBr">Brightness<input id="sBr" type="range" min="50" max="200" value="100"><output id="oBr">100%</output></label>
+    <label class="sl" for="sCab">Cabin light<input id="sCab" type="range" min="0" max="100" value="80"><output id="oCab">80%</output></label></div>
+   <div class="chips"><button class="chip" id="resetView">Reset view</button></div></div>
+</div>
+<script>
+'use strict';
+(()=>{
+const D2R=Math.PI/180,GZ=-7.1,LEN=36.4,TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+const prof=x=>{let f=1,zc=0;
+  if(x>27){const t=(x-27)/(LEN-27);f=Math.sqrt(Math.max(0,1-t*t));zc=-t*t*1.5}
+  else if(x<-18){const t=(-18-x)/(LEN-18);f=1-.9*Math.pow(t,1.5);zc=t*t*3.2}
+  return{f:Math.max(f,.03),zc}};
+const hwAt=(x,z)=>{const{f,zc}=prof(x);const c=clamp((z-zc)/((z>zc?4.2:3.9)*f),-.999,.999);return 3.57*f*Math.pow(1-c*c,.425)};
+const secPt=(x,th)=>{const{f,zc}=prof(x);const s=Math.sin(th),c=Math.cos(th);
+  return[x,3.57*f*Math.pow(Math.abs(s),.85)*Math.sign(s),zc+(c>0?4.2:3.9)*f*c]};
+const cen=pts=>{const n=pts.length;return[0,1,2].map(i=>pts.reduce((a,p)=>a+p[i],0)/n)};
+
+
+const STA=[-36.4,-34,-30.5,-27,-23,-19,-15,-10.5,-6,-1.5,3,8,13,18,22,25,27.5,29.5,31.2,32.8,34.2,35.4,36.4];
+const NS=16,SKIN=[],WINS=[],INT=[];
+for(let i=0;i<STA.length-1;i++)for(let j=0;j<NS;j++){
+  const t0=j*TAU/NS,t1=(j+1)*TAU/NS;
+  const a=secPt(STA[i],t0),b=secPt(STA[i],t1),c=secPt(STA[i+1],t1),d=secPt(STA[i+1],t0);
+  const mx=(STA[i]+STA[i+1])/2;let h=216,s=9,l=22;
+  if(j>=6&&j<=9)l=13;else if(j===15||j===0)l=26;
+  if(j===4||j===11){h=203;s=42;l=28}
+  const p=[a,b,c,d],cc=cen(p);
+  SKIN.push({p,r:[mx,0,prof(mx).zc],h,s,l,part:'Fuselage',cull:true,cx:cc[0],cz:cc[2],skin:true});
+}
+function surfQuad(x0,x1,z0,z1,side,off){return[[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>[x,side*(hwAt(x,z)+off),z])}
+function addWin(x0,x1,z0,z1,side,part,kind,bias,h,s,l){
+  const p=surfQuad(x0,x1,z0,z1,side,.1),mx=(x0+x1)/2;
+  WINS.push({p,r:[mx,0,(z0+z1)/2>0?0:0],h:h||210,s:s||20,l:l||10,part,cull:true,kind,bias:bias||-2,cx:mx,cz:(z0+z1)/2});
+}
+const MAIN_DOORS=[25,15,-9,-23],UP_DOORS=[19,-15];
+for(const side of[-1,1]){
+  for(let x=-28;x<=27.5;x+=1.3){if(MAIN_DOORS.some(d=>Math.abs(x-d)<1.1))continue;addWin(x,x+.55,.75,1.25,side,'Fuselage','win')}
+  for(let x=-19;x<=21;x+=1.3){if(UP_DOORS.some(d=>Math.abs(x-d)<1))continue;addWin(x,x+.55,2.95,3.4,side,'Fuselage','win')}
+  addWin(31.2,32.5,1.1,1.95,side,'Cockpit','cock',-2.5);
+  addWin(33.6,34.8,.95,1.7,side,'Cockpit','cock',-2.5);
+  addWin(-16,-14,-3.4,-2,side,'Cargo door','cargo',-1.5,215,10,17);
+  addWin(17,19.4,-3.4,-2,side,'Cargo door','cargo',-1.5,215,10,17);
+}
+
+const ENGY=[-29.9,-12.7,12.7,29.9],ENG=[],NACC=[];
+const wxle=y=>7-(y-3.4)*.6,wz=y=>-2.2+.075*(y-3.4),wt=y=>Math.max(.4,1.7-(y-3.4)*.036);
+const wxte=y=>y<=14?-10.5-(y-3.4)*(8.5/10.6):-19+(y-14)*(.5/25.9);
+ENGY.forEach((y,i)=>{
+  const ay=Math.abs(y),xin=wxle(ay)+4,zc=wz(ay)-3.0;
+  const XI=[0,.6,2,4.5,7,9,10.5,11.8],RR=[1.62,1.86,1.9,1.76,1.5,1.25,.85,.15],NSEG=8,name='Engine '+(i+1);
+  NACC.push({x:xin,y,z:zc,name});
+  for(let k=0;k<XI.length-1;k++)for(let j=0;j<NSEG;j++){
+    const a0=j*TAU/NSEG,a1=(j+1)*TAU/NSEG;
+    const P=(kk,a)=>[xin-XI[kk],y+RR[kk]*Math.sin(a),zc+RR[kk]*Math.cos(a)];
+    const p=[P(k,a0),P(k,a1),P(k+1,a1),P(k+1,a0)],mid=xin-(XI[k]+XI[k+1])/2;
+    ENG.push({p,r:[mid,y,zc],h:215,s:6,l:k===0?32:(k>=5?15:24),part:name,cull:true,eng:i,cx:mid,cz:zc});
+  }
+  const ya=y;
+  ENG.push({p:[[xin-1.5,ya,zc+1.75],[xin-8,ya,zc+1.5],[xin-7,ya,wz(ay)-.1],[xin-1.5,ya,wz(ay)-.05]],r:null,h:215,s:6,l:18,part:name,cull:false,pylon:true});
+});
+
+const FLOORS=[{z:-.7,x0:-27,x1:26},{z:2.6,x0:-19,x1:21}];
+for(const F of FLOORS){
+  const L=[],R=[];for(let x=F.x0;x<=F.x1;x+=2){const w=hwAt(x,F.z)-.12;L.push([x,-w,F.z]);R.push([x,w,F.z])}
+  INT.push({p:L.concat(R.reverse()),r:null,h:218,s:16,l:15,part:'Cabin',cull:false,floor:true,cx:(F.x0+F.x1)/2,cz:F.z,bias:2,cfloor:true});
+}
+const CLS={f:[38,55,44],b:[198,48,38],e:[222,16,34]};
+function rows(xs,z,blocks,cls){
+  for(const x of xs){const hw=hwAt(x,z+.4)-.3,k=Math.min(1,hw/Math.max(...blocks.flat().map(Math.abs)));
+    if(hw<1.2)continue;
+    for(const[b0,b1]of blocks){INT.push({p:[[x-.3,b0*k,z+.55],[x+.25,b0*k,z+.55],[x+.25,b1*k,z+.55],[x-.3,b1*k,z+.55]],r:null,h:CLS[cls][0],s:CLS[cls][1],l:CLS[cls][2],part:'Cabin',cull:false,seat:true,cx:x,cz:z,bias:-.5})}}
+}
+const seq=(a,b,s)=>{const o=[];for(let x=a;x>=b;x-=s)o.push(x);return o};
+rows(seq(21,8,1.25),-.7,[[-3.1,-2.1],[-.75,.75],[2.1,3.1]],'b');
+rows(seq(6,-25,.95),-.7,[[-3.2,-1.7],[-.95,.95],[1.7,3.2]],'e');
+rows(seq(17,11,2.2),2.6,[[-2.2,-1.4],[-.5,.5],[1.4,2.2]],'f');
+rows(seq(8,-6,1.3),2.6,[[-2.3,-1.2],[-.55,.55],[1.2,2.3]],'b');
+rows(seq(-8,-17,.95),2.6,[[-2.3,-1.3],[-1,1],[1.3,2.3]],'e');
+for(let x=-30;x<=26;x+=3){const pts=[];for(let j=0;j<24;j++)pts.push(secPt(x,j*TAU/24));
+  INT.push({p:pts,r:null,line:true,part:null,cx:x,cz:0,bias:3,ring:true})}
+
+function mesh(sts,us,tf,map,mod,tagf,out,colf,dv){
+  const R=sts.map(st=>{const ch=st.xle-st.xte;return us.map((u,k)=>{
+    const[dxT,dhT]=mod(st,u,ch,true),[dxB,dhB]=mod(st,u,ch,false),x0=st.xle-ch*u,th=st.t*tf[k];
+    return{t:map(st,x0+dxT,th*.55+dhT),b:map(st,x0+dxB,-th*.45+dhB)}})});
+  for(let i=0;i<sts.length-1;i++)for(let k=0;k<us.length-1;k++)for(const top of[true,false]){
+    const key=top?'t':'b',a=R[i][k][key],b=R[i+1][k][key],c=R[i+1][k+1][key],d=R[i][k+1][key],cc=cen([a,b,c,d]),sg=top?-1:1;
+    const tag=tagf(sts[i],sts[i+1],us[k],us[k+1],top),col=colf(tag,top);
+    out.push({p:[a,b,c,d],r:[cc[0]+dv[0]*sg,cc[1]+dv[1]*sg,cc[2]+dv[2]*sg],h:col[0],s:col[1],l:col[2],part:tag,cull:false});
+  }
+}
+const WY=[3.4,8,14,20,26,32,36,39.9];
+const WSTA=WY.map(y=>({s:y,xle:wxle(y),xte:wxte(y),z:wz(y),t:wt(y)}));
+const WU=[0,.1,.4,.7,.85,1],WTF=[.05,.8,1,.75,.4,.03];
+const SSTA=[1.5,8.5,15.2].map(y=>({s:y,xle:-26-(y-1.5)*.73,xte:-34-(y-1.5)*.29,z:1.8+(y-1.5)*.05,t:.55-(y-1.5)*.025}));
+const SU=[0,.12,.45,.65,.82,1],STF=[.05,.8,1,.8,.45,.03];
+const FSTA=[2.2,6,10,14,17].map(s=>({s,xle:-22.5-(s-2.2)*.95,xte:-35.5-(s-2.2)*.3,z:0,t:.9-(s-2.2)*.04}));
+const FU=[0,.12,.45,.7,.85,1],FTF=[.05,.8,1,.7,.35,.03];
+window.A380={D2R,GZ,LEN,TAU,clamp,lerp,prof,hwAt,secPt,cen,SKIN,WINS,ENG,NACC,INT,mesh,WSTA,WU,WTF,SSTA,SU,STF,FSTA,FU,FTF,wxle,wxte,wz,wt,MAIN_DOORS,UP_DOORS,ENGY};
+})();
+'use strict';
+(()=>{
+const A=window.A380,{clamp,lerp,D2R}=A;
+const PH=[
+ {k:'1',n:'Gate',label:'At the gate',spd:0,alt:0},
+ {k:'2',n:'Push & start',label:'Pushback and start',spd:0,alt:0},
+ {k:'3',n:'Taxi',label:'Taxiing',spd:16,alt:0},
+ {k:'4',n:'Line-up',label:'Lined up on the runway',spd:0,alt:0},
+ {k:'5',n:'Take-off',label:'Take-off roll',spd:175,alt:900},
+ {k:'6',n:'Climb',label:'Climbing',spd:250,alt:6500},
+ {k:'7',n:'10,000 ft',label:'Level at 10,000 ft',spd:290,alt:10000}];
+const CONF_DEG=[0,8,16,25,35],CONF_NAME=['0','1','2','3','FULL'];
+const S={ph:0,t:0,spd:0,alt:0,pitch:0,lift:0,flex:0,n1:[0,0,0,0],fan:[0,0,0,0],flapDeg:0,flapOvr:null,
+ gear:1,gearOvr:null,door:.9,doorT:1,doorMan:false,cut:0,cutT:0,cabin:.8,spoil:0,spoilT:0,ail:0,elev:0,rud:0,ctrlT:-1,
+ yaw:-.6,el:.55,zoom:1,inspect:false,sel:null,hover:null,dist:0,tug:16,br:1,rwy:0,lightOvr:{},engOvr:null,msg:'',msgT:0,clock:0};
+const AUTO={
+ strobe:()=>S.ph>=3,beacon:()=>S.ph>=1,scan:()=>S.ph===1,nav:()=>true,logo:()=>true,
+ turnoff:()=>S.ph>=3&&S.ph<=5,land:()=>S.ph>=3&&S.ph<=5,
+ nose:()=>S.gear<.3?0:(S.ph===2?1:(S.ph===3||S.ph===4?2:0))};
+function lightOn(n){const o=S.lightOvr[n];return o!==undefined?o:AUTO[n]()}
+function toggleLight(n){
+  const cur=lightOn(n),mod=n==='nose'?3:2;let nv=n==='nose'?(cur+1)%3:!cur;
+  const auto=AUTO[n]();if(nv===auto)delete S.lightOvr[n];else S.lightOvr[n]=nv;
+}
+function flash(msg){S.msg=msg;S.msgT=2.4}
+function setPhase(n){
+  S.ph=n;S.t=0;S.flapOvr=null;S.gearOvr=null;S.engOvr=null;S.lightOvr={};S.doorMan=false;S.doorT=n===0?1:0;
+  if(n===2)S.ctrlT=0;
+}
+function conf(){if(S.flapOvr!==null)return S.flapOvr;
+  return[0,0,1,2,2,S.alt>1500?0:1,0][S.ph]}
+function step(dt){
+  S.t+=dt;S.clock+=dt;const P=PH[S.ph],air=S.alt>20;
+  
+  let tS=P.spd;if(S.ph===1)tS=S.t>1.5?-3:0;if(S.ph<=3&&air)tS=140;
+  const acc=S.ph===4?26:14;S.spd+=clamp(tS-S.spd,-acc*dt,acc*dt);
+  S.dist+=S.spd*.514*dt*.8;
+  
+  for(let k=0;k<4;k++){
+    let t=0;const ph=S.ph;
+    if(ph===1)t=S.t>1+2.2*k?20:0;else if(ph===2)t=26;else if(ph===3)t=24;
+    else if(ph===4)t=S.t>1.2?92:26;else if(ph===5)t=S.alt>1500?84:88;else if(ph===6)t=76;
+    if(S.engOvr!==null)t=S.engOvr?26:0;
+    S.n1[k]+=clamp(t-S.n1[k],-8*dt,(S.n1[k]<20?6:14)*dt);
+    S.fan[k]+=S.n1[k]*dt*.35;
+  }
+  
+  const tA=P.alt;
+  if(S.ph>=4&&S.alt<tA&&S.spd>=150&&S.pitch>5){S.alt+=Math.min(60,(tA-S.alt)*.5+3)*dt*6}
+  else if(S.alt>tA+1){S.alt-=Math.min(80,(S.alt-tA)*.4+10)*dt*6}
+  S.alt=Math.max(0,S.alt);
+  let pT=0;
+  if(S.ph>=4&&(S.spd>=142||S.alt>0))pT=S.alt<tA-150?[0,0,0,0,11,9,8][S.ph]:2.5;
+  if(S.ph<=3&&S.alt>20)pT=3;
+  S.pitch+=clamp(pT-S.pitch,-4*dt,4*dt);
+  S.lift=Math.pow(S.alt/10000,.55)*24;
+  S.flex+=clamp((S.alt>0?1:0)-S.flex,-1.5*dt,1.5*dt);
+  
+  let gT=(S.ph>=5||(S.ph===4&&S.alt>60))?0:1;if(S.gearOvr!==null)gT=S.gearOvr;if(S.ph<=3&&air)gT=1;
+  S.gear+=clamp(gT-S.gear,-.35*dt,.35*dt);
+  S.flapDeg+=clamp(CONF_DEG[conf()]-S.flapDeg,-6*dt,6*dt);
+  
+  if(!S.doorMan)S.door+=clamp(S.doorT-S.door,-.45*dt,.45*dt);
+  S.cut+=clamp(S.cutT-S.cut,-1.6*dt,1.6*dt);
+  S.spoil+=clamp(S.spoilT-S.spoil,-90*dt,90*dt);
+  
+  let spK=0;
+  if(S.ctrlT>=0){const t=S.ctrlT+=dt,w=TAU3=>Math.sin(TAU3*Math.PI*2/3);
+    if(t<3){S.elev=-15*w(t)}else if(t<6){S.ail=18*w(t-3);spK=30*Math.abs(w(t-3));S.elev=0}
+    else if(t<9){S.rud=22*w(t-6);S.ail=0}else{S.ctrlT=-1}}
+  else{S.ail*=1-Math.min(1,dt*5);S.rud*=1-Math.min(1,dt*5);
+    const eT=(pT>S.pitch+1)?-10:0;S.elev+=clamp(eT-S.elev,-30*dt,30*dt)}
+  S.spoilK=spK;
+  
+  const tugT=S.ph===0?16:(S.ph===1?0:45);S.tug+=clamp(tugT-S.tug,-5*dt,5*dt);
+  S.br+=clamp((S.ph===0?1:0)-S.br,-.35*dt,.35*dt);
+  S.rwy+=clamp((S.ph>=3?1:0)-S.rwy,-.5*dt,.5*dt);
+  if(S.msgT>0)S.msgT-=dt;
+}
+function statusText(){
+  const P=PH[S.ph],n=S.n1,avg=(n[0]+n[1]+n[2]+n[3])/4;
+  let eng;
+  if(avg<.5)eng='engines off';
+  else if(n.some(v=>v<15)&&S.ph<=1)eng='engines starting · N1 '+n.map(v=>Math.round(v)).join('-')+'%';
+  else eng='engines running · N1 '+Math.round(avg)+'%';
+  const c=conf();let mv;
+  if(S.ph===1&&S.spd<-.5&&S.tug<1)mv='tug pushing '+Math.abs(Math.round(S.spd))+' kt';
+  else mv=Math.round(Math.abs(S.spd))+' kt';
+  const g=S.gear>.97?'gear down':S.gear<.03?'gear up':'gear moving';
+  const alt=S.alt>5?' · '+Math.round(S.alt/10)*10+' ft':'';
+  return `${P.label} · CONF ${CONF_NAME[c]} · ${eng} · ${mv} · ${g}${alt}`;
+}
+Object.assign(A,{S,PH,CONF_NAME,CONF_DEG,AUTO,lightOn,toggleLight,flash,setPhase,conf,step,statusText});
+})();
+'use strict';
+(()=>{
+const A=window.A380,S=A.S,{clamp,lerp,D2R,GZ,hwAt,wxle,wxte,wz,wt,prof}=A;
+const $=id=>document.getElementById(id);
+const gGround=$('gGround'),gBody=$('gBody'),gFx=$('gFx'),gLab=$('gLab'),svg=$('stage');
+let CX=500,CY=300,K=8,FS=1;const PF=320,R=58,LV=[-.35,.8,-.5];
+const isDay=()=>S.mode==='day';
+const lum=(b,sh)=>isDay()?(b<12?b*(.6+.8*sh):Math.min(93,38+b*(.7+1.4*sh))):Math.min(82,b*(.55+1.3*sh)+3);
+A.setSize=(w,h)=>{CX=w/2;CY=h*.56;FS=Math.min(w/1000,h/540);K=8.2*FS*(h>w*1.1?1.2:1)};
+let cY,sY,cE,sE,oz,cP,sP;
+const f1=n=>n.toFixed(1);
+function setView(){cY=Math.cos(S.yaw);sY=Math.sin(S.yaw);cE=Math.cos(S.el);sE=Math.sin(S.el);oz=-3+S.lift*.45;
+  const t=S.pitch*D2R;cP=Math.cos(t);sP=Math.sin(t)}
+const acT=p=>{const px=-8,pz=GZ,dx=p[0]-px,dz=p[2]-pz;return[px+dx*cP-dz*sP,p[1],pz+dx*sP+dz*cP+S.lift]};
+const vt=p=>{const z=p[2]-oz,x1=p[0]*cY-p[1]*sY,y1=p[0]*sY+p[1]*cY;return[x1,z*cE+y1*sE,y1*cE-z*sE]};
+const sc=v=>{const s=PF/(PF+v[2]),k=K*S.zoom*s;return[CX+S.px+v[0]*k,CY+S.py-v[1]*k]};
+const W=p=>sc(vt(p));            // ground-fixed point to screen
+const WA=p=>sc(vt(acT(p)));      // aircraft-fixed point to screen
+const D=[];                      // draw list for the aircraft layer
+const pathOf=pts=>'M'+pts.map(q=>f1(q[0])+' '+f1(q[1])).join('L');
+function face(f,ac=true){
+  const V=f.p.map(p=>vt(ac?acT(p):p));
+  const a=V[0],b=V[1],c=V[f.p.length>3&&!f.line?3:2]||V[2];
+  let n=[(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]),(b[2]-a[2])*(c[0]-a[0])-(b[0]-a[0])*(c[2]-a[2]),(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])];
+  const cm=[0,1,2].map(i=>V.reduce((s,v)=>s+v[i],0)/V.length);
+  if(f.r){const Rv=vt(ac?acT(f.r):f.r);if(n[0]*(cm[0]-Rv[0])+n[1]*(cm[1]-Rv[1])+n[2]*(cm[2]-Rv[2])<0)n=n.map(v=>-v);
+    if(f.cull&&n[2]>=0)return false}
+  else if(n[2]>0)n=n.map(v=>-v);
+  const m=Math.hypot(n[0],n[1],n[2])||1,sh=Math.max(0,(n[0]*LV[0]+n[1]*LV[1]+n[2]*LV[2])/m);
+  return{V,d:cm[2]+(f.bias||0),sh};
+}
+function push(f,ac=true,fill){
+  const r=face(f,ac);if(!r)return;
+  const P=r.V.map(sc),hot=f.part&&(f.part===S.hover||f.part===S.sel);
+  let fl=fill;
+  if(!fl){let l=lum(f.l,r.sh);if(hot)l+=isDay()?-16:14;fl=`hsl(${f.h} ${(isDay()?f.s*.7:f.s)+(hot?25:0)}% ${f1(l)}%)`}
+  const st=hot?(isDay()?'#0a62b0':'#7fd0ff'):(isDay()?'rgba(30,45,65,.2)':'rgba(170,190,220,.11)');
+  D.push({d:r.d,s:`<path d="${pathOf(P)}Z" fill="${fl}" stroke="${st}" stroke-width="${hot?1.1:.5}"${f.part?` data-p="${f.part}"`:''}/>`});
+}
+function line(pts,ac,col,w,bias,part){
+  const V=pts.map(p=>vt(ac?acT(p):p)),P=V.map(sc);
+  D.push({d:V.reduce((s,v)=>s+v[2],0)/V.length+(bias||0),s:`<path d="${pathOf(P)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"${part?` data-p="${part}"`:''}/>`});
+}
+function box(cx,cy,cz,sx,sy,sz,h,s,l,part,bias){
+  const x0=cx-sx/2,x1=cx+sx/2,y0=cy-sy/2,y1=cy+sy/2,z0=cz-sz/2,z1=cz+sz/2,r=[cx,cy,cz],q=(p,pp)=>({p:pp,r,h,s,l,part,cull:true,bias});
+  [[[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],[[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]],[[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],
+   [[x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1]],[[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]]].forEach(pp=>push(q(0,pp),false));
+}
+
+const wcol=(t,top)=>{const hot=t==='Flap'||t==='Aileron'||t==='Spoiler';return[213,hot?14:8,(hot?31:25)*(top?1:.62)]};
+const finCol=()=>A.lightOn('logo')?[205,26,29]:[215,10,22];
+function wing(side){
+  const out=[];
+  A.mesh(A.WSTA,A.WU,A.WTF,(st,x,h)=>[x,side*st.s,st.z+h],(st,u,ch,top)=>{
+    const y=st.s;let dx=0,dz=S.flex*Math.pow(y-3.4,2)*.0016;
+    if(u>.7){let d=0;if(y<=27)d=y>3.4?S.flapDeg:0;else if(y>=31.5)d=S.ail*side;const c=(u-.7)*ch;dx+=c*(1-Math.cos(d*D2R));dz-=c*Math.sin(d*D2R)}
+    const sp=Math.max(S.spoil,S.spoilK||0);
+    if(top&&y>8&&y<33&&u>=.4&&sp>0.5)dz+=(Math.min(u,.7)-.4)*ch*Math.sin(sp*D2R);
+    return[dx,dz]},
+   (a,b,u0,u1,top)=>{const m=(a.s+b.s)/2;if(u0>=.7)return m<28?'Flap':(m>31?'Aileron':'Wing');if(top&&u0>=.4&&m>8&&m<32)return'Spoiler';return'Wing'},
+   out,wcol,[0,0,1]);
+  out.forEach(f=>push(f));
+  const zt=wz(39.9)+S.flex*2.1;
+  push({p:[[-14.9,side*39.9,zt+.1],[-18.3,side*39.9,zt+.1],[-18,side*40.2,zt+2.7],[-16.4,side*40.2,zt+2.9]],r:null,h:213,s:8,l:30,part:'Wingtip fence'});
+}
+function tails(){
+  let out=[];
+  for(const side of[-1,1])A.mesh(A.SSTA,A.SU,A.STF,(st,x,h)=>[x,side*st.s,st.z+h],(st,u,ch)=>{
+    let dx=0,dz=0;if(u>.65){const c=(u-.65)*ch;dx=c*(1-Math.cos(S.elev*D2R));dz=-c*Math.sin(S.elev*D2R)}return[dx,dz]},
+    (a,b,u0)=>u0>=.65?'Elevator':'Stabiliser',out,(t,top)=>[213,t==='Elevator'?14:8,(t==='Elevator'?30:24)*(top?1:.65)],[0,0,1]);
+  A.mesh(A.FSTA,A.FU,A.FTF,(st,x,h)=>[x,h,st.s],(st,u,ch)=>{
+    let dx=0,dh=0;if(u>.7){const c=(u-.7)*ch;dx=c*(1-Math.cos(S.rud*D2R));dh=-c*Math.sin(S.rud*D2R)}return[dx,dh]},
+    (a,b,u0)=>u0>=.7?((a.s+b.s)/2>9.5?'Rudder (upper)':'Rudder (lower)'):'Fin',out,(t,top)=>{const c=finCol();return[c[0],c[1],c[2]*(t.startsWith('Rudder')?1.25:1)*(top?1:.9)]},[0,1,0]);
+  out.forEach(f=>push(f));
+}
+
+function doors(){
+  const list=[];
+  A.MAIN_DOORS.forEach((x,i)=>[-1,1].forEach(s=>list.push({x,s,z0:-1.4,z1:1.7,w:1.1,id:(s<0?'L':'R')+(i+1),up:0,i})));
+  A.UP_DOORS.forEach((x,i)=>[-1,1].forEach(s=>list.push({x,s,z0:2.4,z1:3.6,w:.9,id:'U'+(s<0?'L':'R')+(i+1),up:1,i:i+4})));
+  for(const d of list){
+    const o=clamp(S.door*1.25-d.i*.04,0,1),part='Door '+d.id,xh=d.x+d.w/2,xb=d.x-d.w/2,zm=(d.z0+d.z1)/2;
+    const skin=surfQ(xb,xh,d.z0,d.z1,d.s,.1);
+    if(o<.02){push({p:skin,r:[d.x,0,0],h:215,s:10,l:26,part,cull:true,bias:-1.2},true);continue}
+    push({p:surfQ(xb,xh,d.z0,d.z1,d.s,.1),r:[d.x,0,0],h:32,s:50,l:14+S.cabin*18,part,cull:true,bias:-1.1});
+    const ph=o*72*D2R,yb=d.s*(hwAt(xh,zm)+.12);
+    const mk=(u,z)=>[xh-u*Math.cos(ph),yb+d.s*u*Math.sin(ph),z];
+    push({p:[mk(0,d.z0),mk(d.w,d.z0),mk(d.w,d.z1),mk(0,d.z1)],r:null,h:215,s:10,l:30,part,cull:false,bias:-3});
+  }
+}
+const surfQ=(x0,x1,z0,z1,side,off)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>[x,side*(hwAt(x,z)+off),z]);
+
+function wheel(x,y,zc,r){const p=[];for(let k=0;k<12;k++){const a=k*Math.PI/6;p.push([x+r*Math.cos(a),y,zc+r*Math.sin(a)])}
+  push({p,r:null,h:220,s:8,l:10,part:S._gp,cull:false,bias:-.4});}
+function gear(){
+  const e=S.gear;if(e<.04)return;
+  const leg=(x,y,za,axles,name,ys)=>{S._gp=name;const zb=lerp(za-.5,GZ+.75,e);
+    line([[x,y,za],[x,y,zb]],true,isDay()?'#556073':'#8b97a8',3,-.5,name);
+    line([[x+axles[0],y,zb],[x+axles[axles.length-1],y,zb]],true,isDay()?'#3f4a5c':'#6b7686',2.4,-.5,name);
+    for(const ax of axles)for(const dy of ys)wheel(x+ax,y+dy,zb,.75*lerp(.7,1,e))};
+  leg(26,0,-3.7,[0],'Nose gear',[-.5,.5]);
+  for(const s of[-1,1]){leg(-2.5,s*8.5,-2.7,[-.8,.8],'Main gear',[-.5,.5]);leg(-10,s*2.6,-3.8,[-1.4,0,1.4],'Main gear',[-.5,.5])}
+}
+
+function ground(){
+  if(S.tug<44){const tx=32+S.tug;
+    box(tx,0,GZ+.9,6.4,2.8,1.5,44,88,48,'Pushback tug',0);box(tx+1.3,0,GZ+2.1,2.4,2.5,1,44,88,52,'Pushback tug',0);
+    line([[26.2,0,GZ+.6],[tx-2.6,0,GZ+.7]],false,'#c9a53a',2,0,'Pushback tug')}
+  if(S.br>.02){const ya=-(hwAt(25,0)+.5+(1-S.br)*18);
+    [[25,-.3,2.7],[15,-.3,2.7],[19,3.1,2.2]].forEach(([x,z,h])=>{
+      const yb=-34,yc=(ya+yb)/2;box(x,yc,z,2.6,Math.abs(yb-ya),h,196,22,30,'Jet bridge',-1);
+      box(x,yb-.8,(GZ+z)/2,1,1,z-GZ,200,15,22,'Jet bridge',-1)})}
+}
+
+function gline(a,b,col,w,op){const A1=W(a),B1=W(b);return`<path d="M${f1(A1[0])} ${f1(A1[1])}L${f1(B1[0])} ${f1(B1[1])}" stroke="${col}" stroke-width="${w}" opacity="${op}" fill="none"/>`}
+function circ(r,n=72){const p=[];for(let i=0;i<n;i++){const a=i*Math.PI*2/n;p.push(W([r*Math.cos(a),r*Math.sin(a),GZ]))}return pathOf(p)+'Z'}
+function groundLayer(){
+  const day=isDay(),pf=day?'#d6dfeb':'#0b1018',ps=day?'#8e9db2':'#2a3546',r1=day?'#bcc8d8':'#1b2432',r2=day?'#c9d3e1':'#151c28',tk=day?'#7d8ba0':'#3b485c';
+  let s=`<path d="${circ(R)}" fill="${pf}" stroke="${ps}" stroke-width="1.2"/><path d="${circ(R-4)}" fill="none" stroke="${r1}" stroke-width="1"/><path d="${circ(R-10)}" fill="none" stroke="${r2}" stroke-width="1"/>`;
+  for(let i=0;i<72;i++){const a=i*Math.PI/36,r1=R+.5,r2=R+(i%6===0?4:2),c=Math.cos(a),n=Math.sin(a);s+=gline([r1*c,r1*n,GZ],[r2*c,r2*n,GZ],tk,1,.8)}
+  const lim=x=>Math.abs(x)<R-2;
+  const dist=S.dist,col=S.ph>=3?(day?'#5d6a7d':'#e8eef7'):(day?'#b8920f':'#d9b44a'),w=1.6,per=14;
+  for(let i=-6;i<=6;i++){const x=i*per-((dist%per)+per)%per;if(!lim(x)||!lim(x+6))continue;s+=gline([x,0,GZ],[x+6,0,GZ],col,w,.7)}
+  if(S.ph<=1){const sx=44-dist;if(sx>-R&&sx<R-2){s+=gline([sx,-9,GZ],[sx,9,GZ],'#ff4a3a',2,.85);
+    for(const y of[-9,9])s+=gline([sx,y,GZ],[sx-26,y*.35,GZ],'#ff4a3a',1.2,.45)}}
+  if(S.rwy>.02)for(const y of[-30,30]){const xm=Math.sqrt(R*R-900)-2;s+=gline([-xm,y,GZ],[xm,y,GZ],day?'#5d6a7d':'#e8eef7',1.6,.55*S.rwy)}
+  
+  const fade=clamp(1-S.lift/14,0,1);
+  const pool=(pts,op,c=day?'#ffc650':'#fff4d6')=>`<path d="${pathOf(pts.map(p=>W([p[0],p[1],GZ])))}Z" fill="${c}" opacity="${f1(op*fade)}"/>`;
+  if(A.lightOn('land'))for(const sd of[-1,1])s+=pool([[8,sd*5.5],[56,sd*13],[56,sd*2],[8,sd*3.5]],.16);
+  const nm=A.lightOn('nose');if(nm)s+=pool(nm===2?[[27,-1.6],[56,-7],[56,7],[27,1.6]]:[[27,-1],[48,-4],[48,4],[27,1]],nm===2?.15:.1);
+  if(A.lightOn('turnoff'))for(const sd of[-1,1])s+=pool([[6,sd*4],[18,sd*20],[22,sd*12],[8,sd*3.8]],.12);
+  
+  const sh=S.lift*.3,so=p=>W([p[0]-sh,p[1]+sh*.2,GZ]);
+  const fus=[],fb=[];for(let x=-36;x<=36;x+=3){const w=3.57*prof(x).f;fus.push([x,w]);fb.push([x,-w])}
+  const pp=ps=>pathOf(ps.map(so))+'Z';
+  const wg=sd=>pp([[wxle(3.4),sd*3.4],[wxle(39.9),sd*39.9],[wxte(39.9),sd*39.9],[wxte(14),sd*14],[wxte(3.4),sd*3.4]]);
+  const st=sd=>pp([[-26,sd*1.5],[-36,sd*15.2],[-38,sd*15.2],[-34,sd*1.5]]);
+  s+=`<g opacity="${f1(clamp(.55-S.lift*.012,.15,.55)*(day?.55:1))}" fill="#000"><path d="${pp(fus.concat(fb.reverse()))}"/><path d="${wg(1)}"/><path d="${wg(-1)}"/><path d="${st(1)}"/><path d="${st(-1)}"/></g>`;
+  gGround.innerHTML=s;
+}
+
+function glow(p,r,g,op){const q=WA(p);return`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="${f1(r*S.zoom*FS)}" fill="url(#${g})" opacity="${f1(op)}"/>`}
+function fx(){
+  const t=S.clock,on=A.lightOn;let s='';
+  const tipZ=wz(39.9)+S.flex*2.1+.3;
+  if(on('nav')){s+=glow([-16,-40,tipZ],11,'gR',.95)+glow([-16,40,tipZ],11,'gG',.95)+glow([-36.5,0,3.3],8,'gW',.7)}
+  if(on('strobe')){const m=t%1.3,fl=(m<.07||(m>.2&&m<.27))?1:0;if(fl)s+=glow([-16,-40,tipZ],38,'gW',1)+glow([-16,40,tipZ],38,'gW',1)+glow([-36.5,0,3.3],30,'gW',1)}
+  if(on('beacon')&&(t%1.2)<.14)s+=glow([-4,0,4.4],26,'gR',1)+glow([-4,0,-4.3],26,'gR',1);
+  if(on('logo'))s+=glow([-37.5,-15.2,2.4],12,'gW',.55)+glow([-37.5,15.2,2.4],12,'gW',.55);
+  if(on('scan'))for(const sd of[-1,1]){s+=glow([5.5,sd*3.6,-1],16,'gW',.8);
+    const a=WA([5.5,sd*3.6,-1]),b=WA([1,sd*14,-1.4]),c=WA([-6,sd*12,-1.4]);
+    s+=`<path d="M${f1(a[0])} ${f1(a[1])}L${f1(b[0])} ${f1(b[1])}L${f1(c[0])} ${f1(c[1])}Z" fill="#dfeeff" opacity=".12"/>`}
+  if(on('land'))for(const sd of[-1,1])s+=glow([4,sd*7,-2.4],26,'gW',1);
+  if(on('turnoff'))for(const sd of[-1,1])s+=glow([6,sd*3.9,-2.2],14,'gW',.9);
+  const nm=on('nose');if(nm)s+=glow([26.5,0,-3.4],nm===2?22:15,'gW',1);
+  const cab=S.cabin;if(cab>.05)for(const dk of[1.0,3.2])for(const sd of[-1,1])for(let x=-20;x<=20;x+=8)if(dk<2||x>-16&&x<20)s+=glow([x,sd*hwAt(x,dk),dk],9+cab*5,'gA',cab*.28);
+  
+  for(let k=0;k<4;k++){const n=S.n1[k];if(n>40){const c=A.NACC[k];s+=glow([c.x-13,c.y,c.z],(n-30)*.35,'gH',(n-40)/70)}}
+  gFx.innerHTML=s;
+}
+function fans(){
+  const nF=[1,0,0];
+  A.NACC.forEach((c,k)=>{
+    const cc=vt(acT([c.x,c.y,c.z])),c2=vt(acT([c.x+1,c.y,c.z]));
+    if(c2[2]-cc[2]>=0)return;                    // inlet faces away from camera
+    const n=S.n1[k],pts=[],sp=[];
+    for(let i=0;i<16;i++){const a=i*Math.PI/8;pts.push(sc(vt(acT([c.x,c.y+1.55*Math.sin(a),c.z+1.55*Math.cos(a)]))))}
+    const spin=n>25?.35:1;
+    let d=`M${pts.map(q=>f1(q[0])+' '+f1(q[1])).join('L')}Z`;
+    const hub=sc(cc);let bl='';
+    for(let i=0;i<14;i++){const a=S.fan[k]+i*Math.PI*2/14,q=r=>sc(vt(acT([c.x,c.y+r*Math.sin(a),c.z+r*Math.cos(a)])));
+      const p1=q(.3),p2=q(1.5);bl+=`M${f1(p1[0])} ${f1(p1[1])}L${f1(p2[0])} ${f1(p2[1])}`}
+    D.push({d:cc[2]-3,s:`<path d="${d}" fill="${isDay()?(n>25?'#566376':'#3c4756'):(n>25?'#202734':'#10151d')}" stroke="${isDay()?'rgba(20,30,45,.35)':'rgba(170,190,220,.25)'}" stroke-width=".6" data-p="${c.name}"/><path d="${bl}" stroke="${isDay()?'#dfe5ee':'#8d99ac'}" stroke-width="1" opacity="${spin}" fill="none"/><circle cx="${f1(hub[0])}" cy="${f1(hub[1])}" r="${f1(4*S.zoom*FS)}" fill="${isDay()?'#5b687b':'#3a4658'}"/>`});
+  });
+}
+
+const CALL=[['Flight deck',[31,0,2.2],[-60,-70]],['Upper deck',[-2,0,4],[0,-95]],['Main deck',[-12,-3,0],[-90,50]],['Flaps',[-12,-16,-.8],[-90,-60]],['Engine 3',[2,12.7,-4.5],[70,50]],['Fin & rudder',[-35,0,13],[50,-30]],['Main gear',[-10,2.6,-6],[-60,60]],['Nose gear',[26,0,-5.5],[60,70]]];
+function labels(){
+  if(!S.inspect){gLab.innerHTML='';return}
+  const lc=isDay()?'#0a62b0':'#7fd0ff';let s='';for(const[n,p,o]of CALL){const q=WA(p),x=q[0]+o[0],y=q[1]+o[1];
+    s+=`<path d="M${f1(q[0])} ${f1(q[1])}L${f1(x)} ${f1(y)}" stroke="${lc}" stroke-width=".8" opacity=".8" fill="none"/><circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="3" fill="none" stroke="${lc}"/><text x="${f1(x+(o[0]<0?-4:4))}" y="${f1(y)}" fill="${lc}" font-family="IBM Plex Mono,monospace" font-size="10.5" text-anchor="${o[0]<0?'end':'start'}">${n}</text>`}
+  gLab.innerHTML=s;
+}
+
+function cabinFill(f){const c=S.cabin,d=isDay();if(f.kind==='cock')return d?'hsl(205 35% 20%)':`hsl(200 40% ${10+c*12}%)`;
+  if(f.kind==='cargo')return null;return d?`hsl(${lerp(215,38,c)} ${lerp(30,80,c)}% ${f1(24+c*34)}%)`:`hsl(${lerp(215,36,c)} ${lerp(18,75,c)}% ${f1(8+c*52)}%)`}
+function frame(){
+  setView();D.length=0;gFx.style.mixBlendMode=isDay()?'normal':'screen';
+  groundLayer();
+  const cutR=S.cut>.02?27*S.cut:0,inCut=x=>cutR>0&&Math.abs(x+1)<cutR;
+  for(const f of A.SKIN){
+    if(inCut(f.cx)){const r=face(f,true);if(!r){const bf={...f,cull:false,l:f.l*.55};
+        const V=f.p.map(p=>vt(acT(p)));const P=V.map(sc);D.push({d:V.reduce((s,v)=>s+v[2],0)/V.length+4,s:`<path d="${pathOf(P)}Z" fill="hsl(218 12% ${isDay()?58+f.l*.3:f.l*.7}%)" stroke="${isDay()?'rgba(30,45,65,.12)':'rgba(170,190,220,.08)'}" stroke-width=".5"/>`});continue}
+      if(f.cz>-2.8)continue}
+    push(f)}
+  for(const f of A.WINS){if(inCut(f.cx)&&f.part==='Fuselage')continue;push(f,true,cabinFill(f)||undefined)}
+  for(const f of A.ENG)push(f);
+  if(cutR>0)for(const f of A.INT){if(!inCut(f.cx))continue;
+    if(f.line){const V=f.p.map(p=>vt(acT(p))),P=V.map(sc);D.push({d:V.reduce((s,v)=>s+v[2],0)/V.length+3,s:`<path d="${pathOf(P)}Z" fill="none" stroke="${isDay()?'#0a62b0':'#7fd0ff'}" stroke-width=".6" opacity=".28"/>`});continue}
+    if(f.floor){push(f,true);continue}
+    if(f.seat&&S.cabin>.05){push(f,true)}else if(f.seat)push(f,true)}
+  wing(-1);wing(1);tails();doors();gear();fans();ground();
+  D.sort((a,b)=>b.d-a.d);
+  gBody.innerHTML=D.map(x=>x.s).join('');
+  fx();labels();
+}
+Object.assign(A,{frame});
+})();
+'use strict';
+(()=>{
+const A=window.A380,S=A.S,{clamp}=A,$=id=>document.getElementById(id);
+const LIGHTS=[['strobe','Strobe'],['beacon','Beacon'],['scan','Wing & eng scan'],['nav','Nav'],['logo','Logo'],['turnoff','Rwy turn-off'],['land','Land'],['nose','Nose'],['cabin','Cabin']];
+const SYS=[['doors','Doors','D'],['cut','Cutaway','C'],['flaps','Flaps','F'],['ctrl','Control check','K'],['gear','Gear','G'],['eng','Engines','E'],['brake','Speed brake','B'],['inspect','Inspect','I']];
+const svg=$('stage'),plate=$('plate'),dock=$('dock'),body=document.body;
+S.px=0;S.py=0;S.mode='day';
+$('rPh').innerHTML=A.PH.map((p,i)=>`<button class="chip" data-ph="${i}"><kbd>${p.k}</kbd>${p.n}</button>`).join('');
+$('rSys').innerHTML=SYS.map(s=>`<button class="chip" data-sys="${s[0]}"><kbd>${s[2]}</kbd>${s[1]}<small></small></button>`).join('');
+$('rLt').innerHTML=LIGHTS.map(l=>`<button class="chip" data-lt="${l[0]}">${l[1]}<small></small></button>`).join('');
+
+const say=t=>{$('effTxt').textContent=t};
+const PH_FX=[
+ 'Gate: engines off, doors open, jet bridges attached, tug waiting nearby.',
+ 'Push & start: tug pushes the aircraft back at 3 kt, engines 1 to 4 start one after another, beacon turns on.',
+ 'Taxi: tug released, aircraft rolls at 16 kt, flaps CONF 1, nose light on taxi, control check runs.',
+ 'Line-up: aircraft stops on the runway. Strobe, landing and turn-off lights come on, nose light to take-off, flaps CONF 2.',
+ 'Take-off: engines to full thrust, speed builds to 175 kt, nose rotates near 145 kt, gear retracts after lift-off.',
+ 'Climb: 250 kt, nose about 9 degrees up, flaps retract above 1,500 ft, climbing to 6,500 ft.',
+ '10,000 ft: 290 kt in level flight, landing lights off, engines at reduced climb thrust.'];
+const LT_FX={strobe:['Strobe','white double flashes at both wingtips and the tail'],beacon:['Beacon','red flashes on top of and under the fuselage'],
+ scan:['Wing & engine scan','white lights from the fuselage light up the wing leading edge and engines'],nav:['Nav','red on the left wingtip, green on the right, white at the tail'],
+ logo:['Logo','lights on the stabilisers illuminate the tail fin'],turnoff:['Runway turn-off','lamps in the wing roots light the ground to each side'],
+ land:['Landing','two bright beams from the wing roots light the ground ahead'],nose:['Nose','light on the nose gear lights the ground ahead']};
+
+function showTab(k){document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.tab===k));
+  document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+k)}
+document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;
+  const open=t.getAttribute('aria-selected')==='true'&&!$('p-'+t.dataset.tab).hidden;
+  if(open){document.querySelectorAll('.panel').forEach(p=>p.hidden=true);t.setAttribute('aria-selected','false')}else showTab(t.dataset.tab)});
+
+let brTouched=false;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sBr=$('sBr');
+function applyBr(){svg.style.filter=`brightness(${sBr.value/100})`;$('oBr').textContent=sBr.value+'%'}
+function setMode(m,fromUser){
+  S.mode=m;body.dataset.mode=m;
+  $('mDay').setAttribute('aria-pressed',m==='day');$('mNight').setAttribute('aria-pressed',m==='night');
+  if(!brTouched){sBr.value=m==='night'?150:100}
+  applyBr();if(fromUser){store.set('a380.mode',m);say(m==='day'?'Day mode: bright background, white aircraft.':'Night mode: dark background. Raise Brightness in Display if the room is bright.')}
+}
+$('mDay').onclick=()=>setMode('day',true);$('mNight').onclick=()=>setMode('night',true);
+sBr.oninput=()=>{brTouched=true;applyBr();store.set('a380.br',sBr.value);say('Brightness '+sBr.value+'%: the whole aircraft view is '+(sBr.value>100?'brighter':sBr.value<100?'dimmer':'at normal level')+'.')};
+if(store.get('a380.br')){brTouched=true;sBr.value=store.get('a380.br')}
+setMode(store.get('a380.mode')==='night'?'night':'day',false);
+
+function sys(k){
+  if(k==='doors'){S.doorMan=false;S.doorT=S.door>.5?0:1;say(S.doorT?'Doors opening: all 16 doors swing outward. Jet bridges stay attached only at the gate.':'Doors closing: all 16 doors swing back flush with the fuselage.')}
+  else if(k==='cut'){S.cutT=S.cutT>0?0:1;say(S.cutT?'Cutaway on: the skin facing you is removed to show the main deck, upper deck, seats (first gold, business blue, economy grey) and frames.':'Cutaway off: fuselage skin is closed again.')}
+  else if(k==='flaps'){S.flapOvr=(A.conf()+1)%5;say('Flaps CONF '+A.CONF_NAME[S.flapOvr]+': trailing-edge flaps lowered to '+A.CONF_DEG[S.flapOvr]+' degrees. Look at the rear edge of the wings.')}
+  else if(k==='ctrl'){S.ctrlT=S.ctrlT<0?0:-1;say(S.ctrlT>=0?'Control check: elevators move first, then ailerons with spoilers, then the rudder.':'Control check stopped: surfaces return to neutral.')}
+  else if(k==='gear'){if(S.alt<5&&S.gear>.9)say('Gear locked down: it cannot retract while the aircraft is on the ground.');else{S.gearOvr=S.gear>.5?0:1;say(S.gearOvr?'Gear extending: legs and wheels come down.':'Gear retracting: legs and wheels fold up into the fuselage and wings.')}}
+  else if(k==='eng'){S.engOvr=!(S.n1[0]>5||S.n1[3]>5);say(S.engOvr?'Engines started and spooling to idle (N1 about 26%). Fan blades begin to spin.':'Engines shutting down: fan blades slow to a stop.')}
+  else if(k==='brake'){S.spoilT=S.spoilT>0?0:35;say(S.spoilT?'Speed brake: spoilers on top of the wings rise to 35 degrees.':'Speed brake retracted: spoilers lie flat again.')}
+  else if(k==='inspect'){S.inspect=!S.inspect;say(S.inspect?'Inspect on: labels point to the flight deck, decks, flaps, engine 3, fin and rudder, and both gears.':'Inspect off: labels hidden.')}
+}
+dock.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.ph!==undefined){A.setPhase(+b.dataset.ph);say(PH_FX[+b.dataset.ph])}
+  else if(b.dataset.sys)sys(b.dataset.sys);
+  else if(b.dataset.lt){const n=b.dataset.lt;
+    if(n==='cabin'){S.cabin=S.cabin>.05?0:.85;say(S.cabin?'Cabin lights on: all windows glow warm.':'Cabin lights off: windows go dark.')}
+    else{A.toggleLight(n);const v=A.lightOn(n),ov=S.lightOvr[n]!==undefined,L=LT_FX[n];
+      const st=n==='nose'?['off','set to taxi','set to take-off'][v]:(v?'on':'off');
+      say(L[0]+' light '+st+(ov?' (manual)':' (automatic for this phase)')+(v?': '+L[1]+'.':'.'))}}
+  else if(b.id==='resetView'){resetView();say('View reset to the default angle and zoom.')}});
+function resetView(){S.yaw=-.6;S.el=.55;S.zoom=1;S.px=0;S.py=0}
+addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();
+  if(k>='1'&&k<='7')A.setPhase(+k-1);
+  else{const m={d:'doors',c:'cut',f:'flaps',k:'ctrl',g:'gear',e:'eng',b:'brake',i:'inspect'}[k];if(m)sys(m)}});
+const sD=$('sDoor'),sC=$('sCut'),sF=$('sFlap'),sB=$('sCab');
+sD.oninput=()=>{S.doorMan=true;S.door=sD.value/100;say('Doors '+sD.value+'% open.')};
+sC.oninput=()=>{S.cutT=sC.value/100;say(sC.value>2?'Cutaway '+sC.value+'%: more of the cabin is exposed as the slider goes up.':'Cutaway off.')};
+sF.oninput=()=>{S.flapOvr=+sF.value;say('Flaps CONF '+A.CONF_NAME[+sF.value]+': flaps lowered to '+A.CONF_DEG[+sF.value]+' degrees.')};
+sB.oninput=()=>{S.cabin=sB.value/100;say('Cabin light '+sB.value+'%: window glow '+(sB.value>0?'at that level.':'off.'))};
+
+function resize(){const r=plate.getBoundingClientRect(),w=Math.max(200,r.width),h=Math.max(200,r.height);
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);A.setSize(w,h)}
+new ResizeObserver(resize).observe(plate);resize();
+
+const ptr=new Map();let g=null,lastTap=0;
+const mid=()=>{const p=[...ptr.values()];return{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)||1}};
+svg.addEventListener('pointerdown',e=>{
+  ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});svg.setPointerCapture(e.pointerId);
+  if(ptr.size===1)g={mode:'turn',x:e.clientX,y:e.clientY,yaw:S.yaw,el:S.el,moved:0,t:performance.now()};
+  else if(ptr.size===2){const m=mid();g={mode:'pinch',x:m.x,y:m.y,d:m.d,zoom:S.zoom,px:S.px,py:S.py,moved:99}}});
+svg.addEventListener('pointermove',e=>{
+  if(ptr.has(e.pointerId))ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(!g){const t=document.elementFromPoint(e.clientX,e.clientY);S.hover=t&&t.dataset?t.dataset.p||null:null;svg.style.cursor=S.hover?'pointer':'';return}
+  if(g.mode==='turn'&&ptr.size===1){const dx=e.clientX-g.x,dy=e.clientY-g.y;g.moved=Math.max(g.moved,Math.hypot(dx,dy));
+    S.yaw=g.yaw+dx*.008;S.el=clamp(g.el+dy*.005,.08,1.35)}
+  else if(g.mode==='pinch'&&ptr.size>=2){const m=mid();S.zoom=clamp(g.zoom*m.d/g.d,.5,3);S.px=g.px+(m.x-g.x);S.py=g.py+(m.y-g.y)}});
+function end(e){
+  const had=ptr.delete(e.pointerId);if(!had)return;
+  if(g&&g.mode==='turn'&&g.moved<6&&ptr.size===0){
+    const now=performance.now();
+    if(now-lastTap<320){resetView();lastTap=0}else{lastTap=now;
+      const t=document.elementFromPoint(e.clientX,e.clientY);S.sel=t&&t.dataset?t.dataset.p||null:null;if(S.sel)say('Selected part: '+S.sel+'.')}}
+  if(ptr.size===0)g=null;else if(ptr.size===1){const p=[...ptr.values()][0];g={mode:'turn',x:p.x,y:p.y,yaw:S.yaw,el:S.el,moved:99}}}
+svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+svg.addEventListener('pointerleave',()=>{S.hover=null});
+svg.addEventListener('wheel',e=>{e.preventDefault();S.zoom=clamp(S.zoom*(e.deltaY<0?1.08:.93),.5,3)},{passive:false});
+
+function sync(){
+  dock.querySelectorAll('[data-ph]').forEach(b=>b.classList.toggle('on',+b.dataset.ph===S.ph));
+  const set=(el,on,txt)=>{el.classList.toggle('on',!!on);const sm=el.querySelector('small');if(sm)sm.textContent=txt||''};
+  dock.querySelectorAll('[data-sys]').forEach(b=>{const k=b.dataset.sys;
+    const st={doors:[S.door>.5,Math.round(S.door*100)+'%'],cut:[S.cut>.05,''],flaps:[A.conf()>0,'CONF '+A.CONF_NAME[A.conf()]],ctrl:[S.ctrlT>=0,''],gear:[S.gear<.5,S.gear>.97?'down':S.gear<.03?'up':'…'],eng:[S.n1[0]>5||S.n1[3]>5,''],brake:[S.spoil>3,''],inspect:[S.inspect,'']}[k];
+    set(b,st[0],st[1])});
+  dock.querySelectorAll('[data-lt]').forEach(b=>{const n=b.dataset.lt;
+    if(n==='cabin'){set(b,S.cabin>.05,Math.round(S.cabin*100)+'%');return}
+    const v=A.lightOn(n),ov=S.lightOvr[n]!==undefined;
+    set(b,v,(ov?'':'auto · ')+(n==='nose'?['Off','Taxi','T.O'][v]:(v?'on':'off')))});
+  {const act=document.activeElement;
+    if(act!==sD)sD.value=Math.round(S.door*100);if(act!==sC)sC.value=Math.round(S.cut*100);
+    if(act!==sF)sF.value=A.conf();if(act!==sB)sB.value=Math.round(S.cabin*100);
+    $('oDoor').textContent=sD.value+'%';$('oCut').textContent=sC.value>2?sC.value+'%':'off';$('oFlap').textContent=A.CONF_NAME[A.conf()];$('oCab').textContent=sB.value+'%'}
+  $('status').textContent=S.msgT>0?S.msg:A.statusText();
+  $('hint').innerHTML=S.sel?`Part · <b>${S.sel}</b>`:'Drag to turn · pinch to zoom · tap a part';
+}
+let last=performance.now(),acc=0;
+function tick(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  A.step(dt);A.frame();
+  acc+=dt;if(acc>.12){acc=0;sync()}
+  requestAnimationFrame(tick);
+}
+sync();requestAnimationFrame(tick);
+})();
+</script>
+
+</body></html>

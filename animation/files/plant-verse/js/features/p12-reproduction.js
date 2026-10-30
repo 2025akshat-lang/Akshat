@@ -1,0 +1,33 @@
+
+function pvEs(){const L=PV.L,N=[1,2,4,8];let s='';
+  N.forEach((n,i)=>{const cx=30+i*62;s+=`<ellipse cx="${cx}" cy="50" rx="15" ry="30" fill="#f8bbd0" stroke="var(--fg)" stroke-width=".8"/>`;
+    const pos=n===1?[[0,0]]:n===2?[[0,-18],[0,18]]:n===4?[[-5,-20],[5,-20],[-5,20],[5,20]]:[[-5,-24],[5,-24],[-5,-15],[5,-15],[-5,15],[5,15],[-5,24],[5,24]];
+    pos.forEach(p=>{s+=`<circle cx="${cx+p[0]}" cy="${50+p[1]}" r="2.6" fill="#6a1b9a"/>`});
+    s+=`<text x="${cx}" y="92" font-size="6.5" text-anchor="middle" fill="var(--fg)">${n} ${L(n===1?'nucleus':'nuclei','केंद्रक')}</text>`;
+    if(i<3)s+=`<text x="${cx+31}" y="44" font-size="6" text-anchor="middle" fill="var(--muted)">→</text><text x="${cx+31}" y="53" font-size="5" text-anchor="middle" fill="var(--muted)">${L('mitosis','समसूत्रण')}</text>`});
+  return s+`<text x="120" y="104" font-size="6" text-anchor="middle" fill="var(--fg)">${L('8 nuclei become 7 cells: egg apparatus (3), central cell (1), antipodals (3)','8 केंद्रक → 7 कोशिकाएँ: अंड उपकरण (3), केंद्रीय कोशिका (1), प्रतिव्यासांत (3)')}</text>`}
+PV.theory.add({id:'repro',i:'🌼',n:['Reproduction in detail','जनन विस्तार से'],t:[
+{id:'microspor',n:['Microsporogenesis and pollen','लघुबीजाणुजनन और परागकण'],sc:['anther','pollen'],f:{
+ d:['Inside each pollen sac, pollen mother cells (2n) divide by meiosis to form tetrads of four haploid microspores. The tetrad separates and each microspore grows into a pollen grain.','हर परागकोष में परागमातृ कोशिकाएँ (2n) अर्धसूत्रण से चार अगुणित लघुबीजाणुओं की चतुष्क बनाती हैं। चतुष्क अलग होता है और हर लघुबीजाणु परागकण बन जाता है।'],
+ m:['The tapetum feeds the developing pollen. The microspore nucleus divides unequally (microgametogenesis) into a large vegetative cell and a small generative cell. This is the male gametophyte.','टेपेटम विकसित होते पराग को पोषण देता है। लघुबीजाणु का केंद्रक असमान रूप से विभाजित होता है (लघुयुग्मकजनन): बड़ी कायिक कोशिका और छोटी जनन कोशिका। यही नर युग्मकोद्भिद है।'],
+ x:['Pollen can be stored in liquid nitrogen (–196 °C) in pollen banks for later breeding.','परागकणों को पराग बैंक में तरल नाइट्रोजन (–196 °C) में रखकर बाद में प्रजनन के काम में लिया जा सकता है।'],
+ c:['A pollen grain is a gametophyte, not a gamete. Rice and wheat pollen lose viability within about 30 minutes.','परागकण युग्मकोद्भिद है, युग्मक नहीं। धान और गेहूँ का पराग लगभग 30 मिनट में अपनी जीवनक्षमता खो देता है।']}},
+{id:'megaspor',n:['Megasporogenesis','गुरुबीजाणुजनन'],sc:['ovule'],f:{
+ d:['One megaspore mother cell (2n) in the nucellus near the micropyle divides by meiosis into four haploid megaspores.','बीजांडकाय में बीजांडद्वार के पास एक गुरुबीजाणु मातृ कोशिका (2n) अर्धसूत्रण से चार अगुणित गुरुबीजाणु बनाती है।'],
+ m:['Three megaspores (towards the micropyle) degenerate. One, at the chalazal end, stays functional and goes on to form the female gametophyte.','तीन गुरुबीजाणु (बीजांडद्वार की ओर वाले) नष्ट हो जाते हैं। निभाग की ओर वाला एक कार्यशील रहता है और मादा युग्मकोद्भिद बनाता है।'],
+ c:['Only one of the four megaspores survives, unlike the four useful microspores.','चार गुरुबीजाणुओं में से केवल एक बचता है, जबकि चारों लघुबीजाणु उपयोगी होते हैं।']}},
+{id:'esdev',n:['Embryo sac development','भ्रूणकोष का विकास'],v:pvEs,vb:'0 0 240 110',sc:['embryo-sac','fertilisation'],f:{
+ m:['The functional megaspore nucleus divides by mitosis three times: 1 → 2 → 4 → 8 nuclei. Four go to each pole. One from each pole moves to the centre as the polar nuclei. Cell walls form, giving 7 cells.','कार्यशील गुरुबीजाणु का केंद्रक तीन बार समसूत्रण से विभाजित होता है: 1 → 2 → 4 → 8 केंद्रक। हर ध्रुव पर चार जाते हैं। हर ध्रुव से एक केंद्रक ध्रुवीय केंद्रक बनकर बीच में आता है। भित्तियाँ बनने पर 7 कोशिकाएँ मिलती हैं।'],
+ e:['This is the Polygonum (monosporic) type, the most common. The embryo sac is the female gametophyte.','यह पॉलीगोनम (एकबीजाणुक) प्रकार है, जो सबसे आम है। भ्रूणकोष मादा युग्मकोद्भिद है।'],
+ c:['7 cells but 8 nuclei: the central cell holds two nuclei.','7 कोशिकाएँ पर 8 केंद्रक: केंद्रीय कोशिका में दो केंद्रक होते हैं।']}},
+{id:'pollination',n:['Pollination types and agents','परागण के प्रकार और कारक'],f:{
+ t:['Autogamy: same flower (cleistogamous flowers never open: Viola, Oxalis, Commelina). Geitonogamy: another flower of the same plant. Xenogamy: a different plant, the only type that brings new genes.','स्वपरागण: उसी फूल में (अनुन्मीलिक पुष्प कभी नहीं खुलते: वायोला, ऑक्सेलिस, कमेलिना)। सजातपुष्पी परागण: उसी पौधे के दूसरे फूल में। परनिषेचन: दूसरे पौधे के फूल में, केवल यही नए जीन लाता है।'],
+ m:['Wind: light dry pollen, feathery stigma (maize). Water: Vallisneria, Hydrilla. Insects: bright, scented flowers with nectar and sticky pollen. Birds and bats pollinate large flowers.','वायु: हल्का सूखा पराग, पंखदार वर्तिकाग्र (मक्का)। जल: वैलिसनेरिया, हाइड्रिला। कीट: चटक, सुगंधित फूल, मकरंद और चिपचिपा पराग। पक्षी और चमगादड़ बड़े फूलों में परागण करते हैं।'],
+ c:['Geitonogamy is genetically like self-pollination, even though a pollinator is needed.','सजातपुष्पी परागण आनुवंशिक रूप से स्वपरागण जैसा है, भले ही परागणकर्ता चाहिए।']}},
+{id:'outbreed',n:['Outbreeding devices','परनिषेचन के साधन'],f:{
+ t:['Pollen and stigma ripen at different times (dichogamy). Anther and stigma sit at different places (herkogamy). Self-incompatibility blocks own pollen. Unisexual flowers: monoecious plants (castor, maize) avoid autogamy; dioecious plants (papaya) avoid both autogamy and geitonogamy.','पराग और वर्तिकाग्र अलग समय पर परिपक्व होते हैं (डाइकोगैमी)। परागकोश और वर्तिकाग्र अलग स्थान पर (हर्कोगैमी)। स्व-असंगति अपने परागकणों को रोकती है। एकलिंगी पुष्प: एकलिंगाश्रयी पौधे (अरंडी, मक्का) स्वपरागण से बचते हैं; द्विलिंगाश्रयी (पपीता) स्वपरागण और सजातपुष्पी परागण दोनों से बचते हैं।'],
+ c:['Monoecious plants still allow geitonogamy; only dioecious plants prevent it.','एकलिंगाश्रयी पौधों में सजातपुष्पी परागण हो सकता है; इसे केवल द्विलिंगाश्रयी रोकते हैं।']}},
+{id:'pollpistil',n:['Pollen–pistil interaction','पराग-स्त्रीकेसर अन्योन्यक्रिया'],f:{
+ m:['The stigma recognises pollen by chemical signals. If compatible, the pollen germinates and the tube grows down the style, guided by chemicals, enters through the micropyle and bursts in a synergid. If incompatible, the pollen is stopped (self-incompatibility).','वर्तिकाग्र रासायनिक संकेतों से पराग को पहचानता है। संगत हो तो पराग अंकुरित होता है और नलिका रसायनों के निर्देश पर वर्तिका में नीचे बढ़ती, बीजांडद्वार से घुसती और सहायक कोशिका में फटती है। असंगत हो तो पराग रोक दिया जाता है (स्व-असंगति)।'],
+ x:['Plant breeders emasculate (remove anthers), bag the flower, dust chosen pollen, and bag again to make controlled crosses.','प्रजनक पुंकेसर हटाते हैं (विपुंसन), फूल को थैली से ढकते हैं, चुना हुआ पराग डालते हैं और फिर ढक देते हैं, ताकि नियंत्रित संकरण हो।']}}
+]});

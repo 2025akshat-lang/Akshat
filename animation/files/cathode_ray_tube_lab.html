@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cathode Ray Tube – 3D Virtual Lab</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6fb;--fg:#14213d;--card:#fff;--line:#d5dbe8;--acc:#0a7d5a}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1220;--fg:#e6ebf7;--card:#161d33;--line:#2a3555;--acc:#38d9a0}}
+:root[data-theme="dark"]{--bg:#0d1220;--fg:#e6ebf7;--card:#161d33;--line:#2a3555;--acc:#38d9a0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1{font-size:18px;margin:10px 12px 2px}
+.sub{margin:0 12px 8px;font-size:13px;opacity:.75}
+html,body{height:100%;overflow:hidden}
+#stage{position:fixed;inset:0;background:#070b17;overflow:hidden;touch-action:none}
+#dock{position:fixed;left:10px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:10;display:flex;gap:8px;flex-wrap:wrap;max-width:calc(100% - 160px)}
+#dock button{background:rgba(10,20,40,.7);color:#eaf2ff;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px;backdrop-filter:blur(6px)}
+#dock button.on{background:var(--acc);color:#04120d;border-color:var(--acc)}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;max-height:62vh;overflow:auto;z-index:20;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:16px 16px 0 0;padding-bottom:env(safe-area-inset-bottom,0px);transform:translateY(110%);transition:transform .28s ease;visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.shead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-bottom:1px solid var(--line)}
+.shead b{font-size:15px}
+.shead button{padding:4px 10px}
+#stage canvas{display:block;width:100%;height:100%}
+.lbl{position:absolute;transform:translate(-50%,-50%);color:#fff;font-size:11px;font-weight:600;background:rgba(10,20,40,.65);border:1px solid rgba(255,255,255,.25);padding:1px 6px;border-radius:8px;pointer-events:none;white-space:nowrap}
+.minilbl{position:absolute;right:8px;top:8px;width:min(130px,33vw);text-align:center;font-size:10px;color:#ffd0d0;pointer-events:none;transform:translateY(-100%);opacity:0}
+.hud{position:absolute;left:8px;bottom:8px;font-size:11px;color:#cfe;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:8px}
+#wm{position:absolute;right:10px;bottom:8px;font-size:13px;font-weight:600;letter-spacing:.12em;color:#eafff6;opacity:.85;user-select:none;cursor:pointer;padding:6px 14px;border-radius:14px;background:rgba(8,20,36,.55);border:1px solid rgba(56,217,160,.65);text-shadow:0 0 6px #38d9a0,0 0 14px #38d9a0;box-shadow:0 0 10px rgba(56,217,160,.45);animation:wmglow 2.4s ease-in-out infinite;transition:letter-spacing .3s;will-change:transform}
+@keyframes wmglow{0%,100%{box-shadow:0 0 8px rgba(56,217,160,.35);text-shadow:0 0 5px #38d9a0}50%{box-shadow:0 0 20px rgba(56,217,160,.9);text-shadow:0 0 10px #38d9a0,0 0 22px #38d9a0}}
+#wm:hover,#wm.pulse{opacity:1;letter-spacing:.2em;box-shadow:0 0 26px rgba(56,217,160,1)}
+.info h2{font-size:15px;margin:0 0 6px;color:var(--acc)}
+.panel{padding:10px 12px;display:grid;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.row{display:flex;align-items:center;gap:10px;margin:6px 0}
+.row label{flex:0 0 110px;font-size:13px}
+.row input[type=range]{flex:1;accent-color:var(--acc)}
+.row output{flex:0 0 38px;text-align:right;font-variant-numeric:tabular-nums;font-size:13px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+button.on{background:var(--acc);color:#04120d;border-color:var(--acc);font-weight:600}
+.info p{margin:4px 0;font-size:13.5px}
+.info b{color:var(--acc)}
+</style>
+</head>
+<body>
+<div id="dock"><button id="tC">⚙ Controls</button><button id="tT">📝 Comment for Teacher</button></div>
+<div id="stage"><div class="hud" id="hud"></div><div id="wm">made by Akshat</div></div>
+<div id="sheetC" class="sheet"><div class="shead"><b>Simulation Controls</b><button data-close>✕ Close</button></div>
+<div class="panel">
+<div class="card">
+ <div class="row"><label>High voltage</label><input id="volt" type="range" min="0" max="100" value="60"><output id="vo">60</output></div>
+ <div class="row"><label>Gas pressure</label><input id="pres" type="range" min="0" max="60" value="12"><output id="po">12</output></div>
+ <div class="btns">
+  <button id="bE">⚡ Electric field</button>
+  <button id="bB">🧲 Magnetic field</button>
+  <button id="bS">🐢 Slow-mo</button>
+  <button id="bR">↺ View reset</button>
+ </div>
+</div>
+</div></div>
+<div id="sheetT" class="sheet"><div class="shead"><b>Comment for Teacher</b><button data-close>✕ Close</button></div>
+<div class="panel"><div class="card info" id="info"></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setScissorTest(true);
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x070b17);
+const cam=new THREE.PerspectiveCamera(45,1,.1,200);
+scene.add(new THREE.AmbientLight(0xffffff,.55));
+const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(5,10,8);scene.add(dl);
+// floor grid
+const grid=new THREE.GridHelper(40,40,0x1f3a66,0x14213d);grid.position.y=-6;scene.add(grid);
+
+const TX=-6.4,AX=6.4,R=2; // cathode x, anode x, tube radius
+const mat=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.5,roughness:.4},o));
+// glass tube
+const tube=new THREE.Mesh(new THREE.CylinderGeometry(R,R,15,40,1,true),new THREE.MeshPhysicalMaterial({color:0x8fd3ff,transparent:true,opacity:.14,side:THREE.DoubleSide,roughness:.1,depthWrite:false}));
+tube.rotation.z=Math.PI/2;scene.add(tube);
+[-7.5,7.5].forEach(x=>{const c=new THREE.Mesh(new THREE.SphereGeometry(R,32,16,0,Math.PI*2,0,Math.PI/2),tube.material);c.rotation.z=x<0?Math.PI/2:-Math.PI/2;c.position.x=x;scene.add(c);});
+for(let i=-7;i<=7;i+=2){const r=new THREE.Mesh(new THREE.TorusGeometry(R,.015,6,48),new THREE.MeshBasicMaterial({color:0x8fd3ff,transparent:true,opacity:.35}));r.rotation.y=Math.PI/2;r.position.x=i;scene.add(r);}
+// electrodes
+const cathode=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,.3,32),mat(0x4a6fff));cathode.rotation.z=Math.PI/2;cathode.position.x=TX-.15;scene.add(cathode);
+const anode=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,.3,32),mat(0xd94a4a,{emissive:0xff2200,emissiveIntensity:0}));anode.rotation.z=Math.PI/2;anode.position.x=AX+.15;scene.add(anode);
+// metal atoms lattice on cathode surface
+const latt=[];const am=new THREE.MeshStandardMaterial({color:0x9db4ff,emissive:0x2244ff,emissiveIntensity:.3});
+for(let j=-2;j<=2;j++)for(let k=-2;k<=2;k++){if(j*j+k*k>5)continue;const s=new THREE.Mesh(new THREE.SphereGeometry(.13,12,10),am.clone());s.position.set(TX+.05,j*.32,k*.32);s.userData.p=Math.random()*6;scene.add(s);latt.push(s);}
+// deflection plates (electric)
+const plates=new THREE.Group();
+const pTop=new THREE.Mesh(new THREE.BoxGeometry(4,.08,2.2),mat(0xff5555,{emissive:0x550000}));pTop.position.set(.5,1.3,0);
+const pBot=new THREE.Mesh(new THREE.BoxGeometry(4,.08,2.2),mat(0x5577ff,{emissive:0x001155}));pBot.position.set(.5,-1.3,0);
+plates.add(pTop,pBot);plates.visible=false;scene.add(plates);
+// magnets (field along z)
+const mags=new THREE.Group();
+const mN=new THREE.Mesh(new THREE.BoxGeometry(4,1.6,.9),mat(0xff6644));mN.position.set(.5,0,2.9);
+const mS=new THREE.Mesh(new THREE.BoxGeometry(4,1.6,.9),mat(0x4488ff));mS.position.set(.5,0,-2.9);
+mags.add(mN,mS);
+for(let i=0;i<5;i++){const a=new THREE.ArrowHelper(new THREE.Vector3(0,0,-1),new THREE.Vector3(-1+i,0,2.2),4.4,0xffcc66,.3,.2);mags.add(a);}
+mags.visible=false;scene.add(mags);
+// HV supply, wires, pump
+const hv=new THREE.Mesh(new THREE.BoxGeometry(3,1.5,1.6),mat(0x222a40));hv.position.set(0,5.2,0);scene.add(hv);
+const knob=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.2,16),mat(0xffcc00));knob.rotation.x=Math.PI/2;knob.position.set(0,5.2,.9);scene.add(knob);
+function wire(pts,c){const g=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p)));scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:c})));}
+wire([[-1,4.45,0],[-1,3.4,0],[TX-.3,3.4,0],[TX-.3,0,0]],0x6f8cff);
+wire([[1,4.45,0],[1,3.4,0],[AX+.3,3.4,0],[AX+.3,0,0]],0xff6f6f);
+const pump=new THREE.Mesh(new THREE.CylinderGeometry(.7,.9,1.2,20),mat(0x556070));pump.position.set(0,-4.4,0);scene.add(pump);
+const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,2.4,12),mat(0x778899));pipe.position.set(0,-2.9,0);scene.add(pipe);
+const fan=new THREE.Mesh(new THREE.BoxGeometry(1.1,.06,.2),mat(0xffffff));fan.position.set(0,-3.78,0);scene.add(fan);
+
+// gas atoms (low pressure)
+const gas=[];const gg=new THREE.SphereGeometry(.16,14,12);
+for(let i=0;i<60;i++){const m=new THREE.Mesh(gg,new THREE.MeshStandardMaterial({color:0xaaaaaa,emissive:0x000000}));
+ const a=Math.random()*6.28,r=Math.sqrt(Math.random())*1.7;
+ m.position.set(-5.5+Math.random()*11,Math.cos(a)*r,Math.sin(a)*r);
+ m.userData.v=new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(1.2);m.userData.f=0;scene.add(m);gas.push(m);}
+
+// electrons
+const N=450;const pos=new Float32Array(N*3).fill(1e5),vel=new Float32Array(N*3),alive=new Uint8Array(N);
+const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+const cv=document.createElement('canvas');cv.width=cv.height=64;const cx=cv.getContext('2d');
+const gr=cx.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'#fff');gr.addColorStop(.35,'#7fffd0');gr.addColorStop(1,'rgba(0,255,150,0)');cx.fillStyle=gr;cx.fillRect(0,0,64,64);
+const pts=new THREE.Points(geo,new THREE.PointsMaterial({size:.5,map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+pts.frustumCulled=false;scene.add(pts);
+// beam glow core
+const beam=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,12.8,12),new THREE.MeshBasicMaterial({color:0x33ff99,transparent:true,opacity:.2,blending:THREE.AdditiveBlending,depthWrite:false}));
+beam.rotation.z=Math.PI/2;scene.add(beam);
+
+// ---- micro inset: Thomson plum pudding ----
+const scene2=new THREE.Scene();scene2.background=new THREE.Color(0x1a0f1f);
+const cam2=new THREE.PerspectiveCamera(40,1,.1,50);cam2.position.set(0,0,5);
+scene2.add(new THREE.AmbientLight(0xffffff,.7));const l2=new THREE.PointLight(0xffffff,1);l2.position.set(3,3,4);scene2.add(l2);
+const atomG=new THREE.Group();scene2.add(atomG);
+atomG.add(new THREE.Mesh(new THREE.SphereGeometry(1.5,32,24),new THREE.MeshStandardMaterial({color:0xff4d4d,transparent:true,opacity:.35})));
+const els=[];for(let i=0;i<9;i++){const e=new THREE.Mesh(new THREE.SphereGeometry(.14,12,10),new THREE.MeshStandardMaterial({color:0x4aa8ff,emissive:0x0a3a99}));
+ const th=Math.acos(2*Math.random()-1),ph=Math.random()*6.28,r=.4+Math.random()*.8;
+ e.userData={b:new THREE.Vector3(Math.sin(th)*Math.cos(ph),Math.cos(th),Math.sin(th)*Math.sin(ph)).multiplyScalar(r),p:Math.random()*6};atomG.add(e);els.push(e);}
+
+// ---- labels ----
+const labels=[['Cathode (−)',new THREE.Vector3(TX,-1.3,0)],['Anode (+)',new THREE.Vector3(AX,-1.5,0)],['High voltage power supply',new THREE.Vector3(0,6.3,0)],['Vacuum pump',new THREE.Vector3(0,-5.4,0)],['Cathode rays (e⁻)',new THREE.Vector3(0,.7,0)]].map(([t,p])=>{const d=document.createElement('div');d.className='lbl';d.textContent=t;stage.appendChild(d);return{d,p};});
+const mini=document.createElement('div');mini.className='minilbl';stage.appendChild(mini);
+
+// ---- orbit controls (manual) ----
+let th=.35,ph=1.2,dist=22;const tgt=new THREE.Vector3(0,.5,0);
+function setCam(){cam.position.set(tgt.x+dist*Math.sin(ph)*Math.sin(th),tgt.y+dist*Math.cos(ph),tgt.z+dist*Math.sin(ph)*Math.cos(th));cam.lookAt(tgt);}
+const ptr=new Map();let pd=0;
+stage.addEventListener('pointerdown',e=>{stage.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});pd=0;});
+stage.addEventListener('pointerup',e=>ptr.delete(e.pointerId));stage.addEventListener('pointercancel',e=>ptr.delete(e.pointerId));
+stage.addEventListener('pointermove',e=>{const p=ptr.get(e.pointerId);if(!p)return;
+ if(ptr.size===1){th-=(e.clientX-p.x)*.008;ph=Math.min(2.9,Math.max(.2,ph-(e.clientY-p.y)*.008));}
+ p.x=e.clientX;p.y=e.clientY;
+ if(ptr.size===2){const [a,b]=[...ptr.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)dist=Math.min(40,Math.max(8,dist*pd/d));pd=d;}});
+stage.addEventListener('wheel',e=>{e.preventDefault();dist=Math.min(40,Math.max(8,dist*(1+e.deltaY*.001)));},{passive:false});
+
+const wm=document.getElementById('wm');
+wm.addEventListener('click',()=>{wm.classList.add('pulse');setTimeout(()=>wm.classList.remove('pulse'),900);});
+const sheets={tC:document.getElementById('sheetC'),tT:document.getElementById('sheetT')};
+function openSheet(id){Object.keys(sheets).forEach(k=>{const on=k===id&&!sheets[k].classList.contains('open');sheets[k].classList.toggle('open',on);document.getElementById(k).classList.toggle('on',on);});}
+Object.keys(sheets).forEach(k=>document.getElementById(k).addEventListener('click',()=>openSheet(k)));
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{Object.keys(sheets).forEach(k=>{sheets[k].classList.remove('open');document.getElementById(k).classList.remove('on');});}));
+// ---- UI state ----
+const S={V:.6,P:12,E:false,B:false,slow:false,hits:0,emit:0};
+const $=id=>document.getElementById(id);
+$('volt').oninput=e=>{S.V=e.target.value/100;$('vo').textContent=e.target.value;};
+$('pres').oninput=e=>{S.P=+e.target.value;$('po').textContent=S.P;};
+function tog(id,k,fn){$(id).onclick=()=>{S[k]=!S[k];$(id).classList.toggle('on',S[k]);fn&&fn();updInfo();};}
+tog('bE','E',()=>plates.visible=S.E);tog('bB','B',()=>mags.visible=S.B);tog('bS','slow');
+$('bR').onclick=()=>{th=.35;ph=1.2;dist=22;};
+function updInfo(){
+ let t='<p><b>What is happening:</b> Electrons leave the cathode (−) and travel toward the anode (+). This stream of electrons is what we call <b>cathode rays</b>.</p>';
+ if(S.V===0)t+='<p>The voltage is zero, so no rays are produced. Increase the voltage to start the beam.</p>';
+ if(S.E)t+='<p><b>Electric field ON:</b> the beam bends toward the <b>positive (red) plate</b>, showing that electrons carry a negative charge.</p>';
+ if(S.B)t+='<p><b>Magnetic field ON:</b> the beam curves because of the magnetic force, which is further evidence that the rays are charged particles.</p>';
+ t+='<p><b>Gas atoms</b> (grey) are very few because the tube is at low pressure. When an electron hits one, it lights up, which makes the beam visible. If you raise the pressure, the beam scatters.</p>';
+ t+='<p><b>Inset (top-right corner):</b> Thomson\'s plum pudding model of the atom, with negative electrons embedded in a positive sphere.</p>';
+ $('info').innerHTML=t;
+}
+updInfo();
+
+// ---- simulation ----
+let acc=0;
+function spawn(){for(let i=0;i<N;i++)if(!alive[i]){const a=Math.random()*6.28,r=Math.sqrt(Math.random())*.25;
+ pos[i*3]=TX+.2;pos[i*3+1]=Math.cos(a)*r;pos[i*3+2]=Math.sin(a)*r;vel[i*3]=.5;vel[i*3+1]=vel[i*3+2]=0;alive[i]=1;return;}}
+function kill(i){alive[i]=0;pos[i*3]=pos[i*3+1]=pos[i*3+2]=1e5;}
+function step(dt){
+ const V=S.V;acc+=V*110*dt;while(acc>=1){spawn();acc--;}
+ let n=0;
+ for(let i=0;i<N;i++){if(!alive[i])continue;n++;
+  const k=i*3;let x=pos[k],y=pos[k+1],z=pos[k+2];
+  vel[k]+=V*45*dt;if(vel[k]>24)vel[k]=24;
+  const inF=x>-2&&x<3;
+  if(S.E&&inF)vel[k+1]+=16*dt*Math.max(.35,V);
+  if(S.B&&inF){const a=2.1*dt,c=Math.cos(a),s=Math.sin(a),vx=vel[k],vy=vel[k+1];vel[k]=vx*c-vy*s;vel[k+1]=vx*s+vy*c;}
+  x+=vel[k]*dt;y+=vel[k+1]*dt;z+=vel[k+2]*dt;
+  for(let g=0;g<S.P;g++){const a=gas[g].position;const dx=a.x-x,dy=a.y-y,dz=a.z-z;
+   if(dx*dx+dy*dy+dz*dz<.09){gas[g].userData.f=1;vel[k+1]+=(Math.random()-.5)*5;vel[k+2]+=(Math.random()-.5)*5;vel[k]*=.7;break;}}
+  if(x>=AX-.05&&y*y+z*z<1.21){S.hits++;anodeHeat=Math.min(1,anodeHeat+.05);kill(i);continue;}
+  if(x>AX+.5||y*y+z*z>R*R||(S.E&&inF&&Math.abs(y)>1.25)){kill(i);continue;}
+  pos[k]=x;pos[k+1]=y;pos[k+2]=z;}
+ geo.attributes.position.needsUpdate=true;
+ S.n=n;
+ // gas wander
+ gas.forEach((m,i)=>{m.visible=i<S.P;const p=m.position,v=m.userData.v;p.addScaledVector(v,dt);
+  if(p.x<-5.8||p.x>5.8)v.x*=-1;if(Math.hypot(p.y,p.z)>1.8){v.y*=-1;v.z*=-1;}
+  m.userData.f=Math.max(0,m.userData.f-dt*2.5);const f=m.userData.f;m.material.emissive.setRGB(0,f*.9,f*.5);m.scale.setScalar(1+f*.8);});
+}
+let anodeHeat=0;
+const proj=new THREE.Vector3();
+function tick(t,dt){
+ const d=Math.min(.033,dt)*(S.slow?.25:1);
+ step(d);
+ anodeHeat=Math.max(0,anodeHeat-d*.6);anode.material.emissiveIntensity=anodeHeat;
+ beam.material.opacity=.05+S.V*.25*(S.P>25?.5:1);beam.scale.set(1,1,1);beam.visible=S.V>0.02&&!S.E&&!S.B;
+ beam.scale.y=beam.visible?1:0;
+ latt.forEach(m=>{const p=Math.sin(t*.004*(1+S.V*4)+m.userData.p);m.position.x=TX+.05+p*.04*S.V;m.material.emissiveIntensity=.3+S.V*.9*(.5+.5*p);});
+ fan.rotation.y+=dt*8;knob.rotation.z=-S.V*4;
+ // inset
+ atomG.rotation.y+=dt*.6;els.forEach(e=>{const u=e.userData,p=Math.sin(t*.003+u.p);e.position.copy(u.b).multiplyScalar(1+p*.12);});
+ // labels
+ const w=stage.clientWidth,h=stage.clientHeight;
+ labels.forEach(({d,p})=>{proj.copy(p).project(cam);const vis=proj.z<1;d.style.display=vis?'block':'none';d.style.left=((proj.x+1)/2*w)+'px';d.style.top=((1-proj.y)/2*h)+'px';});
+ $('hud').textContent='Electrons in tube: '+(S.n||0)+'  |  Anode hits: '+S.hits;
+ const s=Math.min(130,w*.33);mini.style.opacity=1;mini.style.top=(8+s+14)+'px';mini.style.transform='none';mini.textContent='Thomson model (zoom)';
+ // watermark parallax (drifts slightly as the view rotates)
+ wm.style.transform='translate('+(Math.sin(th)*6).toFixed(1)+'px,'+((ph-1.2)*6).toFixed(1)+'px)';
+ // render
+ setCam();
+ renderer.setViewport(0,0,w,h);renderer.setScissor(0,0,w,h);renderer.render(scene,cam);
+ renderer.setViewport(w-s-8,h-s-8,s,s);renderer.setScissor(w-s-8,h-s-8,s,s);renderer.clearDepth();renderer.render(scene2,cam2);
+}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();}
+addEventListener('resize',resize);resize();
+let last=performance.now();
+(function loop(now){requestAnimationFrame(loop);tick(now,(now-last)/1000);last=now;})(last);
+})();
+</script>
+</body>
+</html>
