@@ -1,4 +1,3 @@
-/* notes.js: iPad-style text boxes, label / fact-card / emoji stickers, washi tape. Loaded after extras.js. */
 (function(){
 'use strict';
 const q=s=>document.querySelector(s),B=document.body,tools=q('#tools');
@@ -29,7 +28,7 @@ const EYES='<svg viewBox="0 0 220 104">'+eye(55)+eye(165)+'</svg>';
 const EYECLAP='<svg viewBox="0 0 220 170">'+eye(55)+eye(165)+'<text class="hclap" x="22" y="160" font-size="52">\uD83D\uDC4F</text><text class="hclap" x="130" y="160" font-size="52" style="animation-delay:.25s">\uD83D\uDC4F</text></svg>';
 const ITEMS=[
  ['FRONT',pill('FRONT','pink')],['SIDE',pill('SIDE','blue')],['TOP',pill('TOP','green')],['NOTE',pill('NOTE','yellow')],['KEY',pill('KEY','purple')],
- ['Fact card',{txt:'FACT 1\nIsme likho…',skin:'fact',w:300}],['Bubble',{txt:'Socho!',skin:'bubble',w:220}],['T  Text',{txt:'Yahan likho…',w:300}],
+ ['Fact card',{txt:'FACT 1\nWrite here...',skin:'fact',w:300}],['Bubble',{txt:'Think!',skin:'bubble',w:220}],['T  Text',{txt:'Write here...',w:300}],
  ['\u2B50',{txt:'\u2B50',skin:'emoji',w:120}],['\u2705',{txt:'\u2705',skin:'emoji',w:120}],['\u2757',{txt:'\u2757',skin:'emoji',w:120}],['\u2753',{txt:'\u2753',skin:'emoji',w:120}],
  ['\uD83D\uDCA1',{txt:'\uD83D\uDCA1',skin:'emoji',w:120}],['\uD83D\uDCCC',{txt:'\uD83D\uDCCC',skin:'emoji',w:120}],['\uD83D\uDD25',{txt:'\uD83D\uDD25',skin:'emoji',w:120}],['\uD83D\uDC4D',{txt:'\uD83D\uDC4D',skin:'emoji',w:120}],
  ['\uD83E\uDDE0',{txt:'\uD83E\uDDE0',skin:'emoji',w:120}],['\uD83C\uDFAF',{txt:'\uD83C\uDFAF',skin:'emoji',w:120}],
@@ -38,7 +37,7 @@ const ITEMS=[
  ['\uD83D\uDC40 Eyes',{svg:EYES,w:230,ar:.4727,keep:true,k:'stk2'}],['Eyes+Clap',{svg:EYECLAP,w:230,ar:.7727,keep:true,k:'stk2'}],
  ['\uD83D\uDC4F',{txt:'\uD83D\uDC4F',skin:'emoji clap',w:120}],['\uD83D\uDE4F',{txt:'\uD83D\uDE4F',skin:'emoji clap',w:120}]
 ];
-/* the eyes follow your finger / pointer */
+
 let tk=0;
 document.addEventListener('pointermove',e=>{
   if(tk||!document.querySelector('.obj .pupg'))return;
@@ -48,8 +47,8 @@ document.addEventListener('pointermove',e=>{
 });
 const label=(l,o)=>o.skin&&o.skin!=='emoji'?`<span class="tx ${o.skin}">${o.skin==='fact'?'FACT':l}</span>`:o.skin==='emoji'?`<span class="tx emoji">${l}</span>`:`<span>${l}</span>`;
 const grid=document.createElement('div');
-grid.innerHTML=`<div class="hd">Stickers aur text (iPad jaisa)</div><div class="stg">${ITEMS.map((it,i)=>`<button data-st="${i}">${label(it[0],it[1])}</button>`).join('')}</div>`;
-const g0=tools.querySelector('.grid');g0.parentNode.insertBefore(grid,g0.previousElementSibling);
+grid.innerHTML=`<div class="hd">Stickers and text (iPad style)</div><div class="stg">${ITEMS.map((it,i)=>`<button data-st="${i}">${label(it[0],it[1])}</button>`).join('')}</div>`;
+const g0=tools.querySelector('.grid');g0.insertBefore(grid,g0.previousElementSibling);
 grid.addEventListener('click',e=>{
   const b=e.target.closest('[data-st]');if(!b)return;
   const o=Object.assign({k:'txt'},ITEMS[+b.dataset.st][1]);
