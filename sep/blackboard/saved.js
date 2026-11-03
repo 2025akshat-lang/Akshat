@@ -8,11 +8,11 @@ st.textContent=`.svin{flex:1 1 140px;font:inherit;font-size:16px;color:var(--ink
 #svList{display:flex;flex-wrap:wrap;gap:6px}#svList button{flex:0 1 auto;min-height:40px;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .svnote{font-size:12px;color:var(--mute)}`;
 document.head.appendChild(st);
-tools.insertAdjacentHTML('beforeend',`<div class="hd">Saved library: link save karo, GitHub par deploy nahi karna padega</div>
-<div class="rw"><input id="svName" class="svin" placeholder="Naam (optional)"><select id="svType" aria-label="Type"><option value="auto">Auto</option><option value="image">Image</option><option value="pdf">PDF</option><option value="page">Page / animation</option></select></div>
-<div class="rw"><input id="svUrl" class="svin" type="url" placeholder="Image ya PDF ka direct link" aria-label="Link"><button id="svAdd" class="go">Save</button></div>
+tools.insertAdjacentHTML('beforeend',`<div class="hd">Saved library: save links, no GitHub deploy needed</div>
+<div class="rw"><input id="svName" class="svin" placeholder="Name (optional)"><select id="svType" aria-label="Type"><option value="auto">Auto</option><option value="image">Image</option><option value="pdf">PDF</option><option value="page">Page / animation</option></select></div>
+<div class="rw"><input id="svUrl" class="svin" type="url" placeholder="Direct link to image or PDF" aria-label="Link"><button id="svAdd" class="go">Save</button></div>
 <div id="svList" aria-label="Saved items"></div>
-<div class="svnote">Saved items is browser mein rehte hain. Hataane ke liye saved-config.js mein LIB_HIDE.</div>`);
+<div class="svnote">Saved items stay in this browser. To remove, use LIB_HIDE in saved-config.js.</div>`);
 const IMG=/\.(png|jpe?g|gif|webp|svg|avif|bmp)$/i;
 const kind=u=>{const p=u.split('#')[0].split('?')[0].toLowerCase();return p.endsWith('.pdf')?'pdf':IMG.test(p)?'image':'page'};
 function norm(u,type){
@@ -26,7 +26,7 @@ function norm(u,type){
   return u;
 }
 let saved=[];try{saved=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){saved=[]}
-const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){alert('Save nahi ho paya (browser storage band hai).')}};
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){alert('Could not save (browser storage is disabled).')}};
 const hidden=it=>(window.LIB_HIDE||[]).some(h=>h===it.url||h===it.name);
 const all=()=>[...(window.LIB_PRESET||[]),...saved].filter(it=>it&&it.url&&!hidden(it));
 const icon=t=>t==='image'?'\uD83D\uDDBC':t==='pdf'?'\uD83D\uDCC4':'\uD83C\uDF10';
@@ -34,7 +34,7 @@ function render(){
   const L=q('#svList');if(!L)return;
   L.innerHTML='';
   all().forEach(it=>{const b=document.createElement('button');b.textContent=icon(it.type)+' '+(it.name||it.url);b.title=it.url;b.onclick=()=>place(it);L.appendChild(b)});
-  if(!L.children.length)L.innerHTML='<span class="svnote">Abhi koi saved item nahi hai.</span>';
+  if(!L.children.length)L.innerHTML='<span class="svnote">No saved items yet.</span>';
 }
 function place(it){
   if(!window.ToolsAPI)return;
