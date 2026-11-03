@@ -1,4 +1,3 @@
-/* tools.js: shapes, angle tool, movable objects, embedded animations and the upgraded pen. */
 (function(){
 'use strict';
 const q=s=>document.querySelector(s),wrapEl=q('#wrap'),ink=q('#ink'),cx=ink.getContext('2d'),B=document.body;
@@ -51,7 +50,6 @@ body.pen.penhide #penbar{display:none}
 @media (prefers-reduced-motion:reduce){.obj{transition:none}}`;
 document.head.appendChild(st);
 
-/* ---------- shapes ---------- */
 const SH=[
 ['line','Line','<line class="s" x1="4" y1="50" x2="96" y2="50"/>',0,.25],
 ['square','Square','<rect class="s f" x="8" y="8" width="84" height="84"/>',1,1],
@@ -114,7 +112,7 @@ function mk(o){
   else if(o.src){
     const im=new Image();im.draggable=false;im.alt=o.alt||'';im.referrerPolicy='no-referrer';
     im.onload=()=>{if(!o.h){const r=im.naturalHeight/im.naturalWidth;el._o.ar=r;el.style.height=el.offsetWidth*r+'px'}};
-    im.onerror=()=>{ob.textContent='Image load nahi hui'};im.src=o.src;ob.appendChild(im);
+    im.onerror=()=>{ob.textContent='Image failed to load'};im.src=o.src;ob.appendChild(im);
   }else if(o.txt!==undefined){
     const tx=document.createElement('div');tx.className='tx '+(o.skin||'');tx.contentEditable='true';tx.spellcheck=false;tx.textContent=o.txt;ob.appendChild(tx);el.style.height='auto';
   }else if(emb){
@@ -160,14 +158,14 @@ function mk(o){
     if(gseed&&gseed!==el&&!e.target.closest('.rs')){e.stopPropagation();el._gid=gseed._gid;el.classList.add('grp');return}
     e.stopPropagation();pick(el);
     const rs=e.target.closest('.rs');
-    if(rs||el.dataset.k!=='txt')e.preventDefault();   /* stops the browser's own image/text drag from cancelling a resize or move */
+    if(rs||el.dataset.k!=='txt')e.preventDefault();
     if(rs){
       const dir=rs.dataset.d,w0=el.offsetWidth,h0=el.offsetHeight,L0=el.offsetLeft,T0=el.offsetTop,isTxt=el.dataset.k==='txt';
       track(el,e,(dx,dy)=>{
         let w=w0,h=h0;
         if(dir.includes('e'))w=w0+dx;if(dir.includes('w'))w=w0-dx;
         if(dir.includes('s'))h=h0+dy;if(dir.includes('n'))h=h0-dy;
-        if(el._o.keep&&dir.length===2){const k=(w/w0+h/h0)/2;w=w0*k;h=h0*k}   /* corners keep the ratio, sides stretch freely */
+        if(el._o.keep&&dir.length===2){const k=(w/w0+h/h0)/2;w=w0*k;h=h0*k}
         w=Math.max(40,w);h=Math.max(emb?120:24,h);
         el.style.width=w+'px';
         if(dir.includes('w'))el.style.left=(L0+w0-w)+'px';
@@ -213,7 +211,6 @@ function addShape(id){
   pick(el);
 }
 
-/* ---------- play / reset ---------- */
 function play(el){
   const a=el._o.anim,d=800/spd(),L=wrapEl.clientWidth;let kf,done;
   if(a==='slide'){const dx=Math.min(L*.3,Math.max(120,el.offsetWidth*1.3));kf=[{translate:'0 0'},{translate:dx+'px 0'}];done=()=>{el.style.left=Math.min(el.offsetLeft+dx,L-el.offsetWidth*.5)+'px'}}
@@ -232,7 +229,6 @@ function setMode(m){
 function resetObjs(){objs.forEach(el=>{const h=el._home;if(!h)return;el.style.left=h.l;el.style.top=h.t;el.style.width=h.w;el.style.height=h.h;el._o.rot=h.r;el.style.transform=`rotate(${h.r}deg)`})}
 function clearObjs(){objs.forEach(e=>e.remove());objs=[];prot=null;selEl=null}
 
-/* ---------- angle tool ---------- */
 function protSvg(){
   let t='<svg viewBox="0 0 200 108" preserveAspectRatio="xMidYMid meet"><path class="s pbd" d="M5 100A95 95 0 0 1 195 100Z"/>';
   for(let a=0;a<=180;a+=5){
@@ -266,7 +262,6 @@ function stamp(a){
   pick(mk({k:'ang',svg,w:Math.min(wrapEl.clientWidth*.5,300),ar:.5625,keep:1}));
 }
 
-/* ---------- steps from lessons ---------- */
 function fromStep(s){
   const W=wrapEl.clientWidth,H=wrapEl.clientHeight,m=Math.min(W,H);
   if(s.k==='embed'){return s.src?mk({k:'emb',embed:hostURL(s.src),w:W*.62,h:H*.55,x:W*.19,y:H*.2}):null}
@@ -275,7 +270,6 @@ function fromStep(s){
   return mk({k:'obj',svg:s.svg,src:s.src,alt:s.alt,w:(s.w||.3)*m,ar,x:s.x!=null?s.x*W:undefined,y:s.y!=null?s.y*H:undefined,anim:s.anim,keep:1});
 }
 
-/* ---------- tools sheet ---------- */
 const mkBtn=(cls,html,label)=>{const b=document.createElement('button');b.className=cls;b.innerHTML=html;b.setAttribute('aria-label',label);return b};
 const toolfab=mkBtn('fab','&#9670;','Shapes and tools');toolfab.id='toolfab';
 const penfab=mkBtn('fab','&#9998;','Pen');penfab.id='penfab';penfab.setAttribute('aria-pressed','false');
@@ -284,7 +278,7 @@ const tbg=document.createElement('div');tbg.id='toolsBg';
 const tools=document.createElement('div');tools.id='tools';tools.setAttribute('role','dialog');tools.setAttribute('aria-label','Shapes and tools');
 const CAR='<svg viewBox="0 0 160 70"><rect x="10" y="20" width="140" height="30" rx="8" fill="#1e5fd8"/><rect x="40" y="6" width="70" height="22" rx="8" fill="#6fb1ff"/><circle cx="42" cy="54" r="13" fill="#222"/><circle cx="118" cy="54" r="13" fill="#222"/><circle cx="42" cy="54" r="5" fill="#ccc"/><circle cx="118" cy="54" r="5" fill="#ccc"/></svg>';
 tools.innerHTML=`<div class="grab"></div>
-<div class="hd">Objects: Drag mode mein khiskao, Play mode mein tap karke chalao</div>
+<div class="hd">Objects: Move in Drag mode, tap to play in Play mode</div>
 <div class="rw"><button id="mDrag" aria-pressed="true">&#9995; Drag</button><button id="mPlay" aria-pressed="false">&#127916; Play</button><button id="oReset">&#8634; Reset</button><button id="oCar">&#128663; Car</button></div>
 <div class="hd">Shapes</div>
 <div class="grid">${SH.map(s=>`<button class="shb" data-s="${s[0]}" aria-label="${s[1]}"><svg class="mini" viewBox="0 0 100 100">${s[2]}</svg><span>${s[1]}</span></button>`).join('')}</div>
@@ -317,7 +311,6 @@ tools.addEventListener('click',e=>{
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('.obj')){pick(null);gseed=null}},true);
 addEventListener('keydown',e=>{if(e.key==='Delete'&&selEl&&!e.target.isContentEditable&&e.target.tagName!=='INPUT'){selEl.querySelector('[data-c=x]').click()}});
 
-/* ---------- pen ---------- */
 const PAL=['auto','#e53935','#1e88e5','#43a047','#fb8c00','#8e24aa','#fdd835','#00bcd4'];
 const SZ=[.0028,.0055,.009,.015,.025],KS=[1,.55,.3,.15];
 let selS=[],selG=null,efil=0,colP='auto',colH='#ffeb3b',tool='pen',sz=2,col='auto',stab=2,snap=true,dash=false,guard=true,strokes=[],hist=[],live=null,IW=1,IH=1,gradOn=false,gradI=0,trail=[],lraf=0;
@@ -448,7 +441,7 @@ function rubAt(p){
   strokes.forEach(s=>{const rs=rubStroke(s,p[0],p[1],r);if(rs.length!==1||rs[0]!==s)ch=true;out.push(...rs)});
   if(ch){strokes=out;if(live)live.ch=true}
 }
-/* select a drawing -> move it, pinch to zoom it */
+
 function selStart(mode){
   const v=[...selPtr.values()];
   selG={mode,orig:selS.map(s=>({p:s.p.map(q=>q.slice()),r:s.r?s.r.slice():null,o:s.o?s.o.map(q=>q.slice()):null})),a:v[0].slice(),d:v[1]?dist(v[0],v[1])||1:1,c:v[1]?[(v[0][0]+v[1][0])/2,(v[0][1]+v[1][1])/2]:null};
@@ -585,7 +578,7 @@ function endInk(e){
     if(w>40&&h<w*.2){const y=ys.reduce((a,b)=>a+b)/ys.length;s={t:'line',p:[[Math.min(...xs),y],[Math.max(...xs),y]]}}}
   s.c=col;s.w=SZ[sz];s.k=L.t==='hl'?'h':(dash?'d':'p');
   if(gradOn&&(s.t==='path'||s.t==='brush'))s.gr=gradI;
-  if(s.t!=='path'&&s.t!=='brush'&&L.t!=='line'&&pts.length>2)s.o=pts.map(p=>p.slice());   /* original handwriting, kept for text recognition */
+  if(s.t!=='path'&&s.t!=='brush'&&L.t!=='line'&&pts.length>2)s.o=pts.map(p=>p.slice());
   snapH();strokes.push(norm(s));redrawInk();
 }
 const forceEnd=()=>{if(live)endInk({pointerId:live.id});selG=null;selPtr.clear();selPtr.h=0};
@@ -596,7 +589,6 @@ addEventListener('blur',forceEnd);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)forceEnd()});
 setInterval(()=>{if(live&&performance.now()-live.last>5000)forceEnd()},1000);
 
-/* ---------- hooks used by index.html ---------- */
 window.sizeInk=sizeInk;window.redrawInk=redrawInk;
 window.inkClear=()=>{strokes=[];hist=[];live=null;clearObjs();setPan(0,0)};
 window.ToolsAPI={step:fromStep,add:mk,pick,
