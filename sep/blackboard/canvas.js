@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 const q=s=>document.querySelector(s),B=document.body,wrap=q('#wrap');
