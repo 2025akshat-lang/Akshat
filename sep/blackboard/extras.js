@@ -1,4 +1,4 @@
-
+/* extras.js: floating timer, background grids, image stickers (paste/drop), sticky note button. */
 (function(){
 'use strict';
 const q=s=>document.querySelector(s),B=document.body;
@@ -11,7 +11,7 @@ body[data-grid=notebook] #wrap::before{background:linear-gradient(to right,trans
 body[data-grid=graph] #wrap::before{background:linear-gradient(to right,var(--gl) 1px,transparent 1px) 0 0/var(--gs) var(--gs),linear-gradient(to bottom,var(--gl) 1px,transparent 1px) 0 0/var(--gs) var(--gs)}
 body[data-grid=iso] #wrap::before{background:repeating-linear-gradient(30deg,var(--gl) 0 1px,transparent 1px var(--gs)),repeating-linear-gradient(150deg,var(--gl) 0 1px,transparent 1px var(--gs)),repeating-linear-gradient(90deg,var(--gl) 0 1px,transparent 1px var(--gs))}
 body[data-grid=staff] #wrap::before{background:linear-gradient(to bottom,var(--gl) 0 2px,transparent 2px 14px,var(--gl) 14px 16px,transparent 16px 28px,var(--gl) 28px 30px,transparent 30px 42px,var(--gl) 42px 44px,transparent 44px 56px,var(--gl) 56px 58px,transparent 58px 170px) 0 0/100% 170px repeat-y}
-.obj .lk{position:absolute;left:-12px;top:-12px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;font-size:14px;opacity:.8;z-index:4;line-height:1}
+.obj .lk{position:absolute;left:16px;top:16px;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;font-size:14px;opacity:.8;z-index:4;line-height:1}
 .obj.locked{pointer-events:none}.obj.locked .lk{pointer-events:auto;opacity:1}
 .obj.grp{outline:2px dotted var(--yl);outline-offset:3px}
 .obj[data-k=stk] .ob img{border:6px solid #fff;border-radius:16px;box-shadow:0 5px 16px #0009;background:#fff}
@@ -29,7 +29,7 @@ body[data-grid=staff] #wrap::before{background:linear-gradient(to bottom,var(--g
 @media (prefers-reduced-motion:reduce){#clk.pulse,#clkfab.pulse{animation:none}}`;
 document.head.appendChild(st);
 
-
+/* ---------- grids + extra rows in the tools sheet ---------- */
 const tools=q('#tools');
 tools.insertAdjacentHTML('beforeend',`<div class="hd">Sticker / image (Google se copy karke paste karo)</div>
 <div class="rw"><button id="xPaste">&#128203; Paste image</button><button id="xFile">&#128444; Image file</button><input id="xIn" type="file" accept="image/*" hidden></div>
@@ -41,7 +41,7 @@ q('#xGrid').onchange=e=>{setGrid(e.target.value);B.classList.remove('tools')};
 const closeTools=()=>B.classList.remove('tools');
 q('#xNote').onclick=()=>{closeTools();window.addNoteFree&&addNoteFree()};
 
-
+/* ---------- image stickers ---------- */
 function addImg(blob){
   const mk=url=>window.ToolsAPI&&ToolsAPI.add({k:'stk',src:url,w:Math.min(innerWidth*.4,420),keep:true});
   const raw=()=>{const r=new FileReader();r.onload=()=>mk(r.result);r.readAsDataURL(blob)};
@@ -71,7 +71,7 @@ q('#xPaste').onclick=async()=>{
   }catch(err){alert('Browser ne paste ki ijazat nahi di. Image ko board par drop karo, ya "Image file" chuno.')}
 };
 
-
+/* ---------- floating timer / stopwatch ---------- */
 const clk=document.createElement('div');clk.id='clk';
 clk.innerHTML=`<div class="ch"><span>&#9201; Timer</span><span><button data-k="cfg" aria-label="Settings">&#9881;</button><button data-k="x" aria-label="Hide timer (keeps running)">&#10005;</button></span></div>
 <div id="ct">00:00</div>
