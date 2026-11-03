@@ -1,9 +1,7 @@
-
 (function(){
 'use strict';
 const q=s=>document.querySelector(s),B=document.body,tools=q('#tools');
 if(!tools||!window.ToolsAPI)return;
-
 
 function direct(u){
   u=(u||'').trim();
@@ -15,7 +13,7 @@ function direct(u){
 }
 
 const sec=document.createElement('div');
-sec.innerHTML=`<div class="hd">Meri image library (images.json se)</div>
+sec.innerHTML=`<div class="hd">My image library (from images.json)</div>
 <div class="rw"><select id="libSel" aria-label="Image library" style="flex:3 1 180px"><option value="">Loading…</option></select><button id="libAdd" class="go">Add</button><button id="libRef" aria-label="Reload list">&#8635;</button></div>
 <div class="hd" id="libMsg"></div>`;
 tools.insertBefore(sec,tools.children[1]||null);
@@ -25,8 +23,8 @@ let list=[];
 
 function build(){
   sel.innerHTML='';
-  if(!list.length){sel.innerHTML='<option value="">(images.json khaali hai)</option>';return}
-  const ph=document.createElement('option');ph.value='';ph.textContent='Image chuno ('+list.length+')';sel.appendChild(ph);
+  if(!list.length){sel.innerHTML='<option value="">(images.json is empty)</option>';return}
+  const ph=document.createElement('option');ph.value='';ph.textContent='Select image ('+list.length+')';sel.appendChild(ph);
   const groups={};
   list.forEach((it,i)=>{const g=it.group||'';(groups[g]=groups[g]||[]).push([it,i])});
   Object.keys(groups).forEach(g=>{
@@ -45,8 +43,8 @@ async function loadList(){
     list=(Array.isArray(d)?d:(d.images||[])).filter(x=>x&&x.url);
     build();
   }catch(e){
-    list=[];sel.innerHTML='<option value="">images.json nahi mili</option>';
-    msg.textContent='images.json repo mein index.html ke saath rakho aur JSON format check karo.';
+    list=[];sel.innerHTML='<option value="">images.json not found</option>';
+    msg.textContent='Place images.json in the repository alongside index.html and verify the JSON format.';
   }
 }
 
