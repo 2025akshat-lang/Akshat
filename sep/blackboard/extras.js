@@ -1,4 +1,3 @@
-/* extras.js: floating timer, background grids, image stickers (paste/drop), sticky note button. */
 (function(){
 'use strict';
 const q=s=>document.querySelector(s),B=document.body;
@@ -29,9 +28,8 @@ body[data-grid=staff] #wrap::before{background:linear-gradient(to bottom,var(--g
 @media (prefers-reduced-motion:reduce){#clk.pulse,#clkfab.pulse{animation:none}}`;
 document.head.appendChild(st);
 
-/* ---------- grids + extra rows in the tools sheet ---------- */
 const tools=q('#tools');
-tools.insertAdjacentHTML('beforeend',`<div class="hd">Sticker / image (Google se copy karke paste karo)</div>
+tools.insertAdjacentHTML('beforeend',`<div class="hd">Sticker / image (Copy and paste from Google)</div>
 <div class="rw"><button id="xPaste">&#128203; Paste image</button><button id="xFile">&#128444; Image file</button><input id="xIn" type="file" accept="image/*" hidden></div>
 <div class="hd">Sticky note and background</div>
 <div class="rw"><button id="xNote">&#128221; Sticky note</button><select id="xGrid" aria-label="Background grid"><option value="">Grid: none</option><option value="notebook">Notebook lines</option><option value="graph">Graph paper</option><option value="iso">Isometric</option><option value="staff">Music staff</option></select></div>`);
@@ -41,7 +39,6 @@ q('#xGrid').onchange=e=>{setGrid(e.target.value);B.classList.remove('tools')};
 const closeTools=()=>B.classList.remove('tools');
 q('#xNote').onclick=()=>{closeTools();window.addNoteFree&&addNoteFree()};
 
-/* ---------- image stickers ---------- */
 function addImg(blob){
   const mk=url=>window.ToolsAPI&&ToolsAPI.add({k:'stk',src:url,w:Math.min(innerWidth*.4,420),keep:true});
   const raw=()=>{const r=new FileReader();r.onload=()=>mk(r.result);r.readAsDataURL(blob)};
@@ -67,11 +64,10 @@ q('#xPaste').onclick=async()=>{
   try{
     const items=await navigator.clipboard.read();
     for(const it of items){const t=it.types.find(t=>t.startsWith('image/'));if(t){addImg(await it.getType(t));closeTools();return}}
-    alert('Clipboard mein koi image nahi mili.');
-  }catch(err){alert('Browser ne paste ki ijazat nahi di. Image ko board par drop karo, ya "Image file" chuno.')}
+    alert('No image found in clipboard.');
+  }catch(err){alert('Browser denied paste permission. Drop the image onto the board, or select "Image file".')}
 };
 
-/* ---------- floating timer / stopwatch ---------- */
 const clk=document.createElement('div');clk.id='clk';
 clk.innerHTML=`<div class="ch"><span>&#9201; Timer</span><span><button data-k="cfg" aria-label="Settings">&#9881;</button><button data-k="x" aria-label="Hide timer (keeps running)">&#10005;</button></span></div>
 <div id="ct">00:00</div>
