@@ -108,7 +108,7 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
   <select id="lesson" aria-label="Chapter and lesson"></select>
   <div class="row" style="display:none"><select id="secSel" aria-label="Section"></select></div>
   <div class="row"><select id="charSel" aria-label="Character"></select></div>
-  <div class="row"><select id="carrSel" aria-label="Mindmap helper"><option value="">Mindmap helper: lesson ke hisaab se</option><option value="monkey">Monkey</option><option value="crane">Crane</option><option value="stick">Stick figure</option></select></div>
+  <div class="row"><select id="carrSel" aria-label="Mindmap helper"><option value="">Mindmap helper: lesson ke hisaab se</option><option value="monkey">Monkey</option><option value="crane">Crane</option><option value="stick">Stick figure</option><option value="snake">Snake</option><option value="crow">Crow master (chasmewala)</option><option value="murga">Murga master</option></select></div>
   <div class="row"><select id="style" aria-label="Pointer style"></select>
     <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></div>
   <div class="row" id="themes"><button id="tdn" aria-label="Smaller text">A&minus;</button><button id="tup" aria-label="Bigger text">A+</button></div>
@@ -139,7 +139,7 @@ const CHARS=window.CHARS||{};
 const speed=()=>parseFloat($('#speed').value)||1;
 const toast=t=>{msg.textContent=t};
 
-
+/* pointer styles: add one line here and it appears in the menu */
 const P={
   arm:{name:'Teacher arm',html:'<i class="hand"></i>',fx:'type',off:[-17,-17],arc:0},
   wand:{name:'Magic wand',html:'🪄',fx:'sparkle',off:[-8,-34],arc:50},
@@ -153,7 +153,7 @@ const fmt=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
  .replace(/\^(\{[^}]+\}|\w+)/g,(_,a)=>'<sup>'+a.replace(/[{}]/g,'')+'</sup>')
  .replace(/_(\{[^}]+\}|\w+)/g,(_,a)=>'<sub>'+a.replace(/[{}]/g,'')+'</sub>');
 
-
+/* ---------- theme, text size, language ---------- */
 const THEMES=[['navy','#0a0f3c','Navy'],['black','#000','Black'],['green','#0e3a2a','Green board'],['white','#fff','White'],['cream','#fff6d6','Cream']];
 function setTheme(t){
   if(!THEMES.some(x=>x[0]===t))t='navy';
@@ -178,7 +178,7 @@ function buildMenu(){
   if(keep)sel.value=keep;
 }
 
-
+/* ---------- pointer / character ---------- */
 function useChar(id){
   const ids=Object.keys(CHARS),c=CHARS[id]||CHARS[ids[0]];if(!c)return;
   CH=c;$('#char').innerHTML=c.svg;
@@ -227,7 +227,7 @@ function moveTo(tx,ty,dur){
   });
 }
 
-
+/* ---------- lines ---------- */
 function makeLine(s){
   const el=document.createElement('div');
   const k=KINDS.includes(s.k)?s.k:'note';
@@ -271,7 +271,7 @@ async function show(s){
 }
 function renderInstant(n){board.innerHTML='';for(let i=0;i<n;i++){const s=lesson.steps[i];if(s&&(s.k==='obj'||s.k==='embed')&&window.ToolsAPI){ToolsAPI.step(s);continue}const e=makeLine(s);e.classList.add('done')}}
 
-
+/* ---------- controls ---------- */
 function ui(){
   document.body.classList.toggle('mm',!!board.querySelector('.mmhost'));
   const n=lesson?lesson.steps.length:0;
@@ -281,7 +281,7 @@ function ui(){
   $('#auto').textContent=auto?'Pause':'Auto play';
 }
 async function next(){
-  if(busy&&Date.now()-busySince>150000)busy=false;   
+  if(busy&&Date.now()-busySince>150000)busy=false;   /* safety: never stay stuck */
   if(lesson)while(idx<lesson.steps.length&&lesson.steps[idx].k==='section')idx++;
   if(busy||!lesson||idx>=lesson.steps.length){auto=false;ui();return}
   if(cs!==SL.length-1)goSlide(SL.length-1);
@@ -324,7 +324,7 @@ function load(id){
   document.head.appendChild(s);
 }
 
-
+/* ---------- slides ---------- */
 function saveCur(){SL[cs]={nodes:[...board.childNodes],items,scroll:board.scrollTop,tools:window.ToolsAPI?ToolsAPI.save():null};board.replaceChildren()}
 function loadSl(i){const t=SL[i];cs=i;items=t.items;board.replaceChildren(...t.nodes);board.scrollTop=t.scroll;if(window.ToolsAPI)ToolsAPI.load(t.tools);closeTb();ui()}
 function goSlide(i){if(busy||i<0||i>=SL.length||i===cs)return;saveCur();loadSl(i)}
@@ -338,7 +338,7 @@ function back(){
   else if(cs>0){SL.pop();loadSl(SL.length-1)}
 }
 
-
+/* ---------- menu wiring ---------- */
 const setOpen=o=>{document.body.classList.toggle('open',o);$('#fab').setAttribute('aria-expanded',o)};
 $('#fab').onclick=()=>setOpen(!document.body.classList.contains('open'));
 $('#sheetBg').onclick=()=>setOpen(false);
@@ -369,7 +369,7 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft')$('#prev').click();
 });
 
-
+/* ---------- long-press text toolbar ---------- */
 const tb=$('#tb');let sel=null,st=null,lp=0,tbOpen=false;
 let tapOff=store.get('tapoff','0')==='1';
 function setTap(on){
@@ -479,14 +479,14 @@ function addNote(el){
 
 function addNoteFree(){addNote({offsetLeft:board.clientWidth*.3,offsetWidth:0,offsetTop:board.scrollTop+board.clientHeight*.3,offsetHeight:0})}
 
-
+/* ---------- start-up, resize, safety net ---------- */
 let rt=0;
 addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{window.sizeInk&&sizeInk();fit();place(cur.x,cur.y);posTb()},120)});
 addEventListener('error',()=>toast('Kuch gadbad hui. Menu mein Restart dabao.'));
 addEventListener('unhandledrejection',e=>{console.error(e.reason)});
 setG(g);setTheme(store.get('theme','navy'));
 
-
+/* pointer (red dot / arm): on-off and drag it anywhere */
 let ptrOn=store.get('ptr','1')==='1',pdrag=false;
 function setPtr(on){
   ptrOn=on;store.set('ptr',on?'1':'0');document.body.classList.toggle('noptr',!on);
@@ -498,7 +498,7 @@ ptr.addEventListener('pointermove',e=>{if(!pdrag)return;const r=wrap.getBounding
 const pdEnd=()=>{if(pdrag){pdrag=false;store.set('ptrpos',JSON.stringify({x:cur.x/wrap.clientWidth,y:cur.y/wrap.clientHeight}))}};
 ptr.addEventListener('pointerup',pdEnd);ptr.addEventListener('pointercancel',pdEnd);
 
-
+/* floating toggle buttons: tap-next on/off + hide all buttons */
 (function(){
   const css=document.createElement('style');
   css.textContent=`#tapfab{top:290px}#hidefab{top:346px}#ptrfab{top:402px}
@@ -527,6 +527,8 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit();pla
 <script src="notes.js"></script>
 <script src="canvas.js"></script>
 <script src="smart.js"></script>
+<script src="saved-config.js"></script>
+<script src="saved.js"></script>
 <script src="mindmap.js"></script>
 <script src="library.js"></script>
 </body>
