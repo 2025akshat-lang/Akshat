@@ -1,5 +1,3 @@
-/* mindmap.js: concept maps filled in by a helper (monkey / crane / stick figure).
-   Lesson step:  {k:'map', carrier:'monkey', tree:{t:'Root', kids:[{t:'Child', kids:[...]}]}}  */
 (function(){
 'use strict';
 const NS='http://www.w3.org/2000/svg',wrap=document.getElementById('wrap'),board=document.getElementById('board');
@@ -31,7 +29,6 @@ async function run(step){
   let type=(typeof store!=='undefined'&&store.get('carrier',''))||step.carrier||'monkey';
   if(!['monkey','crane','stick','snake','crow','murga'].includes(type))type='monkey';
   const ptrMode=['snake','crow','murga'].includes(type),stick=type==='stick'||ptrMode,hang=!stick;
-  /* the map is laid out on a canvas big enough for every box, then scaled to fit this screen: no overlaps on phone, tablet, laptop or smartboard */
   const t0=flatten(step.tree),ch0={},dp0={};let lf=0,md0=0;
   t0.forEach(n=>{if(n.from)ch0[n.from]=1});
   t0.forEach(n=>{dp0[n.id]=n.from?dp0[n.from]+1:0;md0=Math.max(md0,dp0[n.id]);if(!ch0[n.id])lf++});
@@ -42,7 +39,6 @@ async function run(step){
   board.appendChild(host);
   const U=Math.max(8,Math.min(H*.016,W*.016));
 
-  /* ----- tree layout ----- */
   const nodes=flatten(step.tree),by={};
   nodes.forEach(n=>{by[n.id]=n;n.kids=[]});
   const roots=[];nodes.forEach(n=>{const p=n.from?by[n.from]:null;p?p.kids.push(n):roots.push(n)});
@@ -60,7 +56,6 @@ async function run(step){
   for(let i=0;i<16&&fs>7&&(lay()>rowH*.8||(placeN(),overlaps()));i++)fs*=.92;
   lay();placeN();
 
-  /* ----- container (tray) with shuffled chips ----- */
   const T=stick?{x:W*.2,y:H*.76,w:W*.6,h:H*.16}:{x:W*.05,y:H*.15,w:W*.8,h:H*.17};
   const order=nodes.map((_,i)=>i);let seed=7;
   for(let i=order.length-1;i>0;i--){seed=(seed*9301+49297)%233280;const j=Math.floor(seed/233280*(i+1));[order[i],order[j]]=[order[j],order[i]]}
@@ -71,7 +66,6 @@ async function run(step){
   let yy=T.y+(T.h-F.tot)/2;
   F.rows.forEach(r=>{let xx=T.x+(T.w-r.w)/2;r.it.forEach(n=>{n.tx=xx+n.bw*tk/2;n.ty=yy+r.h/2;xx+=n.bw*tk+8});yy+=r.h+8});
 
-  /* ----- drawing: connectors, slots, tray, chips, actor ----- */
   const gC=el('g',{},svg),gS=el('g',{},svg),gT=el('g',{},svg),gK=el('g',{},svg),gA=el('g',{},svg);
   const rail=H*.012;
   if(hang)sty(el('line',{x1:0,y1:rail,x2:W,y2:rail},gC),{stroke:'var(--edge)',strokeWidth:U*.4+'px'});
@@ -94,7 +88,6 @@ async function run(step){
     if(ptrMode){n.g.style.opacity=0;setChip(n,n.cx,n.cy,1)}else setChip(n,n.tx,n.ty,tk);
   });
 
-  /* ----- actor state ----- */
   const S={hx:W*.5,hy:-H*.15,open:1,lx:W*.5,th:0,up:0,fx:-W*.1,ph:0,follow:false};
   if(ptrMode){S.hx=W*.2;S.hy=H*.9}
   const rot=(x,y)=>{const r=S.th*Math.PI/180,c=Math.cos(r),s=Math.sin(r),dx=x-S.hx,dy=y-rail;return{x:S.hx+dx*c-dy*s,y:rail+dx*s+dy*c}};
@@ -171,8 +164,7 @@ async function run(step){
     };
   }
 
-  /* ---------- masters that POINT at each concept while it appears (snake, crow, murga) ---------- */
-  const stickDraw=(g,w,full)=>{                 /* foldable pointer stick: zig-zags while short, straight when fully open */
+  const stickDraw=(g,w,full)=>{
     const segs=[0,1,2].map(i=>sty(el('line',{},g),{stroke:i%2?'#8d5a2b':'#d4a017',strokeWidth:w+'px',strokeLinecap:'round'}));
     const joints=[0,1].map(()=>sty(el('circle',{r:w*.8},g),{fill:'#5d4037'}));
     const tip=sty(el('circle',{r:w*.95},g),{fill:'#e53935'});
@@ -202,7 +194,7 @@ async function run(step){
     return t=>{
       let hx=S.hx,hy=S.hy;const dxb=hx-base.x,dyb=hy-base.y,dd=Math.hypot(dxb,dyb),L=dMax*(N-1)*.97;
       if(dd>L){hx=base.x+dxb/dd*L;hy=base.y+dyb/dd*L}
-      d=Math.min(dMax,Math.max(U*.7,Math.min(dd,L)*1.06/(N-1)));   /* body length follows the distance: no big loops */
+      d=Math.min(dMax,Math.max(U*.7,Math.min(dd,L)*1.06/(N-1)));
       for(let it=0;it<4;it++){
         P[0].x=hx;P[0].y=hy;
         for(let i=1;i<N;i++){const a=P[i-1],b=P[i],vx=b.x-a.x,vy=b.y-a.y,l=Math.hypot(vx,vy)||1;b.x=a.x+vx/l*d;b.y=a.y+vy/l*d}
