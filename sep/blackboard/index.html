@@ -108,16 +108,16 @@ body.pen #penbar{display:flex;right:10px;bottom:10px}
   <select id="lesson" aria-label="Chapter and lesson"></select>
   <div class="row" style="display:none"><select id="secSel" aria-label="Section"></select></div>
   <div class="row"><select id="charSel" aria-label="Character"></select></div>
-  <div class="row"><select id="carrSel" aria-label="Mindmap helper"><option value="">Mindmap helper: lesson ke hisaab se</option><option value="monkey">Monkey</option><option value="crane">Crane</option><option value="stick">Stick figure</option><option value="snake">Snake</option><option value="crow">Crow master (chasmewala)</option><option value="murga">Murga master</option></select></div>
+  <div class="row"><select id="carrSel" aria-label="Mindmap helper"><option value="">Mindmap helper: according to lesson</option><option value="monkey">Monkey</option><option value="crane">Crane</option><option value="stick">Stick figure</option><option value="snake">Snake</option><option value="crow">Crow master (spectacled)</option><option value="murga">Rooster master</option></select></div>
   <div class="row"><select id="style" aria-label="Pointer style"></select>
     <select id="speed" aria-label="Speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></div>
   <div class="row" id="themes"><button id="tdn" aria-label="Smaller text">A&minus;</button><button id="tup" aria-label="Bigger text">A+</button></div>
-  <div class="row"><button id="tapT" aria-pressed="false">Tap se next: ON</button><button id="ptrT" aria-pressed="false">Pointer: ON</button></div>
-  <div class="row"><button id="hi" aria-pressed="false">&#2361;&#2367;&#2306;&#2342;&#2368;</button><button id="fs">Fullscreen</button></div>
+  <div class="row"><button id="tapT" aria-pressed="false">Tap for next: ON</button><button id="ptrT" aria-pressed="false">Pointer: ON</button></div>
+  <div class="row"><button id="hi" aria-pressed="false">Hindi</button><button id="fs">Fullscreen</button></div>
   <div class="row"><button id="sPrev">&#9664; Slide</button><button id="sNew" class="go">&#65291; New slide</button><button id="sNext">Slide &#9654;</button></div>
   <div class="row"><button id="prev">Back</button><button id="next" class="go">Next line</button></div>
   <div class="row"><button id="auto">Auto play</button><button id="reset">Restart</button></div>
-  <div class="row"><button id="unstick">Reset UI (agar kuch atak jaye)</button></div>
+  <div class="row"><button id="unstick">Reset UI (if stuck)</button></div>
   <span id="count"></span>
 </div>
 
@@ -139,7 +139,6 @@ const CHARS=window.CHARS||{};
 const speed=()=>parseFloat($('#speed').value)||1;
 const toast=t=>{msg.textContent=t};
 
-/* pointer styles: add one line here and it appears in the menu */
 const P={
   arm:{name:'Teacher arm',html:'<i class="hand"></i>',fx:'type',off:[-17,-17],arc:0},
   wand:{name:'Magic wand',html:'🪄',fx:'sparkle',off:[-8,-34],arc:50},
@@ -153,7 +152,6 @@ const fmt=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
  .replace(/\^(\{[^}]+\}|\w+)/g,(_,a)=>'<sup>'+a.replace(/[{}]/g,'')+'</sup>')
  .replace(/_(\{[^}]+\}|\w+)/g,(_,a)=>'<sub>'+a.replace(/[{}]/g,'')+'</sub>');
 
-/* ---------- theme, text size, language ---------- */
 const THEMES=[['navy','#0a0f3c','Navy'],['black','#000','Black'],['green','#0e3a2a','Green board'],['white','#fff','White'],['cream','#fff6d6','Cream']];
 function setTheme(t){
   if(!THEMES.some(x=>x[0]===t))t='navy';
@@ -178,7 +176,6 @@ function buildMenu(){
   if(keep)sel.value=keep;
 }
 
-/* ---------- pointer / character ---------- */
 function useChar(id){
   const ids=Object.keys(CHARS),c=CHARS[id]||CHARS[ids[0]];if(!c)return;
   CH=c;$('#char').innerHTML=c.svg;
@@ -227,7 +224,6 @@ function moveTo(tx,ty,dur){
   });
 }
 
-/* ---------- lines ---------- */
 function makeLine(s){
   const el=document.createElement('div');
   const k=KINDS.includes(s.k)?s.k:'note';
@@ -241,7 +237,7 @@ function makeLine(s){
     if(cap){const c=document.createElement('div');c.className='cap';c.innerHTML=cap;el.appendChild(c)}
     el._media=new Promise(res=>{
       im.onload=res;
-      im.onerror=()=>{fig.innerHTML='<div class="imgerr">Image load nahi hui'+(s.alt?': '+fmt(s.alt):'')+'</div>';res()};
+      im.onerror=()=>{fig.innerHTML='<div class="imgerr">Image failed to load'+(s.alt?': '+fmt(s.alt):'')+'</div>';res()};
       setTimeout(res,6000);
     });
     im.src=s.src;
@@ -271,7 +267,6 @@ async function show(s){
 }
 function renderInstant(n){board.innerHTML='';for(let i=0;i<n;i++){const s=lesson.steps[i];if(s&&(s.k==='obj'||s.k==='embed')&&window.ToolsAPI){ToolsAPI.step(s);continue}const e=makeLine(s);e.classList.add('done')}}
 
-/* ---------- controls ---------- */
 function ui(){
   document.body.classList.toggle('mm',!!board.querySelector('.mmhost'));
   const n=lesson?lesson.steps.length:0;
@@ -281,7 +276,7 @@ function ui(){
   $('#auto').textContent=auto?'Pause':'Auto play';
 }
 async function next(){
-  if(busy&&Date.now()-busySince>150000)busy=false;   /* safety: never stay stuck */
+  if(busy&&Date.now()-busySince>150000)busy=false;
   if(lesson)while(idx<lesson.steps.length&&lesson.steps[idx].k==='section')idx++;
   if(busy||!lesson||idx>=lesson.steps.length){auto=false;ui();return}
   if(cs!==SL.length-1)goSlide(SL.length-1);
@@ -298,7 +293,7 @@ function buildSections(){
   const s=$('#secSel'),secs=lesson?lesson.steps.map((x,i)=>({x,i})).filter(o=>o.x.k==='section'):[];
   s.innerHTML='';s.parentNode.style.display=secs.length?'flex':'none';
   if(!secs.length)return;
-  s.innerHTML='<option value="0">Section: shuru se</option>'+secs.map(o=>`<option value="${o.i}">${fmt(o.x.t||'Section')}</option>`).join('');
+  s.innerHTML='<option value="0">Section: From start</option>'+secs.map(o=>`<option value="${o.i}">${fmt(o.x.t||'Section')}</option>`).join('');
 }
 function jumpTo(i){if(!lesson)return;auto=false;reset();idx=i;ui()}
 function reset(n=0){
@@ -313,18 +308,17 @@ function reset(n=0){
 function load(id){
   const m=MANI.find(x=>x.id===id);if(!m)return;
   auto=false;store.set('lesson',id);
-  const ok=()=>{lesson=LESSONS[id]||null;if(lesson)useChar(lesson.char||m.char||store.get('char',''));if(m.words&&window.loadWords)loadWords(m.words);if(!lesson){toast('Lesson file sahi nahi hai: '+m.file)}reset();buildSections()};
+  const ok=()=>{lesson=LESSONS[id]||null;if(lesson)useChar(lesson.char||m.char||store.get('char',''));if(m.words&&window.loadWords)loadWords(m.words);if(!lesson){toast('Lesson file is invalid: '+m.file)}reset();buildSections()};
   if(LESSONS[id])return ok();
   toast('Loading…');
   const s=document.createElement('script');let done=false;
   const fin=f=>{if(done)return;done=true;f()};
   s.src=m.file;s.onload=()=>fin(ok);
-  s.onerror=()=>fin(()=>{lesson=null;reset();toast('Lesson file nahi mili: '+m.file)});
-  setTimeout(()=>fin(()=>{lesson=null;reset();toast('Lesson load nahi hua, internet/file check karo')}),8000);
+  s.onerror=()=>fin(()=>{lesson=null;reset();toast('Lesson file not found: '+m.file)});
+  setTimeout(()=>fin(()=>{lesson=null;reset();toast('Lesson failed to load, please check internet or file')}),8000);
   document.head.appendChild(s);
 }
 
-/* ---------- slides ---------- */
 function saveCur(){SL[cs]={nodes:[...board.childNodes],items,scroll:board.scrollTop,tools:window.ToolsAPI?ToolsAPI.save():null};board.replaceChildren()}
 function loadSl(i){const t=SL[i];cs=i;items=t.items;board.replaceChildren(...t.nodes);board.scrollTop=t.scroll;if(window.ToolsAPI)ToolsAPI.load(t.tools);closeTb();ui()}
 function goSlide(i){if(busy||i<0||i>=SL.length||i===cs)return;saveCur();loadSl(i)}
@@ -338,7 +332,6 @@ function back(){
   else if(cs>0){SL.pop();loadSl(SL.length-1)}
 }
 
-/* ---------- menu wiring ---------- */
 const setOpen=o=>{document.body.classList.toggle('open',o);$('#fab').setAttribute('aria-expanded',o)};
 $('#fab').onclick=()=>setOpen(!document.body.classList.contains('open'));
 $('#sheetBg').onclick=()=>setOpen(false);
@@ -369,13 +362,12 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft')$('#prev').click();
 });
 
-/* ---------- long-press text toolbar ---------- */
 const tb=$('#tb');let sel=null,st=null,lp=0,tbOpen=false;
 let tapOff=store.get('tapoff','0')==='1';
 function setTap(on){
   tapOff=on;store.set('tapoff',on?'1':'0');
   const b=$('#tapT');
-  if(b){b.setAttribute('aria-pressed',on);b.textContent=on?'Tap se next: OFF (free board)':'Tap se next: ON'}
+  if(b){b.setAttribute('aria-pressed',on);b.textContent=on?'Tap for next: OFF (free board)':'Tap for next: ON'}
   const f=$('#tapfab');
   if(f){f.innerHTML=on?'&#128683;':'&#128070;';f.setAttribute('aria-pressed',on);f.title=on?'Tap-next OFF':'Tap-next ON'}
 }
@@ -416,7 +408,7 @@ function unstick(){
   document.body.classList.remove('pen','penhide','tools','open','panmode');
   closeTb();window.ToolsAPI&&ToolsAPI.unstick&&ToolsAPI.unstick();
   document.querySelectorAll('.fab[aria-pressed=true]').forEach(b=>b.setAttribute('aria-pressed','false'));
-  ui();toast('UI reset ho gaya');setTimeout(()=>toast(''),1500);
+  ui();toast('UI reset successfully');setTimeout(()=>toast(''),1500);
 }
 addEventListener('blur',()=>{st=null;clearTimeout(lp);bpt.clear();bpin=null});
 function openTb(el){
@@ -464,7 +456,7 @@ tb.addEventListener('click',e=>{
 });
 function addNote(el){
   const n=document.createElement('div');n.className='snote';
-  n.innerHTML='<div class="nh"><span>Note</span><span class="x" role="button" aria-label="Delete note">&#10005;</span></div><div contenteditable="true" spellcheck="false">Likho…</div>';
+  n.innerHTML='<div class="nh"><span>Note</span><span class="x" role="button" aria-label="Delete note">&#10005;</span></div><div contenteditable="true" spellcheck="false">Write…</div>';
   n.style.left=Math.max(4,Math.min(el.offsetLeft+el.offsetWidth-30,board.clientWidth-190))+'px';
   n.style.top=(el.offsetTop+el.offsetHeight*.6)+'px';
   board.appendChild(n);
@@ -475,18 +467,14 @@ function addNote(el){
   h.addEventListener('pointerup',()=>{d=null});
 }
 
-
-
 function addNoteFree(){addNote({offsetLeft:board.clientWidth*.3,offsetWidth:0,offsetTop:board.scrollTop+board.clientHeight*.3,offsetHeight:0})}
 
-/* ---------- start-up, resize, safety net ---------- */
 let rt=0;
 addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{window.sizeInk&&sizeInk();fit();place(cur.x,cur.y);posTb()},120)});
-addEventListener('error',()=>toast('Kuch gadbad hui. Menu mein Restart dabao.'));
+addEventListener('error',()=>toast('Something went wrong. Press Restart in the menu.'));
 addEventListener('unhandledrejection',e=>{console.error(e.reason)});
 setG(g);setTheme(store.get('theme','navy'));
 
-/* pointer (red dot / arm): on-off and drag it anywhere */
 let ptrOn=store.get('ptr','1')==='1',pdrag=false;
 function setPtr(on){
   ptrOn=on;store.set('ptr',on?'1':'0');document.body.classList.toggle('noptr',!on);
@@ -498,7 +486,6 @@ ptr.addEventListener('pointermove',e=>{if(!pdrag)return;const r=wrap.getBounding
 const pdEnd=()=>{if(pdrag){pdrag=false;store.set('ptrpos',JSON.stringify({x:cur.x/wrap.clientWidth,y:cur.y/wrap.clientHeight}))}};
 ptr.addEventListener('pointerup',pdEnd);ptr.addEventListener('pointercancel',pdEnd);
 
-/* floating toggle buttons: tap-next on/off + hide all buttons */
 (function(){
   const css=document.createElement('style');
   css.textContent=`#tapfab{top:290px}#hidefab{top:346px}#ptrfab{top:402px}
@@ -519,7 +506,7 @@ setTap(tapOff);setPtr(ptrOn);
 document.body.classList.toggle('hi',hi);$('#hi').setAttribute('aria-pressed',hi);
 buildMenu();setStyle();buildChars();
 if(MANI.length){const last=store.get('lesson','');const id=MANI.some(m=>m.id===last)?last:MANI[0].id;$('#lesson').value=id;load(id)}
-else toast('manifest.js mein koi lesson nahi hai');
+else toast('There are no lessons in manifest.js');
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit();place(cur.x,cur.y)});
 </script>
 <script src="tools.js"></script>
