@@ -15,17 +15,24 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
+  html {
+    scroll-behavior: smooth;
+    overflow-y: auto;
+  }
+
   body {
     margin: 0;
-    padding: 8px; /* Margin narrow kiya gaya hai */
+    padding: 8px;
     background-color: #0b0f19;
     color: #fff;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .albums-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 12px; /* Gap narrow kiya gaya hai */
+    gap: 12px;
     max-width: 100%;
     margin: 0 auto;
   }
@@ -94,7 +101,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* Poori screen par failane ke liye styles */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -269,10 +275,10 @@
         <circle cx="115" cy="115" r="3" fill="#ec4899"/>
         <circle cx="100" cy="90" r="3" fill="#a78bfa"/>
         <circle cx="115" cy="65" r="3" fill="#f97316"/>
-        <text x="95" y="165" fill="#facc15" font-size="13" font-weight="bold">Patakha Blast</text>
+        <text x="95" y="165" fill="#facc15" font-size="13" font-weight="bold">Firecracker Blast</text>
       </svg>
     `,
-    subwaysurfer: `
+    metrorunner: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0b1329"/>
         <rect x="0" y="140" width="300" height="50" fill="#1e293b"/>
@@ -283,7 +289,7 @@
         <rect x="120" y="145" width="14" height="10" fill="#ef4444"/>
         <rect x="166" y="145" width="14" height="10" fill="#ef4444"/>
         <rect x="230" y="100" width="18" height="45" fill="#64748b"/>
-        <text x="90" y="35" fill="#38bdf8" font-size="12" font-weight="bold">Endless Runner Game</text>
+        <text x="80" y="35" fill="#38bdf8" font-size="12" font-weight="bold">Metro Runner India</text>
       </svg>
     `,
     hurdlerace: `
@@ -311,8 +317,8 @@
   const data = [
     { id: 1, title: "ABCD Game", author: "Akshat Games", svg: "abcd", file: "https://2025akshat-lang.github.io/Akshat/games/Abcd%20game.html" },
     { id: 2, title: "Ludo", author: "Akshat Games", svg: "ludo", file: "https://2025akshat-lang.github.io/Akshat/games/Ludo.html" },
-    { id: 3, title: "Patakha Blast", author: "Akshat Games", svg: "patakha", file: "https://2025akshat-lang.github.io/Akshat/games/Patakha2.html" },
-    { id: 4, title: "Subway Surfer", author: "Akshat Games", svg: "subwaysurfer", file: "https://2025akshat-lang.github.io/Akshat/games/Subwaysurfer.html" },
+    { id: 3, title: "Firecracker Blast", author: "Akshat Games", svg: "patakha", file: "https://2025akshat-lang.github.io/Akshat/games/Patakha2.html" },
+    { id: 4, title: "Metro Runner India", author: "Akshat Games", svg: "metrorunner", file: "https://2025akshat-lang.github.io/Akshat/games/Subwaysurfer.html" },
     { id: 5, title: "Hurdle Race", author: "Akshat Games", svg: "hurdlerace", file: "https://2025akshat-lang.github.io/Akshat/games/Hurdle-Race.html" }
   ];
 
@@ -339,11 +345,13 @@
     document.getElementById('modalFrame').src = file;
     document.getElementById('openTabLink').href = file;
     document.getElementById('simModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
 
   function closeModal() {
     document.getElementById('modalFrame').src = '';
     document.getElementById('simModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
   }
 
   render();
