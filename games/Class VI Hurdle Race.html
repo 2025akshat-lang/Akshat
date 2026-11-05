@@ -1,0 +1,680 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Class VI Hurdle Race</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout: sports-day sky with bunting, stands + 3 clay lanes (20 hurdles each), question-paper strip, one big question card. */
+:root{
+  --sky-top:#8ED1FF; --sky-bot:#EAF8FF; --ink:#1B2540; --muted:#5C6B8C; --edge:#D6E4F5;
+  --clay:#E4573D; --A:#2F7BFF; --B:#FFC400; --C:#8B5CF6;
+  --onA:#FFFFFF; --onB:#1B2540; --onC:#FFFFFF;
+  --good:#1FB871; --good-d:#128A54; --bad:#FF5A5F; --bad-d:#C93A40;
+  --f-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{
+  margin:0;color:var(--ink);font-family:var(--f-body);
+  background-color:var(--sky-bot);
+  background-image:linear-gradient(180deg,var(--sky-top) 0,var(--sky-bot) 42%,#DFF6D8 100%);
+  background-attachment:fixed;
+  padding-block:6px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.scenery{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bunting{position:absolute;left:0;right:0;top:env(safe-area-inset-top,0px);height:40px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40'%3E%3Cpolygon points='10,8 50,8 30,36' fill='%23FF5A5F'/%3E%3Cpolygon points='70,8 110,8 90,36' fill='%23FFC400'/%3E%3Cpolygon points='130,8 170,8 150,36' fill='%232F7BFF'/%3E%3Cpolygon points='190,8 230,8 210,36' fill='%238B5CF6'/%3E%3Cpath d='M0 4Q30 16 60 4T120 4T180 4T240 4' fill='none' stroke='%235B6785' stroke-width='2'/%3E%3C/svg%3E") repeat-x 0 0/240px 40px}
+.sun{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:calc(48px + env(safe-area-inset-top,0px));width:96px;opacity:.9}
+.sun .rays{transform-box:fill-box;transform-origin:center;animation:spin 40s linear infinite}
+.cloud{position:absolute;left:-220px;animation:drift linear infinite}
+@keyframes drift{to{transform:translateX(calc(100vw + 460px))}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.app{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;gap:10px;max-width:1280px;margin:0 auto}
+.top{height:42px;display:flex;justify-content:flex-start;align-items:flex-end}
+.tools{display:flex;gap:8px;background:#fff;border-radius:16px;padding:5px;box-shadow:0 4px 0 rgba(27,37,64,.12)}
+.ib{width:40px;height:40px;border-radius:12px;border:0;background:#EEF4FF;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.ib:hover{background:#DCE8FF}
+.ib svg{width:22px;height:22px;fill:currentColor}
+.ib.armed{background:var(--bad);color:#fff;animation:shake .3s}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+#track{display:block;width:100%;height:auto;max-height:46vh;overflow:visible;filter:drop-shadow(0 8px 0 rgba(27,37,64,.12))}
+#track .stands{fill:#7388C4}
+#track .clay{fill:var(--clay)}
+#track .laneline{stroke:#fff;stroke-width:3;opacity:.95}
+#track .cell{fill:#fff}
+#track .lane{transition:opacity .35s}
+#track .lane.dim{opacity:.5}
+#track .hl{fill:var(--g);opacity:0;transition:opacity .35s}
+#track .lane.active .hl{opacity:.25}
+#track .badgec{fill:var(--g)}
+#track .badget{font-family:var(--f-display);font-weight:700;font-size:38px;fill:var(--on);text-anchor:middle}
+#track .score{font-family:var(--f-display);font-weight:700;font-size:30px;fill:var(--ink);text-anchor:middle;transform-box:fill-box;transform-origin:center}
+#track .ring{fill:none;stroke:var(--ink);stroke-width:3;opacity:0}
+#track .lane.active .ring{opacity:1;animation:ring 1s ease-in-out infinite}
+#track .hurdle .leg{stroke:#fff;stroke-width:3;stroke-linecap:round;fill:none}
+#track .hurdle .bar{fill:#fff}
+#track .hurdle .stripe{fill:#FF5A5F}
+#track .hurdle.cleared .leg{stroke:var(--g)}
+#track .hurdle.cleared .bar{fill:var(--g)}
+#track .hurdle.cleared .stripe{fill:#fff}
+#track .hurdle.target .bar{animation:blink .8s ease-in-out infinite}
+#track .fan{animation:fan 1.6s ease-in-out infinite;animation-delay:var(--d)}
+#track.cheering .fan{animation:cheer .28s ease-in-out infinite alternate}
+.jl{font-family:var(--f-display);font-weight:700;font-size:14px;fill:var(--on)}
+
+/* kid characters */
+.kid-limb,.legL,.legR,.armL,.armR{transform-box:fill-box;transform-origin:50% 6%}
+.runner .eyesx,.runner .stars,.pkid .eyesx,.pkid .stars{display:none}
+.runner.dizzy .eyes{display:none}
+.runner.dizzy .eyesx,.runner.dizzy .stars{display:inline}
+.stars{transform-box:fill-box;transform-origin:center;animation:spin .9s linear infinite}
+.runner.running .legL,.runner.running .armR{animation:swingA .18s ease-in-out infinite alternate}
+.runner.running .legR,.runner.running .armL{animation:swingB .18s ease-in-out infinite alternate}
+.runner.cheer .armL{transform:rotate(140deg)}
+.runner.cheer .armR{transform:rotate(-140deg)}
+#track .lane.active .runner:not(.running) .bob{animation:bob .7s ease-in-out infinite alternate}
+.pcol.win .armL{transform:rotate(140deg)}
+.pcol.win .armR{transform:rotate(-140deg)}
+.pcol.win .bob{animation:bob .4s ease-in-out infinite alternate}
+@keyframes swingA{from{transform:rotate(-40deg)}to{transform:rotate(40deg)}}
+@keyframes swingB{from{transform:rotate(40deg)}to{transform:rotate(-40deg)}}
+
+/* paper progress strip */
+.strip{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+.pip{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.8);border:2px solid #fff;box-shadow:0 2px 0 rgba(27,37,64,.15);box-sizing:border-box}
+.pip.nobody{background:#B6C0D6}
+.pip.cur{background:#fff;border-color:var(--ink);animation:blink .9s ease-in-out infinite}
+
+/* question card */
+.card{
+  --g:var(--A);--on:var(--onA);
+  position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(14px,2vw,28px);align-items:center;flex:1;
+  background:#fff;border:4px solid var(--g);border-radius:26px;padding:clamp(14px,2vw,26px);
+  box-shadow:0 8px 0 rgba(27,37,64,.14),0 20px 40px rgba(27,37,64,.12);
+}
+.who{display:flex;flex-direction:column;align-items:center;gap:12px}
+.badge{width:clamp(72px,9.5vw,116px);aspect-ratio:1;border-radius:50%;background:var(--g);color:var(--on);
+  display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:clamp(46px,6.8vw,84px);line-height:1;
+  box-shadow:0 6px 0 rgba(27,37,64,.18);animation:bounce 1.2s ease-in-out infinite alternate}
+.chain{display:flex;align-items:center;gap:4px}
+.chain .c{--g:var(--A);--on:var(--onA);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--g);color:var(--on);font-family:var(--f-display);font-weight:700;font-size:15px;opacity:.4}
+.chain .c.cur{opacity:1;outline:3px solid var(--ink);outline-offset:2px;transform:scale(1.12)}
+.chain .c.fail{background:#E3E8F2;opacity:1}
+.chain .c svg{width:16px;height:16px}
+.chain .ar{width:12px;height:12px;fill:none;stroke:var(--muted);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.stakes{display:flex;gap:4px;min-height:30px}
+.stakes svg{width:30px;height:30px;animation:twinkle .9s ease-in-out infinite alternate}
+.stakes svg:nth-child(2){animation-delay:.25s}
+.qarea{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;min-width:0}
+.qtxt{flex:1 1 320px;min-width:0}
+.q{margin:0;font-size:clamp(20px,2.7vw,36px);line-height:1.3;font-weight:800;text-wrap:pretty;max-width:36em;white-space:pre-line}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 24px;margin-top:14px;max-width:46em}
+.opt{display:flex;gap:10px;align-items:center;font-size:clamp(16px,1.9vw,25px);font-weight:700;line-height:1.25;min-width:0}
+.opt i{flex:none;font-style:normal;font-family:var(--f-display);font-weight:700;font-size:.9em;width:1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;color:var(--ink);background:var(--k)}
+.opt span{min-width:0;overflow-wrap:anywhere}
+.fig{flex:0 1 clamp(190px,24vw,300px)}
+.fig svg{display:block;width:100%;height:auto}
+.fig .tg{animation:pulse 1s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+.acts{display:flex;gap:16px}
+.act{width:clamp(72px,8.6vw,98px);aspect-ratio:1;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;padding:0;color:#fff;transition:transform .08s}
+.act svg{width:52%;height:52%;fill:none;stroke:currentColor;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
+.act.yes{background:var(--good);box-shadow:0 7px 0 var(--good-d)}
+.act.no{background:var(--bad);box-shadow:0 7px 0 var(--bad-d)}
+.act.nx{background:var(--A);box-shadow:0 7px 0 #1E56B8}
+.act.nx svg{fill:currentColor;stroke:none}
+.act:hover:not(:disabled){filter:brightness(1.08)}
+.act:active:not(:disabled){transform:translateY(5px)}
+.act:disabled{opacity:.35;cursor:default}
+
+.end{position:fixed;inset:0;z-index:20;background:linear-gradient(180deg,rgba(142,209,255,.97),rgba(234,248,255,.98));display:grid;place-items:center;align-content:center;gap:20px;
+  padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.end canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.podium{--maxh:min(40vh,320px);position:relative;display:flex;align-items:flex-end;justify-content:center;gap:clamp(12px,3vw,40px)}
+.pcol{--g:var(--A);--on:var(--onA);display:flex;flex-direction:column;align-items:center;gap:4px;width:clamp(86px,20vw,190px)}
+.pcol .tr{width:clamp(52px,8vw,88px);animation:hop 1s ease-in-out infinite alternate}
+.pcol .tspace{height:clamp(52px,8vw,88px)}
+.pkid{width:clamp(60px,10vw,110px);height:auto;overflow:visible}
+.pbar{position:relative;width:100%;height:calc(60px + (var(--maxh) - 60px) * var(--h));background:var(--g);border-radius:18px 18px 0 0;color:var(--on);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;box-shadow:0 8px 0 rgba(27,37,64,.18)}
+.pbar b{font-size:clamp(44px,7vw,88px);line-height:1}
+.pbar i{font-style:normal;font-size:clamp(26px,4vw,48px);line-height:1}
+.rk{position:absolute;top:-16px;right:-10px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:20px;color:var(--ink);text-decoration:none;background:#9AA6BF;border:3px solid #fff}
+.rk.r1{background:#FFC400}.rk.r2{background:#CBD3E1}.rk.r3{background:#D9955F}
+.endbtns{position:relative;display:flex;gap:10px;background:#fff;border-radius:16px;padding:5px;box-shadow:0 4px 0 rgba(27,37,64,.12)}
+
+@media (max-width:700px){
+  .card{grid-template-columns:minmax(0,1fr)}
+  .who{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px 16px}
+  .acts{gap:12px}
+  .act{flex:1;aspect-ratio:auto;height:66px;border-radius:33px;width:auto}
+  .opts{grid-template-columns:minmax(0,1fr)}
+  #track{max-height:none}
+  .sun{display:none}
+}
+@keyframes bob{to{transform:translateY(-3px)}}
+@keyframes blink{50%{opacity:.5}}
+@keyframes ring{50%{opacity:.3}}
+@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes hop{to{transform:translateY(-10px)}}
+@keyframes fan{50%{transform:translateY(-2px)}}
+@keyframes cheer{to{transform:translateY(-8px)}}
+@keyframes bounce{to{transform:translateY(-6px)}}
+@keyframes twinkle{to{transform:scale(1.18) rotate(8deg)}}
+@keyframes pulse{to{transform:scale(1.35)}}
+@media (prefers-reduced-motion:reduce){
+  .cloud,.sun .rays,.badge,.stakes svg,.fig .tg,.pcol .tr,.pcol.win .bob,.stars{animation:none}
+  #track .fan,#track.cheering .fan,#track .lane.active .ring,#track .hurdle.target .bar,#track .lane.active .runner:not(.running) .bob,.pip.cur{animation:none}
+}
+</style>
+
+<div class="scenery" aria-hidden="true">
+  <div class="bunting"></div>
+  <svg class="sun" viewBox="0 0 120 120"><g class="rays" stroke="#FFC400" stroke-width="6" stroke-linecap="round"><path d="M60 4v14M60 102v14M4 60h14M102 60h14M20 20l10 10M90 90l10 10M100 20L90 30M30 90l-10 10"/></g><circle cx="60" cy="60" r="28" fill="#FFD43B"/></svg>
+  <svg class="cloud" style="top:70px;animation-duration:70s;animation-delay:-20s" width="150" height="60" viewBox="0 0 150 60"><g fill="#fff"><circle cx="42" cy="38" r="20"/><circle cx="72" cy="28" r="24"/><circle cx="104" cy="38" r="18"/><rect x="40" y="38" width="66" height="20" rx="10"/></g></svg>
+  <svg class="cloud" style="top:150px;animation-duration:95s;animation-delay:-60s" width="190" height="76" viewBox="0 0 150 60"><g fill="#fff" opacity=".85"><circle cx="42" cy="38" r="20"/><circle cx="72" cy="28" r="24"/><circle cx="104" cy="38" r="18"/><rect x="40" y="38" width="66" height="20" rx="10"/></g></svg>
+</div>
+
+<main class="app">
+  <header class="top">
+    <div class="tools">
+      <button class="ib" id="snd" aria-label="Sound"></button>
+      <button class="ib" id="undo" aria-label="Undo"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+      <button class="ib" id="reset" aria-label="Restart"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+    </div>
+  </header>
+
+  <svg id="track" viewBox="0 0 1000 400" role="img" aria-label="Hurdle race track"></svg>
+  <div class="strip" id="strip" aria-hidden="true"></div>
+
+  <section class="card" id="card">
+    <div class="who">
+      <div class="badge" id="badge">A</div>
+      <div class="chain" id="chain"></div>
+      <div class="stakes" id="stakes"></div>
+    </div>
+    <div class="qarea">
+      <div class="qtxt"><p class="q" id="qtext"></p><div class="opts" id="opts"></div></div>
+      <div class="fig" id="fig" hidden></div>
+    </div>
+    <div class="acts">
+      <button class="act yes" id="yes" aria-label="Correct"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></svg></button>
+      <button class="act no" id="no" aria-label="Wrong"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="act nx" id="nx" aria-label="Next" hidden><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+    </div>
+  </section>
+</main>
+
+<div class="end" id="end" hidden>
+  <canvas id="conf"></canvas>
+  <div class="podium" id="podium"></div>
+  <div class="endbtns">
+    <button class="ib" id="undo2" aria-label="Undo"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+    <button class="ib" id="again" aria-label="Play again"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var NS='http://www.w3.org/2000/svg';
+  var TEAMS=['A','B','C'], SLOTS=20, PTS=[1,1,2];
+  var SKIN={A:'#F1C7A0',B:'#B9774A',C:'#F8D5B8'}, HAIR={A:'#3B2A20',B:'#1B1B1B',C:'#E0662B'};
+
+  /* ---------- the whole question paper, in paper order (45 turns) ---------- */
+  function mc(q,o){return {q:q,o:o}}
+  function tf(q){return {q:'True or False: '+q}}
+  var MATCH=['Oscillatory motion','Millimetre','SI unit of temperature','Kilometre','Circular motion','Indicates the north–south direction'];
+  var COMP_INTRO='Reshma made a magnetic compass. She rubbed an iron sewing needle 30–40 times with one pole of a bar magnet, always in the same direction. She passed the needle through a piece of cork and floated it in a bowl of water.';
+  var ITEMS=[
+    mc('The SI unit of temperature is',['degree Celsius','degree Fahrenheit','kelvin','calorie']),
+    mc('The normal temperature of a healthy human body is close to',['98.6 °C','37.0 °C','32.0 °C','27.0 °C']),
+    mc('While reading a laboratory thermometer, the eye should be',['above the liquid level','below the liquid level','in line with the top of the liquid column','far from the thermometer']),
+    mc('A clinical thermometer cannot be used to measure the temperature of boiling water because',['it is made of glass','boiling water is outside its range','it is digital','it is very small']),
+    mc('The temperature of a body tells us',['how heavy it is','how big it is','how hot or cold it is','how fast it moves']),
+    mc('The SI unit of length is',['centimetre','metre','kilometre','millimetre']),
+    mc('Which of the following is NOT a standard unit of length?',['millimetre','centimetre','kilometre','handspan']),
+    mc('A kilometre stone on a road shows ‘Delhi 70 km’. Here, the reference point is',['the bus','the road','Delhi','the passenger']),
+    mc('Deepa sits in a moving bus. Her fellow passengers are at rest with respect to the ______, but in motion with respect to a ______.',['bus; tree outside','tree; bus','road; tree','ground; building']),
+    mc('1 km is equal to',['10 m','100 m','1000 m','10000 m']),
+    mc('Which of the following is attracted by a magnet?',['wooden ruler','iron nail','rubber eraser','glass tumbler']),
+    mc('A freely suspended bar magnet always rests along the north–south direction because',['it is heavy','the Earth behaves like a giant magnet','of the thread','of the wind']),
+    mc('A bar magnet is broken into two pieces. Each piece will have',['only a North pole','only a South pole','both North and South poles','no poles']),
+    mc('Two metal bars look identical; one is a magnet, the other is plain iron. When one end of bar X is brought near the North pole of a magnet, it is repelled. Bar X is',['plain iron','a magnet','a non-magnetic material','a wooden piece']),
+    mc('When the North pole of a bar magnet is brought near the North pole of a compass needle, the needle',['moves away','moves closer','does not move','spins fast']),
+    mc('A thermometer used for measuring human body temperature is called a ______ thermometer.'),
+    mc('While measuring the temperature of hot water, Ravi’s thermometer touched the bottom of the beaker. He should lift it so that the bulb touches neither the bottom nor the ______ of the beaker.'),
+    mc('Handspan, foot and fist differ from person to person, so we need ______ units of measurement.'),
+    mc('A freely suspended magnet rests along the north–south direction because the Earth itself behaves like a giant ______.'),
+    mc('The motion of the blades of a ceiling fan is an example of ______ motion.'),
+    tf('1 km is equal to 100 m.'),
+    tf('A magnet having only a North pole and no South pole can be obtained.'),
+    tf('The temperature of ice remains constant while it is melting.'),
+    tf('The magnetic effect can act through non-magnetic materials such as wood and glass.'),
+    tf('A passenger sitting in a moving bus is at rest with respect to the bus.'),
+    mc('Match: Distance between two cities',MATCH),
+    mc('Match: Thickness of a coin',MATCH),
+    mc('Match: Motion of a swing',MATCH),
+    mc('Match: Needle of a magnetic compass',MATCH),
+    mc('Match: Kelvin',MATCH),
+    mc('If a small iron bar is suspended freely in place of a bar magnet, will it also come to rest along the north–south direction? Give a reason.'),
+    mc('Why do we need standard units of measurement? Name one standard unit of length.'),
+    mc('Why can we not always rely on our sense of touch to decide how hot or cold a body is?'),
+    mc('(i) The distance between Hardeep’s house and school is 1.5 km. Express it in metres.\n(ii) Express 3.5 m in centimetres.'),
+    mc('Between the marks 20 °C and 30 °C on a laboratory thermometer there are 10 small divisions. What is the smallest value this thermometer can read?'),
+    mc('On this thermometer (10 small divisions between 20 °C and 30 °C), what temperature will be shown by the 4th small division above 20 °C?'),
+    {q:'Name the part marked A in the set-up for measuring the temperature of water.',f:'app:A'},
+    {q:'Name the part marked B in the set-up for measuring the temperature of water.',f:'app:B'},
+    {q:'Name the part marked C in the set-up for measuring the temperature of water.',f:'app:C'},
+    {q:'Name the part marked D in the set-up for measuring the temperature of water.',f:'app:D'},
+    {q:'Name the part marked E in the set-up for measuring the temperature of water.',f:'app:E'},
+    {q:COMP_INTRO+'\nHow can Reshma check that the needle has become a magnet?',f:'compass'},
+    {q:'Reshma’s homemade compass (see figure). In which direction will the needle come to rest? Give a reason.',f:'compass'},
+    {q:'Reshma’s homemade compass (see figure). What will she observe if the North pole of the bar magnet is brought near the north-pointing end of the needle?',f:'compass'},
+    {q:'Reshma’s homemade compass (see figure). Will the needle’s deflection change if a thin glass sheet is placed between the bar magnet and the needle? Why?',f:'compass'}
+  ];
+  var TOTAL=ITEMS.length;
+
+  /* ---------- helpers ---------- */
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function $(id){return document.getElementById(id)}
+  function mk(tag,attrs,parent){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+  function T(x,y){return 'translate('+x+'px,'+y+'px)'}
+  function wait(ms){ return new Promise(function(r){ setTimeout(r,reduce?Math.min(ms,200):ms); }); }
+  var STAR='<path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z" fill="#FFC400" stroke="#E09A00" stroke-width="1.4" stroke-linejoin="round"/>';
+
+  /* ---------- geometry ---------- */
+  var TOP0=54, LANE_H=112;
+  function laneTop(g){return TOP0+g*LANE_H}
+  function base(g){return laneTop(g)+90}
+  function hx(k){return 152+k*36}
+  function rest(p){return p>=SLOTS?940:hx(p)-24}
+
+  /* ---------- kid character (feet at 0,0) ---------- */
+  function kid(L){
+    var s=SKIN[L], hr=HAIR[L];
+    return ''+
+    '<ellipse cx="0" cy="1.5" rx="15" ry="4" fill="#1B2540" opacity=".18"/>'+
+    '<g class="bob">'+
+      '<g class="legR"><rect x="1.5" y="-23" width="6.5" height="21" rx="3.2" fill="#2B3A67"/><ellipse cx="6" cy="-1.6" rx="6.8" ry="3.5" fill="#fff" stroke="#2B3A67" stroke-width="1.5"/></g>'+
+      '<g class="legL"><rect x="-8" y="-23" width="6.5" height="21" rx="3.2" fill="#2B3A67"/><ellipse cx="-3.5" cy="-1.6" rx="6.8" ry="3.5" fill="#fff" stroke="#2B3A67" stroke-width="1.5"/></g>'+
+      '<g class="armL"><rect x="-14.5" y="-42" width="5.5" height="18" rx="2.75" fill="'+s+'"/></g>'+
+      '<rect x="-10" y="-46" width="20" height="25" rx="9" style="fill:var(--g)"/>'+
+      '<text class="jl" x="0" y="-28" text-anchor="middle">'+L+'</text>'+
+      '<g class="armR"><rect x="9" y="-42" width="5.5" height="18" rx="2.75" fill="'+s+'"/></g>'+
+      '<circle cx="0" cy="-57" r="12.5" fill="'+s+'"/>'+
+      '<path d="M-12.5 -57A12.5 12.5 0 0 1 12.5 -57Q0 -64 -12.5 -57Z" fill="'+hr+'"/>'+
+      '<g class="eyes"><circle cx="-4.5" cy="-56" r="1.9" fill="#1B2540"/><circle cx="4.5" cy="-56" r="1.9" fill="#1B2540"/></g>'+
+      '<path class="eyesx" d="M-7 -58l4 4m0-4l-4 4M3 -58l4 4m0-4l-4 4" stroke="#1B2540" stroke-width="1.5" stroke-linecap="round" fill="none"/>'+
+      '<path d="M-4.5 -51Q0 -46.5 4.5 -51" stroke="#1B2540" stroke-width="1.7" stroke-linecap="round" fill="none"/>'+
+      '<circle cx="-8.5" cy="-52" r="2.4" fill="#FF8FA3" opacity=".55"/><circle cx="8.5" cy="-52" r="2.4" fill="#FF8FA3" opacity=".55"/>'+
+      '<g class="stars" fill="#FFC400"><path transform="translate(-10,-74)" d="M0 -4.5L1.4 -1.4L4.5 0L1.4 1.4L0 4.5L-1.4 1.4L-4.5 0L-1.4 -1.4Z"/><path transform="translate(0,-78)" d="M0 -4.5L1.4 -1.4L4.5 0L1.4 1.4L0 4.5L-1.4 1.4L-4.5 0L-1.4 -1.4Z"/><path transform="translate(10,-74)" d="M0 -4.5L1.4 -1.4L4.5 0L1.4 1.4L0 4.5L-1.4 1.4L-4.5 0L-1.4 -1.4Z"/></g>'+
+    '</g>';
+  }
+  function tv(L){return '--g:var(--'+L+');--on:var(--on'+L+')'}
+
+  /* ---------- build the track ---------- */
+  var svg=$('track');
+  (function build(){
+    var h='<defs><pattern id="chk" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#fff"/><rect width="6" height="6" fill="#1B2540"/><rect x="6" y="6" width="6" height="6" fill="#1B2540"/></pattern></defs>';
+    h+='<rect class="stands" x="0" y="0" width="1000" height="56" rx="14"/>';
+    var shirts=['#FF5A5F','#FFC400','#2F7BFF','#8B5CF6','#1FB871','#FF8A1F','#FFFFFF'], skins=['#F1C7A0','#B9774A','#F8D5B8','#8D5A36','#E3AE86'];
+    for(var i=0;i<50;i++){
+      for(var r=0;r<2;r++){
+        var x=12+i*19.6+(r?9:0), y=r?36:17;
+        h+='<g class="fan" style="--d:'+(((i*7+r*3)%16)/10).toFixed(1)+'s"><rect x="'+(x-6)+'" y="'+(y+3)+'" width="12" height="10" rx="4" fill="'+shirts[(i*3+r*2)%7]+'"/><circle cx="'+x+'" cy="'+y+'" r="5.5" fill="'+skins[(i+r)%5]+'"/></g>';
+      }
+    }
+    h+='<rect class="clay" x="100" y="'+TOP0+'" width="900" height="'+(3*LANE_H)+'" rx="12"/>';
+    for(var j=0;j<4;j++){ var ly=j===0?TOP0+3:(j===3?TOP0+3*LANE_H-3:TOP0+j*LANE_H); h+='<line class="laneline" x1="104" x2="996" y1="'+ly+'" y2="'+ly+'"/>'; }
+    h+='<rect x="110" y="'+TOP0+'" width="4" height="'+(3*LANE_H)+'" fill="#fff"/>';
+    h+='<rect x="878" y="'+TOP0+'" width="24" height="'+(3*LANE_H)+'" fill="url(#chk)"/>';
+    TEAMS.forEach(function(L,g){
+      var top=laneTop(g), b=base(g);
+      h+='<g class="lane" data-g="'+g+'" style="'+tv(L)+'">';
+      h+='<rect class="hl" x="100" y="'+top+'" width="900" height="'+LANE_H+'"/>';
+      h+='<rect class="cell" x="2" y="'+(top+4)+'" width="92" height="'+(LANE_H-8)+'" rx="16"/>';
+      h+='<circle class="ring" cx="48" cy="'+(top+40)+'" r="35"/>';
+      h+='<circle class="badgec" cx="48" cy="'+(top+40)+'" r="30"/>';
+      h+='<text class="badget" x="48" y="'+(top+53)+'">'+L+'</text>';
+      h+='<text class="score" x="48" y="'+(top+98)+'">0</text>';
+      for(var k=0;k<SLOTS;k++){
+        h+='<g class="hurdle" style="transform:'+T(hx(k),b)+'"><g class="hi"><path class="leg" d="M-8 0L-6.5 -22M8 0L6.5 -22"/><rect class="bar" x="-11" y="-28" width="22" height="7" rx="2"/><rect class="stripe" x="-3" y="-28" width="6" height="7"/></g></g>';
+      }
+      h+='<g class="runner" style="transform:'+T(rest(0),b)+'">'+kid(L)+'</g>';
+      h+='</g>';
+    });
+    h+='<g id="fx"></g>';
+    svg.innerHTML=h;
+  })();
+  var fx=$('fx');
+  var lanes=TEAMS.map(function(_,g){
+    var el=svg.querySelector('.lane[data-g="'+g+'"]');
+    return {el:el,runner:el.querySelector('.runner'),hurdles:Array.prototype.slice.call(el.querySelectorAll('.hurdle')),score:el.querySelector('.score')};
+  });
+
+  /* paper strip */
+  var strip=$('strip'), pips=[];
+  for(var i=0;i<TOTAL;i++){ var d=document.createElement('span'); d.className='pip'; strip.appendChild(d); pips.push(d); }
+
+  /* ---------- figures ---------- */
+  function appFig(part){
+    var P={A:[140,34],B:[146,63],C:[176,128],D:[165,168],E:[152,218]}, t=P[part];
+    return '<svg viewBox="0 0 240 240" role="img" aria-label="Set-up for measuring temperature of water">'+
+      '<rect x="8" y="226" width="78" height="9" rx="4" fill="#8C97AD"/>'+
+      '<rect x="40" y="18" width="8" height="210" rx="3" fill="#A5AFC4"/>'+
+      '<rect x="44" y="58" width="86" height="7" rx="3" fill="#A5AFC4"/>'+
+      '<rect x="126" y="52" width="20" height="20" rx="4" fill="#5B6785"/><circle cx="136" cy="62" r="3" fill="#C9D2E6"/>'+
+      '<rect x="132" y="12" width="8" height="132" rx="4" fill="#fff" stroke="#8C97AD" stroke-width="1.5"/>'+
+      '<rect x="134.5" y="92" width="3" height="52" fill="#E8453C"/><circle cx="136" cy="150" r="8" fill="#E8453C"/>'+
+      '<rect x="99" y="118" width="74" height="66" fill="#8FD3FF" opacity=".85"/>'+
+      '<path d="M95 100V182a8 8 0 0 0 8 8H169a8 8 0 0 0 8-8V100" fill="none" stroke="#6E7FA3" stroke-width="3" stroke-linecap="round"/>'+
+      '<rect x="86" y="192" width="100" height="6" rx="3" fill="#5B6785"/><path d="M96 198L84 226M176 198L188 226" stroke="#5B6785" stroke-width="5" stroke-linecap="round"/>'+
+      '<path d="M122 226l4-12h20l4 12z" fill="#F2B233"/><rect x="134" y="209" width="4" height="6" fill="#6B4E16"/><path d="M136 209c-6-5-4-10 0-14 4 4 6 9 0 14z" fill="#FF8A1F"/>'+
+      '<line x1="204" y1="'+t[1]+'" x2="'+(t[0]+6)+'" y2="'+t[1]+'" stroke="#FF5A5F" stroke-width="3" stroke-linecap="round"/>'+
+      '<circle class="tg" cx="'+t[0]+'" cy="'+t[1]+'" r="5" fill="#FF5A5F"/>'+
+      '<circle cx="216" cy="'+t[1]+'" r="14" fill="#FF5A5F" stroke="#fff" stroke-width="3"/>'+
+      '<text x="216" y="'+(t[1]+6)+'" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="18" fill="#fff">'+part+'</text></svg>';
+  }
+  function compassFig(){
+    return '<svg viewBox="0 0 330 140" role="img" aria-label="Reshma’s homemade compass">'+
+      '<path d="M16 60a110 74 0 0 0 220 0z" fill="#CFEFFF" stroke="#6E7FA3" stroke-width="3" stroke-linejoin="round"/>'+
+      '<rect x="114" y="50" width="24" height="11" rx="3" fill="#D9A066"/>'+
+      '<line x1="66" y1="56" x2="186" y2="56" stroke="#7B8499" stroke-width="4.5" stroke-linecap="round"/>'+
+      '<line x1="66" y1="56" x2="100" y2="56" stroke="#E8453C" stroke-width="4.5" stroke-linecap="round"/>'+
+      '<rect x="256" y="44" width="30" height="26" rx="3" fill="#E8453C"/><rect x="286" y="44" width="30" height="26" rx="3" fill="#2F7BFF"/>'+
+      '<text x="271" y="63" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="18" fill="#fff">N</text>'+
+      '<text x="301" y="63" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="18" fill="#fff">S</text></svg>';
+  }
+  function figure(f){ return f==='compass'?compassFig():appFig(f.split(':')[1]); }
+
+  /* ---------- game state (everything derives from the tap history) ---------- */
+  var KEY='class6-hurdle-race-v2';
+  var actions=[], busy=false, sound=true, lastSig='';
+  try{
+    var sv=localStorage.getItem(KEY);
+    if(sv&&/^[ynx]*$/.test(sv)) actions=sv.split('');
+  }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY,actions.join('')); }catch(e){} }
+
+  function derive(){
+    var q=0,k=0,waiting=false,sc=[0,0,0],win=[];
+    actions.forEach(function(a){
+      if(q>=TOTAL) return;
+      if(waiting){ if(a==='x'){ q++; k=0; waiting=false; } return; }
+      if(a==='y'){ var t=(q%3+k)%3; sc[t]+=PTS[k]; win[q]=t; q++; k=0; }
+      else if(a==='n'){ k++; if(k>=3){ win[q]=-1; waiting=true; } }
+    });
+    return {q:q,k:k,waiting:waiting,sc:sc,win:win,done:q>=TOTAL};
+  }
+
+  /* ---------- sound (soft, child friendly) ---------- */
+  var ac=null;
+  function actx(){
+    if(!sound) return null;
+    try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended') ac.resume(); }catch(e){ ac=null; }
+    return ac;
+  }
+  function note(f0,f1,t0,d,type,v){
+    var a=actx(); if(!a) return;
+    var o=a.createOscillator(), g=a.createGain(), t=a.currentTime+t0;
+    o.type=type||'sine'; o.frequency.setValueAtTime(f0,t);
+    if(f1&&f1!==f0) o.frequency.exponentialRampToValueAtTime(f1,t+d);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(v||0.14,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+d+0.05);
+  }
+  var sfx={
+    ding:function(){ note(784,0,0,0.25,'sine',0.1); note(1175,0,0.09,0.35,'sine',0.08); },
+    boing:function(){ note(280,720,0,0.22,'sine',0.16); },
+    pop:function(){ note(520,300,0,0.1,'triangle',0.12); },
+    cheer:function(two){ [523,659,784].concat(two?[1047,1319]:[]).forEach(function(f,i){ note(f,0,i*0.09,0.26,'triangle',0.13); }); },
+    bonk:function(){ note(240,110,0,0.28,'triangle',0.18); },
+    whoosh:function(){ note(300,1100,0,0.4,'sine',0.07); },
+    wah:function(){ [392,370,349,311].forEach(function(f,i){ note(f,f*0.96,i*0.24,0.3,'triangle',0.12); }); },
+    fanfare:function(){ [523,659,784,1047,784,1047,1319].forEach(function(f,i){ note(f,0,i*0.15,0.3,'triangle',0.15); }); }
+  };
+
+  /* ---------- effects ---------- */
+  function burst(x,y,color,n,spread){
+    if(reduce) return;
+    for(var i=0;i<n;i++){
+      var c=mk(i%3===0?'rect':'circle',{},fx);
+      var s=3+Math.random()*4;
+      if(c.tagName==='rect'){ c.setAttribute('width',s*1.6); c.setAttribute('height',s*1.6); c.setAttribute('x',x); c.setAttribute('y',y); }
+      else{ c.setAttribute('r',s); c.setAttribute('cx',x); c.setAttribute('cy',y); }
+      c.setAttribute('fill',i%2?color:['#FFC400','#fff','#FF5A5F','#1FB871'][i%4]);
+      var a=Math.random()*Math.PI*2, d=(spread||34)*(0.5+Math.random());
+      var an=c.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+Math.cos(a)*d+'px,'+(Math.sin(a)*d-18)+'px) rotate(200deg)',opacity:0}],{duration:800,easing:'ease-out'});
+      an.onfinish=(function(el){return function(){el.remove()}})(c);
+    }
+  }
+  function floatLabel(x,y,txt,L){
+    var g=mk('g',{},fx);
+    mk('circle',{r:17,fill:'var(--'+L+')',stroke:'#fff','stroke-width':3},g);
+    var t=mk('text',{'text-anchor':'middle',y:7,'font-size':20,'font-weight':700,'font-family':'Fredoka,sans-serif',fill:'var(--on'+L+')'},g);
+    t.textContent=txt;
+    var an=g.animate([{transform:T(x,y)+' scale(.4)',opacity:0},{transform:T(x,y-18)+' scale(1.15)',opacity:1,offset:.3},{transform:T(x,y-46)+' scale(1)',opacity:0}],{duration:1300,easing:'ease-out'});
+    an.onfinish=function(){g.remove()};
+  }
+  function passBubble(from,to){
+    var y0=laneTop(from)+40, y1=laneTop(to)+40;
+    var g=mk('g',{},fx);
+    mk('circle',{r:19,fill:'#fff',stroke:'#FFC400','stroke-width':4},g);
+    var t=mk('text',{'text-anchor':'middle',y:8,'font-size':24,'font-weight':700,'font-family':'Fredoka,sans-serif',fill:'#1B2540'},g);
+    t.textContent='?';
+    var an=g.animate([{transform:T(48,y0)+' scale(.6)'},{transform:T(92,(y0+y1)/2)+' scale(1.3)'},{transform:T(48,y1)+' scale(1)'}],{duration:800,easing:'ease-in-out'});
+    an.onfinish=function(){g.remove()};
+  }
+  function crowdCheer(){ svg.classList.add('cheering'); setTimeout(function(){ svg.classList.remove('cheering'); },1500); }
+
+  /* ---------- play: points ---------- */
+  function playScore(t,p0,m){
+    var L=TEAMS[t], y=base(t), lane=lanes[t], run=lane.runner;
+    var s0=Math.min(p0,SLOTS), s1=Math.min(p0+m,SLOTS), c=s1-s0;
+    var fr=[], times=[], apex=[], clock=0;
+    fr.push({x:rest(s0),y:y,t:0});
+    if(c<=0){
+      fr.push({x:rest(s0),y:y-34,t:260}); fr.push({x:rest(s0),y:y,t:520}); clock=520; apex.push(260);
+    }else{
+      for(var h=s0;h<s1;h++){
+        var st=clock;
+        fr.push({x:hx(h)-17,y:y,t:st+240});
+        fr.push({x:hx(h),y:y-38,t:st+440}); apex.push(st+440);
+        fr.push({x:hx(h)+16,y:y,t:st+640});
+        clock=st+640;
+      }
+      clock+=350; fr.push({x:rest(s1),y:y,t:clock});
+    }
+    var dur=reduce?300:clock;
+    var kf=fr.map(function(f){ return {transform:T(f.x,f.y),offset:f.t/clock}; });
+    run.classList.add('running');
+    var anim=run.animate(kf,{duration:dur,fill:'forwards'});
+    if(!reduce) apex.forEach(function(a){
+      setTimeout(function(){ sfx.boing(); },a-130);
+      setTimeout(function(){ sfx.pop(); burst(fr[1].x>0?hx(Math.min(s0,SLOTS-1))+10:0,y-4,'var(--'+L+')',4,16); },a+170);
+    });
+    return anim.finished.then(function(){
+      run.classList.remove('running');
+      run.classList.add('cheer');
+      var ex=rest(s1);
+      burst(ex,y-40,'var(--'+L+')',16,44);
+      floatLabel(Math.min(ex,930),y-72,'+'+m,L);
+      lane.score.animate([{transform:'scale(1)'},{transform:'scale(1.6)'},{transform:'scale(1)'}],{duration:450});
+      sfx.cheer(m>1); crowdCheer();
+      if(s1===SLOTS&&s0<SLOTS) burst(888,y-30,'#FFC400',30,70);
+      setTimeout(function(){ run.classList.remove('cheer'); },1100);
+      return anim;
+    });
+  }
+
+  /* ---------- play: wrong ---------- */
+  function playMiss(t){
+    var run=lanes[t].runner, y=base(t), x=rest(Math.min(derive().sc[t],SLOTS));
+    sfx.bonk();
+    run.classList.add('dizzy');
+    if(!reduce) run.animate([{transform:T(x,y)},{transform:T(x-6,y)},{transform:T(x+6,y)},{transform:T(x-4,y)},{transform:T(x,y)}],{duration:500});
+    setTimeout(function(){ run.classList.remove('dizzy'); },1000);
+  }
+
+  /* ---------- UI refs + render ---------- */
+  var card=$('card'), badge=$('badge'), chain=$('chain'), stakes=$('stakes'), qtext=$('qtext'), opts=$('opts'), fig=$('fig');
+  var yes=$('yes'), no=$('no'), nx=$('nx'), end=$('end'), podium=$('podium'), conf=$('conf');
+  var CHIP=['#FF9E80','#FFD54F','#6FD9B8','#8FB0FF','#F4A6D7','#C4B5FD'];
+  var X_ICON='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="#FF5A5F" stroke-width="4" stroke-linecap="round"/></svg>';
+  var ARROW='<svg class="ar" viewBox="0 0 12 12"><path d="M4 2l4 4-4 4"/></svg>';
+
+  function setCard(s,t){
+    var item=ITEMS[s.q], L=s.waiting?'?':TEAMS[t];
+    card.style.setProperty('--g',s.waiting?'#9AA6BF':'var(--'+TEAMS[t]+')');
+    card.style.setProperty('--on',s.waiting?'#FFFFFF':'var(--on'+TEAMS[t]+')');
+    badge.textContent=L;
+    var owner=s.q%3, ch='';
+    for(var j=0;j<3;j++){
+      var tm=TEAMS[(owner+j)%3], cls=s.waiting||j<s.k?'c fail':(j===s.k?'c cur':'c');
+      ch+='<span class="'+cls+'" style="'+tv(tm)+'">'+(s.waiting||j<s.k?X_ICON:tm)+'</span>'+(j<2?ARROW:'');
+    }
+    chain.innerHTML=ch;
+    var st='';
+    if(!s.waiting) for(var n=0;n<PTS[s.k];n++) st+='<svg viewBox="0 0 24 24">'+STAR+'</svg>';
+    stakes.innerHTML=st;
+    qtext.textContent=item.q;
+    opts.textContent=''; opts.hidden=!item.o;
+    if(item.o) item.o.forEach(function(t2,i){
+      var d=document.createElement('div'); d.className='opt';
+      var c=document.createElement('i'); c.textContent='abcdef'[i]; c.style.setProperty('--k',CHIP[i%CHIP.length]);
+      var sp=document.createElement('span'); sp.textContent=t2;
+      d.appendChild(c); d.appendChild(sp); opts.appendChild(d);
+    });
+    if(item.f){ fig.innerHTML=figure(item.f); fig.hidden=false; } else { fig.innerHTML=''; fig.hidden=true; }
+    yes.hidden=no.hidden=s.waiting; nx.hidden=!s.waiting;
+  }
+
+  function render(){
+    var s=derive(), t=s.waiting?-1:(s.q%3+s.k)%3;
+    TEAMS.forEach(function(_,g){
+      var l=lanes[g], p=Math.min(s.sc[g],SLOTS);
+      l.el.classList.toggle('active',g===t&&!s.done);
+      l.el.classList.toggle('dim',t!==-1&&g!==t&&!s.done);
+      l.runner.style.transform=T(rest(p),base(g));
+      l.hurdles.forEach(function(hd,k){
+        hd.setAttribute('class','hurdle'+(k<p?' cleared':(k===p&&g===t&&!s.done?' target':'')));
+      });
+      l.score.textContent=s.sc[g];
+    });
+    pips.forEach(function(pp,i){
+      var w=s.win[i], cls='pip';
+      if(i===s.q&&!s.done) cls+=' cur'; else if(w===-1) cls+=' nobody';
+      pp.className=cls;
+      pp.style.background=(w>=0)?'var(--'+TEAMS[w]+')':'';
+    });
+    if(s.done){ lastSig=''; if(end.hidden) showEnd(); lock(); return; }
+    end.hidden=true;
+    var sig=s.q+'-'+s.k+'-'+s.waiting;
+    setCard(s,t);
+    if(sig!==lastSig){
+      if(!reduce&&lastSig!=='') card.animate([{opacity:0,transform:'translateY(12px) scale(.98)'},{opacity:1,transform:'none'}],{duration:300,easing:'ease-out'});
+      lastSig=sig;
+    }
+    lock();
+  }
+  function lock(){ yes.disabled=no.disabled=nx.disabled=busy; }
+
+  /* ---------- end screen ---------- */
+  var TROPHY='<svg class="tr" viewBox="0 0 100 100"><path d="M28 12h44v24c0 17-10 28-22 28S28 53 28 36z" fill="#FFC400"/><path d="M28 20H14c0 16 6 24 16 26M72 20h14c0 16-6 24-16 26" fill="none" stroke="#FFC400" stroke-width="6" stroke-linecap="round"/><rect x="45" y="62" width="10" height="14" fill="#E09A00"/><rect x="32" y="76" width="36" height="10" rx="3" fill="#FFC400"/><path d="M40 20v14" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/></svg>';
+  function showEnd(){
+    var sc=derive().sc, top=Math.max.apply(null,sc), mx=Math.max(top,1);
+    podium.innerHTML=TEAMS.map(function(L,g){
+      var win=sc[g]===top&&top>0;
+      var rank=1+sc.filter(function(v){return v>sc[g]}).length;
+      return '<div class="pcol'+(win?' win':'')+'" style="'+tv(L)+';--h:'+(sc[g]/mx)+'">'+
+        (win?TROPHY:'<span class="tspace"></span>')+
+        '<svg class="pkid" viewBox="-28 -84 56 88">'+kid(L)+'</svg>'+
+        '<div class="pbar"><b>'+L+'</b><i>'+sc[g]+'</i><u class="rk r'+rank+'">'+rank+'</u></div></div>';
+    }).join('');
+    end.hidden=false;
+    if(top>0) confetti();
+  }
+  function confetti(){
+    if(reduce) return;
+    var c=conf, x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+    var cols=['#2F7BFF','#FFC400','#8B5CF6','#1FB871','#FF5A5F','#FF8A1F'];
+    var ps=[]; for(var i=0;i<220;i++) ps.push({x:Math.random()*c.width,y:-20-Math.random()*c.height*0.7,w:6+Math.random()*7,h:8+Math.random()*9,vy:2+Math.random()*3.8,vx:-1.2+Math.random()*2.4,r:Math.random()*6,vr:-0.25+Math.random()*0.5,col:cols[i%cols.length],round:i%4===0});
+    var t0=performance.now();
+    (function f(t){
+      x.clearRect(0,0,c.width,c.height);
+      ps.forEach(function(p){ p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.fillStyle=p.col; if(p.round){ x.beginPath(); x.arc(0,0,p.w/2,0,6.3); x.fill(); } else x.fillRect(-p.w/2,-p.h/2,p.w,p.h); x.restore(); });
+      if(t-t0<6000&&!end.hidden) requestAnimationFrame(f); else x.clearRect(0,0,c.width,c.height);
+    })(t0);
+  }
+
+  /* ---------- actions ---------- */
+  function pressYes(){
+    if(busy) return; var s=derive(); if(s.done||s.waiting) return;
+    busy=true; lock(); actx();
+    var t=(s.q%3+s.k)%3;
+    playScore(t,s.sc[t],PTS[s.k]).then(function(anim){
+      return wait(500).then(function(){ actions.push('y'); save(); busy=false; render(); anim.cancel(); afterTurn(s.q); });
+    });
+  }
+  function pressNo(){
+    if(busy) return; var s=derive(); if(s.done||s.waiting) return;
+    busy=true; lock(); actx();
+    var t=(s.q%3+s.k)%3;
+    playMiss(t);
+    if(s.k<2){
+      var nt=(t+1)%3;
+      wait(750).then(function(){ sfx.whoosh(); passBubble(t,nt); return wait(800); }).then(function(){ actions.push('n'); save(); busy=false; render(); });
+    }else{
+      wait(800).then(function(){ sfx.wah(); return wait(900); }).then(function(){ actions.push('n'); save(); busy=false; render(); });
+    }
+  }
+  function pressNext(){
+    if(busy) return; var s=derive(); if(!s.waiting) return;
+    actx(); actions.push('x'); save(); render(); afterTurn(s.q);
+  }
+  function afterTurn(prevQ){
+    var s=derive();
+    if(s.done){ sfx.fanfare(); return; }
+    if(s.q!==prevQ) setTimeout(sfx.ding,250);
+  }
+  yes.addEventListener('click',pressYes);
+  no.addEventListener('click',pressNo);
+  nx.addEventListener('click',pressNext);
+
+  function undo(){ if(busy||!actions.length) return; actions.pop(); save(); lastSig=''; render(); }
+  function doReset(){ if(busy) return; actions=[]; save(); lastSig=''; render(); }
+  $('undo').addEventListener('click',undo);
+  $('undo2').addEventListener('click',undo);
+  $('again').addEventListener('click',doReset);
+  var resetBtn=$('reset'), armTimer=null;
+  resetBtn.addEventListener('click',function(){
+    if(resetBtn.classList.contains('armed')){ clearTimeout(armTimer); resetBtn.classList.remove('armed'); doReset(); }
+    else{ resetBtn.classList.add('armed'); armTimer=setTimeout(function(){ resetBtn.classList.remove('armed'); },2500); }
+  });
+
+  var sndBtn=$('snd');
+  var ON='<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+  var OFF='<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
+  function paintSnd(){ sndBtn.innerHTML=sound?ON:OFF; }
+  sndBtn.addEventListener('click',function(){ sound=!sound; paintSnd(); if(sound) sfx.ding(); });
+  paintSnd();
+
+  document.addEventListener('keydown',function(e){
+    if(!end.hidden) return;
+    if(e.key==='1'||e.key==='ArrowRight') pressYes();
+    else if(e.key==='2'||e.key==='ArrowLeft') pressNo();
+    else if(e.key==='Enter'||e.key===' '){ if(derive().waiting){ e.preventDefault(); pressNext(); } }
+  });
+  window.addEventListener('resize',function(){ if(!end.hidden&&conf.width!==innerWidth){ conf.width=innerWidth; conf.height=innerHeight; } });
+
+  render();
+})();
+</script>
+
+</body></html>
