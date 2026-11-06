@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chai pe Charcha</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#fff7e8;--card:#fff;--ink:#2b2340;--wall:#eaf6ff;--ga:#e0483e;--gb:#2f7bd5;--gc:#1fa463;--pick:#fff0b8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1930;--card:#2a2444;--ink:#fff4dc;--wall:#2c3a5c;--pick:#4a3f12}}
+:root[data-theme="dark"]{--bg:#1d1930;--card:#2a2444;--ink:#fff4dc;--wall:#2c3a5c;--pick:#4a3f12}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Baloo 2","Trebuchet MS","Segoe UI",system-ui,sans-serif;font-size:17px;line-height:1.3}
+main{max-width:980px;margin:0 auto;padding:10px 10px 40px}
+.hide{display:none!important}
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sc{border:3px solid var(--ink);border-radius:14px;background:var(--card);padding:2px 8px;text-align:center;font-weight:800;transition:transform .2s}
+.sc b{margin-left:8px;font-size:1.5rem}
+.sc.on{transform:scale(1.05);box-shadow:0 0 0 4px var(--pick)}
+.bar{border:3px solid var(--ink);border-radius:14px;padding:4px 10px;margin:8px 0;font-weight:800;display:flex;justify-content:space-between;gap:8px;background:var(--card)}
+.top{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:760px){.top{grid-template-columns:1.6fr 1fr;align-items:start}}
+svg.v{width:100%;height:auto;display:block;border:3px solid var(--ink);border-radius:14px}
+.cap{font-weight:800;margin:0 0 4px}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:10px;margin:10px 0}
+.ask{font-weight:800;font-size:1.15rem;margin:10px 2px 8px;text-align:center}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.kid{display:flex;gap:8px;align-items:center;text-align:left;font:inherit;font-weight:600;color:inherit;background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:6px 8px;cursor:pointer;width:100%}
+.kid svg{flex:none;width:46px;height:46px}
+.kid b{display:block;font-size:.85rem}
+.kid.sel{background:var(--pick);transform:rotate(-1deg)}
+.kid.dead{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.kid.right{background:#c8f3da;color:#12392a;border-color:var(--gc);opacity:1;text-decoration:none}
+.btn{font:inherit;font-weight:800;font-size:1.05rem;background:#ff5a3c;color:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px 18px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn.alt{background:var(--card);color:var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.kid:focus-visible,.btn:focus-visible{outline:4px solid var(--gb);outline-offset:2px}
+.acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.why{border-left:8px solid var(--gc);padding-left:12px;margin:6px 0}
+.big{font-size:1.5rem;text-align:center;margin:6px 0}
+.st{animation:up 2.4s ease-in infinite;opacity:0}.st:nth-of-type(2){animation-delay:.8s}.st:nth-of-type(3){animation-delay:1.6s}
+@keyframes up{0%{opacity:0;transform:translateY(8px)}30%{opacity:.8}100%{opacity:0;transform:translateY(-14px)}}
+.pend{transform-origin:56px 54px;animation:sw 1.6s ease-in-out infinite alternate}
+@keyframes sw{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+.sp{transform-origin:180px 118px;animation:spin 1.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tr{animation:slide 2.4s linear infinite}
+@keyframes slide{to{transform:translateX(-50px)}}
+.fb{transform-box:fill-box;transform-origin:top center;animation:swy 2.4s ease-in-out infinite alternate}
+@keyframes swy{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+.cl{animation:drift 45s linear infinite}
+@keyframes drift{from{transform:translateX(-90px)}to{transform:translateX(450px)}}
+.bird{animation:drift 16s linear infinite}
+.sunb{animation:bob 6s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(3px)}}
+.blink{transform-box:fill-box;transform-origin:center;animation:bl 4s infinite}
+@keyframes bl{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.glow{animation:fl 2.6s infinite}
+@keyframes fl{0%,100%{opacity:.9}45%{opacity:.6}50%{opacity:1}}
+.bus{animation:drive 11s linear infinite}
+@keyframes drive{from{transform:translateX(-90px)}to{transform:translateX(380px)}}
+.wh{transform-box:fill-box;transform-origin:center;animation:spin .5s linear infinite}
+.leaf{transform-box:fill-box;transform-origin:bottom center;animation:swy 3.5s ease-in-out infinite alternate}
+.ch{transform-box:fill-box;transform-origin:bottom center}
+.ch .tb{opacity:0}.ch.talk .tb{opacity:1}
+.ch.talk{animation:hop .45s ease-in-out infinite alternate}
+@keyframes hop{to{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.st{opacity:.6}}
+</style>
+</head>
+<body>
+<main>
+<section class="panel" id="intro">
+  <div class="big">☕ Chai pe Charcha</div>
+  <svg class="v" id="p0" viewBox="0 0 360 250" role="img" aria-label="A roadside dhaba at sunset"></svg>
+  <p style="text-align:center;font-weight:700;margin:8px 0 0">Five friends. One cup of chai. Only one of them is right. Three groups, nine rounds. Look closely!</p>
+  <div class="acts"><button class="btn" id="start">Start the charcha</button></div>
+</section>
+
+<section id="game" class="hide">
+  <div class="score" id="score"></div>
+  <div class="bar"><span id="qn"></span><span id="turn"></span><span id="tm"></span></div>
+  <div class="top">
+    <svg class="v" id="p1" viewBox="0 0 360 250" role="img" aria-label="Friends talking at a roadside dhaba at sunset"></svg>
+    <div><p class="cap">🔍 Look closely</p><svg class="v" id="clue" viewBox="0 0 360 230" role="img" aria-label="A close-up clue"></svg></div>
+  </div>
+  <div class="ask" id="ask"></div>
+  <div class="cards" id="cards"></div>
+  <div class="acts">
+    <button class="btn" id="lock" disabled>Lock answer</button>
+    <button class="btn alt" id="pass">Pass to next group</button>
+  </div>
+  <div class="panel hide" id="res">
+    <div class="big" id="verdict"></div>
+    <div class="why" id="why"></div>
+    <div class="acts"><button class="btn" id="next">Next question</button></div>
+  </div>
+</section>
+
+<section class="panel hide" id="end">
+  <div class="big" id="win"></div>
+  <div class="acts"><button class="btn" onclick="location.reload()">Play again</button></div>
+</section>
+</main>
+<script>
+var G=["A","B","C"],COL=["var(--ga)","var(--gb)","var(--gc)"],PTS=[1,1,2],TIME=45;
+var KIDS=[{n:"Ria",s:"#f2c9a0",h:"#2b1b12",c:"#3a7bd5"},{n:"Zoya",s:"#c98b5f",h:"#1a1a1a",c:"#e8479a"},{n:"Kunal",s:"#e6b48a",h:"#7a3b12",c:"#2fa463"},{n:"Bholu",s:"#a86a43",h:"#2b1b12",c:"#f0a020"},{n:"Mitu",s:"#f2c9a0",h:"#5a2a60",c:"#8a5cd0"}];
+var Q=[
+{ask:"Chai on a table inside a moving train. Cup: motion or rest?",p:"train",ok:3,
+ c:["Not moving at all. It’s at rest!","Train moves, so the cup moves. Motion!","The steam moves, so the cup moves.","Rest for the table, motion for the trees outside.","Only living things can move."],
+ why:"Motion depends on the reference point. The cup stays in place compared with the table, but changes place compared with the trees."},
+{ask:"How long is the biscuit? The ruler is broken at the start.",p:"broken",ok:1,
+ c:["9 cm. It ends at 9.","7 cm. End mark minus start mark.","11 cm. Add 2 and 9.","Broken ruler. Can’t measure.","8 cm. I counted the marks."],
+ why:"Use any clear full mark as the start and subtract: 9 − 2 = 7 cm."},
+{ask:"The board says the chai stall is 1.5 km away. How many metres?",p:"board",ok:0,
+ c:["1500 m. 1 km is 1000 m.","150 m. 1 km is 100 m.","15 m. Move the decimal.","15000 m. 1 km is 10000 m.","1.5 m. Same thing."],
+ why:"1 km = 1000 m, so 1.5 km = 1500 m. (100 is for metre to centimetre.)"},
+{ask:"Spoon in the cup, pendulum on the clock. Which motion is each?",p:"motion",ok:4,
+ c:["Both circular. Both repeat.","Both oscillatory. Both repeat.","Pendulum is linear. Straight swings.","Spoon oscillatory, pendulum circular.","Spoon circular, pendulum oscillatory. Both periodic."],
+ why:"The spoon moves along a circle (circular). The pendulum moves to and fro (oscillatory). Both repeat, so both are periodic."},
+{ask:"A curvy vine on the plate. Only a ruler and thread. How to measure it?",p:"vine",ok:2,
+ c:["Impossible with a ruler.","Measure straight, start to end.","Thread along the vine, straighten it, measure.","Bend the ruler along it.","Count the waves. Each is 1 cm."],
+ why:"Lay a thread along the curve, straighten it and measure it. A straight start-to-end measurement is shorter."},
+{ask:"A bus crosses ‘Delhi 40 km’, then ‘Delhi 30 km’. What do we know?",p:"stones",ok:1,
+ c:["Bus is at rest. Stones don’t move.","Its position changes from Delhi. Moving towards it.","Numbers shrank. Bus is slowing.","Numbers going down. Bus is going away.","Stones move backwards. Stones in motion."],
+ why:"Delhi is the reference point. The distance from Delhi decreases with time, so the bus is in motion towards Delhi."},
+{ask:"Five friends measure one table in handspans. Different counts. Why?",p:"span",ok:3,
+ c:["Someone was careless.","Hot chai made the table expand.","Bigger hand, bigger count.","Handspans are different sizes.","They started from different corners."],
+ why:"Handspans differ from person to person. That’s why we need a standard unit like the metre. (A bigger hand gives a smaller count.)"},
+{ask:"On a ship with no window, steam rises straight up. Can you tell if it moves?",p:"ship",ok:0,
+ c:["No. Everything inside behaves the same.","Yes. Steam would bend backwards.","Yes. Chai would tilt backwards.","No. It’s at rest, so not moving.","Yes. A moving ship makes ripples."],
+ why:"Inside, the ship is at rest compared with us. Without something outside as a reference point, we can’t tell."},
+{ask:"Where should your eye be to read the pencil tip?",p:"eye",ok:2,
+ c:["A. I can see the whole ruler.","C. It’s the comfy angle.","B. Straight above the tip.","Anywhere. Same mark for everyone.","Close one eye. Fixes the error."],
+ why:"The eye must be directly above the tip (B). From the sides, the tip seems to line up with a different mark."}
+];
+function $(i){return document.getElementById(i)}
+function face(k){return '<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="56" r="22" fill="'+k.c+'" stroke="#2b2340" stroke-width="2.5"/><circle cx="30" cy="28" r="17" fill="'+k.s+'" stroke="#2b2340" stroke-width="2.5"/><path d="M12 26c0-14 36-14 36 0c-8-6-28-6-36 0z" fill="'+k.h+'"/><circle cx="24" cy="30" r="2.4" fill="#2b2340"/><circle cx="36" cy="30" r="2.4" fill="#2b2340"/><path d="M24 38q6 5 12 0" fill="none" stroke="#2b2340" stroke-width="2.5" stroke-linecap="round"/></svg>'}
+function ruler(x0,y,n0,n){var s='<rect x="'+x0+'" y="'+y+'" width="'+n*20+'" height="22" fill="#ffe58a" stroke="#2b2340" stroke-width="2"/>';for(var i=0;i<=n;i++){var x=x0+i*20;s+='<line x1="'+x+'" x2="'+x+'" y1="'+y+'" y2="'+(y+9)+'" stroke="#2b2340" stroke-width="1.5"/><text x="'+x+'" y="'+(y+20)+'" font-size="9" text-anchor="middle" fill="#2b2340">'+(n0+i)+'</text>'}return s}
+function T(x,y,t,sz){return '<text x="'+x+'" y="'+y+'" font-size="'+(sz||12)+'" font-weight="700" fill="#2b2340" text-anchor="middle">'+t+'</text>'}
+function steam(x,y){var d="q-6-9 0-17t0-15";return [0,7,-7].map(function(o){return '<path class="st" d="M'+(x+o)+' '+y+d+'" fill="none" stroke="#e6dccb" stroke-width="3" stroke-linecap="round"/>'}).join("")}
+function clue(p){
+  var s='<rect width="360" height="230" fill="var(--wall)"/><ellipse cx="180" cy="172" rx="160" ry="40" fill="#a8683a" stroke="#2b2340" stroke-width="3"/>';
+  var dx=p==="eye"?-110:0;
+  s+='<g transform="translate('+dx+',0)"><path d="M150 118h60v22a30 18 0 0 1-60 0z" fill="#fff" stroke="#2b2340" stroke-width="3"/><path d="M210 124q22 4 0 22" fill="none" stroke="#2b2340" stroke-width="3"/><ellipse cx="180" cy="118" rx="30" ry="6" fill="#b5651d" stroke="#2b2340" stroke-width="2"/>'+steam(180,108)+'</g>';
+  if(p==="train"){s+='<clipPath id="cw"><rect x="16" y="14" width="112" height="82"/></clipPath><rect x="16" y="14" width="112" height="82" fill="#9ed8ff" stroke="#2b2340" stroke-width="3"/><g clip-path="url(#cw)"><g class="tr">';for(var i=0;i<6;i++){var x=30+i*50;s+='<rect x="'+(x-3)+'" y="62" width="6" height="22" fill="#6b4226"/><circle cx="'+x+'" cy="54" r="15" fill="#3fa65a"/>'}s+='</g></g>'+T(72,110,"TRAIN WINDOW",10)}
+  if(p==="broken"){s+='<rect x="80" y="168" width="140" height="20" rx="7" fill="#d9a35b" stroke="#2b2340" stroke-width="2"/>'+ruler(60,192,1,12)+T(40,208,"broken",9)}
+  if(p==="board"){s+='<rect x="232" y="14" width="116" height="62" rx="8" fill="#fff" stroke="#2b2340" stroke-width="3"/>'+T(290,38,"CHAI STALL",14)+T(290,62,"1.5 km →",18)}
+  if(p==="motion"){s+='<rect x="22" y="12" width="68" height="108" rx="10" fill="#fff" stroke="#2b2340" stroke-width="3"/><circle cx="56" cy="34" r="14" fill="#fff" stroke="#2b2340" stroke-width="2"/><g class="pend"><line x1="56" y1="54" x2="56" y2="100" stroke="#2b2340" stroke-width="3"/><circle cx="56" cy="102" r="9" fill="#e8a020" stroke="#2b2340" stroke-width="2"/></g><g class="sp"><line x1="180" y1="118" x2="196" y2="94" stroke="#cfd6e4" stroke-width="5" stroke-linecap="round"/></g>'}
+  if(p==="vine"){s+='<ellipse cx="290" cy="150" rx="58" ry="17" fill="#fff" stroke="#2b2340" stroke-width="3"/><path d="M252 150q10-14 20 0t20 0t20 0t12-4" fill="none" stroke="#1fa463" stroke-width="3"/><path d="M24 150q10-14 20 0t20 0" fill="none" stroke="#8b5a2b" stroke-width="3"/>'+T(44,174,"thread",10)+ruler(60,196,0,12)}
+  if(p==="stones"){s+=T(76,22,"🚌 →",20)+'<rect x="22" y="34" width="62" height="54" rx="14" fill="#fff" stroke="#2b2340" stroke-width="3"/>'+T(53,58,"DELHI",12)+T(53,78,"40 km",14)+'<rect x="104" y="34" width="62" height="54" rx="14" fill="#fff" stroke="#2b2340" stroke-width="3"/>'+T(135,58,"DELHI",12)+T(135,78,"30 km",14)}
+  if(p==="span"){var n=[13,14,12,13,15];for(var j=0;j<5;j++){s+=T(40+j*70,52,"✋",24)+T(40+j*70,76,KIDS[j].n+": "+n[j],11)}}
+  if(p==="ship"){s+=T(180,24,"SHIP · calm sea · constant speed",13)+T(180,44,"no window",13)+'<path d="M0 224q15-10 30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0" fill="none" stroke="#2f7bd5" stroke-width="3"/>'}
+  if(p==="eye"){s+='<rect x="70" y="170" width="100" height="12" fill="#e8c24a" stroke="#2b2340" stroke-width="2"/><polygon points="170,170 184,176 170,182" fill="#2b2340"/>'+ruler(60,190,0,12);[[130,"A"],[184,"B"],[238,"C"]].forEach(function(e){s+='<line x1="'+e[0]+'" y1="58" x2="184" y2="172" stroke="#2b2340" stroke-dasharray="4 4" stroke-width="1.5"/>'+T(e[0],44,"👁️",24)+T(e[0],72,e[1],14)})}
+  return s}
+function dhaba(pre){
+  var s='<defs><linearGradient id="sk'+pre+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a3d91"/><stop offset=".5" stop-color="#ff7a59"/><stop offset="1" stop-color="#ffd27a"/></linearGradient><radialGradient id="gl'+pre+'"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs>';
+  s+='<rect width="360" height="250" fill="url(#sk'+pre+')"/>';
+  s+='<g class="sunb"><circle cx="250" cy="96" r="46" fill="url(#gl'+pre+')" opacity=".7"/><circle cx="250" cy="96" r="26" fill="#ffd34d"/><circle cx="238" cy="102" r="4" fill="#ff9f6b" opacity=".6"/><circle cx="262" cy="102" r="4" fill="#ff9f6b" opacity=".6"/><g class="blink"><circle cx="242" cy="92" r="5" fill="#fff"/><circle cx="258" cy="92" r="5" fill="#fff"/><circle cx="242" cy="93.5" r="2.6" fill="#2b2340"/><circle cx="258" cy="93.5" r="2.6" fill="#2b2340"/></g><path d="M241 103q9 8 18 0" fill="none" stroke="#7a3a10" stroke-width="2" stroke-linecap="round"/><g transform="rotate(-8 250 70)"><rect x="238" y="44" width="24" height="25" rx="2" fill="#1d1a26"/><rect x="238" y="60" width="24" height="5" fill="#d33"/><rect x="225" y="68" width="50" height="6" rx="3" fill="#1d1a26"/></g></g>';
+  s+='<g class="cl" opacity=".7"><ellipse cx="0" cy="40" rx="26" ry="8" fill="#ffd9c0"/><ellipse cx="14" cy="34" rx="16" ry="8" fill="#ffd9c0"/></g><g class="cl" style="animation-delay:-22s" opacity=".6"><ellipse cx="0" cy="66" rx="22" ry="6" fill="#ffc7a0"/></g>';
+  s+='<g class="bird" style="animation-duration:19s"><path d="M0 52q4-5 8 0q4-5 8 0" fill="none" stroke="#2b2340" stroke-width="1.5"/></g>';
+  s+='<path d="M0 118Q50 100 110 114T230 112T360 108V150H0z" fill="#7a4a7e"/><path d="M0 128Q80 112 160 124T360 120V160H0z" fill="#4d2f5e"/>';
+  s+='<path d="M0 70Q70 86 140 66T360 72" fill="none" stroke="#2b2340" stroke-width="1"/><rect x="138" y="62" width="4" height="104" fill="#3a2a2a"/><rect x="128" y="64" width="24" height="3" fill="#3a2a2a"/>';
+  s+='<rect y="126" width="360" height="36" fill="#4a4a55"/><path d="M0 144h360" stroke="#e8e0c0" stroke-width="2" stroke-dasharray="14 10"/>';
+  s+='<g class="bus"><rect x="0" y="116" width="74" height="28" rx="6" fill="#e8493a"/><rect x="0" y="132" width="74" height="4" fill="#ffd34d"/>';
+  for(var i=0;i<5;i++)s+='<rect x="'+(6+i*13)+'" y="121" width="9" height="9" rx="2" fill="#bfe6ff"/>';
+  s+='<rect x="66" y="121" width="6" height="12" rx="2" fill="#bfe6ff"/><g class="wh"><circle cx="16" cy="146" r="7" fill="#222"/><line x1="16" y1="140" x2="16" y2="152" stroke="#aaa" stroke-width="2"/></g><g class="wh"><circle cx="58" cy="146" r="7" fill="#222"/><line x1="58" y1="140" x2="58" y2="152" stroke="#aaa" stroke-width="2"/></g></g>';
+  s+='<rect y="162" width="360" height="88" fill="#c98f55"/><path d="M0 164h360" stroke="#7a5a3a" stroke-width="2"/>';
+  [[150,168],[170,166],[196,169],[222,167],[250,170],[282,166],[310,169],[340,167],[20,170],[100,168]].forEach(function(a,i){s+='<ellipse cx="'+a[0]+'" cy="'+a[1]+'" rx="'+(3+i%3)+'" ry="2.2" fill="#9a9aa5" stroke="#6b6b75" stroke-width=".6"/>'});
+  s+='<rect x="8" y="98" width="5" height="116" fill="#6b4226"/><rect x="120" y="98" width="5" height="116" fill="#6b4226"/><rect x="13" y="98" width="107" height="92" fill="#f1d9a8"/><path d="M13 130h107M13 160h107" stroke="#a8743a" stroke-width="3"/>';
+  [["#e8493a",20],["#ffd34d",34],["#3a7bd5",48],["#e8493a",62]].forEach(function(j){s+='<rect x="'+j[1]+'" y="140" width="10" height="20" rx="3" fill="'+j[0]+'" opacity=".85"/><rect x="'+(j[1]-1)+'" y="137" width="12" height="4" rx="2" fill="#fff"/>'});
+  s+='<ellipse cx="86" cy="156" rx="12" ry="4" fill="#d9a35b"/><ellipse cx="86" cy="152" rx="12" ry="4" fill="#e6b873"/><ellipse cx="108" cy="156" rx="7" ry="3.5" fill="#d9a35b"/>';
+  s+='<polygon points="2,100 132,100 118,70 16,70" fill="#8a3b2a"/><rect x="22" y="76" width="92" height="16" rx="3" fill="#f6c945"/>'+T(68,88,"CHAI · NASHTA",10);
+  [["#ff9f1c",24,14],["#ffd34d",42,20],["#e8493a",60,12],["#3fa65a",78,18],["#ff9f1c",96,14],["#e8493a",112,20]].forEach(function(k,i){s+='<g class="fb" style="animation-delay:-'+i*.4+'s"><line x1="'+k[1]+'" y1="100" x2="'+k[1]+'" y2="'+(100+k[2])+'" stroke="#333" stroke-width="1"/><rect x="'+(k[1]-7)+'" y="'+(100+k[2])+'" width="14" height="22" rx="2" fill="'+k[0]+'" stroke="#333" stroke-width="1"/><path d="M'+(k[1]-6)+' '+(108+k[2])+'q3-4 6 0t6 0" fill="none" stroke="#fff" stroke-width="1.5"/></g>'});
+  s+='<circle class="glow" cx="66" cy="112" r="16" fill="url(#gl'+pre+')"/><circle cx="66" cy="108" r="3" fill="#fff3b0"/>';
+  s+='<rect x="4" y="190" width="124" height="28" fill="#7a4b2a"/><rect x="2" y="188" width="128" height="5" fill="#9a6a3a"/><path d="M96 188v-14h14l3 14z" fill="#cfd6e4" stroke="#6b7280" stroke-width="1.5"/>'+steam(104,172);
+  [[24,"#2f7bd5"],[34,"#e8a020"],[44,"#1fa463"]].forEach(function(b){s+='<rect x="'+b[0]+'" y="174" width="6" height="14" rx="2" fill="'+b[1]+'"/><rect x="'+(b[0]+1.5)+'" y="170" width="3" height="5" fill="'+b[1]+'"/>'});
+  s+='<rect x="341" y="124" width="9" height="96" fill="#6b4226"/>';
+  [[345,108,28],[326,118,20],[364,118,20]].forEach(function(c,i){s+='<circle class="leaf" style="animation-delay:-'+i+'s" cx="'+c[0]+'" cy="'+c[1]+'" r="'+c[2]+'" fill="'+(i?"#3d8a4a":"#2e7a3e")+'"/>'});
+  KIDS.forEach(function(k,i){var x=162+i*40;
+    s+='<g class="ch" id="'+pre+'ch'+i+'"><g transform="translate('+x+',0)"><rect x="-14" y="190" width="28" height="30" rx="10" fill="'+k.c+'" stroke="#2b2340" stroke-width="1.5"/><circle cx="0" cy="180" r="11" fill="'+k.s+'" stroke="#2b2340" stroke-width="1.5"/><path d="M-11 178c0-12 22-12 22 0c-5-4-17-4-22 0z" fill="'+k.h+'"/><circle cx="-4" cy="181" r="1.4" fill="#2b2340"/><circle cx="4" cy="181" r="1.4" fill="#2b2340"/><path d="M-3 186q3 3 6 0" fill="none" stroke="#2b2340" stroke-width="1.3" stroke-linecap="round"/><text class="tb" y="160" font-size="16" text-anchor="middle">💬</text></g></g>'});
+  s+='<rect x="146" y="214" width="196" height="9" rx="2" fill="#9a6a3a" stroke="#4a2f1a" stroke-width="1.5"/><rect x="152" y="222" width="5" height="26" fill="#6b4226"/><rect x="331" y="222" width="5" height="26" fill="#6b4226"/>';
+  [190,245,300].forEach(function(x){s+='<path d="M'+(x-7)+' 202h14l-2 12h-10z" fill="#f2f2f2" opacity=".9" stroke="#2b2340" stroke-width="1.2"/><rect x="'+(x-6)+'" y="205" width="12" height="7" fill="#b5651d"/>'+steam(x,200)});
+  s+='<ellipse cx="245" cy="214" rx="14" ry="3" fill="#fff"/>';
+  s+='<rect width="360" height="250" fill="#ff7a59" opacity=".07"/>';
+  return s}
+var qi=0,tries=0,picked=-1,dead=[],sc=[0,0,0],tleft=0,iv=null,locked=false;
+function order(){var s=qi%3;return [s,(s+1)%3,(s+2)%3]}
+function talk(i){for(var j=0;j<5;j++){var e=$("bch"+j);e.classList.toggle("talk",j===i)}}
+function paintScore(){var o=order()[Math.min(tries,2)],h="";for(var i=0;i<3;i++)h+='<div class="sc'+((!locked&&i===o)?' on':'')+'" style="color:'+COL[i]+'">Group '+G[i]+'<b>'+sc[i]+'</b></div>';$("score").innerHTML=h}
+function paintTurn(){var g=order()[tries],lab=["answers first · 1 point","can steal · 1 point","last chance · 2 points"][tries];$("turn").innerHTML='<span style="color:'+COL[g]+'">Group '+G[g]+'</span> '+lab;paintScore()}
+function tick(){tleft--;$("tm").textContent="⏱ "+Math.max(tleft,0);if(tleft<=0){clearInterval(iv);fail(true)}}
+function startT(){clearInterval(iv);tleft=TIME;$("tm").textContent="⏱ "+tleft;iv=setInterval(tick,1000)}
+function show(){
+  var q=Q[qi];locked=false;tries=0;picked=-1;dead=[];talk(-1);
+  $("qn").textContent="Round "+(qi+1)+" of "+Q.length;
+  $("clue").innerHTML=clue(q.p);$("ask").textContent=q.ask;
+  var box=$("cards");box.innerHTML="";
+  q.c.forEach(function(t,i){var b=document.createElement("button");b.className="kid";b.type="button";b.innerHTML=face(KIDS[i])+'<span><b>'+KIDS[i].n+'</b>“'+t+'”</span>';
+    b.onclick=function(){if(locked||dead.indexOf(i)>-1)return;picked=i;talk(i);[].forEach.call(box.children,function(c,j){c.classList.toggle("sel",j===i)});$("lock").disabled=false};box.appendChild(b)});
+  $("lock").disabled=true;$("pass").disabled=false;$("res").classList.add("hide");
+  paintTurn();startT()}
+function fail(timeout){
+  if(locked)return;
+  if(picked>-1&&!timeout){dead.push(picked)}
+  [].forEach.call($("cards").children,function(c,j){c.classList.remove("sel");if(dead.indexOf(j)>-1)c.classList.add("dead")});
+  picked=-1;talk(-1);$("lock").disabled=true;tries++;
+  if(tries>=3){reveal(-1);return}
+  paintTurn();startT()}
+function reveal(w){
+  locked=true;clearInterval(iv);var q=Q[qi];talk(q.ok);
+  [].forEach.call($("cards").children,function(c,j){c.classList.remove("sel","dead");if(j===q.ok)c.classList.add("right")});
+  $("lock").disabled=true;$("pass").disabled=true;
+  if(w<0){$("verdict").textContent="Nobody got it. 0 points for everyone. It’s a tie!"}
+  else{$("verdict").innerHTML='<span style="color:'+COL[w]+'">Group '+G[w]+'</span> got it! +'+PTS[tries]+(PTS[tries]>1?" points":" point")}
+  $("why").innerHTML="<b>"+KIDS[q.ok].n+" was right.</b> "+q.why;
+  $("res").classList.remove("hide");$("next").textContent=qi===Q.length-1?"See final result":"Next question";
+  paintScore();$("res").scrollIntoView({behavior:"smooth"})}
+$("lock").onclick=function(){
+  if(picked<0||locked)return;
+  if(picked===Q[qi].ok){var w=order()[tries];sc[w]+=PTS[tries];reveal(w)}else{fail(false)}};
+$("pass").onclick=function(){fail(true)};
+$("next").onclick=function(){
+  qi++;
+  if(qi>=Q.length){$("game").classList.add("hide");$("end").classList.remove("hide");
+    var m=Math.max.apply(null,sc),w=[];sc.forEach(function(v,i){if(v===m)w.push(G[i])});
+    $("win").innerHTML=(w.length>1?"It’s a tie between Groups "+w.join(" and ")+"!":"🏆 Group "+w[0]+" wins!")+"<br>A: "+sc[0]+" · B: "+sc[1]+" · C: "+sc[2];window.scrollTo(0,0)}
+  else{show();window.scrollTo(0,0)}};
+$("p0").innerHTML=dhaba("a");$("p1").innerHTML=dhaba("b");
+$("start").onclick=function(){$("intro").classList.add("hide");$("game").classList.remove("hide");show()};
+</script>
+</body>
+</html>
