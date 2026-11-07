@@ -17,37 +17,42 @@
 
   body {
     margin: 0;
-    padding: 20px;
+    padding: 0;
     background-color: #0b0f19;
     color: #fff;
+    overflow-x: hidden;
+    width: 100vw;
+    min-height: 100vh;
   }
 
   .albums-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 8px;
   }
 
   .card {
     background: #0d1117;
-    border-radius: 18px;
+    border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(0, 229, 255, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 229, 255, 0.25);
   }
 
   .card-thumbnail {
     width: 100%;
-    height: 190px;
+    height: 180px;
     position: relative;
     overflow: hidden;
     background: #eef7ff;
@@ -60,15 +65,15 @@
   }
 
   .card-content {
-    padding: 16px;
+    padding: 12px 14px;
     background: #0d1117;
   }
 
   .card-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     line-height: 1.3;
   }
 
@@ -80,18 +85,45 @@
   }
 
   .card-author {
-    font-size: 13px;
+    font-size: 12px;
     color: #94a3b8;
+  }
+
+  .actions-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
   }
 
   .badge {
     background: #16a34a;
     color: #ffffff;
-    padding: 5px 12px;
-    border-radius: 8px;
+    padding: 5px 10px;
+    border-radius: 6px;
     font-weight: 600;
     font-size: 11px;
     letter-spacing: 0.3px;
+    text-decoration: none;
+    transition: 0.2s;
+  }
+
+  .badge:hover {
+    background: #15803d;
+  }
+
+  .new-tab-btn {
+    background: #3b82f6;
+    color: #ffffff;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 11px;
+    text-decoration: none;
+    transition: 0.2s;
+  }
+
+  .new-tab-btn:hover {
+    background: #2563eb;
   }
 
   .modal-overlay {
@@ -101,29 +133,28 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(8px);
     z-index: 9999;
     align-items: center;
     justify-content: center;
-    padding: 15px;
+    padding: 0;
   }
 
   .modal-container {
     background: #111827;
-    width: 100%;
-    max-width: 1000px;
-    height: 90vh;
-    border-radius: 16px;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+    border: none;
   }
 
   .modal-header {
-    padding: 14px 20px;
+    padding: 10px 16px;
     background: #1f2937;
     display: flex;
     justify-content: space-between;
@@ -132,20 +163,41 @@
   }
 
   .modal-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #22c55e;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .modal-new-tab {
+    background: #3b82f6;
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    transition: 0.2s;
+  }
+
+  .modal-new-tab:hover {
+    background: #2563eb;
   }
 
   .close-btn {
     background: #ef4444;
     color: white;
     border: none;
-    padding: 6px 14px;
-    border-radius: 8px;
+    padding: 5px 12px;
+    border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     transition: 0.2s;
   }
 
@@ -158,6 +210,7 @@
     width: 100%;
     height: 100%;
     background: #000;
+    overflow: hidden;
   }
 
   .modal-body iframe {
@@ -169,15 +222,16 @@
 </head>
 <body>
 
-  
   <div class="albums-grid" id="cardsGrid"></div>
 
-  
   <div class="modal-overlay" id="simModal">
     <div class="modal-container">
       <div class="modal-header">
         <span class="modal-title" id="modalTitle">Game</span>
-        <button class="close-btn" onclick="closeModal()">✕ Close</button>
+        <div class="modal-actions">
+          <a id="modalNewTabBtn" href="" target="_blank" class="modal-new-tab">Open in New Tab ↗</a>
+          <button class="close-btn" onclick="closeModal()">✕ Close</button>
+        </div>
       </div>
       <div class="modal-body">
         <iframe id="modalFrame" src=""></iframe>
@@ -187,7 +241,6 @@
 
 <script>
   const svgThumbnails = {
-    
     abcd: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#1e1b4b"/>
@@ -202,8 +255,6 @@
         <text x="95" y="35" fill="#a5b4fc" font-size="12" font-weight="bold">ABCD Learning Game</text>
       </svg>
     `,
-
-    
     ludo: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0b0f19"/>
@@ -219,8 +270,6 @@
         <text x="105" y="165" fill="#e2e8f0" font-size="13" font-weight="bold">Ludo</text>
       </svg>
     `,
-
-    
     patakha: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#1a0b1f"/>
@@ -244,8 +293,6 @@
         <text x="95" y="165" fill="#facc15" font-size="13" font-weight="bold">Patakha Blast</text>
       </svg>
     `,
-
-    
     subwaysurfer: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0b1329"/>
@@ -260,8 +307,6 @@
         <text x="90" y="35" fill="#38bdf8" font-size="12" font-weight="bold">Endless Runner Game</text>
       </svg>
     `,
-
-    
     hurdlerace: `
       <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="190" fill="#0f172a"/>
@@ -284,6 +329,32 @@
         <line x1="70" y1="90" x2="85" y2="82" stroke="#facc15" stroke-width="3"/>
         <text x="100" y="35" fill="#facc15" font-size="12" font-weight="bold">Hurdle Race</text>
       </svg>
+    `,
+    chainasta: `
+      <svg viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#2a1b3d"/>
+        <path d="M95 50 Q102 38 95 28 T95 10" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round" opacity="0.7" fill="none"/>
+        <path d="M115 45 Q122 33 115 23 T115 5" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round" opacity="0.7" fill="none"/>
+        <rect x="65" y="75" width="85" height="65" rx="14" fill="#fb923c"/>
+        <path d="M150 85 C168 85 168 115 150 115" stroke="#fb923c" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <ellipse cx="107" cy="143" rx="55" ry="8" fill="#fdba74"/>
+        <circle cx="88" cy="98" r="5" fill="#1e1b4b"/>
+        <circle cx="120" cy="98" r="5" fill="#1e1b4b"/>
+        <circle cx="90" cy="96" r="1.5" fill="#ffffff"/>
+        <circle cx="122" cy="96" r="1.5" fill="#ffffff"/>
+        <circle cx="80" cy="106" r="4.5" fill="#f43f5e" opacity="0.6"/>
+        <circle cx="128" cy="106" r="4.5" fill="#f43f5e" opacity="0.6"/>
+        <path d="M98 106 Q104 114 110 106" stroke="#1e1b4b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <polygon points="215,65 175,135 255,135" fill="#facc15" stroke="#eab308" stroke-width="3" stroke-linejoin="round"/>
+        <circle cx="203" cy="100" r="4.5" fill="#1e1b4b"/>
+        <circle cx="227" cy="100" r="4.5" fill="#1e1b4b"/>
+        <circle cx="204" cy="98" r="1.5" fill="#ffffff"/>
+        <circle cx="228" cy="98" r="1.5" fill="#ffffff"/>
+        <circle cx="195" cy="107" r="4" fill="#f43f5e" opacity="0.6"/>
+        <circle cx="235" cy="107" r="4" fill="#f43f5e" opacity="0.6"/>
+        <path d="M209 108 Q215 116 221 108 Z" fill="#1e1b4b"/>
+        <text x="80" y="172" fill="#fde047" font-size="14" font-weight="bold">Chai Nasta Game</text>
+      </svg>
     `
   };
 
@@ -292,21 +363,25 @@
     { id: 2, title: "Ludo", author: "Akshat Games", svg: "ludo", file: "https://2025akshat-lang.github.io/Akshat/games/Ludo.html" },
     { id: 3, title: "Patakha Blast", author: "Akshat Games", svg: "patakha", file: "https://2025akshat-lang.github.io/Akshat/games/Patakha2.html" },
     { id: 4, title: "Subway Surfer", author: "Akshat Games", svg: "subwaysurfer", file: "https://2025akshat-lang.github.io/Akshat/games/Subwaysurfer.html" },
-    { id: 5, title: "Hurdle Race", author: "Akshat Games", svg: "hurdlerace", file: "https://2025akshat-lang.github.io/Akshat/games/Hurdle-Race.html" }
+    { id: 5, title: "Hurdle Race", author: "Akshat Games", svg: "hurdlerace", file: "https://2025akshat-lang.github.io/Akshat/games/Hurdle-Race.html" },
+    { id: 6, title: "Chai Nasta", author: "Akshat Games", svg: "chainasta", file: "https://2025akshat-lang.github.io/Akshat/games/Chai_nasta_games.html" }
   ];
 
   function render() {
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = data.map(item => `
-      <div class="card" onclick="openModal('${item.title}', '${item.file}')">
-        <div class="card-thumbnail">
+      <div class="card">
+        <div class="card-thumbnail" onclick="openModal('${item.title}', '${item.file}')">
           ${svgThumbnails[item.svg]}
         </div>
         <div class="card-content">
           <div class="card-title">${item.title}</div>
           <div class="card-footer">
             <span class="card-author">${item.author}</span>
-            <span class="badge">Play Game</span>
+            <div class="actions-group">
+              <a href="${item.file}" target="_blank" class="new-tab-btn" title="Open in new tab">↗</a>
+              <span class="badge" onclick="openModal('${item.title}', '${item.file}')">Play</span>
+            </div>
           </div>
         </div>
       </div>
@@ -316,6 +391,7 @@
   function openModal(title, file) {
     document.getElementById('modalTitle').innerText = title;
     document.getElementById('modalFrame').src = file;
+    document.getElementById('modalNewTabBtn').href = file;
     document.getElementById('simModal').style.display = 'flex';
   }
 
