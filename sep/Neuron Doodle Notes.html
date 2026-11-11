@@ -1,0 +1,615 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Neuron Doodle Notes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Yellowtail&family=Nunito:wght@600;800&display=swap">
+<style>
+
+:root{
+  --bg:#f3dfe4; --paper:#fdf0f2; --paper2:#fff8f9; --ink:#8c1235; --ink2:#b5546e;
+  --rose:#f290a6; --rosed:#d13f60; --tissue:#f8bfcc; --purple:#7b50c4; --gold:#f2c35c;
+  --skin:#f7d3b5; --lime:#b8c93c; --chrome:#ffffff; --chrome-fg:#5a1a2e;
+  --f-ui:'Nunito',system-ui,sans-serif; --f-hand:'Caveat','Segoe Print',cursive; --f-script:'Yellowtail','Brush Script MT',cursive;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#150a0f; --paper:#26121a; --paper2:#321a24; --ink:#ff9db4; --ink2:#d98ba1;
+  --rose:#c9506d; --rosed:#ff7a98; --tissue:#5c2b3c; --purple:#a98cff; --gold:#e8b24c;
+  --skin:#7b4b3c; --lime:#9aae2a; --chrome:#2e1722; --chrome-fg:#ffd3de; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#150a0f; --paper:#26121a; --paper2:#321a24; --ink:#ff9db4; --ink2:#d98ba1;
+  --rose:#c9506d; --rosed:#ff7a98; --tissue:#5c2b3c; --purple:#a98cff; --gold:#e8b24c;
+  --skin:#7b4b3c; --lime:#9aae2a; --chrome:#2e1722; --chrome-fg:#ffd3de; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--chrome-fg);font-family:var(--f-ui);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:10px;display:flex;flex-direction:column;gap:10px;overflow:hidden;box-sizing:border-box}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.crumbs{display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-width:0}
+.crumb{font:800 13px var(--f-ui);border:0;border-radius:999px;background:var(--chrome);color:var(--chrome-fg);padding:8px 13px;cursor:pointer;white-space:nowrap}
+.crumb[aria-current="true"]{background:var(--rosed);color:#fff}
+.sep{opacity:.5;font-weight:800}
+.crumb:focus-visible,.ctl:focus-visible{outline:3px solid var(--purple);outline-offset:2px}
+.zoomlbl{font:700 13px var(--f-ui);opacity:.75;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stage{position:relative;flex:1;min-height:0;border-radius:20px;overflow:hidden;background:var(--bg);touch-action:none;cursor:grab;box-shadow:inset 0 0 0 2px var(--tissue)}
+svg{width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.dock{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:8px}
+.ctl{font:800 22px/1 var(--f-ui);border:0;border-radius:999px;background:var(--chrome);color:var(--chrome-fg);width:44px;height:44px;padding:0;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.hint{position:absolute;left:12px;bottom:12px;max-width:66%;font:700 12.5px/1.35 var(--f-ui);padding:8px 12px;border-radius:12px;background:var(--chrome);opacity:.94;pointer-events:none}
+
+.paper{fill:var(--paper);stroke:var(--tissue);stroke-width:4}
+.f-ink{fill:var(--ink)}.f-ink2{fill:var(--ink2)}.f-rose{fill:var(--rose)}.f-rosed{fill:var(--rosed)}
+.f-tissue{fill:var(--tissue)}.f-purple{fill:var(--purple)}.f-gold{fill:var(--gold)}.f-paper2{fill:var(--paper2)}
+.f-skin{fill:var(--skin)}.f-lime{fill:var(--lime)}
+.f-hl{fill:#fff;opacity:.55}
+.s{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.s-rose{stroke:var(--rose)}.s-rosed{stroke:var(--rosed)}.s-ink{stroke:var(--ink)}.s-purple{stroke:var(--purple)}.s-gold{stroke:var(--gold)}.s-tissue{stroke:var(--tissue)}
+.hand{font-family:var(--f-hand);font-weight:700}
+.sub{font-family:var(--f-hand);font-weight:500}
+.script{font-family:var(--f-script)}
+.arr{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#ah)}
+.arrp{fill:none;stroke:var(--purple);stroke-width:16;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#ahp)}
+.mk{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cue{fill:none;stroke:var(--gold);stroke-width:4;stroke-dasharray:2 9;stroke-linecap:round;cursor:pointer}
+.cue-t{font-family:var(--f-hand);font-weight:700;fill:var(--ink2);cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.cue{animation:spin 6s linear infinite}@keyframes spin{to{stroke-dashoffset:-110}}}
+</style>
+
+<div class="bar">
+  <div class="crumbs" id="crumbs" aria-label="Where you are"></div>
+  <div class="zoomlbl" id="zoomlbl">×1.0</div>
+</div>
+
+<div class="stage" id="stage">
+<svg id="svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zoomable hand-drawn anatomy notes. Pinch into a drawing to open a deeper note page.">
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" class="mk"/></marker>
+  <marker id="ahp" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="2.6" markerHeight="2.6" orient="auto"><path d="M1 1 L9 5 L1 9" style="fill:none;stroke:var(--purple);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"/></marker>
+  <g id="heart"><path d="M0 -5 C-9 -16 -24 -3 0 15 C24 -3 9 -16 0 -5Z"/></g>
+  <g id="spark"><path d="M0 -14 Q2 -2 14 0 Q2 2 0 14 Q-2 2 -14 0 Q-2 -2 0 -14Z"/></g>
+  <g id="ves">
+    <circle r="36" class="f-purple"/>
+    <circle r="36" class="s s-ink" style="stroke-width:3;opacity:.45"/>
+    <circle cx="-11" cy="-9" r="6" class="f-hl"/><circle cx="9" cy="-14" r="5" class="f-hl"/><circle cx="12" cy="8" r="6" class="f-hl"/><circle cx="-8" cy="12" r="5" class="f-hl"/>
+  </g>
+  <g id="rec"><path d="M-34 22 L34 22 L27 -26 L11 -10 L-11 -10 L-27 -26 Z" class="f-purple"/><path d="M-34 22 L34 22 L27 -26 L11 -10 L-11 -10 L-27 -26 Z" class="s s-ink" style="stroke-width:3"/></g>
+  <clipPath id="clipSyn"><rect x="130" y="965" width="200" height="300" rx="14"/></clipPath>
+  <clipPath id="clipAlv"><rect x="700" y="980" width="200" height="300" rx="14"/></clipPath>
+</defs>
+
+<g id="world">
+
+
+<g class="pg" data-id="anatomy" data-name="Human anatomy">
+  <rect class="paper" x="0" y="0" width="1000" height="1500" rx="28"/>
+  <text class="script f-ink" x="500" y="150" text-anchor="middle" font-size="116">Human anatomy</text>
+  <path d="M230 180 Q500 162 770 184" class="s s-rose" style="stroke-width:12;opacity:.45"/>
+  <text class="hand f-ink2" x="500" y="226" text-anchor="middle" font-size="34">♥ organs &amp; where to find them ♥</text>
+
+  
+  <g class="f-skin s-rosed" style="stroke-width:4;stroke-linejoin:round">
+    <ellipse cx="500" cy="360" rx="64" ry="76"/>
+    <path d="M470 425 L470 478 L530 478 L530 425 Z"/>
+    <path d="M472 470 Q405 482 368 520 Q335 565 345 650 Q352 720 384 790 Q404 850 396 930 Q392 990 410 1050 Q450 1110 500 1112 Q550 1110 590 1050 Q608 990 604 930 Q596 850 616 790 Q648 720 655 650 Q665 565 632 520 Q595 482 528 470 Z"/>
+    <path d="M368 520 Q320 560 305 660 Q298 720 312 790 L338 786 Q330 720 348 660 Q362 590 384 560 Z"/>
+    <path d="M632 520 Q680 560 695 660 Q702 720 688 790 L662 786 Q670 720 652 660 Q638 590 616 560 Z"/>
+  </g>
+  
+  <path d="M452 340 Q448 300 488 296 Q520 284 548 306 Q566 330 546 356 Q524 372 492 368 Q456 366 452 340 Z" class="f-rose s-rosed" style="stroke-width:4"/>
+  <path d="M470 330 Q490 312 506 334 M506 334 Q526 316 540 338 M474 350 Q496 340 514 356" class="s s-rosed" style="stroke-width:3"/>
+  
+  <rect x="491" y="470" width="18" height="76" rx="8" class="f-tissue s-rosed" style="stroke-width:3"/>
+  <path d="M455 522 Q410 520 400 590 Q392 650 420 692 Q455 702 478 672 L478 542 Z" class="f-rose s-rosed" style="stroke-width:4;stroke-linejoin:round"/>
+  <path d="M545 522 Q590 520 600 590 Q608 650 580 692 Q545 702 522 672 L522 542 Z" class="f-rose s-rosed" style="stroke-width:4;stroke-linejoin:round"/>
+  <path d="M500 546 L450 580 M450 580 L432 620 M450 580 L436 568 M500 546 L550 580 M550 580 L568 620 M550 580 L564 568" class="s s-rosed" style="stroke-width:3;opacity:.8"/>
+  
+  <path d="M500 604 Q478 580 458 602 Q446 626 500 676 Q554 626 542 602 Q522 580 500 604 Z" class="f-rosed s-ink" style="stroke-width:3;stroke-linejoin:round"/>
+  <path d="M488 590 Q490 566 498 560 M512 590 Q514 566 506 560" class="s s-ink" style="stroke-width:5;opacity:.6"/>
+  
+  <path d="M410 722 Q470 702 562 732 Q572 782 520 802 Q450 812 420 772 Z" class="f-rosed s-ink" style="stroke-width:3;stroke-linejoin:round;opacity:.92"/>
+  <ellipse cx="478" cy="808" rx="16" ry="25" class="f-lime s-ink" style="stroke-width:3" transform="rotate(-14 478 808)"/>
+  <path d="M542 732 Q604 722 612 772 Q612 832 562 842 Q520 832 530 792 Q530 752 542 732 Z" class="f-rose s-rosed" style="stroke-width:4;stroke-linejoin:round"/>
+  
+  <ellipse cx="432" cy="858" rx="15" ry="30" class="f-rosed s-ink" style="stroke-width:3" transform="rotate(10 432 858)"/>
+  <ellipse cx="568" cy="858" rx="15" ry="30" class="f-rosed s-ink" style="stroke-width:3" transform="rotate(-10 568 858)"/>
+  
+  <path d="M430 890 Q500 868 570 890 Q604 918 560 938 Q480 958 430 956 Q398 976 440 996 Q500 1016 570 996 Q606 1026 560 1050 Q490 1064 440 1050" class="s s-rosed" style="stroke-width:36"/>
+  <path d="M430 890 Q500 868 570 890 Q604 918 560 938 Q480 958 430 956 Q398 976 440 996 Q500 1016 570 996 Q606 1026 560 1050 Q490 1064 440 1050" class="s s-rose" style="stroke-width:26"/>
+  <path d="M432 886 Q500 866 568 886 M440 992 Q500 1010 566 992" class="s f-hl" style="stroke:#fff;stroke-width:6;opacity:.5"/>
+
+  
+  <text class="hand f-ink" x="70" y="296" font-size="42">Brain</text>
+  <text class="sub f-ink2" font-size="26"><tspan x="70" y="326">thinking, memory</tspan><tspan x="70" y="352">&amp; control</tspan></text>
+  <path class="arr" d="M200 300 Q320 290 442 326"/>
+
+  <text class="hand f-ink" x="70" y="560" font-size="42">Lungs</text>
+  <text class="sub f-ink2" font-size="26"><tspan x="70" y="590">breathing, gas</tspan><tspan x="70" y="616">exchange</tspan></text>
+  <path class="arr" d="M180 566 Q270 540 392 580"/>
+
+  <text class="hand f-ink" x="70" y="776" font-size="42">Liver</text>
+  <text class="sub f-ink2" x="70" y="806" font-size="26">filters the blood</text>
+  <path class="arr" d="M160 776 Q290 740 414 752"/>
+
+  <text class="hand f-ink" x="70" y="880" font-size="42">Gallbladder</text>
+  <text class="sub f-ink2" x="70" y="910" font-size="26">stores bile</text>
+  <path class="arr" d="M250 876 Q380 850 458 820"/>
+
+  <text class="hand f-ink" x="70" y="1010" font-size="42">Kidneys</text>
+  <text class="sub f-ink2" x="70" y="1040" font-size="26">clean waste</text>
+  <path class="arr" d="M200 1000 Q330 960 416 876"/>
+
+  
+  <text class="hand f-ink" x="760" y="448" font-size="42">Skin</text>
+  <text class="sub f-ink2" x="760" y="478" font-size="26">protective cover</text>
+  <path class="arr" d="M752 452 Q700 480 650 516"/>
+
+  <text class="hand f-ink" x="760" y="590" font-size="42">Heart</text>
+  <text class="sub f-ink2" x="760" y="620" font-size="26">pumps the blood</text>
+  <path class="arr" d="M752 594 Q640 590 548 612"/>
+
+  <text class="hand f-ink" x="770" y="770" font-size="42">Stomach</text>
+  <text class="sub f-ink2" x="770" y="800" font-size="26">breaks down food</text>
+  <path class="arr" d="M762 774 Q690 770 618 780"/>
+
+  <text class="hand f-ink" x="740" y="1020" font-size="42">Intestines</text>
+  <text class="sub f-ink2" x="740" y="1050" font-size="26">absorb nutrients</text>
+  <path class="arr" d="M732 1010 Q680 1000 604 998"/>
+
+  
+  <text class="script f-ink" x="60" y="1262" font-size="62">Dive in</text>
+  <text class="hand f-ink" font-size="38"><tspan x="60" y="1322">Brain → Neuron → Synapse</tspan><tspan x="60" y="1370">Lungs → Bronchiole → Alveoli</tspan></text>
+  <text class="sub f-ink2" font-size="28"><tspan x="60" y="1420">pinch into the glowing rings, or tap them</tspan></text>
+
+  <use href="#heart" class="f-rosed" transform="translate(900 300) scale(.8) rotate(10)"/>
+  <use href="#heart" class="f-rosed" transform="translate(920 900) scale(.7)"/>
+  <use href="#heart" class="f-rosed" transform="translate(50 700) scale(.7) rotate(-10)"/>
+  <use href="#spark" class="f-gold" transform="translate(900 640) scale(.8)"/>
+  <use href="#spark" class="f-gold" transform="translate(120 440) scale(.7)"/>
+
+  
+  <circle class="cue" data-goto="neuron" cx="500" cy="334" r="56"/>
+  <text class="cue-t" data-goto="neuron" x="570" y="262" font-size="30">pinch in ✦</text>
+  <ellipse class="cue" data-goto="bronchiole" cx="415" cy="612" rx="62" ry="92"/>
+  <text class="cue-t" data-goto="bronchiole" x="262" y="500" font-size="30">pinch in ✦</text>
+
+  
+  <g class="pg" data-id="neuron" data-name="Neuron" data-x="455" data-y="268.5" data-w="90">
+    <rect class="paper" x="0" y="0" width="1000" height="1500" rx="28"/>
+    <text class="script f-ink" x="500" y="150" text-anchor="middle" font-size="128">Neuron</text>
+    <path d="M330 180 Q500 162 680 184" class="s s-rose" style="stroke-width:12;opacity:.45"/>
+    <text class="hand f-ink2" x="500" y="226" text-anchor="middle" font-size="34">♥ structure &amp; function ♥</text>
+    <text class="sub f-ink2" font-size="30"><tspan x="60" y="272">a nerve cell that sends</tspan><tspan x="60" y="304">electric signals between</tspan><tspan x="60" y="336">brain, spinal cord &amp; body</tspan></text>
+
+    <g class="s s-rosed" style="stroke-width:6">
+      <path d="M430 540 Q380 480 330 430 M330 430 L290 380 M330 430 L345 368 M362 460 L312 458"/>
+      <path d="M470 525 Q470 460 430 400 M430 400 L402 345 M430 400 L474 350"/>
+      <path d="M520 520 Q560 460 600 420 M600 420 L582 360 M600 420 L652 395 M576 456 L640 472"/>
+      <path d="M412 600 Q350 590 300 610 M300 610 L250 588 M300 610 L255 652"/>
+      <path d="M418 640 Q380 700 340 722 M340 722 L300 700 M340 722 L330 774"/>
+    </g>
+    <path d="M410 590 Q400 540 450 525 Q500 505 540 535 Q575 565 555 610 Q540 655 490 660 Q435 665 410 625 Z" class="f-tissue s-rosed" style="stroke-width:6;stroke-linejoin:round"/>
+    <circle cx="485" cy="592" r="36" class="f-purple"/>
+    <circle cx="485" cy="592" r="36" class="s s-ink" style="stroke-width:3;opacity:.4"/>
+    <circle cx="494" cy="598" r="13" class="f-ink" style="opacity:.55"/>
+    <circle cx="472" cy="578" r="7" class="f-hl"/>
+    <path d="M545 640 Q600 700 590 780 Q580 860 650 920 Q700 960 720 1030" class="s s-rosed" style="stroke-width:9"/>
+    <path d="M545 640 Q600 700 590 780 Q580 860 650 920 Q700 960 720 1030" pathLength="100" class="s s-gold" style="stroke-width:40;stroke-dasharray:9 2.2 9 2.2 9 2.2 9 2.2 9 2.2 9 2.2 9 2.2 100;stroke-dashoffset:-9"/>
+    <path d="M545 640 Q600 700 590 780 Q580 860 650 920 Q700 960 720 1030" pathLength="100" class="s s-ink" style="stroke-width:3;opacity:.28;stroke-dasharray:9 2.2 9 2.2 9 2.2 9 2.2 9 2.2 9 2.2 9 2.2 100;stroke-dashoffset:-9"/>
+    <g class="s s-rosed" style="stroke-width:6"><path d="M720 1030 Q690 1085 622 1132 M720 1030 L690 1152 M720 1030 Q742 1100 772 1162 M720 1030 Q790 1060 852 1112"/></g>
+    <g class="f-rosed"><circle cx="618" cy="1136" r="14"/><circle cx="688" cy="1158" r="14"/><circle cx="774" cy="1168" r="14"/><circle cx="858" cy="1116" r="14"/></g>
+
+    <text class="hand f-ink" x="790" y="232" font-size="38">in the brain</text>
+    <path d="M770 305 Q760 258 810 252 Q850 236 882 262 Q926 266 921 312 Q936 352 892 362 Q860 388 820 368 Q770 372 770 332 Z" class="f-tissue s-rosed" style="stroke-width:5;stroke-linejoin:round"/>
+    <path d="M800 296 Q828 270 850 302 M850 302 Q880 280 902 308 M800 336 Q830 318 856 342 M858 342 Q884 326 906 344" class="s s-rosed" style="stroke-width:3.5;opacity:.8"/>
+    <circle cx="838" cy="322" r="15" class="f-rosed"/><circle cx="833" cy="317" r="5" class="f-hl"/>
+    <text class="sub f-ink2" font-size="27"><tspan x="720" y="428">neurons are abundant</tspan><tspan x="720" y="458">in the cerebral cortex</tspan></text>
+
+    <text class="hand f-ink" x="60" y="410" font-size="42">dendrites</text>
+    <text class="sub f-ink2" font-size="28"><tspan x="60" y="442">receive signals</tspan><tspan x="60" y="470">from other cells</tspan></text>
+    <path class="arr" d="M200 408 Q240 392 282 392"/>
+    <text class="hand f-ink" x="700" y="520" font-size="42">cell body</text>
+    <text class="sub f-ink2" x="700" y="550" font-size="28">(soma) keeps it alive</text>
+    <path class="arr" d="M690 536 Q640 548 566 572"/>
+    <text class="hand f-ink" x="700" y="626" font-size="42">nucleus</text>
+    <text class="sub f-ink2" x="700" y="656" font-size="28">holds the DNA</text>
+    <path class="arr" d="M690 634 Q620 622 526 598"/>
+    <text class="hand f-ink" x="760" y="790" font-size="42">axon</text>
+    <text class="sub f-ink2" font-size="28"><tspan x="760" y="822">carries impulses</tspan><tspan x="760" y="850">away from the cell</tspan></text>
+    <path class="arr" d="M750 796 Q690 790 612 812"/>
+    <text class="hand f-ink" x="70" y="866" font-size="42">myelin sheath</text>
+    <text class="sub f-ink2" font-size="28"><tspan x="70" y="898">insulates the axon,</tspan><tspan x="70" y="926">speeds up signals</tspan></text>
+    <path class="arr" d="M300 860 Q430 836 556 850"/>
+    <text class="hand f-ink" x="640" y="1240" font-size="42">axon terminals</text>
+    <text class="sub f-ink2" x="640" y="1270" font-size="28">pass the signal on</text>
+    <path class="arr" d="M730 1204 Q745 1190 758 1186"/>
+
+    
+    <rect x="122" y="957" width="216" height="316" rx="20" class="f-paper2 s s-rosed" style="stroke-width:5;stroke-dasharray:3 12"/>
+    <g clip-path="url(#clipSyn)">
+      <rect x="130" y="965" width="200" height="300" class="f-paper2"/>
+      <path d="M150 1008 Q150 1090 190 1112 L270 1112 Q312 1090 312 1008 Q302 972 230 972 Q160 972 150 1008 Z" class="f-rose s-rosed" style="stroke-width:5"/>
+      <use href="#ves" transform="translate(192 1038) scale(.42)"/><use href="#ves" transform="translate(238 1056) scale(.42)"/><use href="#ves" transform="translate(278 1030) scale(.42)"/>
+      <g class="f-purple"><circle cx="205" cy="1132" r="4"/><circle cx="236" cy="1140" r="4"/><circle cx="262" cy="1130" r="4"/><circle cx="222" cy="1156" r="4"/><circle cx="250" cy="1160" r="4"/></g>
+      <path d="M70 1196 Q150 1170 230 1190 T390 1184 L390 1290 L70 1290 Z" class="f-tissue s-purple" style="stroke-width:5"/>
+      <use href="#rec" transform="translate(196 1182) scale(.4)"/><use href="#rec" transform="translate(268 1186) scale(.4)"/>
+      <text class="hand f-ink" x="230" y="1246" font-size="24" text-anchor="middle">receiving neuron</text>
+    </g>
+    <text class="hand f-ink" x="230" y="936" font-size="40" text-anchor="middle">synapse</text>
+    <path class="arr" d="M600 1150 Q500 1190 346 1160" style="stroke-dasharray:2 9"/>
+    <text class="sub f-ink2" x="452" y="1214" font-size="26" text-anchor="middle" transform="rotate(-6 452 1214)">pinch in ✦</text>
+    <circle class="cue" data-goto="synapse" cx="230" cy="1115" r="0"/>
+
+    <text class="script f-ink" x="60" y="1352" font-size="62">Functions</text>
+    <g transform="translate(440 1390)">
+      <circle r="34" class="f-tissue s-rosed" style="stroke-width:4"/><path class="s s-ink" style="stroke-width:5" d="M-52 0 L-12 0 M-24 -12 L-12 0 L-24 12"/>
+      <text class="hand f-ink" y="74" text-anchor="middle" font-size="34">receive</text>
+      <text class="sub f-ink2" y="102" text-anchor="middle" font-size="25">inputs via dendrites</text>
+    </g>
+    <g transform="translate(660 1390)">
+      <path d="M6 -40 L-24 6 L-4 6 L-10 40 L24 -8 L2 -8 Z" class="f-gold s-ink" style="stroke-width:3;stroke-linejoin:round"/>
+      <text class="hand f-ink" y="74" text-anchor="middle" font-size="34">conduct</text>
+      <text class="sub f-ink2" y="102" text-anchor="middle" font-size="25">impulse along axon</text>
+    </g>
+    <g transform="translate(880 1390)">
+      <circle r="34" class="f-tissue s-rosed" style="stroke-width:4"/><path class="s s-ink" style="stroke-width:5" d="M-14 0 L24 0 M12 -12 L24 0 L12 12"/>
+      <text class="hand f-ink" y="74" text-anchor="middle" font-size="34">transmit</text>
+      <text class="sub f-ink2" y="102" text-anchor="middle" font-size="25">to the next cell</text>
+    </g>
+    <use href="#heart" class="f-rosed" transform="translate(340 330) scale(.8) rotate(-12)"/>
+    <use href="#heart" class="f-rosed" transform="translate(940 520) scale(.7)"/>
+    <use href="#heart" class="f-rosed" transform="translate(70 1020) scale(.8) rotate(10)"/>
+    <use href="#heart" class="f-rosed" transform="translate(900 960) scale(.75) rotate(-10)"/>
+    <use href="#spark" class="f-gold" transform="translate(520 1100) scale(.9)"/>
+    <use href="#spark" class="f-gold" transform="translate(840 690) scale(.8)"/>
+    <use href="#spark" class="f-gold" transform="translate(200 740) scale(.7)"/>
+
+    
+    <g class="pg" data-id="synapse" data-name="Synapse" data-x="130" data-y="965" data-w="200">
+      <rect class="paper" x="0" y="0" width="1000" height="1500" rx="28"/>
+      <text class="script f-ink" x="330" y="150" text-anchor="middle" font-size="128">Synapse</text>
+      <path d="M120 180 Q330 162 550 184" class="s s-rose" style="stroke-width:12;opacity:.45"/>
+      <text class="hand f-ink2" x="330" y="226" text-anchor="middle" font-size="34">♥ anatomy notes ♥</text>
+      <text class="hand f-ink" x="720" y="130" font-size="40">functions</text>
+      <g class="sub f-ink2" font-size="28">
+        <text x="720" y="168">• passes signals between</text><text x="740" y="198">neurons</text>
+        <text x="720" y="232">• sets signal strength</text>
+        <text x="720" y="266">• learning &amp; memory</text>
+      </g>
+      <path d="M420 300 L580 300 Q600 380 690 450 Q744 560 640 640 Q560 692 500 692 Q440 692 360 640 Q256 560 310 450 Q400 380 420 300 Z" class="f-rose s-rosed" style="stroke-width:8;stroke-linejoin:round"/>
+      <path d="M446 316 L554 316 Q570 386 650 452 Q690 540 620 610" class="s s-tissue" style="stroke-width:6;opacity:.7"/>
+      <use href="#ves" transform="translate(440 520)"/><use href="#ves" transform="translate(528 470)"/><use href="#ves" transform="translate(600 560)"/>
+      <use href="#ves" transform="translate(470 610) scale(.9)"/><use href="#ves" transform="translate(552 636) scale(.8)"/><use href="#ves" transform="translate(380 560) scale(.8)"/>
+      <text class="hand f-ink" x="500" y="372" text-anchor="middle" font-size="30">Ca²⁺ channels open</text>
+      <text class="sub f-ink" x="500" y="404" text-anchor="middle" font-size="24">→ vesicles fuse with the membrane</text>
+      <g class="f-purple">
+        <circle cx="470" cy="716" r="9"/><circle cx="505" cy="732" r="9"/><circle cx="535" cy="712" r="9"/>
+        <circle cx="450" cy="760" r="9"/><circle cx="492" cy="772" r="9"/><circle cx="548" cy="760" r="9"/><circle cx="590" cy="744" r="9"/>
+        <circle cx="330" cy="760" r="9"/><circle cx="412" cy="790" r="9"/><circle cx="575" cy="796" r="9"/><circle cx="520" cy="802" r="9"/>
+        <circle cx="660" cy="778" r="9"/><circle cx="355" cy="800" r="8"/><circle cx="690" cy="808" r="8"/>
+      </g>
+      <path d="M60 826 Q200 796 300 834 T520 834 T740 834 T940 816 L940 980 L60 980 Z" class="f-tissue s-purple" style="stroke-width:8;stroke-linejoin:round"/>
+      <use href="#rec" transform="translate(300 828)"/><use href="#rec" transform="translate(520 832)"/><use href="#rec" transform="translate(740 832)"/>
+      <text class="hand f-ink" x="500" y="918" text-anchor="middle" font-size="44">postsynaptic membrane</text>
+      <text class="sub f-ink" x="500" y="958" text-anchor="middle" font-size="26">transmitter binds → ion channel opens → next neuron fires</text>
+
+      <text class="hand f-ink" x="60" y="400" font-size="42">axon terminal</text>
+      <text class="sub f-ink2" x="60" y="430" font-size="28">end of the sending cell</text>
+      <path class="arr" d="M200 446 Q250 480 316 500"/>
+      <text class="hand f-ink" x="730" y="360" font-size="42">synaptic vesicles</text>
+      <text class="sub f-ink2" x="730" y="390" font-size="28">packets of transmitter</text>
+      <path class="arr" d="M738 400 Q730 470 650 544"/>
+      <text class="hand f-ink" x="730" y="700" font-size="42">neurotransmitters</text>
+      <text class="sub f-ink2" x="730" y="730" font-size="28">chemical messengers</text>
+      <path class="arr" d="M722 716 Q690 740 614 748"/>
+      <text class="hand f-ink" x="780" y="796" font-size="42">receptors</text>
+      <path class="arr" d="M772 800 Q760 802 752 812"/>
+      <text class="hand f-ink" x="60" y="740" font-size="42">synaptic cleft</text>
+      <text class="sub f-ink2" x="60" y="770" font-size="28">tiny gap, ~20 nm</text>
+      <path d="M236 700 Q214 700 214 726 Q214 748 196 758 Q214 768 214 790 Q214 816 236 816" class="s s-ink" style="stroke-width:4"/>
+
+      <text class="script f-ink" x="60" y="1068" font-size="62">How it works</text>
+      <text class="sub f-ink2" x="400" y="1062" font-size="32">simple sequence →</text>
+      <rect x="60" y="1100" width="270" height="250" rx="22" class="f-paper2 s s-rosed" style="stroke-width:4;stroke-dasharray:3 10"/>
+      <rect x="365" y="1100" width="270" height="250" rx="22" class="f-paper2 s s-rosed" style="stroke-width:4;stroke-dasharray:3 10"/>
+      <rect x="670" y="1100" width="270" height="250" rx="22" class="f-paper2 s s-rosed" style="stroke-width:4;stroke-dasharray:3 10"/>
+      <path class="arr" d="M334 1225 L361 1225"/><path class="arr" d="M639 1225 L666 1225"/>
+      <path d="M165 1118 l-14 24 l18 -5 l-14 28" class="s s-gold" style="stroke-width:7"/>
+      <path d="M135 1180 L255 1180 Q272 1230 238 1262 L152 1262 Q118 1230 135 1180 Z" class="f-rose s-rosed" style="stroke-width:5;stroke-linejoin:round" transform="translate(30 0)"/>
+      <use href="#ves" transform="translate(180 1215) scale(.3)"/><use href="#ves" transform="translate(222 1232) scale(.3)"/><use href="#ves" transform="translate(262 1212) scale(.3)"/>
+      <path d="M440 1130 L560 1130 Q577 1180 543 1212 L457 1212 Q423 1180 440 1130 Z" class="f-rose s-rosed" style="stroke-width:5;stroke-linejoin:round"/>
+      <use href="#ves" transform="translate(478 1168) scale(.3)"/><use href="#ves" transform="translate(526 1160) scale(.3)"/><use href="#ves" transform="translate(500 1205) scale(.26)"/>
+      <g class="f-purple"><circle cx="470" cy="1240" r="6"/><circle cx="500" cy="1255" r="6"/><circle cx="532" cy="1238" r="6"/><circle cx="486" cy="1280" r="6"/><circle cx="520" cy="1284" r="6"/></g>
+      <path d="M385 1316 Q450 1302 500 1312 T615 1308 L615 1345 L385 1345 Z" class="f-tissue s-purple" style="stroke-width:4"/>
+      <g class="f-purple"><circle cx="740" cy="1190" r="6"/><circle cx="800" cy="1176" r="6"/><circle cx="868" cy="1196" r="6"/><circle cx="770" cy="1236" r="6"/><circle cx="840" cy="1240" r="6"/></g>
+      <path d="M690 1318 Q760 1300 805 1316 T925 1310 L925 1345 L690 1345 Z" class="f-tissue s-purple" style="stroke-width:4"/>
+      <use href="#rec" transform="translate(745 1300) scale(.55)"/><use href="#rec" transform="translate(852 1302) scale(.55)"/>
+      <g class="s s-gold" style="stroke-width:5"><path d="M745 1262 l-6 -14 l10 4 l-6 -12"/><path d="M852 1264 l-6 -14 l10 4 l-6 -12"/></g>
+      <g class="hand f-ink" font-size="36"><text x="60" y="1392">1 signal arrives</text><text x="365" y="1392">2 vesicles release</text><text x="670" y="1392">3 receptors activated</text></g>
+      <g class="sub f-ink2" font-size="26"><text x="60" y="1424">electric pulse reaches the terminal</text><text x="365" y="1424">transmitter spills into the cleft</text><text x="670" y="1424">next neuron gets the message</text></g>
+      <use href="#heart" class="f-rosed" transform="translate(900 120) scale(.9) rotate(12)"/>
+      <use href="#heart" class="f-rosed" transform="translate(120 600) scale(.8) rotate(-10)"/>
+      <use href="#heart" class="f-rosed" transform="translate(910 620) scale(.7)"/>
+      <use href="#spark" class="f-gold" transform="translate(220 330) scale(.8)"/>
+      <use href="#spark" class="f-gold" transform="translate(810 560) scale(.8)"/>
+    </g>
+  </g>
+
+  
+  <g class="pg" data-id="bronchiole" data-name="Bronchiole" data-x="365" data-y="535" data-w="100">
+    <rect class="paper" x="0" y="0" width="1000" height="1500" rx="28"/>
+    <text class="script f-ink" x="500" y="150" text-anchor="middle" font-size="124">Bronchiole</text>
+    <path d="M300 180 Q500 162 710 184" class="s s-rose" style="stroke-width:12;opacity:.45"/>
+    <text class="hand f-ink2" x="500" y="226" text-anchor="middle" font-size="34">♥ structure &amp; function ♥</text>
+    <text class="sub f-ink2" font-size="30"><tspan x="60" y="272">tiny airways (under 1 mm)</tspan><tspan x="60" y="304">that carry air deep into</tspan><tspan x="60" y="336">the lungs</tspan></text>
+
+    <circle cx="500" cy="640" r="275" class="f-rosed s-ink" style="stroke-width:4;opacity:.95"/>
+    <circle cx="500" cy="640" r="258" class="s s-ink" style="stroke-width:3;stroke-dasharray:34 12;opacity:.3"/>
+    <circle cx="500" cy="640" r="244" class="f-tissue s-rosed" style="stroke-width:4"/>
+    <g id="br-folds"></g>
+    <circle cx="500" cy="640" r="140" class="f-paper2 s-rosed" style="stroke-width:4"/>
+    <g id="br-cilia"></g>
+    <ellipse cx="335" cy="735" rx="34" ry="24" class="f-gold s-ink" style="stroke-width:3" transform="rotate(-30 335 735)"/><circle cx="332" cy="735" r="8" class="f-ink" style="opacity:.35"/>
+    <ellipse cx="690" cy="660" rx="30" ry="22" class="f-gold s-ink" style="stroke-width:3" transform="rotate(70 690 660)"/><circle cx="690" cy="660" r="7" class="f-ink" style="opacity:.35"/>
+    <ellipse cx="470" cy="462" rx="30" ry="22" class="f-gold s-ink" style="stroke-width:3" transform="rotate(8 470 462)"/><circle cx="470" cy="462" r="7" class="f-ink" style="opacity:.35"/>
+    <path class="arrp" d="M430 700 Q470 650 540 590"/>
+    <path class="arrp" d="M500 740 Q560 700 590 650" style="opacity:.8"/>
+    <text class="hand f-ink" x="500" y="738" text-anchor="middle" font-size="34" style="display:none">lumen</text>
+
+    <text class="hand f-ink" x="60" y="420" font-size="42">smooth muscle</text>
+    <text class="sub f-ink2" font-size="28"><tspan x="60" y="450">tightens or relaxes</tspan><tspan x="60" y="478">the airway</tspan></text>
+    <path class="arr" d="M110 496 Q200 540 262 530" style="display:none"/>
+    <path class="arr" d="M260 424 Q290 440 312 456"/>
+    <text class="hand f-ink" x="60" y="830" font-size="42">goblet cells</text>
+    <text class="sub f-ink2" x="60" y="860" font-size="28">make mucus</text>
+    <path class="arr" d="M200 826 Q260 790 312 748"/>
+    <text class="hand f-ink" x="780" y="540" font-size="42">ciliated cells</text>
+    <text class="sub f-ink2" font-size="28"><tspan x="780" y="570">sweep dust &amp;</tspan><tspan x="780" y="598">mucus out</tspan></text>
+    <path class="arr" d="M772 560 Q720 600 664 622"/>
+    <text class="hand f-ink" x="500" y="842" text-anchor="middle" font-size="40">lumen</text>
+    <text class="sub f-ink2" x="500" y="870" text-anchor="middle" font-size="26">(air passage)</text>
+
+    <text class="sub f-ink2" font-size="28"><tspan x="60" y="1040">branches from bronchi</tspan><tspan x="60" y="1070">and ends in tiny air sacs</tspan><tspan x="60" y="1100">called alveoli →</tspan></text>
+    <path class="arr" d="M600 905 Q650 980 702 1060" style="stroke-dasharray:2 9"/>
+
+    
+    <rect x="692" y="972" width="216" height="316" rx="20" class="f-paper2 s s-rosed" style="stroke-width:5;stroke-dasharray:3 12"/>
+    <g clip-path="url(#clipAlv)">
+      <rect x="700" y="980" width="200" height="300" class="f-paper2"/>
+      <path d="M800 960 L800 1060" class="s s-rosed" style="stroke-width:16"/>
+      <circle cx="800" cy="1110" r="52" class="f-tissue s-rosed" style="stroke-width:4"/>
+      <circle cx="800" cy="1110" r="60" class="s s-rosed" style="stroke-width:8;stroke-dasharray:14 7"/>
+      <circle cx="742" cy="1190" r="34" class="f-tissue s-rosed" style="stroke-width:4"/>
+      <circle cx="858" cy="1190" r="34" class="f-tissue s-rosed" style="stroke-width:4"/>
+      <circle cx="800" cy="1230" r="28" class="f-tissue s-rosed" style="stroke-width:4"/>
+    </g>
+    <text class="hand f-ink" x="800" y="954" font-size="40" text-anchor="middle">alveoli</text>
+    <text class="sub f-ink2" x="800" y="1312" font-size="26" text-anchor="middle">pinch in ✦</text>
+
+    <text class="script f-ink" x="60" y="1352" font-size="62">Functions</text>
+    <g transform="translate(440 1390)">
+      <g class="s s-ink" style="stroke-width:5"><path d="M-36 -14 Q-10 -30 10 -14 Q22 -2 6 6"/><path d="M-36 6 Q-6 -8 24 6 Q38 16 20 26"/><path d="M-36 26 Q-16 18 0 26"/></g>
+      <text class="hand f-ink" y="74" text-anchor="middle" font-size="34">conduct air</text>
+      <text class="sub f-ink2" y="102" text-anchor="middle" font-size="25">to the alveoli</text>
+    </g>
+    <g transform="translate(660 1390)">
+      <path d="M0 -38 L30 -26 L30 6 Q30 28 0 40 Q-30 28 -30 6 L-30 -26 Z" class="f-tissue s-rosed" style="stroke-width:4;stroke-linejoin:round"/>
+      <path d="M-12 2 L-3 12 L14 -10" class="s s-ink" style="stroke-width:5"/>
+      <text class="hand f-ink" y="74" text-anchor="middle" font-size="34">filter &amp; clean</text>
+      <text class="sub f-ink2" y="102" text-anchor="middle" font-size="25">traps dust and germs</text>
+    </g>
+    <g transform="translate(880 1390)">
+      <g class="s s-rosed" style="stroke-width:6"><path d="M-36 -18 Q-24 -30 -12 -18 T12 -18 T36 -18"/><path d="M-36 0 Q-24 -12 -12 0 T12 0 T36 0"/><path d="M-36 18 Q-24 6 -12 18 T12 18 T36 18"/></g>
+      <text class="hand f-ink" y="74" text-anchor="middle" font-size="34">regulate flow</text>
+      <text class="sub f-ink2" y="102" text-anchor="middle" font-size="25">muscle sets the width</text>
+    </g>
+    <use href="#heart" class="f-rosed" transform="translate(900 300) scale(.8) rotate(10)"/>
+    <use href="#heart" class="f-rosed" transform="translate(70 640) scale(.7)"/>
+    <use href="#heart" class="f-rosed" transform="translate(920 900) scale(.7) rotate(-8)"/>
+    <use href="#spark" class="f-gold" transform="translate(880 440) scale(.8)"/>
+    <use href="#spark" class="f-gold" transform="translate(130 960) scale(.7)"/>
+
+    
+    <g class="pg" data-id="alveoli" data-name="Alveoli" data-x="700" data-y="980" data-w="200">
+      <rect class="paper" x="0" y="0" width="1000" height="1500" rx="28"/>
+      <text class="script f-ink" x="500" y="150" text-anchor="middle" font-size="128">Alveoli</text>
+      <path d="M320 180 Q500 162 690 184" class="s s-rose" style="stroke-width:12;opacity:.45"/>
+      <text class="hand f-ink2" x="500" y="226" text-anchor="middle" font-size="34">♥ where gas exchange happens ♥</text>
+
+      <circle cx="250" cy="450" r="108" class="f-tissue s-rosed" style="stroke-width:5"/>
+      <circle cx="758" cy="440" r="104" class="f-tissue s-rosed" style="stroke-width:5"/>
+      <circle cx="255" cy="850" r="98" class="f-tissue s-rosed" style="stroke-width:5"/>
+      <circle cx="760" cy="860" r="104" class="f-tissue s-rosed" style="stroke-width:5"/>
+      <rect x="468" y="860" width="64" height="190" class="f-tissue s-rosed" style="stroke-width:6"/>
+      <circle cx="500" cy="640" r="236" class="f-paper2 s-rosed" style="stroke-width:8"/>
+      <circle cx="500" cy="640" r="256" class="s s-rosed" style="stroke-width:26;stroke-dasharray:46 16"/>
+      <circle cx="500" cy="640" r="256" class="s s-ink" style="stroke-width:3;stroke-dasharray:46 16;opacity:.25"/>
+      <g class="f-rosed s-ink" style="stroke-width:3">
+        <ellipse cx="500" cy="384" rx="22" ry="14"/><ellipse cx="682" cy="458" rx="22" ry="14" transform="rotate(48 682 458)"/>
+        <ellipse cx="320" cy="458" rx="22" ry="14" transform="rotate(-48 320 458)"/><ellipse cx="500" cy="896" rx="22" ry="14"/>
+        <ellipse cx="682" cy="822" rx="22" ry="14" transform="rotate(-48 682 822)"/><ellipse cx="320" cy="822" rx="22" ry="14" transform="rotate(48 320 822)"/>
+      </g>
+      <text class="hand f-purple" x="500" y="590" text-anchor="middle" font-size="46">O₂ → blood</text>
+      <text class="hand f-ink" x="500" y="660" text-anchor="middle" font-size="46">CO₂ ← blood</text>
+      <text class="sub f-ink2" x="500" y="712" text-anchor="middle" font-size="30">fresh air fills the sac</text>
+      <path class="arrp" d="M410 770 L330 820" style="stroke-width:12"/>
+      <path d="M690 770 L606 724" class="s s-rosed" style="stroke-width:12;marker-end:url(#ah)"/>
+
+      <text class="hand f-ink" x="60" y="330" font-size="42">alveolus</text>
+      <text class="sub f-ink2" x="60" y="360" font-size="28">tiny air sac</text>
+      <path class="arr" d="M200 346 Q270 380 330 450"/>
+      <text class="hand f-ink" x="730" y="320" font-size="42">capillary</text>
+      <text class="sub f-ink2" x="730" y="350" font-size="28">thin blood vessel</text>
+      <path class="arr" d="M722 336 Q690 390 672 450"/>
+      <text class="hand f-ink" x="60" y="1000" font-size="42">thin wall</text>
+      <text class="sub f-ink2" x="60" y="1030" font-size="28">one cell thick</text>
+      <path class="arr" d="M200 982 Q240 920 326 842"/>
+      <text class="hand f-ink" x="690" y="1000" font-size="42">red blood cells</text>
+      <text class="sub f-ink2" x="690" y="1030" font-size="28">pick up the O₂</text>
+      <path class="arr" d="M770 982 Q740 930 686 826"/>
+      <text class="hand f-ink" x="560" y="1100" font-size="38">alveolar duct</text>
+      <text class="sub f-ink2" x="560" y="1130" font-size="26">air arrives from the bronchiole</text>
+      <path class="arr" d="M556 1092 Q548 1070 536 1050"/>
+
+      <text class="script f-ink" x="60" y="1262" font-size="62">Why it matters</text>
+      <text class="hand f-ink" font-size="36"><tspan x="60" y="1322">• about 300 million of them per lung pair</tspan><tspan x="60" y="1366">• huge surface area, roughly a tennis court</tspan><tspan x="60" y="1410">• gas moves by simple diffusion</tspan></text>
+      <use href="#heart" class="f-rosed" transform="translate(900 300) scale(.8) rotate(10)"/>
+      <use href="#heart" class="f-rosed" transform="translate(70 640) scale(.7)"/>
+      <use href="#spark" class="f-gold" transform="translate(500 270) scale(.8)"/>
+      <use href="#spark" class="f-gold" transform="translate(900 1180) scale(.8)"/>
+    </g>
+  </g>
+</g>
+
+</g>
+</svg>
+
+<div class="hint" id="hint">Pinch or scroll to zoom into any drawing. Each one opens a deeper note page.</div>
+<div class="dock">
+  <button class="ctl" id="zin" aria-label="Zoom in">+</button>
+  <button class="ctl" id="zout" aria-label="Zoom out">−</button>
+  <button class="ctl" id="zhome" aria-label="Back to the first page" style="font-size:15px">Home</button>
+</div>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function mk(n,a){var e=document.createElementNS(NS,n);for(var q in a)e.setAttribute(q,a[q]);return e;}
+
+  
+  var folds=document.getElementById('br-folds'), cilia=document.getElementById('br-cilia'), i, a;
+  for(i=0;i<24;i++){a=i*Math.PI/12;
+    folds.appendChild(mk('circle',{cx:500+192*Math.cos(a),cy:640+192*Math.sin(a),r:30,'class':'f-rose s-rosed',style:'stroke-width:4'}));}
+  for(i=0;i<72;i++){a=i*Math.PI/36;
+    cilia.appendChild(mk('line',{x1:500+142*Math.cos(a),y1:640+142*Math.sin(a),x2:500+166*Math.cos(a+0.08),y2:640+166*Math.sin(a+0.08),'class':'s s-ink',style:'stroke-width:3;opacity:.45'}));}
+
+  var stage=document.getElementById('stage'), world=document.getElementById('world');
+  var lbl=document.getElementById('zoomlbl'), hint=document.getElementById('hint'), crumbsEl=document.getElementById('crumbs');
+  var SW=1,SH=1,k=1,x=0,y=0,fit=1,kMax=100,touched=false,anim=null;
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+
+  
+  var pages={},list=[];
+  document.querySelectorAll('.pg').forEach(function(el){
+    var id=el.getAttribute('data-id'), pe=el.parentNode.closest?el.parentNode.closest('.pg'):null, p=pe?pages[pe.getAttribute('data-id')]:null, o;
+    if(!p){o={id:id,el:el,name:el.getAttribute('data-name'),parent:null,s:1,tx:0,ty:0,depth:0};}
+    else{
+      var s0=+el.getAttribute('data-w')/1000,x0=+el.getAttribute('data-x'),y0=+el.getAttribute('data-y');
+      el.setAttribute('transform','translate('+x0+' '+y0+') scale('+s0+')');
+      o={id:id,el:el,name:el.getAttribute('data-name'),parent:p,s:p.s*s0,tx:p.tx+p.s*x0,ty:p.ty+p.s*y0,depth:p.depth+1};
+    }
+    pages[id]=o;list.push(o);
+  });
+  var root=list[0], deepest=list.reduce(function(m,p){return p.s<m?p.s:m;},1);
+  var currentId=root.id, crumbKey='';
+
+  function apply(){
+    world.setAttribute('transform','translate('+x+' '+y+') scale('+k+')');
+    list.forEach(function(p){
+      if(!p.parent) return;
+      var sw=k*p.s*1000, t=clamp((sw-0.30*SW)/(0.34*SW),0,1);
+      p.el.style.opacity=t; p.el.style.display=t<0.01?'none':'';
+      p.t=t;
+    });
+    
+    var cur=root;
+    list.forEach(function(p){
+      var left=x+k*p.tx, top=y+k*p.ty, w=k*p.s*1000, h=k*p.s*1500;
+      if(w>=0.55*SW && SW/2>=left && SW/2<=left+w && SH/2>=top && SH/2<=top+h && p.depth>=cur.depth) cur=p;
+    });
+    currentId=cur.id;
+    var chain=[],q=cur; while(q){chain.unshift(q);q=q.parent;}
+    var key=chain.map(function(c){return c.id;}).join('>');
+    if(key!==crumbKey){crumbKey=key;drawCrumbs(chain);}
+    lbl.textContent='×'+(k/fit).toFixed(k/fit<10?1:0);
+  }
+  function drawCrumbs(chain){
+    crumbsEl.textContent='';
+    chain.forEach(function(c,idx){
+      if(idx){var sp=document.createElement('span');sp.className='sep';sp.textContent='›';crumbsEl.appendChild(sp);}
+      var b=document.createElement('button');b.className='crumb';b.textContent=c.name;
+      if(idx===chain.length-1) b.setAttribute('aria-current','true');
+      b.onclick=function(){goTo(c.id);};
+      crumbsEl.appendChild(b);
+    });
+  }
+  function measure(){
+    var r=stage.getBoundingClientRect(); SW=Math.max(r.width,1); SH=Math.max(r.height,1);
+    fit=Math.min(SW/1000,SH/1500)*0.97; kMax=fit/deepest*1.25;
+  }
+  function viewFor(p){
+    var nk=Math.min(SW/(1000*p.s),SH/(1500*p.s))*0.97;
+    return {k:nk,x:(SW-nk*p.s*1000)/2-nk*p.tx,y:(SH-nk*p.s*1500)/2-nk*p.ty};
+  }
+  function setView(v){k=v.k;x=v.x;y=v.y;apply();}
+  function goTo(id){
+    var tgt=viewFor(pages[id]);
+    var c0={x:(SW/2-x)/k,y:(SH/2-y)/k}, c1={x:(SW/2-tgt.x)/tgt.k,y:(SH/2-tgt.y)/tgt.k};
+    var l0=Math.log(k), l1=Math.log(tgt.k), t0=performance.now(), dur=Math.min(1800,700+Math.abs(l1-l0)*420);
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    touched=true; hint.style.display='none';
+    var token={};anim=token;
+    if(reduce){setView(tgt);return;}
+    (function step(now){
+      if(anim!==token) return;
+      var u=clamp((now-t0)/dur,0,1), e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+      var nk=Math.exp(l0+(l1-l0)*e), cx=c0.x+(c1.x-c0.x)*e, cy=c0.y+(c1.y-c0.y)*e;
+      k=nk;x=SW/2-cx*nk;y=SH/2-cy*nk;apply();
+      if(u<1) requestAnimationFrame(step);
+    })(t0);
+  }
+  function zoomAt(f,cx,cy){
+    var nk=clamp(k*f,fit*0.7,kMax), real=nk/k;
+    x=cx-(cx-x)*real; y=cy-(cy-y)*real; k=nk; apply();
+  }
+
+  
+  var ptrs=new Map(), start=null, tapOK=false;
+  stage.addEventListener('pointerdown',function(e){
+    if(e.target.closest&&e.target.closest('.ctl')) return;
+    anim=null; touched=true; hint.style.display='none';
+    try{stage.setPointerCapture(e.pointerId);}catch(_){}
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===1){start={x:e.clientX,y:e.clientY,t:performance.now()};tapOK=true;}else tapOK=false;
+  });
+  stage.addEventListener('pointermove',function(e){
+    if(!ptrs.has(e.pointerId)) return;
+    var prev=ptrs.get(e.pointerId), cur={x:e.clientX,y:e.clientY}, rect=stage.getBoundingClientRect();
+    if(start&&Math.hypot(cur.x-start.x,cur.y-start.y)>8) tapOK=false;
+    if(ptrs.size===1){x+=cur.x-prev.x;y+=cur.y-prev.y;ptrs.set(e.pointerId,cur);apply();}
+    else if(ptrs.size===2){
+      var oid=null;ptrs.forEach(function(_,id){if(id!==e.pointerId)oid=id;});
+      var o=ptrs.get(oid), d0=Math.hypot(prev.x-o.x,prev.y-o.y), d1=Math.hypot(cur.x-o.x,cur.y-o.y);
+      var m0={x:(prev.x+o.x)/2,y:(prev.y+o.y)/2}, m1={x:(cur.x+o.x)/2,y:(cur.y+o.y)/2};
+      x+=m1.x-m0.x;y+=m1.y-m0.y;ptrs.set(e.pointerId,cur);
+      if(d0>0) zoomAt(d1/d0,m1.x-rect.left,m1.y-rect.top); else apply();
+    }
+  });
+  function up(e){
+    var wasOne=ptrs.size===1&&ptrs.has(e.pointerId);
+    ptrs.delete(e.pointerId);
+    if(wasOne&&tapOK&&e.type==='pointerup'&&performance.now()-start.t<450){
+      var el=document.elementFromPoint(e.clientX,e.clientY), g=el&&el.closest?el.closest('[data-goto]'):null;
+      if(g){goTo(g.getAttribute('data-goto'));return;}
+      var pg=el&&el.closest?el.closest('.pg'):null;
+      if(pg&&pg.getAttribute('data-id')!==currentId&&pages[pg.getAttribute('data-id')].depth>pages[currentId].depth) goTo(pg.getAttribute('data-id'));
+    }
+  }
+  stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+  stage.addEventListener('wheel',function(e){
+    e.preventDefault();anim=null;touched=true;hint.style.display='none';
+    var rect=stage.getBoundingClientRect();
+    zoomAt(Math.exp(-e.deltaY*(e.ctrlKey?0.012:0.0024)),e.clientX-rect.left,e.clientY-rect.top);
+  },{passive:false});
+  document.getElementById('zin').onclick=function(){anim=null;touched=true;zoomAt(1.6,SW/2,SH/2);};
+  document.getElementById('zout').onclick=function(){anim=null;touched=true;zoomAt(1/1.6,SW/2,SH/2);};
+  document.getElementById('zhome').onclick=function(){goTo(root.id);};
+
+  function init(){measure();setView(viewFor(root));}
+  init();
+  if(window.ResizeObserver){
+    new ResizeObserver(function(){measure();if(!touched) setView(viewFor(root)); else apply();}).observe(stage);
+  }else{window.addEventListener('resize',function(){measure();apply();});}
+})();
+</script>
+
+</body></html>

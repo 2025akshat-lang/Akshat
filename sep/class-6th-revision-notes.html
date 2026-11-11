@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Measurement &amp; Motion — Concept Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f3ea;
+    --line:#c9bfa5;
+    --ink:#2b2a28;
+    --marker-blue:#2f5d8a;
+    --marker-green:#3f6e4c;
+    --marker-orange:#c1611f;
+    --marker-pink:#a8375f;
+    --card:#fffdf6;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, #ecE4d2 28px),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Karla',sans-serif;
+    padding:20px 14px 60px;
+    min-height:100vh;
+  }
+  .margin-line{
+    position:fixed;
+    top:0; bottom:0; left:38px;
+    width:2px;
+    background:#d9a3a3;
+    opacity:.5;
+    z-index:0;
+  }
+  header{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    margin-bottom:14px;
+    padding-bottom:14px;
+    border-bottom:2px dashed var(--line);
+  }
+  header h1{
+    font-family:'Kalam',cursive;
+    font-size:1.75rem;
+    margin:0 0 4px;
+    color:var(--ink);
+    line-height:1.25;
+  }
+  header p{
+    margin:0;
+    font-size:.85rem;
+    color:#6b6355;
+    font-style:italic;
+  }
+
+  .hindi-toggle-wrap{
+    position:relative;
+    z-index:1;
+    max-width:560px;
+    margin:0 auto 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:30px;
+    padding:8px 16px;
+  }
+  .hindi-toggle-wrap span{font-size:.85rem; font-weight:700;}
+  .switch{
+    position:relative;
+    display:inline-block;
+    width:42px;
+    height:24px;
+    flex-shrink:0;
+  }
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{
+    position:absolute; cursor:pointer;
+    top:0; left:0; right:0; bottom:0;
+    background:#c9bfa5;
+    transition:.2s;
+    border-radius:24px;
+  }
+  .slider:before{
+    position:absolute;
+    content:"";
+    height:18px; width:18px;
+    left:3px; bottom:3px;
+    background:white;
+    transition:.2s;
+    border-radius:50%;
+  }
+  input:checked + .slider{background:var(--marker-green);}
+  input:checked + .slider:before{transform:translateX(18px);}
+
+  .hindi{
+    display:none;
+    color:#7a7263;
+    font-size:.85em;
+    font-style:italic;
+  }
+  body.show-hindi .hindi{display:inline;}
+  body.show-hindi .hindi-block{display:block;}
+  .hindi-block{display:none;}
+
+  .root{
+    position:relative;
+    z-index:1;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Kalam',cursive;
+    text-align:center;
+    padding:14px 10px;
+    border-radius:10px;
+    font-size:1.1rem;
+    max-width:520px;
+    margin:0 auto 18px;
+    box-shadow:3px 3px 0 var(--line);
+  }
+  .connector{
+    width:2px;
+    height:16px;
+    background:var(--line);
+    margin:0 auto;
+    position:relative;
+    z-index:1;
+  }
+  .branches{
+    position:relative;
+    z-index:1;
+    max-width:560px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  details.branch{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:2px 2px 0 rgba(0,0,0,.06);
+  }
+  details.branch > summary{
+    list-style:none;
+    cursor:pointer;
+    padding:13px 14px;
+    font-family:'Kalam',cursive;
+    font-size:1.1rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    user-select:none;
+  }
+  details.branch > summary::-webkit-details-marker{display:none;}
+  .arrow{
+    font-size:1rem;
+    transition:transform .25s ease;
+    flex-shrink:0;
+    color:#8a8272;
+  }
+  details[open] > summary .arrow{transform:rotate(90deg);}
+
+  .b-blue > summary{color:var(--marker-blue); border-left:6px solid var(--marker-blue);}
+  .b-green > summary{color:var(--marker-green); border-left:6px solid var(--marker-green);}
+  .b-orange > summary{color:var(--marker-orange); border-left:6px solid var(--marker-orange);}
+  .b-pink > summary{color:var(--marker-pink); border-left:6px solid var(--marker-pink);}
+
+  .branch-body{
+    padding:2px 16px 16px 18px;
+    font-size:.92rem;
+    line-height:1.55;
+  }
+  .sub{
+    margin:10px 0;
+    padding:10px 12px;
+    background:#fbf8ef;
+    border:1px dashed var(--line);
+    border-radius:8px;
+  }
+  .sub h4{
+    margin:0 0 6px;
+    font-family:'Kalam',cursive;
+    font-size:1rem;
+    color:var(--ink);
+  }
+  .sub ul{
+    margin:0;
+    padding-left:18px;
+  }
+  .sub li{margin-bottom:4px;}
+  .diagram-svg{
+    display:block;
+    width:100%;
+    max-width:320px;
+    height:auto;
+    margin:12px auto 4px;
+  }
+  .formula{
+    display:inline-block;
+    background:#eef1e6;
+    border-radius:5px;
+    padding:1px 7px;
+    font-family:'Karla',sans-serif;
+    font-weight:700;
+    margin:2px 3px 2px 0;
+  }
+  .motion-type{
+    margin-top:10px;
+    padding:10px;
+    border-radius:8px;
+    background:#fff;
+    border:1.5px solid var(--marker-pink);
+  }
+  .motion-type h5{
+    margin:0 0 4px;
+    font-family:'Kalam',cursive;
+    color:var(--marker-pink);
+    font-size:1rem;
+  }
+  .anim-btn{
+    margin-top:8px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--marker-pink);
+    color:#fff;
+    border:none;
+    padding:7px 14px;
+    border-radius:20px;
+    font-size:.82rem;
+    font-weight:700;
+    cursor:pointer;
+    font-family:'Karla',sans-serif;
+  }
+  .anim-btn.loaded{background:#6b2340;}
+  .anim-frame-wrap{
+    margin-top:10px;
+    border-radius:10px;
+    overflow:hidden;
+    border:2px solid var(--marker-pink);
+    display:none;
+    background:#0f172a;
+  }
+  .anim-frame-wrap iframe{
+    width:100%;
+    height:420px;
+    border:none;
+    display:block;
+  }
+  .steps{
+    counter-reset:step;
+    padding-left:0;
+    list-style:none;
+    margin:0;
+  }
+  .steps li{
+    counter-increment:step;
+    position:relative;
+    padding-left:28px;
+    margin-bottom:8px;
+  }
+  .steps li::before{
+    content:counter(step);
+    position:absolute;
+    left:0; top:0;
+    width:20px; height:20px;
+    background:var(--marker-orange);
+    color:#fff;
+    border-radius:50%;
+    font-size:.72rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+  }
+  footer{
+    text-align:center;
+    margin-top:24px;
+    font-size:.75rem;
+    color:#9a9384;
+    position:relative;
+    z-index:1;
+  }
+  @media (max-width:380px){
+    header h1{font-size:1.4rem;}
+    details.branch > summary{font-size:.98rem;}
+    .anim-frame-wrap iframe{height:360px;}
+  }
+</style>
+</head>
+<body>
+<div class="margin-line"></div>
+
+<header>
+  <h1>Measurement of Length &amp; Motion</h1>
+  <p>Tap a box to open it · tap ▶ to watch an example animation</p>
+</header>
+
+<div class="hindi-toggle-wrap">
+  <span>हिंदी अनुवाद दिखाएँ / Show Hindi</span>
+  <label class="switch">
+    <input type="checkbox" id="hindiToggle">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="root">Measurement of Length &amp; Motion</div>
+<div class="connector"></div>
+
+<div class="branches">
+
+  <details class="branch b-blue">
+    <summary><span>1. Non-Standard Units <span class="hindi">(गैर-मानक मात्रक)</span></span><span class="arrow">▶</span></summary>
+    <div class="branch-body">
+      <div class="sub">
+        <h4>Measurement by body <span class="hindi">(शरीर के अंगों से मापन)</span></h4>
+        <ul>
+          
+          <li><b>Foot steps</b> — for short lengths <span class="hindi">(पैर के कदम — छोटी लंबाई के लिए)</span></li>
+          <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">
+  
+  <circle cx="130" cy="30" r="14" fill="#f3caa1" stroke="#7a4a25" stroke-width="2.5"/>
+  <rect x="118" y="44" width="24" height="40" rx="8" fill="#2f5d8a"/>
+  
+  <line x1="118" y1="55" x2="30" y2="55" stroke="#7a4a25" stroke-width="2" stroke-linecap="round" fill="none" opacity="0"/>
+  
+  <line x1="130" y1="84" x2="115" y2="130" stroke="#2f5d8a" stroke-width="10" stroke-linecap="round"/>
+  <line x1="130" y1="84" x2="145" y2="130" stroke="#2f5d8a" stroke-width="10" stroke-linecap="round"/>
+  
+  <line x1="30" y1="100" x2="230" y2="100" stroke="#a8375f" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="30" y1="92" x2="30" y2="108" stroke="#a8375f" stroke-width="2"/>
+  <line x1="230" y1="92" x2="230" y2="108" stroke="#a8375f" stroke-width="2"/>
+  <text x="130" y="142" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#a8375f">Leg — Number of step count</text>
+          </svg>
+          <li><b>Arm length</b> — for longer lengths <span class="hindi">(हाथ — लंबी लंबाई के लिए)</span></li>
+          
+          <li><b>Hand span(Balisht)</b> <span class="hindi">(बालिश्त)</span> — distance from thumb tip to little-finger tip with fingers stretched out</li>
+        </ul>
+        <svg viewBox="0 0 320 190" class="diagram-svg" role="img" aria-label="Diagram of a hand span used to measure length">
+          <path d="M160 178 L160 120 Q158 100 150 88 L120 40 Q116 32 122 27 Q129 22 135 29 L156 70 L156 40 Q156 30 165 30 Q174 30 174 40 L174 70 L174 34 Q174 24 183 24 Q192 24 192 34 L192 70 L192 40 Q192 31 200 31 Q208 31 208 40 L208 82 L214 62 Q217 53 225 56 Q233 59 230 68 L214 108 Q212 118 212 130 L212 178 Z"
+                fill="#f3caa1" stroke="#7a4a25" stroke-width="2.5" stroke-linejoin="round"/>
+          <line x1="122" y1="18" x2="230" y2="18" stroke="#a8375f" stroke-width="2" stroke-dasharray="10 10"/>
+          <line x1="122" y1="10" x2="122" y2="26" stroke="#a8375f" stroke-width="2"/>
+          <line x1="230" y1="10" x2="230" y2="26" stroke="#a8375f" stroke-width="2"/>
+          <text x="161" y="14" text-anchor="middle" font-family="Karla, sans-serif" font-size="12" font-weight="700" fill="#a8375f">1 hand span</text>
+          <text x="161" y="188" text-anchor="middle" font-family="Kalam, cursive" font-size="12" fill="#7a7263" class="hindi hindi-block">1 बालिश्त</text>
+        </svg>
+      </div>
+      <div class="sub">
+        <h4>Ancient units</h4>
+        <p>Angul, Dhanush, Yojan <span class="hindi">(अंगुल, धनुष, योजन)</span></p>
+        <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  
+  <path d="M70 190 L70 130 Q68 115 78 108
+           L78 60 Q78 50 88 50 Q98 50 98 60 L98 108
+           L98 55 Q98 45 108 45 Q118 45 118 55 L118 108
+           L118 58 Q118 48 128 48 Q138 48 138 58 L138 110
+           Q140 118 140 130 L140 190 Z"
+        fill="#f3caa1" stroke="#7a4a25" stroke-width="2.5" stroke-linejoin="round"/>
+  
+  <path d="M70 150 Q45 155 42 175 Q40 188 55 190 Q68 190 70 178 Z"
+        fill="#f3caa1" stroke="#7a4a25" stroke-width="2.5"/>
+  
+  <line x1="78" y1="42" x2="140" y2="42" stroke="#a8375f" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="78" y1="34" x2="78" y2="50" stroke="#a8375f" stroke-width="2"/>
+  <line x1="140" y1="34" x2="140" y2="50" stroke="#a8375f" stroke-width="2"/>
+  <text x="109" y="26" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#a8375f">4 Angul (Char Angulah)</text>
+        </svg>
+      </div>
+      <div class="sub">
+        <h4>Why not reliable?</h4>
+        <p>These units are <b>not exact</b> — they change from person to person, so they are not accepted as standard. <span class="hindi hindi-block">ये मात्रक Exact नहीं होते, हर व्यक्ति के अनुसार बदलते हैं, इसलिए Standard नहीं माने जाते।</span></p>
+      </div>
+      <svg viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg">
+  
+  <rect x="20" y="170" width="300" height="10" rx="2" fill="#7a4a25"/>
+  <rect x="35" y="180" width="8" height="40" fill="#5c3a1e"/>
+  <rect x="290" y="180" width="8" height="40" fill="#5c3a1e"/>
+
+  
+  <rect x="180" y="120" width="90" height="16" rx="3" fill="#2b2a28"/>
+  <path d="M180 120 Q230 90 260 120 L260 100 Q235 78 195 100 Z" fill="#2b2a28"/>
+  <circle cx="255" cy="108" r="6" fill="#c1611f"/>
+  <rect x="245" y="132" width="10" height="24" fill="#2b2a28"/>
+  
+  <line x1="250" y1="156" x2="250" y2="170" stroke="#8a8272" stroke-width="2"/>
+  
+  <rect x="150" y="165" width="100" height="10" fill="#3f6e4c" stroke="#2b4a34" stroke-width="1.5"/>
+
+  
+  <rect x="95" y="175" width="10" height="35" fill="#5c3a1e"/>
+
+  
+  <rect x="70" y="120" width="46" height="60" rx="10" fill="#2f5d8a"/>
+  
+  <path d="M112 130 Q150 130 175 150" stroke="#f3caa1" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M112 150 Q145 155 170 160" stroke="#f3caa1" stroke-width="10" stroke-linecap="round" fill="none"/>
+  
+  <line x1="82" y1="178" x2="80" y2="215" stroke="#2b2a28" stroke-width="12" stroke-linecap="round"/>
+  <line x1="102" y1="178" x2="106" y2="215" stroke="#2b2a28" stroke-width="12" stroke-linecap="round"/>
+
+  
+  <rect x="88" y="105" width="12" height="14" fill="#f3caa1"/>
+  <circle cx="94" cy="92" r="18" fill="#f3caa1" stroke="#7a4a25" stroke-width="1.5"/>
+  
+  <path d="M80 96 Q94 118 108 96 Q108 108 94 112 Q80 108 80 96 Z" fill="#4a4a48"/>
+  
+  <path d="M76 88 Q94 66 112 88 Q94 80 76 88 Z" fill="#fdf6e3" stroke="#c9bfa5" stroke-width="1.5"/>
+  
+  <circle cx="88" cy="90" r="1.6" fill="#2b2a28"/>
+  <circle cx="100" cy="90" r="1.6" fill="#2b2a28"/>
+
+  
+  <path d="M84 118 Q94 128 104 118" stroke="#facc15" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  
+  <rect x="140" y="150" width="14" height="18" rx="2" fill="#a8375f"/>
+  <ellipse cx="147" cy="150" rx="7" ry="3" fill="#c94f7c"/>
+
+  <text x="170" y="30" text-anchor="middle" font-family="'Kalam', cursive" font-size="20" font-weight="700" fill="#2b2a28">Aslam Bhai ki Kahani</text>
+  <text x="170" y="50" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#6b6355">The tailor stitching a new dream, one seam at a time</text>
+      </svg>
+    </div>
+  </details>
+
+  <details class="branch b-green">
+    <summary><span>2. Standard Units <span class="hindi">(मानक मात्रक)</span></span><span class="arrow">▶</span></summary>
+    <div class="branch-body">
+      <div class="sub">
+        <h4>What is it?</h4>
+        <p>A form of measuring length that is <b>exact and equal for everyone</b> — this is the S.I. Unit of length. <span class="hindi hindi-block">Length मापने का ऐसा रूप जो सबके लिए Equal / Exact हो — S.I. Unit of Length कहलाता है।</span></p>
+      </div>
+      <div class="sub">
+        <h4>Conversions to remember</h4>
+        <p><span class="formula">1 kilometre = 1000 metres</span></p>
+        <p><span class="formula">1 metre = 1/1000 kilometres</span></p>
+        <p><span class="formula">1 metre = 100 centimetres</span></p>
+        <p><span class="formula">1 centimetre = 1/100 metres</span></p>
+        <p><span class="formula">1 centimetre = 10 millimetres</span></p>
+        <p><span class="formula">1millimetres  = 1/10 centimetre</span></p>
+        <p><span class="formula">1 metre = 1000 millimetres</span></p>
+      </div>
+    </div>
+  </details>
+
+  <details class="branch b-orange" open>
+    <summary><span>3. Position, Reference Point &amp; Motion</span><span class="arrow">▶</span></summary>
+    <div class="branch-body">
+      <div class="sub">
+        <h4>Position <span class="hindi">(स्थिति)</span></h4>
+        <p>The exact address of an object measured from a fixed point.</p>
+      </div>
+      <div class="sub">
+        <h4>Reference Point <span class="hindi">(संदर्भ बिंदु)</span></h4>
+        <p>A fixed point from which the distance and direction of an object is described. Motion is measured starting from here.</p>
+      </div>
+      <div class="sub">
+        <h4>Motion vs Rest</h4>
+        <ul>
+          <li><b>Motion</b> — change in position with respect to a reference point over time</li>
+          <li><b>Rest</b> — no change in position</li>
+        </ul>
+        <button class="anim-btn" data-anim="push">▶ Watch example: pushing a box (motion &amp; rest)</button>
+        <div class="anim-frame-wrap" id="frame-push"></div>
+      </div>
+      <div class="sub">
+        <h4>Types of Motion</h4>
+
+        <div class="motion-type">
+          <h5>Linear Motion <span class="hindi">(सरल रेखीय गति)</span></h5>
+          <p>Motion in a straight line. Example: a bus, a metro train, kids marching in a line.</p>
+          <button class="anim-btn" data-anim="linear">▶ Watch example: kids marching (linear motion)</button>
+          <div class="anim-frame-wrap" id="frame-linear"></div>
+        </div>
+
+        <div class="motion-type">
+          <h5>Circular Motion <span class="hindi">(वृत्तीय गति)</span></h5>
+          <p>An object moves around a fixed centre point. Example: a fan blade, a merry-go-round / carousel.</p>
+          <button class="anim-btn" data-anim="circular">▶ Watch example: carousel (circular motion)</button>
+          <div class="anim-frame-wrap" id="frame-circular"></div>
+        </div>
+
+        <div class="motion-type">
+          <h5>Oscillatory Motion <span class="hindi">(दोलन गति)</span></h5>
+          <p>An object moves back and forth repeatedly along the same path. Example: a swing, a pendulum.</p>
+          <button class="anim-btn" data-anim="oscillatory">▶ Watch example: a swing (oscillatory motion)</button>
+          <div class="anim-frame-wrap" id="frame-oscillatory"></div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details class="branch b-pink">
+    <summary><span>4. Correct Way of Measurement <span class="hindi">(सही मापन कैसे करें?)</span></span><span class="arrow">▶</span></summary>
+    <div class="branch-body">
+      <div class="sub">
+        <h4>Rules for accurate measurement</h4>
+        <ol class="steps">
+          <li>Place the object <b>parallel</b> to the scale.</li>
+          <li>Keep your eye directly <b>above the scale</b> to avoid a parallax error.</li>
+          <li>If the scale has a broken start, use: <span class="formula">Length = Final point − Initial point</span></li>
+          <li>To measure a curved line, use a <b>thread</b> along the curve, then measure the thread on the scale.</li>
+        </ol>
+      </div>
+      <div class="sub">
+        <h4>Measuring with a broken scale <span class="hindi">(टूटे हुए स्केल से मापन)</span></h4>
+        <svg viewBox="0 0 340 150" class="diagram-svg" role="img" aria-label="Diagram of measuring an object with a broken scale, from initial point 2 cm to final point 9 cm">
+          <rect x="10" y="55" width="320" height="30" rx="4" fill="#fdf6e3" stroke="#7a7263" stroke-width="1.5"/>
+          <polyline points="10,55 18,85 26,55 10,55" fill="#f7f3ea" stroke="#a8375f" stroke-width="1.5"/>
+          <g stroke="#7a7263" stroke-width="1.5" font-family="Karla, sans-serif" font-size="10" fill="#2b2a28">
+            <line x1="30" y1="55" x2="30" y2="85"/><text x="30" y="98" text-anchor="middle">0</text>
+            <line x1="55" y1="55" x2="55" y2="85"/><text x="55" y="98" text-anchor="middle">1</text>
+            <line x1="80" y1="55" x2="80" y2="85"/><text x="80" y="98" text-anchor="middle">2</text>
+            <line x1="105" y1="55" x2="105" y2="85"/><text x="105" y="98" text-anchor="middle">3</text>
+            <line x1="130" y1="55" x2="130" y2="85"/><text x="130" y="98" text-anchor="middle">4</text>
+            <line x1="155" y1="55" x2="155" y2="85"/><text x="155" y="98" text-anchor="middle">5</text>
+            <line x1="180" y1="55" x2="180" y2="85"/><text x="180" y="98" text-anchor="middle">6</text>
+            <line x1="205" y1="55" x2="205" y2="85"/><text x="205" y="98" text-anchor="middle">7</text>
+            <line x1="230" y1="55" x2="230" y2="85"/><text x="230" y="98" text-anchor="middle">8</text>
+            <line x1="255" y1="55" x2="255" y2="85"/><text x="255" y="98" text-anchor="middle">9</text>
+            <line x1="280" y1="55" x2="280" y2="85"/><text x="280" y="98" text-anchor="middle">10</text>
+          </g>
+          <rect x="80" y="40" width="175" height="12" rx="2" fill="#c1611f" stroke="#7a4a25" stroke-width="1.5"/>
+          <line x1="80" y1="30" x2="80" y2="55" stroke="#3f6e4c" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <line x1="255" y1="30" x2="255" y2="55" stroke="#3f6e4c" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="80" y="24" text-anchor="middle" font-family="Karla, sans-serif" font-size="10" font-weight="700" fill="#3f6e4c">Initial: 2</text>
+          <text x="255" y="24" text-anchor="middle" font-family="Karla, sans-serif" font-size="10" font-weight="700" fill="#3f6e4c">Final: 9</text>
+          <text x="167" y="130" text-anchor="middle" font-family="Kalam, cursive" font-size="13" fill="#a8375f">Length = 9 − 2 = 7 cm</text>
+        </svg>
+      </div>
+      <div class="sub">
+        <h4>Remember</h4>
+        <p>Even with a broken scale, always use <b>final point − initial point</b> to get the correct measurement.</p>
+      </div>
+    </div>
+  </details>
+
+</div>
+
+<footer>Revision Concept Map · Measurement of Length &amp; Motions</footer>
+
+<script>
+  
+  const hindiToggle = document.getElementById('hindiToggle');
+  hindiToggle.addEventListener('change', () => {
+    document.body.classList.toggle('show-hindi', hindiToggle.checked);
+  });
+
+  
+  const allBranches = document.querySelectorAll('details.branch');
+  allBranches.forEach(d => {
+    d.addEventListener('toggle', () => {
+      if(d.open){
+        allBranches.forEach(other => { if(other !== d) other.open = false; });
+      }
+    });
+  });
+
+  
+  const ANIMATIONS = {
+    linear: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Linear Motion - Kids Marching with Band Sound</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        body {\n            background-color: #0f172a;\n            color: #fff;\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            min-height: 100vh;\n            overflow: hidden;\n        }\n        h1 {\n            margin-top: 10px;\n            font-size: 1.4rem;\n            color: #facc15;\n            text-align: center;\n        }\n        p {\n            font-size: 0.85rem;\n            color: #94a3b8;\n            margin-bottom: 8px;\n            text-align: center;\n        }\n        .container {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 10px;\n        }\n        canvas {\n            background: #1e293b;\n            border-radius: 16px;\n            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);\n            max-width: 95vw;\n            max-height: 65vh;\n        }\n        .controls {\n            display: flex;\n            gap: 12px;\n            flex-wrap: wrap;\n            justify-content: center;\n            align-items: center;\n            background: #1e293b;\n            padding: 10px 20px;\n            border-radius: 30px;\n            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);\n        }\n        button {\n            background: #2563eb;\n            color: #fff;\n            border: none;\n            padding: 8px 16px;\n            border-radius: 20px;\n            font-weight: bold;\n            cursor: pointer;\n            transition: 0.2s ease;\n        }\n        button:hover {\n            background: #1d4ed8;\n        }\n        button.sound-btn {\n            background: #22c55e;\n            color: #000;\n        }\n        button.sound-btn.off {\n            background: #ef4444;\n            color: #fff;\n        }\n        label {\n            font-size: 0.85rem;\n            color: #cbd5e1;\n            display: flex;\n            align-items: center;\n            gap: 6px;\n        }\n        input[type=range] {\n            cursor: pointer;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"container\">\n        <canvas id=\"marchCanvas\" width=\"550\" height=\"380\"></canvas>\n\n        <div class=\"controls\">\n            <button id=\"playBtn\">\u23f8\ufe0f Pause</button>\n            <button id=\"soundBtn\" class=\"sound-btn off\">\ud83d\udd0a Tap for Marching Band Sound</button>\n            <label>\n                Speed:\n                <input type=\"range\" id=\"speedSlider\" min=\"1\" max=\"4\" step=\"0.5\" value=\"2\">\n            </label>\n        </div>\n    </div>\n\n    <script>\n        const canvas = document.getElementById('marchCanvas');\n        const ctx = canvas.getContext('2d');\n\n        let isPlaying = true;\n        let marchaStep = 0;\n        let marchSpeed = 2;\n        let leadPositionX = 0;\n\n        const numStudents = 7;\n        const studentSpacing = 45;\n\n        
+    circular: "<!DOCTYPE html>\n<html lang=\"hi\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Realistic Mela Carousel Physics</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        body {\n            background-color: #0f172a;\n            color: #fff;\n            font-family: 'Segoe UI', Roboto, sans-serif;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            min-height: 100vh;\n            overflow: hidden;\n        }\n        h1 {\n            margin-top: 10px;\n            font-size: 1.3rem;\n            color: #facc15;\n            text-align: center;\n        }\n        p {\n            font-size: 0.85rem;\n            color: #94a3b8;\n            margin-bottom: 8px;\n            text-align: center;\n        }\n        .controls {\n            margin-bottom: 10px;\n        }\n        .sound-btn {\n            background: #22c55e;\n            color: #000;\n            border: none;\n            padding: 8px 16px;\n            border-radius: 20px;\n            font-weight: bold;\n            cursor: pointer;\n            font-size: 0.9rem;\n            box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);\n            transition: all 0.2s ease;\n        }\n        .sound-btn.off {\n            background: #ef4444;\n            color: #fff;\n            box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);\n        }\n        canvas {\n            background: #0f172a;\n            border-radius: 16px;\n            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);\n            max-width: 95vw;\n            max-height: 70vh;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"controls\">\n        <button id=\"soundBtn\" class=\"sound-btn off\">\ud83d\udd0a Tap to Start High-Volume Mela Sound</button>\n    </div>\n\n    <canvas id=\"carouselCanvas\" width=\"400\" height=\"520\"></canvas>\n\n    <script>\n        const canvas = document.getElementById('carouselCanvas');\n        const ctx = canvas.getContext('2d');\n\n        const centerX = canvas.width / 2;\n        const centerY = 330; \n        const roofBaseY = 175;\n        const radiusX = 130; \n        const radiusY = 38;  \n        const numHorses = 6;\n        \n        let angleOffset = 0;\n\n        const palette = ['#e11d48', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777', '#0284c7', '#16a34a', '#ca8a04', '#9333ea', '#ea580c', '#0891b2'];\n        const kidColors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];\n\n        
+    oscillatory: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Oscillatory Motion - Swing Simulation</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        body {\n            background-color: #0f172a;\n            color: #fff;\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            min-height: 100vh;\n            overflow: hidden;\n        }\n        h1 {\n            margin-top: 10px;\n            font-size: 1.4rem;\n            color: #facc15;\n            text-align: center;\n        }\n        p {\n            font-size: 0.9rem;\n            color: #94a3b8;\n            margin-bottom: 10px;\n            text-align: center;\n        }\n        .container {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 12px;\n        }\n        canvas {\n            background: #1e293b;\n            border-radius: 16px;\n            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);\n            max-width: 95vw;\n            max-height: 65vh;\n        }\n        .controls {\n            display: flex;\n            gap: 12px;\n            flex-wrap: wrap;\n            justify-content: center;\n            align-items: center;\n            background: #1e293b;\n            padding: 10px 20px;\n            border-radius: 30px;\n            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);\n        }\n        button {\n            background: #2563eb;\n            color: #fff;\n            border: none;\n            padding: 8px 16px;\n            border-radius: 20px;\n            font-weight: bold;\n            cursor: pointer;\n            transition: 0.2s ease;\n        }\n        button:hover {\n            background: #1d4ed8;\n        }\n        button.sound-btn {\n            background: #22c55e;\n            color: #000;\n        }\n        button.sound-btn.off {\n            background: #ef4444;\n            color: #fff;\n        }\n        label {\n            font-size: 0.85rem;\n            color: #cbd5e1;\n            display: flex;\n            align-items: center;\n            gap: 6px;\n        }\n        input[type=range] {\n            cursor: pointer;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"container\">\n        <canvas id=\"swingCanvas\" width=\"500\" height=\"420\"></canvas>\n\n        <div class=\"controls\">\n            <button id=\"playBtn\">\u23f8\ufe0f Pause</button>\n            <button id=\"soundBtn\" class=\"sound-btn off\">\ud83d\udd0a Tap for High-Volume Park Sound</button>\n            <label>\n                Max Angle:\n                <input type=\"range\" id=\"angleSlider\" min=\"10\" max=\"45\" value=\"30\">\n            </label>\n        </div>\n    </div>\n\n    <script>\n        const canvas = document.getElementById('swingCanvas');\n        const ctx = canvas.getContext('2d');\n\n        
+    push: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Force and Motion - Boy & Girl Pushing Box</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        body {\n            background-color: #0f172a;\n            color: #fff;\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            min-height: 100vh;\n            overflow: hidden;\n        }\n        h1 {\n            margin-top: 8px;\n            font-size: 1.4rem;\n            color: #facc15;\n            text-align: center;\n        }\n        p {\n            font-size: 0.85rem;\n            color: #94a3b8;\n            margin-bottom: 6px;\n            text-align: center;\n        }\n        .container {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 8px;\n        }\n        canvas {\n            background: #1e293b;\n            border-radius: 16px;\n            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);\n            max-width: 95vw;\n            max-height: 60vh;\n        }\n        .status-badge {\n            background: #334155;\n            padding: 6px 16px;\n            border-radius: 20px;\n            font-size: 0.95rem;\n            color: #38bdf8;\n            font-weight: bold;\n        }\n        .controls {\n            display: flex;\n            gap: 12px;\n            flex-wrap: wrap;\n            justify-content: center;\n            align-items: center;\n            background: #1e293b;\n            padding: 10px 20px;\n            border-radius: 30px;\n            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);\n        }\n        button {\n            background: #2563eb;\n            color: #fff;\n            border: none;\n            padding: 8px 16px;\n            border-radius: 20px;\n            font-weight: bold;\n            cursor: pointer;\n            transition: 0.2s ease;\n        }\n        button:hover {\n            background: #1d4ed8;\n        }\n        button.sound-btn {\n            background: #22c55e;\n            color: #000;\n        }\n        button.sound-btn.off {\n            background: #ef4444;\n            color: #fff;\n        }\n        label {\n            font-size: 0.85rem;\n            color: #cbd5e1;\n            display: flex;\n            align-items: center;\n            gap: 6px;\n            font-weight: bold;\n        }\n        input[type=range] {\n            cursor: pointer;\n            accent-color: #facc15;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"container\">\n        <canvas id=\"boxCanvas\" width=\"600\" height=\"380\"></canvas>\n\n        <div class=\"controls\">\n            <button id=\"playBtn\">\u23f8\ufe0f Pause</button>\n            <button id=\"soundBtn\" class=\"sound-btn off\">\ud83d\udd0a Heavy Push Sound</button>\n            <label>\n                \u26a1 Speed:\n                <input type=\"range\" id=\"speedSlider\" min=\"0.2\" max=\"2.5\" step=\"0.1\" value=\"1\">\n            </label>\n        </div>\n    </div>\n\n    <script>\n        const canvas = document.getElementById('boxCanvas');\n        const ctx = canvas.getContext('2d');\n        const statusBadge = document.getElementById('statusBadge');\n\n        let isPlaying = true;\n        let animationTime = 0;\n        let pushSpeedMultiplier = 1.0;\n        let boxX = 260;\n        const groundY = 300;\n        const boxSize = 130; 
+  };
+
+  document.querySelectorAll('.anim-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-anim');
+      const wrap = document.getElementById('frame-' + key);
+      const isOpen = wrap.style.display === 'block';
+
+      if (isOpen) {
+        wrap.style.display = 'none';
+        wrap.innerHTML = '';
+        btn.classList.remove('loaded');
+        btn.textContent = btn.textContent.replace('■ Close animation', btn.dataset.label || btn.textContent);
+      } else {
+        if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+        wrap.innerHTML = '';
+        const iframe = document.createElement('iframe');
+        iframe.srcdoc = ANIMATIONS[key];
+        iframe.allow = 'autoplay';
+        wrap.appendChild(iframe);
+        wrap.style.display = 'block';
+        btn.classList.add('loaded');
+        btn.textContent = '■ Close animation';
+        wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

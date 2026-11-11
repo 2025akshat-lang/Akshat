@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simple Distillation Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#14212e;--sub:#4b5b6b;--line:#c5d0db;--accent:#0b6e8a;--cap:#fff6e8;--capline:#f0d9b0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1720;--card:#17212c;--ink:#e8eef4;--sub:#9fb0c0;--line:#2b3a49;--accent:#5cc3df;--cap:#2a2418;--capline:#5a4a28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1720;--card:#17212c;--ink:#e8eef4;--sub:#9fb0c0;--line:#2b3a49;--accent:#5cc3df;--cap:#2a2418;--capline:#5a4a28;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans','Noto Sans Devanagari','Segoe UI',Tahoma,sans-serif;-webkit-user-select:none;user-select:none}
+.app{height:100%;display:flex;flex-direction:column;gap:6px;padding:8px;max-width:680px;margin:0 auto}
+h1{font-size:15px;margin:0;text-align:center;font-weight:700}
+.hi{font-family:'Noto Sans Devanagari','Noto Sans',sans-serif}
+.sub{font-size:12px;color:var(--sub);text-align:center;margin-top:-2px}
+.bar{display:flex;gap:6px}
+.seg{flex:1;display:flex;border:1.5px solid var(--accent);border-radius:9px;overflow:hidden}
+button{font:600 12px 'Noto Sans','Noto Sans Devanagari',sans-serif;border:0;cursor:pointer;color:var(--ink);background:var(--card);padding:8px 6px}
+.seg button{flex:1;background:transparent;color:var(--accent)}
+.seg button.on{background:var(--accent);color:#fff}
+#rs{border:1.5px solid var(--line);border-radius:9px;background:var(--card)}
+.cap{background:var(--cap);border:1px solid var(--capline);border-radius:10px;padding:6px 10px;text-align:center;min-height:86px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+#en{font-size:12.5px;font-weight:600}#hi{font-size:12.5px;color:var(--sub)}
+#prog{font-size:11px;color:var(--accent);font-weight:600;margin-top:2px}
+.bench{position:relative;flex:1;min-height:0;background:#f8fafc;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+svg{width:100%;height:100%;display:block;touch-action:none}
+.tray{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.chip{background:var(--card);border:1.5px solid var(--accent);border-radius:8px;padding:4px 3px;text-align:center;font-size:10.5px;line-height:1.25;touch-action:none;cursor:grab}
+.chip b{display:block;font-weight:600}.chip span{color:var(--sub);font-size:10px}
+.chip.pipe{border-color:#ea580c}
+.len{font:700 9.5px 'Noto Sans',sans-serif;fill:#14212e}
+.lhi{font:400 8.5px 'Noto Sans Devanagari','Noto Sans',sans-serif;fill:#475569}
+.ghost{opacity:.15;filter:grayscale(1);pointer-events:none}
+svg.auto .ghost{display:none}
+.part.drag{filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.pipe{fill:none;stroke:#ea580c;stroke-width:6;stroke-linecap:round}
+.pipe.ok{stroke:#0ea5e9}
+.h{cursor:grab}.h .v{fill:#ea580c;stroke:#fff;stroke-width:2}.h.locked{cursor:default}.h.locked .v{fill:#22c55e}
+.flame,.drop{opacity:0}
+.done .flame{opacity:1;transform-box:fill-box;transform-origin:center bottom;animation:fl .45s infinite alternate ease-in-out}
+.done .drop{opacity:1;animation:dr 1.1s infinite}
+.done .pipe.ok{stroke-dasharray:10 6;animation:fw .6s linear infinite}
+@keyframes fl{from{transform:scale(1)}to{transform:scale(1.1)}}
+@keyframes dr{from{transform:translateY(0)}to{transform:translateY(22px)}}
+@keyframes fw{to{stroke-dashoffset:-16}}
+@media (prefers-reduced-motion:reduce){.done .flame,.done .drop,.done .pipe.ok{animation:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div><h1>Simple Distillation Setup</h1><div class="sub hi">सरल आसवन उपकरण</div></div>
+  <div class="bar">
+    <div class="seg"><button id="mM" class="on">Manual (मैन्युअल)</button><button id="mA">Auto (स्वचालित)</button></div>
+    <button id="rs">Reset (फिर से)</button>
+  </div>
+  <div class="cap"><div id="en"></div><div id="hi"></div><div id="prog"></div></div>
+  <div class="bench"><svg id="sv" viewBox="0 0 400 380" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Distillation apparatus">
+    <line x1="0" y1="354" x2="400" y2="354" stroke="#cbd5e1" stroke-width="1"/>
+    <g id="ghosts"></g><g id="parts"></g><g id="pipes"></g>
+  </svg></div>
+  <div class="tray" id="tray"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id),NS="http://www.w3.org/2000/svg",sv=$("sv");
+function el(t,a,h){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(h)e.innerHTML=h;return e}
+function lab(x,y,en,hi,an){an=an||"start";let s="";en.split("|").forEach((t,i)=>{s+=`<text x="${x}" y="${y+i*10}" text-anchor="${an}" class="len">${t}</text>`});return s+`<text x="${x}" y="${y+en.split("|").length*10}" text-anchor="${an}" class="lhi">${hi}</text>`}
+const T='stroke-linecap="round"';
+const DRAW={
+stand2:`<rect x="325" y="345" width="60" height="9" rx="2" fill="#475569"/><rect x="352" y="140" width="6" height="206" fill="#64748b"/><rect x="348" y="228" width="14" height="12" rx="2" fill="#334155"/><path d="M349 234H288" stroke="#334155" stroke-width="4" ${T}/><rect x="272" y="226" width="16" height="28" rx="3" fill="none" stroke="#334155" stroke-width="3"/>`,
+stand:`<rect x="133" y="345" width="60" height="9" rx="2" fill="#475569"/><rect x="160" y="118" width="6" height="228" fill="#64748b"/><rect x="156" y="172" width="14" height="12" rx="2" fill="#334155"/><path d="M156 178H106" stroke="#334155" stroke-width="4" ${T}/><rect x="84" y="170" width="22" height="16" rx="3" fill="none" stroke="#334155" stroke-width="3"/>`,
+tripod:`<path d="M95 273V345" stroke="#64748b" stroke-width="3.5" ${T}/><path d="M60 271L40 345M130 271L150 345" stroke="#334155" stroke-width="5" ${T}/><ellipse cx="95" cy="268" rx="42" ry="5" fill="none" stroke="#334155" stroke-width="5"/>`,
+gauze:`<polygon points="56,264 134,264 124,254 66,254" fill="rgba(148,163,184,.35)" stroke="#334155" stroke-width="2" stroke-linejoin="round"/><path d="M75 254L72 264M85 254L83 264M95 254V264M105 254L107 264M115 254L118 264" stroke="#64748b" stroke-width=".8"/><ellipse cx="95" cy="259" rx="16" ry="3.5" fill="#e5e7eb" stroke="#94a3b8"/>`,
+burner:`<path d="M74 345L79 335H111L116 345Z" fill="#475569"/><rect x="89" y="292" width="12" height="44" fill="#94a3b8" stroke="#475569"/><rect x="86" y="310" width="18" height="6" rx="1" fill="#334155"/><rect x="101" y="326" width="16" height="4" fill="#475569"/><g class="flame"><path d="M95 292Q86 276 95 262Q104 276 95 292Z" fill="#fb923c"/><path d="M95 292Q91 281 95 272Q99 281 95 292Z" fill="#60a5fa"/></g>`,
+flask:`<path d="M103 172L176 193" stroke="#0369a1" stroke-width="7" ${T}/><path d="M103 172L176 193" stroke="#e0f2fe" stroke-width="3.5" ${T}/><path d="M87 160V193A32 32 0 1 0 103 193V160" fill="rgba(186,230,253,.4)" stroke="#0369a1" stroke-width="2"/><path d="M64 232A32 32 0 0 0 126 232Z" fill="#93c5fd" opacity=".7"/><circle cx="85" cy="244" r="1.8" fill="#fff"/><circle cx="100" cy="248" r="1.8" fill="#fff"/><polygon points="85,150 105,150 102,162 88,162" fill="#92400e"/>`,
+thermo:`<rect x="92.5" y="96" width="5" height="76" rx="2.5" fill="#f1f5f9" stroke="#64748b" stroke-width="1.2"/><circle cx="95" cy="178" r="5" fill="#ef4444" stroke="#64748b"/><path d="M95 176V140" stroke="#ef4444" stroke-width="2"/><path d="M92.5 105h5M92.5 115h5M92.5 125h5" stroke="#64748b" stroke-width=".7"/>`,
+cond:`<g transform="translate(175 192) rotate(25)"><rect x="0" y="-10" width="120" height="20" rx="3" fill="rgba(186,230,253,.45)" stroke="#0369a1" stroke-width="2"/><rect x="15" y="-19" width="6" height="10" fill="#e0f2fe" stroke="#0369a1"/><rect x="99" y="9" width="6" height="10" fill="#e0f2fe" stroke="#0369a1"/><rect x="-6" y="-3.5" width="134" height="7" rx="3" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.5"/></g><circle cx="199" cy="182" r="4" fill="#ea580c"/><circle cx="259" cy="252" r="4" fill="#ea580c"/>`,
+recv:`<path d="M283 262V282L263 336Q261 345 269 345H313Q321 345 319 336L299 282V262Z" fill="rgba(186,230,253,.35)" stroke="#0369a1" stroke-width="2"/><path d="M281 262H301" stroke="#0369a1" stroke-width="2.5" ${T}/><circle class="drop" cx="291" cy="252" r="2.5" fill="#38bdf8"/>`,
+tap:`<rect x="196" y="338" width="26" height="7" rx="2" fill="#64748b"/><rect x="203" y="298" width="10" height="42" fill="#94a3b8"/><path d="M208 300Q208 286 222 286H236V292" stroke="#94a3b8" stroke-width="7" fill="none" ${T}/><circle cx="208" cy="320" r="5" fill="#475569"/><circle cx="236" cy="294" r="4" fill="#ea580c"/>`,
+sink:`<rect x="298" y="68" width="82" height="38" rx="6" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/><ellipse cx="339" cy="74" rx="36" ry="5" fill="#e2e8f0" stroke="#94a3b8"/><circle cx="302" cy="78" r="4" fill="#ea580c"/>`
+};
+const LAB={
+stand:lab(193,366,"Lab stand 1","(लैब स्टैंड 1)","end"),stand2:lab(396,366,"Lab stand 2","(लैब स्टैंड 2)","end"),
+tripod:lab(3,300,"Tripod","(तिपाई)"),
+gauze:lab(3,242,"Wire gauze","(तार की जाली)"),
+burner:lab(3,330,"Burner","(बर्नर)"),
+flask:lab(3,206,"Distillation|flask","(आसवन फ्लास्क)"),
+thermo:lab(86,100,"Thermometer","(थर्मामीटर)","end"),
+cond:lab(222,184,"Condenser","(संघनित्र)"),
+recv:lab(293,366,"Receiver flask","(संग्राही फ्लास्क)","middle"),
+tap:lab(198,366,"Water tap","(पानी का नल)"),
+sink:lab(339,124,"Sink","(सिंक)","middle")
+};
+
+const PARTS=[
+["stand","Lab stand 1","लैब स्टैंड 1",[163,230]],
+["tripod","Tripod stand","तिपाई स्टैंड",[95,305]],
+["gauze","Wire gauze","तार की जाली",[95,259]],
+["burner","Bunsen burner","बनसेन बर्नर",[95,320]],
+["flask","Distillation flask","आसवन फ्लास्क",[95,215]],
+["thermo","Thermometer","थर्मामीटर",[95,140]],
+["stand2","Lab stand 2","लैब स्टैंड 2",[355,240]],
+["cond","Condenser","संघनित्र",[230,215]],
+["recv","Receiver flask","संग्राही फ्लास्क",[291,305]],
+["tap","Water tap","पानी का नल",[212,315]],
+["sink","Sink","सिंक",[339,90]]
+].map(([id,en,hi,c])=>({id,en,hi,c,placed:false}));
+const part=id=>PARTS.find(p=>p.id===id);
+
+const TG={
+tap:{part:"tap",p:[236,294],d:[0,1],en:"water tap",hi:"नल"},
+in:{part:"cond",p:[259,252],d:[.42,.9],en:"lower inlet of condenser",hi:"संघनित्र का निचला प्रवेश"},
+out:{part:"cond",p:[199,182],d:[.42,-.9],en:"upper outlet of condenser",hi:"संघनित्र का ऊपरी निकास"},
+sink:{part:"sink",p:[302,78],d:[-1,0],en:"sink",hi:"सिंक"}
+};
+const okPair=(a,b)=>(a==="tap"&&b==="in")||(a==="in"&&b==="tap")||(a==="out"&&b==="sink")||(a==="sink"&&b==="out");
+let mode="manual",pipes=[],run=0,busy=false;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const say=(e,h)=>{$("en").textContent=e;$("hi").textContent=h};
+const pt=e=>{const p=sv.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(sv.getScreenCTM().inverse())};
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const inside=q=>q.x>=0&&q.x<=400&&q.y>=0&&q.y<=380;
+
+function refresh(){
+  const n=PARTS.filter(p=>p.placed).length,m=pipes.filter(p=>p.done).length;
+  $("prog").textContent=`Parts (उपकरण) ${n}/${PARTS.length}  ·  Tubes (नली) ${m}/2`;
+  if(n===PARTS.length&&m===2){sv.classList.add("done");say("Setup complete! Cooling water enters at the lower inlet and leaves at the upper outlet.","सेट-अप पूरा! ठंडा पानी निचले प्रवेश से जाता है और ऊपरी निकास से बाहर आता है।")}
+}
+
+function build(){
+  $("ghosts").innerHTML="";$("parts").innerHTML="";$("pipes").innerHTML="";$("tray").innerHTML="";
+  pipes=[];sv.classList.remove("done");
+  PARTS.forEach(P=>{
+    P.placed=false;
+    P.g=el("g",{class:"ghost"},DRAW[P.id]);$("ghosts").appendChild(P.g);
+    P.p=el("g",{class:"part"},DRAW[P.id]+LAB[P.id]);P.p.style.display="none";P.p.style.opacity=1;P.p.style.transform="translate(0px,0px)";$("parts").appendChild(P.p);
+    P.chip=document.createElement("div");P.chip.className="chip";P.chip.innerHTML=`<b>${P.en}</b><span class="hi">(${P.hi})</span>`;
+    P.chip.addEventListener("pointerdown",e=>startPart(P,e));$("tray").appendChild(P.chip);
+  });
+  [1,2].forEach(n=>{
+    const c=document.createElement("div");c.className="chip pipe";c.innerHTML=`<b>Rubber tube ${n}</b><span class="hi">(रबर की नली ${n})</span>`;
+    c.addEventListener("pointerdown",e=>startPipe(c,e));$("tray").appendChild(c);
+  });
+  $("tray").style.display=mode==="manual"?"":"none";
+  sv.classList.toggle("auto",mode==="auto");
+  refresh();
+}
+
+function startPart(P,e){
+  if(mode!=="manual"||busy||P.placed)return;
+  e.preventDefault();
+  const p=P.p;p.style.transition="none";p.style.display="";p.classList.add("drag");let o=[999,999];
+  const mv=ev=>{const q=pt(ev);o=[q.x-P.c[0],q.y-P.c[1]];p.style.transform=`translate(${o[0]}px,${o[1]}px)`};
+  const up=()=>{
+    window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up);
+    p.classList.remove("drag");
+    if(Math.hypot(o[0],o[1])<30){
+      p.style.transition="transform .25s";p.style.transform="translate(0px,0px)";
+      P.placed=true;P.chip.style.display="none";P.g.style.display="none";
+      say("Locked in place: "+P.en,"सही जगह लॉक हुआ: "+P.hi);refresh();
+      if(PARTS.every(x=>x.placed)&&pipes.length===0)say("All parts are locked. Now drag a rubber tube onto the board and move each end to an orange dot.","सभी उपकरण लॉक हो गए। अब रबर की नली को बोर्ड पर खींचें और उसके हर सिरे को नारंगी बिंदु तक ले जाएँ।");
+    }else{
+      p.style.display="none";
+      say("Not here. Match the faint outline of the part.","यहाँ नहीं। उपकरण की धुँधली रूपरेखा से मिलाएँ।");
+    }
+  };
+  window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up);mv(e);
+}
+
+function newPipe(a,b){
+  const path=el("path",{class:"pipe"}),mk=()=>el("g",{class:"h"},'<circle r="16" fill="transparent"/><circle class="v" r="6"/>');
+  const P={a:{p:a,t:null},b:{p:b,t:null},path,ha:mk(),hb:mk(),done:false};
+  $("pipes").append(path,P.ha,P.hb);
+  ["a","b"].forEach(k=>P["h"+k].addEventListener("pointerdown",e=>dragEnd(P,k,e)));
+  pipes.push(P);draw(P);return P;
+}
+function draw(P){
+  const{a,b}=P,d=e=>e.t?TG[e.t].d:[0,0],c1=d(a),c2=d(b);
+  P.path.setAttribute("d",`M${a.p} C${a.p[0]+c1[0]*45},${a.p[1]+c1[1]*45} ${b.p[0]+c2[0]*45},${b.p[1]+c2[1]*45} ${b.p}`);
+  P.ha.setAttribute("transform",`translate(${a.p[0]} ${a.p[1]})`);P.hb.setAttribute("transform",`translate(${b.p[0]} ${b.p[1]})`);
+  P.ha.classList.toggle("locked",!!a.t);P.hb.classList.toggle("locked",!!b.t);P.path.classList.toggle("ok",P.done);
+}
+function startPipe(chip,e){
+  if(mode!=="manual"||busy)return;
+  e.preventDefault();chip.style.display="none";
+  const q0=pt(e),P=newPipe([q0.x,q0.y],[q0.x+40,q0.y]);let q=q0;
+  const mv=ev=>{q=pt(ev);P.a.p=[q.x,q.y];P.b.p=[cl(q.x+40,8,392),q.y];draw(P)};
+  const up=()=>{
+    window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up);
+    if(!inside(q)){P.path.remove();P.ha.remove();P.hb.remove();pipes=pipes.filter(x=>x!==P);chip.style.display="";return}
+    P.a.p=[cl(P.a.p[0],8,392),cl(P.a.p[1],8,372)];P.b.p=[cl(P.b.p[0],8,392),cl(P.b.p[1],8,372)];draw(P);
+    say("Drag each end of the tube to an orange dot. Tap water goes to the lower inlet.","नली के हर सिरे को नारंगी बिंदु तक खींचें। नल का पानी निचले प्रवेश में जाता है।");
+  };
+  window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up);mv(e);
+}
+function dragEnd(P,k,e){
+  const E=P[k];if(E.t||busy||mode!=="manual")return;
+  e.preventDefault();e.stopPropagation();const prev=[...E.p];
+  const mv=ev=>{const q=pt(ev);E.p=[cl(q.x,8,392),cl(q.y,8,372)];draw(P)};
+  const up=()=>{window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up);snap(P,k,prev)};
+  window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up);
+}
+function snap(P,k,prev){
+  const E=P[k],O=P[k==="a"?"b":"a"],used=pipes.flatMap(p=>[p.a.t,p.b.t]);let best=null,bd=34;
+  for(const t in TG){const T2=TG[t];if(!part(T2.part).placed||used.includes(t))continue;const d=Math.hypot(E.p[0]-T2.p[0],E.p[1]-T2.p[1]);if(d<bd){bd=d;best=t}}
+  if(!best){for(const t in TG){const T2=TG[t];if(!part(T2.part).placed&&Math.hypot(E.p[0]-T2.p[0],E.p[1]-T2.p[1])<34){const pp=part(T2.part);say("Place the "+pp.en+" first.","पहले "+pp.hi+" लगाएँ।");break}}return}
+  if(O.t&&!okPair(O.t,best)){E.p=prev;draw(P);say("Wrong connection. Tap goes to the lower inlet; the upper outlet goes to the sink.","गलत जोड़। नल निचले प्रवेश से और ऊपरी निकास सिंक से जुड़ेगा।");return}
+  E.t=best;E.p=[...TG[best].p];
+  if(P.a.t&&P.b.t){P.done=true;say("Tube connected and locked.","नली जुड़ गई और लॉक हो गई।")}
+  else say("End locked to the "+TG[best].en+".","सिरा लॉक हुआ: "+TG[best].hi+"।");
+  draw(P);refresh();
+}
+
+async function auto(){
+  reset();const tok=run;busy=true;
+  for(const P of PARTS){
+    if(tok!==run)return;
+    const p=P.p;p.style.transition="none";p.style.display="";p.style.opacity=0;p.style.transform="translate(0px,-70px)";
+    await sleep(40);p.style.transition="transform .6s ease,opacity .6s";p.style.opacity=1;p.style.transform="translate(0px,0px)";
+    P.placed=true;say("Placing: "+P.en,"लगा रहे हैं: "+P.hi);refresh();await sleep(700);
+  }
+  for(const[t1,t2]of[["tap","in"],["out","sink"]]){
+    if(tok!==run)return;
+    say("Connecting rubber tube: "+TG[t1].en+" → "+TG[t2].en,"रबर की नली जोड़ रहे हैं: "+TG[t1].hi+" → "+TG[t2].hi);
+    await new Promise(res=>{
+      const P=newPipe([30,40],[60,40]),s1=[...P.a.p],s2=[...P.b.p],e1=TG[t1].p,e2=TG[t2].p,t0=performance.now();
+      const f=now=>{
+        if(tok!==run)return res();
+        const k=Math.min(1,(now-t0)/900),s=k*k*(3-2*k);
+        P.a.p=[s1[0]+(e1[0]-s1[0])*s,s1[1]+(e1[1]-s1[1])*s];P.b.p=[s2[0]+(e2[0]-s2[0])*s,s2[1]+(e2[1]-s2[1])*s];draw(P);
+        if(k<1)requestAnimationFrame(f);else{P.a.t=t1;P.b.t=t2;P.done=true;draw(P);refresh();res()}
+      };requestAnimationFrame(f);
+    });
+    await sleep(300);
+  }
+  busy=false;
+}
+
+function reset(){
+  run++;busy=false;build();
+  if(mode==="manual")say("Drag each part from the tray onto its faint outline. It locks when placed correctly.","हर उपकरण को ट्रे से खींचकर उसकी धुँधली रूपरेखा पर रखें। सही जगह पर रखते ही वह लॉक हो जाएगा।");
+  else say("Auto mode: tap Auto (स्वचालित) to watch the setup assemble itself.","ऑटो मोड: उपकरण को अपने-आप लगते देखने के लिए Auto (स्वचालित) दबाएँ।");
+}
+function setMode(m){mode=m;$("mM").classList.toggle("on",m==="manual");$("mA").classList.toggle("on",m==="auto");m==="auto"?auto():reset()}
+$("mM").onclick=()=>setMode("manual");
+$("mA").onclick=()=>setMode("auto");
+$("rs").onclick=()=>reset();
+reset();
+</script>
+</body>
+</html>
