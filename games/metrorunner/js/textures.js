@@ -107,6 +107,50 @@
     });
   }
 
+  // Raaste ke upar tangne wale CHAUDE banners (gantry). 1024x300
+  function bannerNeta(name, party, slogan, c1, c2, capCol) {
+    return canvasTex(1024, 300, (ctx, w, h) => {
+      const g = ctx.createLinearGradient(0, 0, w, 0);
+      g.addColorStop(0, c1); g.addColorStop(0.5, c2); g.addColorStop(1, c1);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 10; ctx.strokeRect(8, 8, w - 16, h - 16);
+      function face(cx) {
+        ctx.fillStyle = '#f7f3ea'; ctx.beginPath();
+        ctx.moveTo(cx - 95, 292); ctx.quadraticCurveTo(cx, 170, cx + 95, 292); ctx.fill();          // kurta
+        ctx.fillStyle = '#d9a073'; ctx.beginPath(); ctx.arc(cx, 130, 62, 0, Math.PI * 2); ctx.fill(); // chehra
+        ctx.fillStyle = capCol; ctx.beginPath();                                                       // topi
+        ctx.moveTo(cx - 62, 108); ctx.lineTo(cx + 62, 108); ctx.lineTo(cx + 44, 62); ctx.lineTo(cx - 44, 62); ctx.fill();
+        ctx.fillStyle = '#5a5a5a'; ctx.fillRect(cx - 28, 128, 12, 7); ctx.fillRect(cx + 16, 128, 12, 7);
+        ctx.fillRect(cx - 32, 158, 64, 9);                                                             // moonchh
+        ctx.fillStyle = '#e04040'; ctx.fillRect(cx - 4, 96, 8, 16);                                    // tilak
+        ctx.fillStyle = '#d9a073'; ctx.beginPath(); ctx.ellipse(cx, 238, 20, 32, 0, 0, Math.PI * 2); ctx.fill(); // namaste
+      }
+      face(130); face(w - 130);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 36px Arial'; ctx.fillText(party, w / 2, 62);
+      ctx.fillStyle = 'rgba(255,255,255,0.93)'; ctx.fillRect(250, 84, w - 500, 92);
+      ctx.fillStyle = '#6a3a1a'; ctx.font = 'bold 50px Arial'; ctx.fillText(name, w / 2, 148);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 40px Arial'; ctx.fillText(slogan, w / 2, 224);
+      ctx.fillStyle = '#ffeaa7'; ctx.font = 'bold 30px Arial'; ctx.fillText('★ VOTE KARO ★', w / 2, 270);
+    });
+  }
+
+  function bannerAd(a) {
+    return canvasTex(1024, 300, (ctx, w, h) => {
+      const g = ctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, a.color); g.addColorStop(1, '#ffffff');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(80 + i * 170, i % 2 ? 40 : 260, 46, 0, Math.PI * 2); ctx.fill(); }
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 10; ctx.strokeRect(8, 8, w - 16, h - 16);
+      ctx.fillStyle = '#4a4a4a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      let size = 100; ctx.font = 'bold ' + size + 'px Arial';
+      while (ctx.measureText(a.text).width > w - 90 && size > 24) { size -= 4; ctx.font = 'bold ' + size + 'px Arial'; }
+      ctx.fillText(a.text, w / 2, h / 2 - 8);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 26px Arial'; ctx.fillText('★ LIMITED OFFER ★  AAJ HI AAIYE ★', w / 2, h - 34);
+    });
+  }
+
   MR.Tex = {
     up:   symbol('▲', '#ff9900', '#5a4a3a'),
     down: symbol('▼', '#e879f9', '#554a5e'),
@@ -126,6 +170,13 @@
       neta('SHRI KISHAN VERMA', 'NAV BHARAT SANGH', 'SABKA SAATH SABKA VIKAS', '#3a8fd6', '#a8d4f5', '#ffb347'),
       neta('SMT. SUNITA DEVI', 'GRAMIN KRANTI PARTY', 'NARI SHAKTI ZINDABAD', '#d6567a', '#f5b8cc', '#ffffff')
     ],
+    netaBanners: [
+      bannerNeta('SHRI BHOLA PRASAD', 'JANTA VIKAS DAL', 'VOTE DO, KAAM LO!', '#ff9933', '#f7c873', '#ffffff'),
+      bannerNeta('SHRI RAMLAL YADAV', 'AAM AADMI MORCHA', 'HAATH KA SAATH', '#3fae5a', '#a8e0b0', '#f7f3ea'),
+      bannerNeta('SHRI KISHAN VERMA', 'NAV BHARAT SANGH', 'SABKA SAATH SABKA VIKAS', '#3a8fd6', '#a8d4f5', '#ffb347'),
+      bannerNeta('SMT. SUNITA DEVI', 'GRAMIN KRANTI PARTY', 'NARI SHAKTI ZINDABAD', '#d6567a', '#f5b8cc', '#ffffff')
+    ],
+    adBanners: MR.AD_DATA.map(bannerAd),
     fishSign: fishSign(),
     shopSigns: [
       shopSign('CHAI SUTTA BAR', '#c0562a'), shopSign('KIRANA STORE', '#2f8f5a'),

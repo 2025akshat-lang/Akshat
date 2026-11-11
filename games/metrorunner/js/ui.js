@@ -11,7 +11,8 @@
         'start-screen', 'pause-screen', 'game-over-screen', 'start-best',
         'detain-screen', 'detain-sub', 'detain-count', 'detain-note',
         'final-score', 'final-coins', 'final-level', 'final-best', 'go-title', 'new-best',
-        'start-btn', 'restart-btn', 'resume-btn', 'menu-btn', 'pause-btn', 'mute-btn', 'flash'
+        'start-btn', 'restart-btn', 'resume-btn', 'menu-btn', 'pause-btn', 'mute-btn', 'flash',
+        'settings-btn', 'start-settings-btn', 'pause-settings-btn'
       ].forEach(id => el[id] = $(id));
 
       el['start-btn'].addEventListener('click', h.start);
@@ -20,6 +21,9 @@
       el['menu-btn'].addEventListener('click', h.menu);
       el['pause-btn'].addEventListener('click', (e) => { e.stopPropagation(); h.pause(); });
       el['mute-btn'].addEventListener('click', (e) => { e.stopPropagation(); h.mute(); });
+      el['settings-btn'].addEventListener('click', (e) => { e.stopPropagation(); h.settings(); });
+      el['start-settings-btn'].addEventListener('click', h.settings);
+      el['pause-settings-btn'].addEventListener('click', h.settings);
 
       // Power-up chips (ek baar bana ke rakhte hain)
       for (const kind in MR.CONFIG.POWERUPS) {

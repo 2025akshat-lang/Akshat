@@ -14,8 +14,8 @@
       group.add(body);
 
       shadow = new THREE.Mesh(
-        new THREE.PlaneGeometry(1, 1),
-        new THREE.MeshBasicMaterial({ color: 0x6a6a6a, transparent: true, opacity: 0.4 })
+        new THREE.CircleGeometry(0.5, 20),
+        new THREE.MeshBasicMaterial({ color: 0x555555, transparent: true, opacity: 0.28, depthWrite: false })
       );
       shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.02;
       group.add(shadow);

@@ -29,70 +29,90 @@ MR.CONFIG = {
   }
 };
 
-/* Har level ki theme + difficulty.
-   weights: kaun sa obstacle kitni baar aayega (relative). */
-MR.LEVELS = [
-  {
-    name: 'MUMBAI SUBAH', from: 0,
-    minSpeed: 0.28, maxSpeed: 0.55, gap: 1.0, doubleChance: 0.0,
-    weights: { jump: 25, roll: 20, block: 20, spinner: 10, auto: 20, train: 5, cow: 0 },
-    chase: { from: 0, to: 300 },
-    theme: {
-      bg: 0x9fd3f2, fogDensity: 0.006, ground: 0x9bb36a, wall: 0xcfc5b2,
-      bldA: 0xe8a0b4, bldB: 0xf2d27a, leaf: 0x3fae5a, sun: 0xfff2b0,
-      ambient: [0xffffff, 0.9], key: [0xfff1d0, 1.25], fill: [0xbfe0ff, 0.55],
-      weather: { type: 'none', color: 0xffffff, opacity: 0.0, fall: 0 }
-    }
-  },
-  {
-    name: 'DELHI TRAFFIC CHAOS', from: 1200,
-    minSpeed: 0.36, maxSpeed: 0.65, gap: 0.95, doubleChance: 0.15,
-    weights: { jump: 15, roll: 12, block: 15, spinner: 10, auto: 22, train: 10, cow: 16 },
-    chase: { from: 1500, to: 1850 },
-    theme: {
-      bg: 0xd8d0b8, fogDensity: 0.011, ground: 0xb9a878, wall: 0xd4c8b0,
-      bldA: 0xa9c4d8, bldB: 0xe0b98a, leaf: 0x8aa84a, sun: 0xffe9b0,
-      ambient: [0xfff0d6, 0.9], key: [0xffe2a8, 1.1], fill: [0xd8d8d8, 0.55],
-      weather: { type: 'dust', color: 0xd8c8a8, opacity: 0.3, fall: 0.15 }
-    }
-  },
-  {
-    name: 'KOLKATA SHAAM', from: 3000,
-    minSpeed: 0.45, maxSpeed: 0.75, gap: 0.9, doubleChance: 0.3,
-    weights: { jump: 14, roll: 14, block: 14, spinner: 14, auto: 14, train: 18, cow: 12 },
-    chase: null,
-    theme: {
-      bg: 0xf0b98a, fogDensity: 0.007, ground: 0x9fae6a, wall: 0xd8c4a8,
-      bldA: 0xd9a0c8, bldB: 0xf0c080, leaf: 0x4fa86a, sun: 0xffc070,
-      ambient: [0xffe0c8, 0.85], key: [0xffb870, 1.2], fill: [0xc8a8ff, 0.5],
-      weather: { type: 'rain', color: 0xd0e4ff, opacity: 0.4, fall: 1.0 }
-    }
-  },
-  {
-    name: 'RAJASTHAN DESERT DASH', from: 5500,
-    minSpeed: 0.55, maxSpeed: 0.82, gap: 0.88, doubleChance: 0.4,
-    weights: { jump: 14, roll: 12, block: 16, spinner: 16, auto: 10, train: 18, cow: 14 },
-    chase: { from: 5700, to: 6100 },
-    theme: {
-      bg: 0xf5d08a, fogDensity: 0.007, ground: 0xdcb878, wall: 0xe8d0a0,
-      bldA: 0xe9a860, bldB: 0xf0c27a, leaf: 0x9aaa3a, sun: 0xfff0c0,
-      ambient: [0xfff4dc, 0.95], key: [0xffe0a8, 1.15], fill: [0xffe8c0, 0.5],
-      weather: { type: 'dust', color: 0xeed0a0, opacity: 0.4, fall: 0.1 }
-    }
-  },
-  {
-    name: 'GOA SUNSET BEACH', from: 9000,
-    minSpeed: 0.62, maxSpeed: 0.92, gap: 0.85, doubleChance: 0.5,
-    weights: { jump: 14, roll: 14, block: 14, spinner: 16, auto: 12, train: 18, cow: 12 },
-    chase: null,
-    theme: {
-      bg: 0xffa87a, fogDensity: 0.006, ground: 0xe6cf98, wall: 0xe8c8b0,
-      bldA: 0xf08a9a, bldB: 0xf8b860, leaf: 0x3fcf81, sun: 0xff9a50,
-      ambient: [0xffe0c8, 0.9], key: [0xffc888, 1.2], fill: [0xff9fc5, 0.55],
-      weather: { type: 'none', color: 0xffffff, opacity: 0.0, fall: 0 }
-    }
-  }
-];
+/* ===== MAUSAM (weather) =====
+   sky:null  -> region ka apna sky. Manual mode mein player inme se chunta hai, Automatic mein region ka 'weather' lagta hai.
+   Roshni (amb/key/fill) jaan-boojh kar halki rakhi hai taaki rang safed na hon aur objects saaf dikhein. */
+MR.WEATHERS = {
+  sunny:  { label: 'Dhoop',  icon: '☀️', sky: null,     fog: 0.0055, amb: [0xffffff, 0.55], key: [0xfff3d9, 0.90], fill: [0xcfe4ff, 0.30], sun: 1,
+            cloud: { color: 0xffffff, opacity: 0.92, scale: 1.0 }, precip: { type: 'none', color: 0xffffff, opacity: 0, fall: 0, size: 0.06 } },
+  cloudy: { label: 'Baadal', icon: '☁️', sky: 0xb4c4d2, fog: 0.0070, amb: [0xf2f5ff, 0.72], key: [0xe8eef8, 0.50], fill: [0xcfe4ff, 0.25], sun: 0,
+            cloud: { color: 0xe2e8ee, opacity: 1.0, scale: 1.8 }, precip: { type: 'none', color: 0xffffff, opacity: 0, fall: 0, size: 0.06 } },
+  rain:   { label: 'Barish', icon: '🌧️', sky: 0x9db0c0, fog: 0.0095, amb: [0xe6eefa, 0.70], key: [0xdde6f2, 0.38], fill: [0xbcd4ee, 0.25], sun: 0,
+            cloud: { color: 0xbcc8d4, opacity: 1.0, scale: 2.0 }, precip: { type: 'rain', color: 0xd4e8ff, opacity: 0.55, fall: 1.1, size: 0.06 } },
+  fog:    { label: 'Kohra',  icon: '🌫️', sky: 0xd2d6da, fog: 0.0200, amb: [0xffffff, 0.78], key: [0xf0f0f0, 0.34], fill: [0xe0e8f0, 0.20], sun: 0,
+            cloud: { color: 0xe6eaee, opacity: 0.7, scale: 1.6 }, precip: { type: 'none', color: 0xffffff, opacity: 0, fall: 0, size: 0.06 } },
+  dust:   { label: 'Dhool',  icon: '🌪️', sky: 0xe2cfa4, fog: 0.0120, amb: [0xfff0d6, 0.62], key: [0xffdcaa, 0.72], fill: [0xf0d8b0, 0.25], sun: 0.5,
+            cloud: { color: 0xeadcc0, opacity: 0.8, scale: 1.4 }, precip: { type: 'dust', color: 0xe9d6ad, opacity: 0.35, fall: 0.12, size: 0.14 } },
+  snow:   { label: 'Barf',   icon: '❄️', sky: 0xd6e2ec, fog: 0.0120, amb: [0xf0f6ff, 0.78], key: [0xeaf2ff, 0.50], fill: [0xc8dcf5, 0.25], sun: 0,
+            cloud: { color: 0xeef3f8, opacity: 1.0, scale: 1.9 }, precip: { type: 'snow', color: 0xffffff, opacity: 0.9, fall: 0.26, size: 0.14 } },
+  sunset: { label: 'Shaam',  icon: '🌇', sky: 0xf2a27c, fog: 0.0065, amb: [0xffe0c8, 0.50], key: [0xffb070, 0.85], fill: [0xc8a8ff, 0.30], sun: 1, sunCol: 0xff9a50,
+            cloud: { color: 0xffc8a8, opacity: 0.9, scale: 1.1 }, precip: { type: 'none', color: 0xffffff, opacity: 0, fall: 0, size: 0.06 } }
+};
+
+/* ===== ILAAKE (states) =====
+   kind: scenery ka type (city | rock | sand | coast | jungle | snow | mountain)
+   lanes[0..2]: left / beech / right raaste ka rang; detail[0..2]: surface ka design
+   (paver | slab | tarmac | patch | ripple | rail); detailCol: us design ka rang. */
+MR.REGIONS = {
+  maha: { state: 'MAHARASHTRA', label: 'Pathar ka raasta', kind: 'rock', weather: 'cloudy',
+    sky: 0x9fd0f0, sun: 0xfff2b0, field: 0x8c7b66, foot: 0xb4a894, rock: 0x6f655c, leaf: 0x5a9a3a, bldA: 0xd9b38c, bldB: 0xcdbfa6,
+    lanes: [0x8f8378, 0x6b6f73, 0x9a7b5a], detail: ['slab', 'tarmac', 'patch'], detailCol: [0x6a6057, 0xf2f2ee, 0x7a5c3e], gantry: 0.7 },
+  raj: { state: 'RAJASTHAN', label: 'Ret par daud', kind: 'sand', weather: 'sunny',
+    sky: 0x8fcdf2, sun: 0xfff0b8, field: 0xe3c386, foot: 0xe9d3a4, dune: 0xe8c88c, leaf: 0x8a9a3a, bldA: 0xe9a860, bldB: 0xf0c27a,
+    lanes: [0xdcb878, 0xb9a070, 0xd8b680], detail: ['ripple', 'patch', 'ripple'], detailCol: [0xc79f5c, 0x8f7a50, 0xc79f5c], gantry: 0.6 },
+  kerala: { state: 'KERALA', label: 'Samundar kinara', kind: 'coast', weather: 'rain',
+    sky: 0x8fd4e8, sun: 0xfff2b0, field: 0xe8d9a8, foot: 0xd8cdb0, sea: 0x2f9fd6, leaf: 0x2f9a4a, bldA: 0xf4b6a0, bldB: 0xa8d8c0, fogMul: 1.1,
+    lanes: [0xe6d2a0, 0x6a6e72, 0x8a8580], detail: ['patch', 'tarmac', 'rail'], detailCol: [0xcdb982, 0xf2f2ee, 0x7a5a3a], gantry: 0.7 },
+  ne: { state: 'NORTH EAST', label: 'Jungle ke beech', kind: 'jungle', weather: 'fog',
+    sky: 0x9fd8b8, sun: 0xfff2b0, field: 0x5f8f3f, foot: 0x9a8f6a, leaf: 0x2f8a3a, leaf2: 0x4fa84a, bldA: 0xc89a6a, bldB: 0x9ab87a, fogMul: 0.9,
+    lanes: [0x8a6a44, 0x6f7068, 0x7a5a3a], detail: ['patch', 'tarmac', 'patch'], detailCol: [0x5e4428, 0xe8e8e0, 0x4f7a32], gantry: 0.45 },
+  delhi: { state: 'DELHI', label: 'Traffic ka chaos', kind: 'city', weather: 'dust',
+    sky: 0xcfdce6, sun: 0xffe9b0, field: 0xb9a878, foot: 0xd4c8b0, leaf: 0x7aa04a, bldA: 0xa9c4d8, bldB: 0xe0b98a,
+    lanes: [0xc8704a, 0x6e7074, 0x8a8580], detail: ['paver', 'tarmac', 'rail'], detailCol: [0xa65a38, 0xf5f5f0, 0x7a5a3a], gantry: 0.85 },
+  gujarat: { state: 'GUJARAT', label: 'Rann ka safed namak', kind: 'sand', weather: 'sunny',
+    sky: 0x86c8f0, sun: 0xfff6c8, field: 0xf0ece0, foot: 0xe8e2d0, dune: 0xf4f0e6, leaf: 0x9aa84a, bldA: 0xf0b8c8, bldB: 0xf6e0a0,
+    lanes: [0xe6e0d0, 0x8a8c90, 0xd8c8a8], detail: ['ripple', 'tarmac', 'patch'], detailCol: [0xcfc8b4, 0xf5f5f0, 0xb89c70], gantry: 0.6 },
+  goa: { state: 'GOA', label: 'Beach ki shaam', kind: 'coast', weather: 'sunset',
+    sky: 0xf2a27c, sun: 0xff9a50, field: 0xeed9a8, foot: 0xe6d0b0, sea: 0x3fa8d8, leaf: 0x2fb060, bldA: 0xf08a9a, bldB: 0xf8c860,
+    lanes: [0xe8d4a4, 0x707478, 0x8a8580], detail: ['patch', 'tarmac', 'rail'], detailCol: [0xcdb982, 0xf5f5f0, 0x7a5a3a], gantry: 0.7 },
+  uk: { state: 'UTTARAKHAND', label: 'Pahadi mod', kind: 'snow', snow: false, weather: 'sunny',
+    sky: 0x8ccbf0, sun: 0xfff2b0, field: 0x6a9a4a, foot: 0xa8a08a, leaf: 0x2f7a4a, bldA: 0xe0c09a, bldB: 0xc88a5a,
+    lanes: [0x9a8a70, 0x6c6e72, 0x8a7a5e], detail: ['slab', 'tarmac', 'patch'], detailCol: [0x7a6c56, 0xf2f2ee, 0x6a5a40], gantry: 0.5 },
+  kashmir: { state: 'KASHMIR', label: 'Barf par daud', kind: 'snow', snow: true, weather: 'snow',
+    sky: 0xc6dcf0, sun: 0xffffff, field: 0xeef3f8, foot: 0xdfe8f0, leaf: 0x2f6b4a, bldA: 0xc8a070, bldB: 0x9a7048,
+    lanes: [0xe4edf5, 0x8fa0b0, 0xc4d8ec], detail: ['patch', 'tarmac', 'patch'], detailCol: [0xb8c8d8, 0xf5f8fc, 0x9fbad4], gantry: 0.5 },
+  ladakh: { state: 'LADAKH', label: 'Pahad ka raasta', kind: 'mountain', weather: 'sunny',
+    sky: 0x6fb0ea, sun: 0xffffff, field: 0xb59a78, foot: 0xc8b496, rock: 0x8a7a68, leaf: 0x8a9a4a, bldA: 0xf4f0e8, bldB: 0xb04a3a, fogMul: 0.6,
+    lanes: [0xb8a080, 0x76787c, 0xa3866a], detail: ['patch', 'tarmac', 'slab'], detailCol: [0x8a7458, 0xf2f2ee, 0x7a6450], gantry: 0.35 }
+};
+Object.keys(MR.REGIONS).forEach(k => { MR.REGIONS[k].key = k; });
+
+/* ===== LEVELS: 10 levels, har level ka alag ilaaka. Score badhne par speed, obstacle ki bheed,
+   double-obstacle chance badhte jaate hain. Naya level: yahan ek key aur 'from' jodo. */
+(function () {
+  const order = ['maha', 'raj', 'kerala', 'ne', 'delhi', 'gujarat', 'goa', 'uk', 'kashmir', 'ladakh'];
+  const from  = [0, 1200, 2600, 4200, 6000, 8000, 10200, 12600, 15200, 18000];
+  const chaseOn = { 0: true, 2: true, 4: true, 6: true, 8: true, 9: true };
+  const n = order.length - 1;
+  MR.LEVELS = order.map((key, i) => {
+    const t = i / n;                       // 0 (aasaan) -> 1 (sabse mushkil)
+    const rg = MR.REGIONS[key];
+    return {
+      name: rg.state + ' • ' + rg.label.toUpperCase(),
+      region: key, from: from[i],
+      minSpeed: +(0.28 + 0.40 * t).toFixed(3),
+      maxSpeed: +(0.55 + 0.38 * t).toFixed(3),
+      gap: +(1.0 - 0.36 * t).toFixed(2),
+      doubleChance: +(0.0 + 0.65 * t).toFixed(2),
+      weights: {
+        jump: Math.round(26 - 12 * t), roll: Math.round(20 - 8 * t), block: Math.round(18 - 3 * t),
+        spinner: Math.round(8 + 10 * t), auto: Math.round(18 + 4 * t),
+        train: Math.round(4 + 14 * t), cow: i === 0 ? 0 : Math.round(8 + 8 * t)
+      },
+      chase: chaseOn[i] ? (i === 0 ? { from: 0, to: 300 } : { from: from[i] + 300, to: from[i] + 650 }) : null
+    };
+  });
+})();
 
 /* Police pakad: kitni baar pakde jaane par game over (pehli aur doosri baar sirf detain + countdown) */
 MR.CONFIG.MAX_BUSTS = 3;
@@ -102,5 +122,9 @@ MR.AD_DATA = [
   { text: 'SASTA MILK 🥛',        color: '#FFD700' },
   { text: '20 KE 10 BHAII! 🥚',   color: '#FF4500' },
   { text: '100 KE 5 🍌! SALE ✨', color: '#32CD32' },
-  { text: 'NEW SNEAKERS 👟⚡!',   color: '#1E90FF' }
+  { text: 'NEW SNEAKERS 👟⚡!',   color: '#1E90FF' },
+  { text: 'SHAADI SALE 💍 50% OFF', color: '#FF69B4' },
+  { text: 'DOODH JALEBI 😋 SPECIAL', color: '#FFA500' },
+  { text: 'MELA! JHULA 🎡 SHAAM 6 BAJE', color: '#9370DB' },
+  { text: 'COACHING: 100% SELECTION*', color: '#20B2AA' }
 ];

@@ -46,7 +46,9 @@
     MR.Police.init(scene);
 
     best = loadBest();
-    MR.UI.init({ start: startGame, menu: toMenu, pause: togglePause, mute: toggleMute });
+    MR.UI.init({ start: startGame, menu: toMenu, pause: togglePause, mute: toggleMute, settings: openSettings });
+    MR.Settings.bindUI();
+    MR.Settings.onChange(() => MR.World.refresh());
     MR.UI.showStart(best);
     MR.UI.setMuteIcon(false);
 
@@ -57,7 +59,7 @@
       roll:  () => { if (state === 'playing') MR.Player.roll(); },
       pause: togglePause,
       mute: toggleMute,
-      confirm: () => { if (state === 'menu' || state === 'over') startGame(); }
+      confirm: () => { if (MR.Settings.isOpen()) return; if (state === 'menu' || state === 'over') startGame(); }
     });
 
     addEventListener('resize', () => {
@@ -104,7 +106,13 @@
     MR.UI.showStart(best);
   }
 
+  function openSettings() {
+    if (state === 'playing') togglePause();      // gameplay ke dauran settings khulne par pehle pause
+    MR.Settings.open();
+  }
+
   function togglePause() {
+    if (MR.Settings.isOpen()) return;
     if (state === 'playing') {
       state = 'paused';
       MR.Audio.stopSiren(); MR.Audio.stopMusic();

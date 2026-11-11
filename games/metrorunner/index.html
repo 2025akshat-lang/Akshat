@@ -18,6 +18,7 @@
       <div class="hud-box"><span class="label">Best</span><span id="best-val" class="value" style="color:#9ff0c9;">0</span></div>
       <div class="hud-box"><span class="label">Coins</span><span id="coin-val" class="value" style="color:#ffd166;">0</span></div>
       <div class="hud-buttons">
+        <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
         <button id="mute-btn" class="icon-btn" title="Sound (M)">🔊</button>
         <button id="pause-btn" class="icon-btn" title="Pause (P)" style="display:none;">⏸</button>
       </div>
@@ -33,6 +34,8 @@
     <p class="subtitle">made by Akshat</p>
     <div class="stat">Best Score: <span id="start-best">0</span></div>
     <button class="btn" id="start-btn">Start Run</button>
+    <br />
+    <button class="btn btn-alt" id="start-settings-btn">⚙️ Settings</button>
     <div class="hint">
       <p><span class="kbd">← → / A D</span> Lane badlo &nbsp; <span class="kbd">↑ / W / Space</span> Jump &nbsp; <span class="kbd">↓ / S</span> Roll</p>
       <p><span class="kbd">Orange ▲</span> Jump Barrier &nbsp; <span class="kbd">Purple ▼</span> Roll Tunnel &nbsp; <span class="kbd">Red ◄►</span> Lane Change Wall</p>
@@ -46,7 +49,35 @@
     <h1 class="title">PAUSED</h1>
     <button class="btn" id="resume-btn">Resume</button>
     <br />
+    <button class="btn btn-alt" id="pause-settings-btn">⚙️ Settings</button>
+    <br />
     <button class="btn btn-alt" id="menu-btn">Main Menu</button>
+  </div>
+
+  <div id="settings-screen" class="overlay overlay-settings" style="display:none;">
+    <div class="set-panel">
+      <h2 class="set-title">⚙️ SETTINGS</h2>
+
+      <div class="set-label">MAUSAM MODE</div>
+      <div class="seg">
+        <button id="mode-auto" class="seg-btn">AUTOMATIC</button>
+        <button id="mode-manual" class="seg-btn">MANUAL</button>
+      </div>
+      <p class="set-note" id="mode-note"></p>
+
+      <div id="weather-box" style="display:none;">
+        <div class="set-label">MAUSAM CHUNO</div>
+        <div class="chips-row" id="weather-chips"></div>
+      </div>
+
+      <div class="set-label">BRIGHTNESS <span id="bright-val">100%</span></div>
+      <input type="range" id="bright-range" min="60" max="150" step="5" value="100" />
+
+      <div class="set-label">COLOR SHADE</div>
+      <div class="chips-row" id="shade-chips"></div>
+
+      <button class="btn" id="settings-done">Done</button>
+    </div>
   </div>
 
   <div id="detain-screen" class="overlay overlay-detain" style="display:none;">
@@ -72,6 +103,7 @@
 
   <!-- Scripts ka order zaroori hai (har file pichhli file par depend karti hai) -->
   <script src="js/config.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/textures.js"></script>
   <script src="js/models.js"></script>

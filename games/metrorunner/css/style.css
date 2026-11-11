@@ -109,3 +109,24 @@ html,body{
 .detain-count{ font-size:120px; font-weight:900; line-height:1.1; color:#d04a2a; }
 .detain-count.pulse{ animation:detainPulse .9s ease-out; }
 @keyframes detainPulse{ 0%{ transform:scale(1.6); opacity:.2; } 40%{ transform:scale(1); opacity:1; } 100%{ transform:scale(.92); opacity:.85; } }
+
+/* ---- Settings panel (neeche se, taaki scene dikhta rahe aur live preview mile) ---- */
+.overlay-settings{ z-index:30; background:rgba(80,80,88,.12); backdrop-filter:none; justify-content:flex-end; padding:0; }
+.set-panel{
+  width:100%; max-width:520px; background:rgba(96,96,106,.97); border:1.5px solid var(--stroke); border-bottom:none;
+  border-radius:20px 20px 0 0; padding:14px 18px 20px; max-height:76vh; overflow:auto; text-align:left;
+}
+.set-title{ font-size:18px; letter-spacing:1.5px; margin-bottom:6px; color:#fff; }
+.set-label{ font-size:12px; font-weight:900; letter-spacing:1.2px; color:#ffe1b8; margin:12px 0 6px; }
+.set-label span{ color:#ffd166; margin-left:6px; }
+.set-note{ font-size:12px; line-height:1.5; color:#f2ece0; margin-top:6px; }
+.seg{ display:flex; gap:8px; }
+.seg-btn, .chip-btn{
+  flex:1; border:1.5px solid var(--stroke); background:rgba(120,120,130,.6); color:#fff; font-weight:800;
+  border-radius:12px; padding:10px 8px; font-size:13px; cursor:pointer;
+}
+.seg-btn.on, .chip-btn.on{ background:linear-gradient(135deg,#ffd166,#ff8a00); color:#5a3300; border-color:#ffd166; }
+.chips-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip-btn{ flex:0 0 auto; padding:8px 12px; }
+#bright-range{ width:100%; touch-action:pan-x; accent-color:#ffb347; height:30px; }
+.set-panel .btn{ width:100%; margin-top:16px; }

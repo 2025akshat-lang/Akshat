@@ -5,11 +5,12 @@ Chalane ke liye: `index.html` ko browser mein kholo (internet chahiye, Three.js 
 ## Structure
 - index.html            -> page + script order
 - css/style.css         -> saari styling
-- js/config.js          -> CONFIG + LEVELS (naya level / theme yahin add karo; MAX_BUSTS, DETAIN_SECONDS bhi yahin)
+- js/config.js          -> CONFIG, MAUSAM (WEATHERS), ILAAKE (REGIONS), 10 LEVELS (naya level / state yahin add karo)
+- js/settings.js        -> brightness, color shade, Automatic/Manual mausam (localStorage mein save)
 - js/audio.js           -> sounds + music + siren
 - js/textures.js        -> canvas textures (signs, posters, billboards)
 - js/models.js          -> saare 3D models (player, auto, train, cow, jeep, coin, powerups)
-- js/world.js           -> 3 alag raaste (paver / sadak / kachchi mitti), footpath, khula maidan, thele, dukaane, neta hoardings, sun/baadal, theme transition
+- js/world.js           -> ilaake ke hisaab se raaste + scenery, sar ke upar neta/ad banners, thele, sun/baadal, mausam
 - js/player.js          -> player movement / jump / roll / animation
 - js/obstacles.js       -> spawn + collision
 - js/collectibles.js    -> coins, power-ups, sparkles
@@ -24,7 +25,12 @@ config.js mein MR.LEVELS array mein ek object add karo (name, from score, speeds
 models.js mein builder -> obstacles.js ke BUILDERS mein naam -> config.js ke weights mein naam.
 
 ## Is version mein kya badla
-- Deep black hata diya: sab jagah grey / faded rang. Zyadatar levels din ke hain (subah, dopahar, shaam).
-- Indian sadak: khula area (koi deewar/chhat nahi), 3 alag raaste, footpath par thele wale, machhali wala ("das ke chaar" awaaz), dukaanein, politician ke posters / hoardings (sab kaalpanik naam).
-- Police pakad: 1st aur 2nd baar pakde gaye -> "DETAIN" screen + 5-4-3-2-1 countdown, phir chhod kar dobara running. 3rd baar -> BUSTED / Try Again.
-  (config.js mein MAX_BUSTS aur DETAIN_SECONDS se badal sakte ho)
+- Deep black hata diya: sab jagah grey / faded rang. Roshni kam ki gayi (pehle sab safed dikhta tha), coins ab chamakte hain.
+- Settings (⚙️): Brightness slider, Color Shade (Normal/Garam/Thanda/Rangeen/Saaf/Soft), Mausam mode:
+  AUTOMATIC = jis state mein ho wahan ka mausam, MANUAL = Dhoop/Baadal/Barish/Kohra/Dhool/Barf/Shaam khud chuno.
+- Neta ke posters aur ad ke bade banners ab raaste ke UPAR (gantry) tange hain.
+- 10 levels, har level ek state: Maharashtra (pathar), Rajasthan (ret), Kerala (samundar kinara + train track),
+  North East (jungle), Delhi, Gujarat (Rann), Goa, Uttarakhand, Kashmir (barf), Ladakh (pahad + prayer flags).
+  Level badhne par speed, obstacles ki bheed aur double-obstacle ka chance badhta hai.
+- Indian sadak: khula area, 3 alag raaste, thele wale, machhali wala ("das ke chaar"), dukaanein.
+- Police pakad: 1st aur 2nd baar -> DETAIN + 5-4-3-2-1, phir dobara running. 3rd baar -> BUSTED / Try Again.

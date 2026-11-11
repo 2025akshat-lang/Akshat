@@ -204,10 +204,10 @@
   Models.coin = function () {
     const c = new THREE.Group();
     const disc = new THREE.Mesh(geo('coinDisc', () => new THREE.CylinderGeometry(0.34, 0.34, 0.075, 18)),
-      M.std('coinA', 0xffd34d, { metalness: 0.9, roughness: 0.2, emissive: 0xa15a00, emissiveIntensity: 0.4 }));
+      M.std('coinA', 0xffd34d, { metalness: 0.15, roughness: 0.4, emissive: 0xd89a00, emissiveIntensity: 0.65 }));
     disc.rotation.x = Math.PI / 2; c.add(disc);
     const rim = new THREE.Mesh(geo('coinRim', () => new THREE.TorusGeometry(0.3, 0.03, 8, 18)),
-      M.std('coinB', 0xeab308, { metalness: 0.92, roughness: 0.25, emissive: 0x663f00, emissiveIntensity: 0.25 }));
+      M.std('coinB', 0xf2c21e, { metalness: 0.15, roughness: 0.4, emissive: 0xc88a00, emissiveIntensity: 0.55 }));
     c.add(rim);
     return c;
   };
@@ -267,7 +267,7 @@
     if (kind === 'fruit') goods(26, 0xf7d11e, 0xe8503a, 0.12, 1.2, 1.5, 0.92);
     else if (kind === 'sabzi') goods(26, 0x3fae5a, 0xe8503a, 0.11, 1.2, 1.5, 0.92);
     else if (kind === 'chai') {
-      g.add(mesh(cyl(0.22, 0.26, 0.45, 10), M.std('kettle', 0xb8b8b8, { metalness: 0.7, roughness: 0.3 }), 0.25, 1.05, -0.2));
+      g.add(mesh(cyl(0.22, 0.26, 0.45, 10), M.std('kettle', 0xb8b8b8, { metalness: 0.25, roughness: 0.4 }), 0.25, 1.05, -0.2));
       g.add(mesh(cyl(0.16, 0.16, 0.3, 10), M.std('stove', 0xc0562a), -0.35, 0.98, -0.2));
       for (let i = 0; i < 4; i++) g.add(mesh(cyl(0.06, 0.05, 0.12, 8), M.std('glassCup', 0xf5f5f5), -0.5 + i * 0.28, 0.95, 0.5));
     } else if (kind === 'fish') {
