@@ -5,7 +5,8 @@ Chalane ke liye: `index.html` ko browser mein kholo (internet chahiye, Three.js 
 ## Structure
 - index.html            -> page + script order
 - css/style.css         -> saari styling
-- js/config.js          -> CONFIG, MAUSAM (WEATHERS), ILAAKE (REGIONS), 10 LEVELS (naya level / state yahin add karo)
+- js/config.js          -> CONFIG, MAUSAM (WEATHERS), ILAAKE (REGIONS: raasta, camera, character ke kapde, khaas obstacles), 11 LEVELS
+- js/models2.js         -> Gypsy, Thar, Truck, Bus, Camel, slum/beach/jungle ke obstacles, kela + nariyal ke ped, kapde/kabadi stalls
 - js/settings.js        -> brightness, color shade, Automatic/Manual mausam (localStorage mein save)
 - js/audio.js           -> sounds + music + siren
 - js/textures.js        -> canvas textures (signs, posters, billboards)
@@ -34,3 +35,14 @@ models.js mein builder -> obstacles.js ke BUILDERS mein naam -> config.js ke wei
   Level badhne par speed, obstacles ki bheed aur double-obstacle ka chance badhta hai.
 - Indian sadak: khula area, 3 alag raaste, thele wale, machhali wala ("das ke chaar"), dukaanein.
 - Police pakad: 1st aur 2nd baar -> DETAIN + 5-4-3-2-1, phir dobara running. 3rd baar -> BUSTED / Try Again.
+
+## Update 3
+- Alag-alag awaazein: machhali wala ("das ke chaar"), kapde wale (aadmi / aurat / bachcha ki awaaz: "150 ke 2 kapde"),
+  kabadi wale (basti mein), chai / sabzi / fruit wale, kutte ka bhaunkna. (audio.js: CRIES)
+- Indian gaadiyaan: Gypsy, Thar, Truck ("HORN OK PLEASE"), Bus, Camel (registan). Side mein khadi bhi hain aur obstacle bhi.
+- Naye levels / mode: MUMBAI BASTI (tedha-medha raasta, gandi nali = kudo, kapde dhote log = kudo, gande kutte, upar sookhte kapde = neeche se niklo),
+  North East (jungle ki bus road, ghana jungle, baans), Kerala/Goa (nariyal ke ped, beach, dhoop sekte log = kudo,
+  upar baithe log = neeche se niklo), Rajasthan (registan + camel).
+- Sar ke upar ke banners ab camera paas aane par halke ho jaate hain; camera neecha kiya gaya.
+- Camera aur character ke kapde har ilaake ke hisaab se badalte hain.
+- Start screen par ab world scroll nahi hota.

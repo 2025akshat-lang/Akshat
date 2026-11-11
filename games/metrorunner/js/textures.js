@@ -151,6 +151,24 @@
     });
   }
 
+  function signBoard(l1, l2, bg, w, h) {
+    return canvasTex(w, h, (ctx, W, H) => {
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 5; ctx.strokeRect(4, 4, W - 8, H - 8);
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const two = !!l2;
+      let size = two ? Math.floor(H * 0.34) : Math.floor(H * 0.5);
+      ctx.font = 'bold ' + size + 'px Arial';
+      while (ctx.measureText(l1).width > W - 24 && size > 12) { size -= 2; ctx.font = 'bold ' + size + 'px Arial'; }
+      ctx.fillText(l1, W / 2, two ? H * 0.32 : H / 2);
+      if (two) {
+        ctx.fillStyle = '#ffe066'; size = Math.floor(H * 0.34); ctx.font = 'bold ' + size + 'px Arial';
+        while (ctx.measureText(l2).width > W - 24 && size > 12) { size -= 2; ctx.font = 'bold ' + size + 'px Arial'; }
+        ctx.fillText(l2, W / 2, H * 0.72);
+      }
+    });
+  }
+
   MR.Tex = {
     up:   symbol('▲', '#ff9900', '#5a4a3a'),
     down: symbol('▼', '#e879f9', '#554a5e'),
@@ -178,6 +196,10 @@
     ],
     adBanners: MR.AD_DATA.map(bannerAd),
     fishSign: fishSign(),
+    kapdeSign: signBoard('KAPDE 👕👗', '150 KE 2!', '#d6567a', 256, 128),
+    kabadiSign: signBoard('KABADI WALA', 'PURANA SAMAAN', '#8a6a3a', 256, 128),
+    truckSign: signBoard('HORN OK PLEASE', '', '#d6402a', 256, 64),
+    busSign: signBoard('STATE TRANSPORT', '', '#2f6fd6', 256, 64),
     shopSigns: [
       shopSign('CHAI SUTTA BAR', '#c0562a'), shopSign('KIRANA STORE', '#2f8f5a'),
       shopSign('PAAN SHOP', '#8a4fbf'), shopSign('MOBILE REPAIR', '#2f7fbf'),

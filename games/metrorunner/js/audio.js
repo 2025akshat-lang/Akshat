@@ -85,16 +85,46 @@
     siren = null;
   }
 
-  // Machhali wala: "das ke chaar" - browser ki Hindi awaaz (speechSynthesis), halki volume mein
-  function vendorCry() {
-    if (muted || !('speechSynthesis' in window)) return;
+  /* ===== Bechne wale ki awaazein (browser ki Hindi awaaz, halki volume mein) =====
+     voice: m = aadmi (gehri awaaz), f = aurat (patli), c = bachcha (tez + unchi). Pitch se alag-alag awaaz banti hai. */
+  const VOICES = { m: { pitch: 0.7, rate: 1.0 }, f: { pitch: 1.35, rate: 1.05 }, c: { pitch: 1.9, rate: 1.2 } };
+  const CRIES = {
+    fish:   [['m', 'दस के चार! दस के चार! मछली ले लो, मछली!']],
+    kabadi: [['m', 'कबाड़ी वाले! पुराना सामान! कबाड़ी वाले!']],
+    kapde:  [['m', 'कपड़े ले लो कपड़े! डेढ़ सौ रुपए के दो कपड़े! सस्ते कपड़े!'],
+             ['f', 'कपड़े ले लो, कपड़े! डेढ़ सौ के दो कपड़े! सस्ते सस्ते!'],
+             ['c', 'कपड़े ले लो कपड़े! डेढ़ सौ के दो!']],
+    chai:   [['m', 'चाय गरम! चाय गरम चाय!'], ['c', 'चाय ले लो चाय! गरम चाय!']],
+    sabzi:  [['f', 'आलू प्याज़ टमाटर! ताज़ी सब्ज़ी ले लो!'], ['m', 'सब्ज़ी ले लो सब्ज़ी! ताज़ी ताज़ी!']],
+    fruit:  [['m', 'केले ले लो केले! चालीस रुपये दर्जन!'], ['f', 'फल ले लो फल! ताज़े ताज़े फल!']]
+  };
+  let voiceList = null;
+  function hindiVoices() {
+    if (voiceList === null || !voiceList.length) {
+      try { voiceList = speechSynthesis.getVoices().filter(v => /^hi/i.test(v.lang)); } catch (e) { voiceList = []; }
+    }
+    return voiceList;
+  }
+  function speak(who, text) {
+    const u = new SpeechSynthesisUtterance(text);
+    const v = VOICES[who] || VOICES.m;
+    u.lang = 'hi-IN'; u.pitch = v.pitch; u.rate = v.rate; u.volume = 0.45;
+    const hv = hindiVoices();
+    if (hv.length) u.voice = hv[(who === 'm' ? 0 : who === 'f' ? 1 : 2) % hv.length];   // jitni alag voices mile
+    speechSynthesis.speak(u);
+  }
+  function cry(kind) {
+    if (muted) return;
+    if (kind === 'bark') { tone(220, 120, 0.12, 'sawtooth', 0.09); tone(260, 130, 0.14, 'sawtooth', 0.09, 0.2); return; }
+    if (kind === 'horn') { tone(330, 330, 0.35, 'square', 0.06); tone(415, 415, 0.35, 'square', 0.05); return; }
+    if (!('speechSynthesis' in window) || !CRIES[kind]) return;
     try {
       if (speechSynthesis.speaking) return;
-      const u = new SpeechSynthesisUtterance('दस के चार! दस के चार! मछली ले लो, मछली!');
-      u.lang = 'hi-IN'; u.rate = 1.05; u.pitch = 0.75; u.volume = 0.45;
-      speechSynthesis.speak(u);
+      const c = CRIES[kind][Math.floor(Math.random() * CRIES[kind].length)];
+      speak(c[0], c[1]);
     } catch (e) {}
   }
+  function vendorCry() { cry('fish'); }
   function stopVoice() { try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {} }
 
   MR.Audio = {
@@ -107,7 +137,7 @@
     shieldBreak: () => { tone(900, 200, 0.3, 'sawtooth', 0.15); noise(0.2, 0.12); },
     levelUp:() => { [523, 659, 784, 1046].forEach((f, i) => tone(f, f, 0.15, 'square', 0.1, i * 0.1)); },
     crash:  () => { noise(0.45, 0.3); tone(160, 40, 0.5, 'sawtooth', 0.2); },
-    startSiren, stopSiren, startMusic, stopMusic, vendorCry, stopVoice,
+    startSiren, stopSiren, startMusic, stopMusic, vendorCry, cry, stopVoice,
     tick:   () => tone(700, 700, 0.09, 'square', 0.08),
     release:() => { tone(523, 523, 0.12, 'square', 0.1); tone(784, 784, 0.2, 'square', 0.1, 0.12); },
     setMuted(m) {

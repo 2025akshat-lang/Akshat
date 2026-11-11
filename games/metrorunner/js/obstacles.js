@@ -11,8 +11,24 @@
     spinner: () => MR.Models.spinner(),
     auto: () => MR.Models.autoRickshaw(),
     train: () => MR.Models.train(),
-    cow: () => MR.Models.cow()
+    cow: () => MR.Models.cow(),
+    // Indian gaadiyaan / jaanwar
+    truck: () => MR.Models.truck(),
+    bus: () => MR.Models.bus(),
+    gypsy: () => MR.Models.gypsy(),
+    thar: () => MR.Models.thar(),
+    camel: () => MR.Models.camel(),
+    // Slum / beach / jungle
+    drain: () => MR.Models.drain(),
+    washer: () => MR.Models.washer(),
+    dog: () => MR.Models.dog(),
+    clothesline: () => MR.Models.clothesline(),
+    sunbather: () => MR.Models.sunbather(),
+    sitters: () => MR.Models.sitters('coast'),
+    machaan: () => MR.Models.sitters('forest'),
+    log: () => MR.Models.log()
   };
+  const JUMPERS = ['jump', 'drain', 'washer', 'sunbather', 'log'];      // inke upar coins ka arc
 
   function pickType(weights, exclude) {
     let total = 0;
@@ -63,7 +79,7 @@
       const free = lanes.filter(l => !used.includes(l));
       const freeLane = free[Math.floor(Math.random() * free.length)];
       MR.Collectibles.spawnCoinRow(freeLane, z - 4, 4, false);
-      if (typeA === 'jump' && Math.random() < 0.6) MR.Collectibles.spawnCoinRow(laneA, z - 4.4, 5, true);
+      if (JUMPERS.includes(typeA) && Math.random() < 0.6) MR.Collectibles.spawnCoinRow(laneA, z - 4.4, 5, true);
       if (Math.random() < 0.10) {
         const kinds = ['shield', 'magnet', 'double'];
         MR.Collectibles.spawnPowerup(kinds[Math.floor(Math.random() * 3)], free[Math.floor(Math.random() * free.length)], z - 14);

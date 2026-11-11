@@ -10,7 +10,9 @@
   let best = 0;
   const power = { shield: 0, magnet: 0, double: 0 };
   let invuln = 0, shake = 0, crashT = 0, crashReason = '';
-  let bustCount = 0, detainT = 0, detainShown = 0;   // police ne kitni baar pakda + countdown
+  let bustCount = 0, detainT = 0, detainShown = 0;
+  const cam = { y: 3.9, z: -8.4, look: 1.0, fov: 60 };   // camera ki abhi ki settings (ilaake ke saath dheere badalti hain)
+  let frameCount = 0, shaderChecked = false;   // police ne kitni baar pakda + countdown
 
   /* ---------- storage (try/catch: private mode mein bhi crash na ho) ---------- */
   function loadBest() {
@@ -29,8 +31,8 @@
     }
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1100);
-    camera.position.set(0, 4.8, -8.4);
-    camera.lookAt(0, 0.1, 12);
+    camera.position.set(0, C.CAM.y, C.CAM.z);
+    camera.lookAt(0, C.CAM.look, 14);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(innerWidth, innerHeight);
@@ -85,7 +87,9 @@
     MR.World.reset(); MR.Player.reset(); MR.Police.reset();
     MR.Player.setShield(false);
     MR.UI.resetHud(); MR.UI.setPowerups({}); MR.UI.showChase(false);
-    camera.fov = 60; camera.updateProjectionMatrix();
+    Object.assign(cam, C.CAM);
+    camera.position.set(0, cam.y, cam.z); camera.lookAt(0, cam.look, 14);
+    camera.fov = cam.fov; camera.updateProjectionMatrix();
   }
 
   function startGame() {
@@ -268,9 +272,15 @@
 
     // camera
     camera.position.x += (MR.Player.x * 0.34 - camera.position.x) * 0.08 * k;
-    camera.position.y += ((4.7 + Math.sin(distance * 0.03) * 0.08) - camera.position.y) * 0.05 * k;
-    const fov = 60 + (speed - 0.28) * 14;
+    // camera: ilaake ke hisaab se height / doori / fov dheere dheere badalte hain (slum / jungle mein camera neecha)
+    const ct = MR.World.camTarget();
+    cam.y += (ct.y - cam.y) * 0.03 * k; cam.z += (ct.z - cam.z) * 0.03 * k;
+    cam.look += (ct.look - cam.look) * 0.03 * k; cam.fov += (ct.fov - cam.fov) * 0.03 * k;
+    camera.position.y += ((cam.y + Math.sin(distance * 0.03) * 0.08) - camera.position.y) * 0.05 * k;
+    camera.position.z = cam.z;
+    const fov = cam.fov + (speed - 0.28) * 14;
     camera.fov += (fov - camera.fov) * 0.05; camera.updateProjectionMatrix();
+    camera.lookAt(camera.position.x * 0.5, cam.look, 14);
 
     MR.UI.setHud(score, coins, Math.max(best, score));
     MR.UI.setPowerups(power);
@@ -294,8 +304,8 @@
     if (state === 'playing') {
       updatePlaying(dt, k);
     } else if (state === 'menu') {
-      MR.World.update(k, 0.1, 0);               // menu mein halka scroll
-      MR.Player.update(k, 0.12, time);
+      MR.World.update(k, 0, 0);                 // menu mein world ruka hua (scroll nahi)
+      MR.Player.idle(time);
     } else if (state === 'detained') {
       detainT -= dt;
       const c = Math.max(1, Math.ceil(detainT));
@@ -311,6 +321,7 @@
     }
     if (state !== 'paused') applyShake(dt);
     renderer.render(scene, camera);
+    if (!shaderChecked && ++frameCount > 20) { shaderChecked = true; MR.World.verify(renderer); }   // curved road shader theek chala?
   }
 
   window.addEventListener('load', init);

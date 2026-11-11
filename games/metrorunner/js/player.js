@@ -7,7 +7,27 @@
   let jumping = false, rolling = false, rollTimer = null;
   let runPhase = 0, dxLast = 0;
 
+  let pendingOutfit = null;
+  function applyOutfit(o) {
+    const M = MR.Models.mat;
+    const shirt = M.std('shirt', 0); shirt.color.setHex(o.shirt); shirt.emissive.setHex(o.shirt).multiplyScalar(0.2);
+    M.std('cap', 0).color.setHex(o.cap);
+    M.std('pants', 0).color.setHex(o.pants);
+  }
+
   const P = {
+    // Ilaake ke hisaab se character ke kapde badalte hain
+    setOutfit(o) { pendingOutfit = o; if (body) applyOutfit(o); },
+
+    // Menu mein khada hua (daud nahi raha)
+    idle(time) {
+      const u = body.userData;
+      u.legL.rotation.x = 0; u.legR.rotation.x = 0;
+      u.armL.rotation.x = 0.05; u.armR.rotation.x = -0.5;
+      body.position.y = Math.sin(time * 2) * 0.02;
+      torchFire.scale.set(1 + Math.sin(time * 25) * 0.12, 1 + Math.sin(time * 31 + 1) * 0.18, 1);
+    },
+
     init(scene) {
       group = new THREE.Group();
       body = MR.Models.player();
@@ -43,6 +63,7 @@
 
       group.position.set(C.LANES[lane], y, 0);
       scene.add(group);
+      if (pendingOutfit) applyOutfit(pendingOutfit);
     },
 
     reset() {
