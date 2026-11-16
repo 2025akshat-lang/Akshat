@@ -501,6 +501,8 @@
         .port-hole.usbc { width: 12px; height: 6px; border-radius: 4px; }
         .port.active .port-hole { box-shadow: 0 0 6px #00e5ff, inset 0 0 0 1px #00e5ff; }
         .port.active i { color: #00e5ff; }
+        body.lowfx * { animation: none !important; filter: none !important; box-shadow: none !important; text-shadow: none !important; transition: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .q-pick.active { background: #0a84ff; border-color: #64b5ff; color: #fff; }
     </style>
 </head>
 <body>
@@ -557,6 +559,14 @@
 
     <div id="settings-panel">
         <h3>⚙️ MANUAL ZONE & COCKPIT SETTINGS</h3>
+        <div class="setting-row">
+            <label>Graphics Quality (change karne par game reload hoga):</label>
+            <div class="toggle-group">
+                <button class="toggle-btn q-pick" data-q="low">Low (old tablet)</button>
+                <button class="toggle-btn q-pick" data-q="med">Medium</button>
+                <button class="toggle-btn q-pick" data-q="high">High</button>
+            </div>
+        </div>
         <div class="setting-row">
             <label>Select Drive Area (Manual Mode):</label>
             <div class="toggle-group" style="margin-top:4px;">
@@ -917,22 +927,36 @@
     scene.fog = fog;
     scene.autoUpdate = false;
 
-    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 180);
+    let QUALITY = null;
+    try { QUALITY = localStorage.getItem('tharQ'); } catch (e) {}
+    if (QUALITY !== 'low' && QUALITY !== 'med' && QUALITY !== 'high') {
+        QUALITY = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? 'low' : 'high';
+    }
+    const Q_LOW = QUALITY === 'low', Q_HIGH = QUALITY === 'high';
+    if (Q_LOW) document.body.classList.add('lowfx');
+    const MatCls = Q_HIGH ? THREE.MeshStandardMaterial : THREE.MeshLambertMaterial;
+    function mkMat(p) {
+        if (!Q_HIGH) { p = Object.assign({}, p); delete p.roughness; delete p.metalness; }
+        return new MatCls(p);
+    }
+    const SC_N = Q_LOW ? 6 : 12, SC_SP = Q_LOW ? 52 : 26;
+    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, Q_LOW ? 150 : 180);
     camera.position.set(2.5, 1.78, 0);
 
     const mirrorCamera = new THREE.PerspectiveCamera(56, 124 / 72, 0.1, 100);
     const mirrorCanvas = document.getElementById('mirror-canvas');
-    const mirrorRenderer = new THREE.WebGLRenderer({ canvas: mirrorCanvas, antialias: false, powerPreference: "high-performance" });
-    mirrorRenderer.setSize(124, 72);
+    const rOpts = { antialias: false, alpha: false, stencil: false, powerPreference: "high-performance" };
+    const mirrorRenderer = Q_LOW ? null : new THREE.WebGLRenderer(Object.assign({ canvas: mirrorCanvas }, rOpts));
+    if (mirrorRenderer) mirrorRenderer.setSize(124, 72);
 
     const centerMirrorCamera = new THREE.PerspectiveCamera(52, 150 / 42, 0.1, 100);
     const centerMirrorCanvas = document.getElementById('center-mirror-canvas');
-    const centerMirrorRenderer = new THREE.WebGLRenderer({ canvas: centerMirrorCanvas, antialias: false, powerPreference: "high-performance" });
-    centerMirrorRenderer.setSize(150, 42);
+    const centerMirrorRenderer = Q_LOW ? null : new THREE.WebGLRenderer(Object.assign({ canvas: centerMirrorCanvas }, rOpts));
+    if (centerMirrorRenderer) centerMirrorRenderer.setSize(150, 42);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer(rOpts);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Q_LOW ? 0.75 : Math.min(window.devicePixelRatio, Q_HIGH ? 1.5 : 1));
     container.insertBefore(renderer.domElement, container.firstChild);
 
     const ambientLight = new THREE.AmbientLight(0xd8cfc0, 0.92);
@@ -952,12 +976,13 @@
     const headLightR = new THREE.SpotLight(0xfff8e7, 2.2, 65, Math.PI / 5, 0.45, 1);
     headLightR.position.set(3.2, 1.2, -1.8);
     headLightR.target.position.set(3.2, 0.3, -30);
-    scene.add(headLightL, headLightL.target, headLightR, headLightR.target);
+    scene.add(headLightL, headLightL.target);
+    if (!Q_LOW) scene.add(headLightR, headLightR.target);
 
     const deflectorLight = new THREE.SpotLight(0xffaa2b, 0, 52, Math.PI / 3.2, 0.65, 1);
     deflectorLight.position.set(2.5, 2.05, -1.2);
     deflectorLight.target.position.set(2.5, 0.2, -22);
-    scene.add(deflectorLight, deflectorLight.target);
+    if (!Q_LOW) scene.add(deflectorLight, deflectorLight.target);
 
     const tailLightGlow = new THREE.PointLight(0xff1744, 1.8, 14);
     tailLightGlow.position.set(2.5, 1.1, 1.5);
@@ -1013,12 +1038,12 @@
     const tharGroup = new THREE.Group();
     const hoodMesh = new THREE.Mesh(
         new THREE.BoxGeometry(1.75, 0.24, 2.2),
-        new THREE.MeshStandardMaterial({ color: 0x1b1c20, roughness: 0.35, metalness: 0.6 })
+        mkMat({ color: 0x1b1c20, roughness: 0.35, metalness: 0.6 })
     );
     hoodMesh.position.set(0, 1.12, -1.8);
     tharGroup.add(hoodMesh);
 
-    const fenderMat = new THREE.MeshStandardMaterial({ color: 0x0d0d10, roughness: 0.8 });
+    const fenderMat = mkMat({ color: 0x0d0d10, roughness: 0.8 });
     const leftFender = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 1.9), fenderMat);
     leftFender.position.set(-0.98, 1.08, -1.8);
     const rightFender = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 1.9), fenderMat);
@@ -1027,18 +1052,18 @@
     scene.add(tharGroup);
 
     const roadSegments = [];
-    const segCount = 55;
+    const segCount = Q_LOW ? 28 : 55;
     const segLen = 6;
-    const roadSegMat = new THREE.MeshStandardMaterial({ color: 0x252629, roughness: 0.92 });
-    const kerbMat = new THREE.MeshStandardMaterial({ color: 0x524f4a });
+    const roadSegMat = mkMat({ color: 0x252629, roughness: 0.92 });
+    const kerbMat = mkMat({ color: 0x524f4a });
     const lineMat = new THREE.MeshBasicMaterial({ color: 0xd0d0d0 });
 
     const asphaltGeo = new THREE.PlaneGeometry(18, segLen + 0.2);
     const divGeo = new THREE.BoxGeometry(0.45, 0.45, segLen - 0.3);
     const dashGeo = new THREE.PlaneGeometry(0.18, 3.4);
     const kerbGeo = new THREE.BoxGeometry(1.1, 0.7, segLen + 0.2);
-    const divYellowMat = new THREE.MeshStandardMaterial({ color: 0xfbc02d });
-    const divBlackMat = new THREE.MeshStandardMaterial({ color: 0x1c1c1e });
+    const divYellowMat = mkMat({ color: 0xfbc02d });
+    const divBlackMat = mkMat({ color: 0x1c1c1e });
 
     for (let i = 0; i < segCount; i++) {
         const segGroup = new THREE.Group();
@@ -1071,11 +1096,11 @@
     }
 
     const roundaboutGroup = new THREE.Group();
-    const island = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 4.0, 0.65, 16), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 4.0, 0.65, 16), mkMat({ color: 0x2e7d32 }));
     island.position.y = 0.32;
-    const islandRim = new THREE.Mesh(new THREE.TorusGeometry(3.8, 0.22, 6, 16), new THREE.MeshStandardMaterial({ color: 0xfbc02d }));
+    const islandRim = new THREE.Mesh(new THREE.TorusGeometry(3.8, 0.22, 6, 16), mkMat({ color: 0xfbc02d }));
     islandRim.rotation.x = Math.PI / 2; islandRim.position.y = 0.3;
-    const monument = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.7, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0xd7ccc8 }));
+    const monument = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.7, 3.2, 8), mkMat({ color: 0xd7ccc8 }));
     monument.position.y = 1.9;
     const ringRoad = new THREE.Mesh(new THREE.RingGeometry(4.4, 10.5, 28), roadSegMat);
     ringRoad.rotation.x = -Math.PI / 2; ringRoad.position.y = 0.03;
@@ -1110,7 +1135,7 @@
     }
 
     const streetLightList = [];
-    const poleMat = new THREE.MeshStandardMaterial({ color: 0x3b3d45, metalness: 0.7, roughness: 0.4 });
+    const poleMat = mkMat({ color: 0x3b3d45, metalness: 0.7, roughness: 0.4 });
     const bulbOffMat = new THREE.MeshBasicMaterial({ color: 0x888888 });
     const bulbOnMat = new THREE.MeshBasicMaterial({ color: 0xffe082 });
     const groundGlowMat = new THREE.MeshBasicMaterial({ color: 0xffb300, transparent: true, opacity: 0.0 });
@@ -1144,21 +1169,21 @@
     }
 
     const sceneryList = [];
-    const farmMat = new THREE.MeshStandardMaterial({ color: 0x388e3c, roughness: 0.9 });
-    const cropMat = new THREE.MeshStandardMaterial({ color: 0x7cb342 });
-    const mountainMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.95 });
-    const snowMat = new THREE.MeshStandardMaterial({ color: 0xeceff1 });
+    const farmMat = mkMat({ color: 0x388e3c, roughness: 0.9 });
+    const cropMat = mkMat({ color: 0x7cb342 });
+    const mountainMat = mkMat({ color: 0x5d4037, roughness: 0.95 });
+    const snowMat = mkMat({ color: 0xeceff1 });
     const fieldGeo = new THREE.PlaneGeometry(24, 22);
     const trunkGeo = new THREE.CylinderGeometry(0.25, 0.35, 2.4, 5);
     const crownGeo = new THREE.DodecahedronGeometry(1.7);
     const peakGeo = new THREE.ConeGeometry(14, 22, 5);
     const snowGeo = new THREE.ConeGeometry(4.5, 6.5, 5);
     const shopGeo = new THREE.BoxGeometry(5, 4.5, 14);
-    const shopMat = new THREE.MeshStandardMaterial({ color: 0xd84315 });
+    const shopMat = mkMat({ color: 0xd84315 });
 
     function createSceneryBatch() {
-        for (let i = 0; i < 12; i++) {
-            const z = -i * 26 - 20;
+        for (let i = 0; i < SC_N; i++) {
+            const z = -i * SC_SP - 20;
             [-1, 1].forEach(side => {
                 const prop = new THREE.Group();
                 const farmGroup = new THREE.Group();
@@ -1203,10 +1228,10 @@
     const cartList = [];
 
     const paintMatCache = {};
-    const sharedGlassMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.42, roughness: 0.1 });
-    const sharedDarkMat = new THREE.MeshStandardMaterial({ color: 0x16171a, roughness: 0.8 });
+    const sharedGlassMat = mkMat({ color: 0x88ccff, transparent: true, opacity: 0.42, roughness: 0.1 });
+    const sharedDarkMat = mkMat({ color: 0x16171a, roughness: 0.8 });
     function getPaintMat(color) {
-        return paintMatCache[color] || (paintMatCache[color] = new THREE.MeshStandardMaterial({ color, roughness: 0.35, metalness: 0.3 }));
+        return paintMatCache[color] || (paintMatCache[color] = mkMat({ color, roughness: 0.35, metalness: 0.3 }));
     }
 
     function buildDetailedVehicle(type, isOncoming) {
@@ -1286,7 +1311,7 @@
     bumpTex.wrapS = THREE.RepeatWrapping;
     bumpTex.repeat.set(3, 1);
     const bumpGeo = new THREE.BoxGeometry(18, 0.16, 1.6);
-    const bumpMat = new THREE.MeshStandardMaterial({ map: bumpTex, roughness: 0.8 });
+    const bumpMat = mkMat({ map: bumpTex, roughness: 0.8 });
     const sigPoleGeo = new THREE.CylinderGeometry(0.1, 0.12, 5, 6);
     const sigArmGeo = new THREE.BoxGeometry(5.5, 0.1, 0.1);
     const sigTimerGeo = new THREE.PlaneGeometry(0.8, 0.5);
@@ -1294,7 +1319,7 @@
     const sigHeadGeo = new THREE.BoxGeometry(0.5, 1.2, 0.4);
     const sigLampGeo = new THREE.SphereGeometry(0.19, 8, 6);
     const sigLineGeo = new THREE.PlaneGeometry(9, 0.5);
-    const sigDarkMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.6 });
+    const sigDarkMat = mkMat({ color: 0x18181b, roughness: 0.6 });
     const sigLineMat = new THREE.MeshBasicMaterial({ color: 0xe8e8e8 });
 
     function applySignalState(s) {
@@ -1355,7 +1380,7 @@
     }
 
     function initWorldObjects() {
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < (Q_LOW ? 4 : 6); i++) {
             const type = i % 2 === 0 ? 'auto' : 'car';
             const v = buildDetailedVehicle(type, false);
             const lane = forwardLanes[i % 2];
@@ -1364,7 +1389,7 @@
             trafficList.push({ mesh: v.group, width: v.width, length: v.length, speed: v.speed, isOncoming: false, laneOffset: lane, wheels: v.wheels, curSpeed: v.speed });
         }
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < (Q_LOW ? 3 : 5); i++) {
             const v = buildDetailedVehicle('car', true);
             const lane = oncomingLanes[i % 2];
             v.group.position.set(lane, 0, -i * 60 - 50);
@@ -1437,7 +1462,7 @@
 
         for (let i = 0; i < 3; i++) {
             const cart = new THREE.Group();
-            const cartBed = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.35, 2.2), new THREE.MeshStandardMaterial({ color: 0x6d4c41 }));
+            const cartBed = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.35, 2.2), mkMat({ color: 0x6d4c41 }));
             cartBed.position.y = 0.85;
             cart.add(cartBed);
             cart.visible = false;
@@ -1449,7 +1474,7 @@
     }
     initWorldObjects();
 
-    const pCount = 350;
+    const pCount = Q_LOW ? 100 : 350;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
     for (let i = 0; i < pCount * 3; i += 3) {
@@ -1591,6 +1616,14 @@
         settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
     });
     document.getElementById('close-settings').addEventListener('click', () => settingsPanel.style.display = 'none');
+    document.querySelectorAll('.q-pick').forEach(b => {
+        b.classList.toggle('active', b.dataset.q === QUALITY);
+        b.addEventListener('click', () => {
+            if (b.dataset.q === QUALITY) return;
+            try { localStorage.setItem('tharQ', b.dataset.q); } catch (e) {}
+            location.reload();
+        });
+    });
 
     const wheelWrapper = document.getElementById('steering-wrapper');
     const arrowControls = document.getElementById('arrow-steer-controls');
@@ -1777,10 +1810,11 @@
     const MOVE = 1.35;
     const portraitQuery = window.matchMedia('(orientation: portrait)');
     const hudCache = {};
+    let mirrorFrame = 0;
     let lastTime = 0, accumulator = 0, mirrorTick = 0, renderBudget = 6, viewX = 0;
     let frameAvg = 16.7, frameCount = 0;
     let pixelRatio = renderer.getPixelRatio();
-    const MIN_PIXEL_RATIO = 0.75;
+    const MIN_PIXEL_RATIO = Q_LOW ? 0.5 : 0.75;
 
     function changed(key, value) {
         if (hudCache[key] === value) return false;
@@ -1853,7 +1887,7 @@
         for (let i = 0; i < sceneryList.length; i++) {
             const s = sceneryList[i];
             s.prop.position.z += move;
-            if (s.prop.position.z > 30) s.prop.position.z -= 12 * 26;
+            if (s.prop.position.z > 30) s.prop.position.z -= SC_N * SC_SP;
             s.prop.position.x = getRoadCurveX(s.prop.position.z);
         }
 
@@ -2063,6 +2097,7 @@
         scene.updateMatrixWorld();
         renderer.render(scene, camera);
 
+        if (!mirrorRenderer || ++mirrorFrame % (Q_HIGH ? 1 : 3)) return;
         mirrorTick ^= 1;
         if (mirrorTick) {
             mirrorCamera.position.set(viewX + 1.05, 1.52 + suspensionY, -0.6);
@@ -2091,13 +2126,13 @@
             return;
         }
 
-        const delta = Math.min(now - lastTime, 100);
+        const delta = Math.min(now - lastTime, 90);
         lastTime = now;
         let steps = 0;
 
         if (gameActive) {
             accumulator += delta;
-            while (accumulator >= STEP_MS && steps < 3 && gameActive) {
+            while (accumulator >= STEP_MS && steps < 5 && gameActive) {
                 stepGame();
                 accumulator -= STEP_MS;
                 steps++;
