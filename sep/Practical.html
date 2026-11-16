@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -231,11 +232,11 @@
       </div>
     </div>
 
-    <!-- Educational Games Dashboard Card -->
+    <!-- Games Dashboard Card (Direct Open, No Extra Step) -->
     <div class="kids-card games-card" onclick="openGamesDashboard()" style="border-color:#ffe3a0;background:linear-gradient(180deg,#fff,#fffbf0)">
       <div class="character-container">
         <div class="floating-file" style="background:#f59e0b;box-shadow:0 8px 18px rgba(245,158,11,0.4)">
-          <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-4c-.83 0-1.5-.67-1.5-1.5S17.67 8 18.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-4c-.83 0-1.5-.67-1.5-1.5S17.67 8 18.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5 z"/></svg>
         </div>
         <svg class="mascot" viewBox="0 0 120 120" aria-hidden="true">
           <ellipse cx="60" cy="112" rx="30" ry="5" fill="#000" opacity=".12"/>
@@ -248,7 +249,7 @@
         </svg>
       </div>
       <span class="tag-btn" style="background:#fef3c7;color:#b45309">🎮 Games</span>
-      <h2 class="kids-title">Educational Games</h2>
+      <h2 class="kids-title">Games Dashboard</h2>
       <div class="click-text" style="color:#d97706">✨ Click to Play 🕹️ ✨</div>
       <div class="card-footer" style="border-top-color:#fde68a">
         <span class="class-label">Interactive Tools</span>
@@ -405,10 +406,10 @@
   }
 
   function openGamesDashboard() {
-    const gamesUrl = "https://2025akshat-lang.github.io/Akshat/games/gamedashboard.html";
+    const gamesUrl = "https://bit.ly/4920OND";
     document.getElementById('noteFrame').src = gamesUrl;
     document.getElementById('openTabLink').href = gamesUrl;
-    document.getElementById('notesTitle').innerText = 'Educational Games Dashboard';
+    document.getElementById('notesTitle').innerText = 'Games Dashboard';
     document.getElementById('notesList').style.display = 'none';
     document.getElementById('noteFrameWrap').style.display = 'block';
     document.getElementById('albumsGrid').style.display = 'none';
@@ -420,18 +421,12 @@
   }
 
   function notesBack() {
-    if (noteOpen) {
-      document.getElementById('noteFrame').src = 'about:blank';
-      document.getElementById('noteFrameWrap').style.display = 'none';
-      document.getElementById('notesList').style.display = 'grid';
-      document.getElementById('notesTitle').innerText = 'Doodle Notes';
-      noteOpen = false;
-      document.body.classList.remove('note-open');
-    } else {
-      document.getElementById('notesView').style.display = 'none';
-      document.getElementById('albumsGrid').style.display = 'grid';
-      setBg('home');
-    }
+    document.getElementById('noteFrame').src = 'about:blank';
+    document.getElementById('notesView').style.display = 'none';
+    document.getElementById('albumsGrid').style.display = 'grid';
+    noteOpen = false;
+    document.body.classList.remove('note-open');
+    setBg('home');
   }
 
   renderAlbums();
