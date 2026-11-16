@@ -1,0 +1,2258 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Delhi to Hills: Thar 4x4</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #111; overscroll-behavior: none; touch-action: manipulation; }
+
+        #rotate-warning {
+            display: none; position: fixed; inset: 0; background: #0d0d10; color: #fff;
+            z-index: 9999; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 24px;
+        }
+        #rotate-warning .phone-icon { font-size: 48px; margin-bottom: 16px; animation: rotatePhone 1.8s infinite ease-in-out; }
+        @keyframes rotatePhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } }
+        @media screen and (orientation: portrait) { #rotate-warning { display: flex; } }
+
+        #game-container { position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; }
+
+        #smog-vignette {
+            position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(circle, rgba(168,155,130,0.04) 45%, rgba(75,70,60,0.5) 100%);
+            z-index: 4; transition: background 0.6s, opacity 0.6s;
+        }
+
+        #interior-glow {
+            position: absolute; inset: 0; pointer-events: none; z-index: 9;
+            background: radial-gradient(circle at 50% 80%, rgba(255, 175, 75, 0.16) 0%, rgba(255, 130, 30, 0.05) 55%, transparent 80%);
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        #interior-glow.active { opacity: 1; }
+
+        #windshield-fx {
+            position: absolute; inset: 0; pointer-events: none; z-index: 7; overflow: hidden;
+        }
+        .water-drop {
+            position: absolute; width: 6px; height: 9px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(135,206,250,0.45));
+            box-shadow: 0 1px 3px rgba(0,150,255,0.4);
+            animation: dropSlide 1.8s ease-in forwards;
+        }
+        @keyframes dropSlide {
+            0% { transform: translateY(0) scale(1); opacity: 0.95; }
+            100% { transform: translateY(65px) scale(0.7); opacity: 0; }
+        }
+        .wiper-blade {
+            position: absolute; bottom: 33%; width: 220px; height: 8px;
+            background: linear-gradient(90deg, #111, #2c2d33, #09090b);
+            border-radius: 4px; transform-origin: left center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.7);
+            transform: rotate(0deg);
+            transition: transform 0.05s linear;
+        }
+        #wiper-left { left: 24%; }
+        #wiper-right { left: 52%; }
+
+        #top-bar {
+            position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 10px; z-index: 30;
+            background: rgba(16, 17, 20, 0.88); border: 1px solid #3a3a42;
+            padding: 4px 12px; border-radius: 20px; color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+        .hud-item { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+        .hud-label { color: #999; font-size: 9.5px; font-weight: 600; }
+        .hud-val { font-weight: 800; font-size: 11.5px; }
+        #lives-val { font-size: 12px; letter-spacing: 1px; }
+
+        #settings-btn {
+            background: #2c2c34; border: 1px solid #555; color: #fff;
+            width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 13px;
+        }
+
+        #top-fuel-widget {
+            position: absolute; top: 10px; right: 7.5%; z-index: 32;
+            background: rgba(15, 17, 22, 0.9); border: 1.5px solid #3c404d;
+            border-radius: 12px; padding: 5px 10px; color: #fff;
+            display: flex; flex-direction: column; gap: 3px; min-width: 116px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.75); cursor: pointer;
+        }
+        .tf-row { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: 800; }
+        .tf-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 4px; overflow: hidden; border: 1px solid #444; }
+        #fuel-fill { width: 85%; height: 100%; background: #32d74b; transition: width 0.2s, background 0.2s; }
+        .fuel-low-blink { animation: blinkFuel 0.5s infinite alternate; border-color: #ff3b30 !important; }
+        @keyframes blinkFuel {
+            from { transform: scale(1); box-shadow: 0 0 6px rgba(255,59,48,0.4); }
+            to { transform: scale(1.06); box-shadow: 0 0 16px rgba(255,59,48,0.95); }
+        }
+
+        #fill-gas-popup {
+            display: none; position: absolute; top: 54px; right: 7.5%; z-index: 45;
+            background: linear-gradient(135deg, #ff3b30, #d32f2f); color: #fff;
+            border: 2px solid #ffd60a; border-radius: 10px; padding: 7px 14px;
+            font-size: 12px; font-weight: 900; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 59, 48, 0.75);
+            animation: pulseGasBtn 0.7s infinite alternate;
+        }
+        @keyframes pulseGasBtn {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-2px) scale(1.05); }
+        }
+
+        #zone-banner {
+            display: none; position: absolute; top: 48px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(90deg, rgba(16,24,32,0.95), rgba(28,48,38,0.95));
+            border: 1.5px solid #32d74b; color: #fff; padding: 7px 20px;
+            border-radius: 24px; font-size: 13px; font-weight: 900; letter-spacing: 0.5px;
+            z-index: 42; box-shadow: 0 6px 22px rgba(0,0,0,0.8); text-align: center;
+        }
+        #zone-sub { display: block; font-size: 10px; color: #a5d6a7; font-weight: 600; margin-top: 1px; }
+
+        #settings-panel {
+            display: none; position: absolute; top: 44px; left: 50%; transform: translateX(-50%);
+            width: 320px; background: rgba(18, 19, 23, 0.97);
+            border: 1px solid #444; border-radius: 12px; padding: 14px;
+            color: #fff; z-index: 60; box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+            max-height: 85vh; overflow-y: auto;
+        }
+        #settings-panel h3 { font-size: 13px; color: #ff9f0a; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .setting-row { margin-bottom: 11px; font-size: 12px; }
+        .setting-row label { display: block; margin-bottom: 4px; color: #ccc; }
+        .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; }
+        .toggle-btn {
+            flex: 1; min-width: 85px; padding: 6px; background: #26262e; border: 1px solid #444;
+            color: #aaa; border-radius: 6px; cursor: pointer; font-size: 10.5px; font-weight: bold;
+            text-align: center;
+        }
+        .toggle-btn.active { background: #d32f2f; color: #fff; border-color: #ff6659; }
+        input[type="range"] { width: 100%; accent-color: #ff9f0a; }
+
+        .pillar-left {
+            position: absolute; top: 0; left: 0; width: 6%; height: 68%;
+            background: linear-gradient(90deg, #0b0b0d 65%, #1f1f24 100%);
+            transform: skewX(-10deg); transform-origin: top left; z-index: 8; pointer-events: none;
+        }
+        .pillar-right {
+            position: absolute; top: 0; right: 0; width: 6%; height: 68%;
+            background: linear-gradient(-90deg, #0b0b0d 65%, #1f1f24 100%);
+            transform: skewX(10deg); transform-origin: top right; z-index: 8; pointer-events: none;
+        }
+        .roof-liner {
+            position: absolute; top: 0; left: 0; width: 100%; height: 12px;
+            background: #121215; z-index: 8; pointer-events: none;
+        }
+
+        #center-mirror-assembly {
+            position: absolute; top: 38px; left: 50%; transform: translateX(-50%);
+            z-index: 15; display: flex; flex-direction: column; align-items: center;
+            pointer-events: none;
+        }
+        #center-mirror {
+            width: 150px; height: 42px; background: #141418; border: 3px solid #09090b;
+            border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.85);
+            position: relative;
+        }
+        #center-mirror-canvas { width: 100%; height: 100%; display: block; transform: scaleX(-1); }
+
+        #hanging-charm {
+            transform-origin: top center;
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: -2px;
+        }
+        .garland-loop {
+            width: 18px; height: 24px;
+            border: 3px dotted #8d4925; border-top: none;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .id-card-tag {
+            width: 22px; height: 28px; background: linear-gradient(135deg, #fff8e7, #e6d5b8);
+            border: 1px solid #b8860b; border-radius: 3px; margin-top: -2px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.7);
+        }
+        .id-stripe { width: 100%; height: 5px; background: #d32f2f; margin-bottom: 3px; }
+        .id-symbol { font-size: 9px; color: #b71c1c; font-weight: bold; line-height: 1; }
+
+        #side-mirror {
+            position: absolute; bottom: 34%; right: 3%;
+            width: 124px; height: 72px;
+            background: #1b1a18; border: 5px solid #121214;
+            border-radius: 26px 14px 14px 14px;
+            overflow: hidden; z-index: 15;
+            box-shadow: 4px 8px 20px rgba(0,0,0,0.85);
+            transform: perspective(320px) rotateY(-16deg);
+        }
+        #mirror-canvas { width: 100%; height: 100%; display: block; transform: scaleX(-1); }
+        #mirror-label {
+            position: absolute; bottom: 2px; left: 8px; font-size: 8px;
+            color: rgba(255,255,255,0.65); pointer-events: none;
+        }
+
+        #dashboard-buddha {
+            position: absolute; bottom: 32.5%; left: 50%; transform: translateX(-50%);
+            z-index: 16; display: flex; flex-direction: column; align-items: center;
+            pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.9));
+        }
+        .buddha-stage { position: relative; display: flex; align-items: flex-end; justify-content: center; }
+        .buddha-halo {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.42) 0%, rgba(255, 180, 0, 0.12) 68%, transparent 100%);
+            border: 1.5px solid rgba(255, 215, 0, 0.65);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.35);
+        }
+        .buddha-figure { font-size: 22px; line-height: 1; filter: sepia(1) saturate(4) hue-rotate(8deg) brightness(1.15); }
+        .buddha-pedestal {
+            width: 56px; height: 8px;
+            background: linear-gradient(90deg, #3e2723, #8d6e63, #3e2723);
+            border: 1px solid #ffd54f; border-radius: 4px; margin-top: -3px;
+        }
+        .incense-holder { position: absolute; right: -10px; bottom: 2px; width: 14px; height: 28px; pointer-events: none; }
+        .incense-stick {
+            position: absolute; bottom: 0; left: 3px; width: 2px; height: 22px;
+            background: linear-gradient(180deg, #4e342e 0%, #8d6e63 100%);
+            transform: rotate(14deg); transform-origin: bottom center; border-radius: 1px;
+        }
+        .incense-ember {
+            position: absolute; top: -2px; left: -1px; width: 4px; height: 4px; border-radius: 50%;
+            background: #ff5722; box-shadow: 0 0 6px #ff3d00, 0 0 10px #ffab00;
+            animation: emberPulse 1.1s infinite alternate;
+        }
+        @keyframes emberPulse { from { transform: scale(0.85); opacity: 0.75; } to { transform: scale(1.25); opacity: 1; } }
+        .smoke-wisp {
+            position: absolute; top: -6px; left: 5px; width: 9px; height: 9px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(240, 244, 248, 0.85) 0%, rgba(200, 210, 220, 0) 75%);
+            filter: blur(1.6px); animation: riseSmoke 3.6s infinite ease-out;
+        }
+        .smoke-wisp:nth-child(2) { animation-delay: 0.6s; }
+        .smoke-wisp:nth-child(3) { animation-delay: 1.2s; }
+        .smoke-wisp:nth-child(4) { animation-delay: 1.8s; }
+        .smoke-wisp:nth-child(5) { animation-delay: 2.4s; }
+        .smoke-wisp:nth-child(6) { animation-delay: 3.0s; }
+        @keyframes riseSmoke {
+            0% { transform: translate(0, 0) scale(0.6); opacity: 0.9; }
+            30% { transform: translate(-7px, -26px) scale(1.5); opacity: 0.7; }
+            65% { transform: translate(8px, -58px) scale(2.6); opacity: 0.4; }
+            100% { transform: translate(-4px, -92px) scale(4.2); opacity: 0; }
+        }
+
+        #thar-dashboard {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 33%;
+            background: linear-gradient(180deg, #232429 0%, #141518 45%, #0c0c0e 100%);
+            border-top: 3px solid #35363d;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.9);
+            z-index: 12; display: flex; justify-content: space-between; align-items: stretch;
+            padding: 8px 4% 4px 4%;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        #thar-dashboard.dash-lit {
+            border-top-color: #00e5ff;
+            box-shadow: 0 -8px 25px rgba(0, 229, 255, 0.22);
+        }
+        #thar-dashboard.dash-lit .instrument-hood {
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.45), inset 0 0 10px rgba(0, 229, 255, 0.2);
+            border-color: #00e5ff;
+        }
+        #thar-dashboard.dash-lit .climate-strip {
+            border-color: #ff9f0a;
+            box-shadow: 0 0 8px rgba(255, 159, 10, 0.35);
+        }
+
+        .dash-left {
+            width: 28%; display: flex; flex-direction: column; justify-content: space-between;
+            padding-right: 10px; border-right: 1px solid #2a2b30;
+        }
+        .dash-left-top { display: flex; align-items: center; justify-content: space-between; }
+        .ac-vent {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: radial-gradient(circle, #0d0d10 40%, #2a2a30 75%, #484852 100%);
+            border: 3px solid #3c3d45; position: relative;
+            box-shadow: inset 0 0 8px #000, 0 2px 5px rgba(0,0,0,0.7);
+        }
+        .ac-vent::before, .ac-vent::after { content: ''; position: absolute; background: #222; }
+        .ac-vent::before { top: 46%; left: 10%; width: 80%; height: 3px; }
+        .ac-vent::after { left: 46%; top: 10%; width: 3px; height: 80%; }
+
+        .grab-handle {
+            flex: 1; margin-left: 10px; height: 18px;
+            background: linear-gradient(180deg, #7c4a32 0%, #4e2b1b 100%);
+            border: 2px solid #222; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 2px; font-weight: bold;
+        }
+
+        #glovebox {
+            width: 100%; height: 30%; background: #191a1e;
+            border: 1.5px solid #2e3036; border-radius: 5px;
+            cursor: pointer; pointer-events: auto;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: transform 0.25s ease;
+            margin-bottom: 66px;
+        }
+        .glove-latch { width: 22px; height: 7px; background: #363840; border-radius: 3px; border: 1px solid #555; }
+        #glove-content { font-size: 8px; color: #888; }
+        #glovebox.open { transform: translateY(4px); border-color: #ff9f0a; }
+
+        .dash-center {
+            width: 36%; display: flex; flex-direction: column; align-items: center;
+            justify-content: space-between; padding: 0 8px;
+        }
+        .infotainment-bezel {
+            width: 100%; background: linear-gradient(180deg, #6e3f2a 0%, #462618 100%);
+            padding: 3px; border-radius: 8px; pointer-events: auto;
+        }
+        .music-screen {
+            background: #0b0e14; border-radius: 5px; padding: 3px 8px;
+            display: flex; align-items: center; justify-content: space-between;
+            color: #fff; border: 1px solid #222;
+        }
+        .track-title { font-size: 9.5px; font-weight: bold; color: #00e5ff; }
+        .track-sub { font-size: 7.5px; color: #aaa; }
+        .music-btns { display: flex; gap: 4px; }
+        .m-btn {
+            background: #1f242d; border: 1px solid #444; color: #fff;
+            padding: 2px 6px; border-radius: 4px; font-size: 9px; cursor: pointer;
+        }
+
+        .light-switch-panel {
+            width: 100%; background: #111216; border: 1px solid #32343d;
+            border-radius: 6px; padding: 3px 4px;
+            display: flex; align-items: center; justify-content: space-between; gap: 2.5px;
+            pointer-events: auto;
+        }
+        .lt-btn {
+            flex: 1; padding: 3px 1px; border-radius: 4px;
+            background: #1d1f26; border: 1px solid #3a3d47;
+            color: #777; font-size: 7px; font-weight: 800;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.15s ease; line-height: 1.1;
+        }
+        .lt-led {
+            width: 10px; height: 2.5px; border-radius: 2px;
+            background: #333; margin-top: 2px; transition: background 0.15s, box-shadow 0.15s;
+        }
+        .lt-btn.on { color: #fff; background: #262932; border-color: #666; }
+        .lt-btn.on[data-light="head"] .lt-led { background: #00e5ff; box-shadow: 0 0 6px #00e5ff; }
+        .lt-btn.on[data-light="tail"] .lt-led { background: #ff3b30; box-shadow: 0 0 6px #ff3b30; }
+        .lt-btn.on[data-light="defl"] .lt-led { background: #ff9f0a; box-shadow: 0 0 6px #ff9f0a; }
+        .lt-btn.on[data-light="int"] .lt-led  { background: #ffd60a; box-shadow: 0 0 6px #ffd60a; }
+        .lt-btn.on[data-light="dash"] .lt-led { background: #32d74b; box-shadow: 0 0 6px #32d74b; }
+        .lt-btn.on[data-light="wiper"] .lt-led { background: #64d2ff; box-shadow: 0 0 6px #64d2ff; }
+        .lt-btn:active[data-light="spray"] .lt-led { background: #0a84ff; box-shadow: 0 0 8px #0a84ff; }
+
+        .climate-strip {
+            width: 96%; height: 20px; background: #141519; border: 1px solid #2f3138;
+            border-radius: 5px; display: flex; align-items: center; justify-content: space-around;
+            font-size: 8px; color: #ccc; transition: all 0.3s;
+        }
+        .ac-badge { background: #007aff; color: #fff; padding: 1px 5px; border-radius: 3px; font-weight: bold; }
+
+        .dash-right {
+            width: 34%; display: flex; flex-direction: column; align-items: flex-end;
+            justify-content: flex-start; padding-left: 8px; border-left: 1px solid #2a2b30;
+        }
+        .driver-cluster-row { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+        .instrument-hood {
+            flex: 1; margin-right: 6px; height: 64px;
+            background: #080a0f; border: 2.5px solid #2c2d35; border-radius: 22px 22px 8px 8px;
+            display: flex; align-items: center; justify-content: space-around; padding: 0 4px;
+            pointer-events: auto; transition: all 0.3s;
+        }
+        .dial {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 2px solid #ff3b30; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; background: #0e121a;
+        }
+        .dial-val { font-size: 12px; font-weight: 900; color: #fff; line-height: 1; }
+        .dial-lbl { font-size: 5.5px; color: #ff453a; margin-top: 2px; }
+
+        .mid-cluster {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px; width: 54px;
+        }
+        .ind-row { display: flex; align-items: center; gap: 6px; }
+        .ind-arrow {
+            font-size: 11px; font-weight: 900; color: #223826;
+            cursor: pointer; padding: 0 2px; border-radius: 3px;
+            transition: color 0.08s, text-shadow 0.08s;
+        }
+        .ind-arrow.blink-on {
+            color: #32d74b;
+            text-shadow: 0 0 8px #32d74b, 0 0 14px #32d74b;
+        }
+        .accel-tag { font-size: 7.5px; color: #00e5ff; font-weight: 800; letter-spacing: 0.3px; }
+
+        #steering-wrapper {
+            position: absolute; bottom: -22px; right: 5.5%;
+            width: 158px; height: 158px; z-index: 28;
+            touch-action: none;
+        }
+        #steering-wheel {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 15px solid #16171a;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.95), inset 0 0 8px #3a3a42;
+            position: relative; cursor: grab;
+            background: radial-gradient(circle, transparent 56%, rgba(255,255,255,0.06) 60%);
+        }
+        #steering-wheel::before {
+            content: ''; position: absolute; top: -15px; left: 46%;
+            width: 8%; height: 15px; background: #ff3b30;
+        }
+        .spoke-horiz {
+            position: absolute; top: 44%; left: 0; width: 100%; height: 14px;
+            background: linear-gradient(180deg, #25262b, #141518);
+        }
+        .spoke-vert {
+            position: absolute; bottom: 0; left: 42%; width: 16%; height: 46%;
+            background: linear-gradient(90deg, #5e3523, #824b33, #5e3523);
+        }
+        #horn-pad {
+            position: absolute; top: 28%; left: 28%; width: 44%; height: 44%;
+            border-radius: 50%; background: radial-gradient(circle, #26272d, #111215);
+            border: 2px solid #555; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: #ff3b30; font-size: 9.5px; font-weight: 900; letter-spacing: 1px;
+            cursor: pointer; z-index: 3; touch-action: none;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.8);
+            transition: transform 0.08s, border-color 0.08s;
+        }
+        #horn-pad span { font-size: 6.5px; color: #888; font-weight: normal; margin-top: 1px; }
+        #horn-pad.honking { transform: scale(0.92); border-color: #ff9f0a; background: #2b1414; }
+
+        #arrow-steer-controls {
+            display: none; position: absolute; bottom: 16px; right: 7%;
+            gap: 10px; z-index: 28;
+        }
+        .ctrl-btn {
+            width: 50px; height: 46px; border-radius: 10px;
+            background: rgba(24, 25, 30, 0.9); border: 2px solid #484a54;
+            color: #fff; font-weight: 800; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; touch-action: manipulation;
+        }
+
+        #foot-pedals {
+            position: absolute; bottom: 8px; left: 3.5%;
+            display: flex; align-items: flex-end; gap: 12px; z-index: 32;
+        }
+        .pedal {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            cursor: pointer; touch-action: none;
+            background: linear-gradient(180deg, #32343b 0%, #18191d 100%);
+            border: 2px solid #555863; color: #ddd;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.9), inset 0 2px 3px rgba(255,255,255,0.15);
+            transition: transform 0.07s ease, border-color 0.07s;
+            padding-bottom: 6px;
+        }
+        #brake-pedal { width: 56px; height: 52px; border-radius: 8px 8px 12px 12px; border-bottom: 4px solid #ff453a; }
+        #accel-pedal { width: 46px; height: 74px; border-radius: 10px 10px 8px 8px; border-bottom: 4px solid #32d74b; }
+        .pedal-grooves {
+            width: 70%; height: 60%; margin-bottom: 4px;
+            background: repeating-linear-gradient(0deg, #111 0px, #111 4px, #444 4px, #444 7px);
+            border-radius: 3px; opacity: 0.8;
+        }
+        .pedal-lbl { font-size: 8px; font-weight: 900; letter-spacing: 0.5px; }
+        .pedal.pressed { transform: perspective(180px) rotateX(22deg) translateY(4px) scale(0.96); border-color: #fff; }
+
+        #toast-msg {
+            position: absolute; top: 88px; left: 50%; transform: translateX(-50%);
+            background: rgba(211, 47, 47, 0.92); color: #fff; padding: 6px 16px;
+            border-radius: 8px; font-size: 12px; font-weight: bold; z-index: 40;
+            display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+
+        #overlay-screen {
+            position: absolute; inset: 0; background: rgba(10, 10, 12, 0.92);
+            z-index: 80; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px;
+        }
+        #overlay-screen h1 { font-size: 24px; color: #ff453a; margin-bottom: 8px; }
+        #overlay-screen p { max-width: 600px; font-size: 12.5px; color: #ccc; line-height: 1.5; margin-bottom: 18px; }
+        #start-btn {
+            padding: 12px 34px; font-size: 15px; font-weight: bold;
+            background: #d32f2f; color: #fff; border: none; border-radius: 8px; cursor: pointer;
+        }
+        #smog-vignette.hit { background: radial-gradient(circle, rgba(255,0,0,0.25) 30%, rgba(180,0,0,0.7) 100%) !important; }
+        #steering-wheel, #hanging-charm, .wiper-blade { will-change: transform; }
+        .climate-strip { pointer-events: auto; gap: 4px; }
+        .climate-strip.ac-on { border-color: #4da3ff; box-shadow: 0 0 8px rgba(77, 163, 255, 0.45); }
+        .cl-btn { background: #1d1f26; border: 1px solid #3a3d47; color: #aaa; font-size: 8px; font-weight: 800; padding: 1px 6px; border-radius: 3px; cursor: pointer; }
+        .cl-btn.on { color: #fff; background: #007aff; border-color: #4da3ff; }
+        #fan-btn.on { background: #0a8a52; border-color: #32d74b; }
+        .ac-vent.air-on { animation: ventAir 0.6s infinite alternate; }
+        @keyframes ventAir {
+            from { box-shadow: inset 0 0 8px #000, 0 0 3px rgba(120, 220, 255, 0.3); }
+            to { box-shadow: inset 0 0 8px #000, 0 0 12px rgba(120, 220, 255, 0.95); }
+        }
+        .port-panel { display: flex; gap: 6px; margin-top: 3px; padding: 2px 6px; background: #101116; border: 1px solid #2f3138; border-radius: 6px; pointer-events: auto; align-self: flex-start; }
+        .port { display: flex; flex-direction: column; align-items: center; gap: 1px; cursor: pointer; }
+        .port i { font-style: normal; font-size: 5px; color: #888; font-weight: 800; }
+        .port-hole { display: block; position: relative; background: #050505; box-shadow: inset 0 0 0 1px #555; }
+        .port-hole.hdmi { width: 18px; height: 7px; clip-path: polygon(0 0, 100% 0, 100% 55%, 88% 100%, 12% 100%, 0 55%); }
+        .port-hole.aux { width: 9px; height: 9px; border-radius: 50%; }
+        .port-hole.usb { width: 14px; height: 7px; }
+        .port-hole.usb::after { content: ''; position: absolute; left: 2px; right: 2px; top: 3px; height: 2px; background: #8a8a90; }
+        .port-hole.usbc { width: 12px; height: 6px; border-radius: 4px; }
+        .port.active .port-hole { box-shadow: 0 0 6px #00e5ff, inset 0 0 0 1px #00e5ff; }
+        .port.active i { color: #00e5ff; }
+    </style>
+</head>
+<body>
+
+<div id="rotate-warning">
+    <div class="phone-icon">📱</div>
+    <h2>Please Rotate Your Phone</h2>
+    <p style="color:#aaa; margin-top:8px; font-size:14px;">Rotate your phone to <b>Landscape Mode</b> for the wide cockpit view and foot pedals.</p>
+</div>
+
+<div id="game-container">
+    <div id="smog-vignette"></div>
+    <div id="interior-glow"></div>
+
+    <div id="windshield-fx">
+        <div class="wiper-blade" id="wiper-left"></div>
+        <div class="wiper-blade" id="wiper-right"></div>
+    </div>
+
+    <div id="toast-msg">⚠️ ALERT!</div>
+    <div id="zone-banner">DELHI SMOG ZONE<span id="zone-sub">Manual Zone Mode Active</span></div>
+
+    <div id="top-bar">
+        <div class="hud-item">
+            <span class="hud-label">LIVES:</span>
+            <span id="lives-val">❤️❤️❤️</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">ZONE:</span>
+            <span class="hud-val" style="color:#64d2ff;" id="zone-hud">DELHI</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">AQI:</span>
+            <span class="hud-val" style="color:#ff453a;" id="aqi-val">485</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">DIST:</span>
+            <span class="hud-val" id="dist-val">0.00 km</span>
+        </div>
+        <button id="settings-btn" title="Settings">⚙️</button>
+    </div>
+
+    <div id="top-fuel-widget" title="Tap to Refuel">
+        <div class="tf-row">
+            <span>⛽ FUEL</span>
+            <span id="fuel-pct-txt">85%</span>
+        </div>
+        <div class="tf-bar-bg">
+            <div id="fuel-fill"></div>
+        </div>
+    </div>
+
+    <div id="fill-gas-popup">⛽ FILL GAS (TAP HERE)</div>
+
+    <div id="settings-panel">
+        <h3>⚙️ MANUAL ZONE & COCKPIT SETTINGS</h3>
+        <div class="setting-row">
+            <label>Select Drive Area (Manual Mode):</label>
+            <div class="toggle-group" style="margin-top:4px;">
+                <button class="toggle-btn zone-pick active" data-z="0">Delhi Smog</button>
+                <button class="toggle-btn zone-pick" data-z="1">Ghaziabad</button>
+                <button class="toggle-btn zone-pick" data-z="2">NH-9 Highway</button>
+                <button class="toggle-btn zone-pick" data-z="3">Farmland</button>
+                <button class="toggle-btn zone-pick" data-z="4">Hills</button>
+                <button class="toggle-btn zone-pick" data-z="5">Old Lane</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Time of Day (Day / Night Mode):</label>
+            <div class="toggle-group">
+                <button class="toggle-btn active" id="mode-day-btn">☀️ Day</button>
+                <button class="toggle-btn" id="mode-night-btn">🌙 Night</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Steering Control Type:</label>
+            <div class="toggle-group">
+                <button class="toggle-btn active" id="mode-wheel-btn">Wheel (○)</button>
+                <button class="toggle-btn" id="mode-arrows-btn">Buttons (◀ ▶)</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Steering Smoothness: <span id="steer-smooth-txt">65%</span></label>
+            <input type="range" id="steer-smooth-slider" min="15" max="100" value="65">
+        </div>
+        <button class="toggle-btn" style="width:100%; background:#333; color:#fff; margin-top:4px;" id="close-settings">DONE</button>
+    </div>
+
+    <div class="roof-liner"></div>
+    <div class="pillar-left"></div>
+    <div class="pillar-right"></div>
+
+    <div id="center-mirror-assembly">
+        <div id="center-mirror">
+            <canvas id="center-mirror-canvas"></canvas>
+        </div>
+        <div id="hanging-charm">
+            <div class="garland-loop"></div>
+            <div class="id-card-tag">
+                <div class="id-stripe"></div>
+                <div class="id-symbol">ॐ</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-buddha">
+        <div class="buddha-stage">
+            <div class="buddha-halo">
+                <div class="buddha-figure">🧘‍♂️</div>
+            </div>
+            <div class="incense-holder">
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="incense-stick">
+                    <div class="incense-ember"></div>
+                </div>
+            </div>
+        </div>
+        <div class="buddha-pedestal"></div>
+    </div>
+
+    <div id="side-mirror">
+        <canvas id="mirror-canvas"></canvas>
+        <div id="mirror-label">SIDE MIRROR</div>
+    </div>
+
+    <div id="thar-dashboard" class="dash-lit">
+        <div class="dash-left">
+            <div class="dash-left-top">
+                <div class="ac-vent"></div>
+                <div class="grab-handle">THAR 4x4</div>
+            </div>
+            <div id="glovebox" title="Tap to open/close side drawer">
+                <div class="glove-latch"></div>
+                <div id="glove-content">SIDE DRAWER (TAP)</div>
+            </div>
+        </div>
+
+        <div class="dash-center">
+            <div class="infotainment-bezel">
+                <div class="music-screen">
+                    <div class="track-info">
+                        <div class="track-title" id="track-name">FM 98.3 Mirchi Delhi</div>
+                        <div class="track-sub" id="track-status">Paused • Tap ▶ for Audio</div>
+                    </div>
+                    <div class="music-btns">
+                        <button class="m-btn" id="music-toggle">▶</button>
+                        <button class="m-btn" id="music-next">⏭</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="light-switch-panel">
+                <button class="lt-btn on" data-light="head" id="btn-headlight" title="Headlights">
+                    HEAD<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn on" data-light="tail" id="btn-taillight" title="Tail Lights">
+                    TAIL<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="defl" id="btn-deflector" title="Fog Lights">
+                    DEFL<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="int" id="btn-interior" title="Cabin Light">
+                    INT<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn on" data-light="dash" id="btn-dashlight" title="Dash Glow">
+                    DASH<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="wiper" id="btn-wiper" title="Windshield Wipers">
+                    WIPER<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="spray" id="btn-spray" title="Water Sprinkler">
+                    💦<div class="lt-led"></div>
+                </button>
+            </div>
+
+            <div class="climate-strip" id="climate-strip">
+                <button class="cl-btn" id="ac-btn">A/C <b id="ac-state">OFF</b></button>
+                <button class="cl-btn" id="fan-btn">FAN <b id="fan-state">OFF</b></button>
+                <span>TEMP: <b id="temp-state">--</b></span>
+            </div>
+        </div>
+
+        <div class="dash-right">
+            <div class="driver-cluster-row">
+                <div class="instrument-hood">
+                    <div class="dial">
+                        <div class="dial-val" id="speed-display">0</div>
+                        <div class="dial-lbl">KM/H</div>
+                    </div>
+
+                    <div class="mid-cluster">
+                        <div class="ind-row">
+                            <span class="ind-arrow" id="ind-left" title="Left Indicator">◀</span>
+                            <span style="font-size:10px; color:#fff; font-weight:900;" id="gear-display">D1</span>
+                            <span class="ind-arrow" id="ind-right" title="Right Indicator">▶</span>
+                        </div>
+                        <div class="accel-tag" id="accel-display">0.00 G</div>
+                    </div>
+
+                    <div class="dial" style="border-color:#00e5ff;">
+                        <div class="dial-val" id="rpm-display">0.8</div>
+                        <div class="dial-lbl" style="color:#00e5ff;">RPM x1k</div>
+                    </div>
+                </div>
+                <div class="ac-vent"></div>
+            </div>
+            <div class="port-panel">
+                <div class="port" data-port="HDMI"><span class="port-hole hdmi"></span><i>HDMI</i></div>
+                <div class="port" data-port="AUX"><span class="port-hole aux"></span><i>AUX</i></div>
+                <div class="port" data-port="USB-A"><span class="port-hole usb"></span><i>USB-A</i></div>
+                <div class="port" data-port="USB-C"><span class="port-hole usbc"></span><i>USB-C</i></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="steering-wrapper">
+        <div id="steering-wheel">
+            <div class="spoke-horiz"></div>
+            <div class="spoke-vert"></div>
+            <div id="horn-pad">THAR<span>HOLD HORN</span></div>
+        </div>
+    </div>
+
+    <div id="arrow-steer-controls">
+        <button class="ctrl-btn" id="left-btn">◀</button>
+        <button class="ctrl-btn" id="right-btn">▶</button>
+    </div>
+
+    <div id="foot-pedals">
+        <div class="pedal" id="brake-pedal">
+            <div class="pedal-grooves"></div>
+            <div class="pedal-lbl" style="color:#ff453a;">BRAKE</div>
+        </div>
+        <div class="pedal" id="accel-pedal">
+            <div class="pedal-grooves"></div>
+            <div class="pedal-lbl" style="color:#32d74b;">ACCEL</div>
+        </div>
+    </div>
+
+    <div id="overlay-screen">
+        <h1>DELHI TO HILLS: THAR 4x4</h1>
+        <p>
+            • <b>Choose Your Zone:</b> Open Settings (⚙️) and pick any area: <b>Hills</b>, <b>Farmland</b> or the <b>NH-9 Highway</b> (120 km/h top speed test).<br>
+            • <b>Smooth Performance:</b> Optimized for a steady, lag-free frame rate.<br>
+            • Use the wipers, sprinkler and fuel refill from the top-right.
+        </p>
+        <button id="start-btn">START ENGINE</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+    if (typeof THREE === 'undefined') {
+        document.querySelector('#overlay-screen p').textContent = 'Could not load the 3D engine (three.js). Check your internet connection and reload.';
+        document.getElementById('start-btn').style.display = 'none';
+        throw new Error('three.js failed to load');
+    }
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+    let hornOsc1 = null, hornOsc2 = null, hornGain = null;
+
+    function ensureAudio() {
+        if (!AudioCtx) return;
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function startContinuousHorn() {
+        ensureAudio();
+        if (hornOsc1) return;
+        hornOsc1 = audioCtx.createOscillator();
+        hornOsc2 = audioCtx.createOscillator();
+        hornGain = audioCtx.createGain();
+        hornOsc1.type = 'sawtooth'; hornOsc2.type = 'sawtooth';
+        hornOsc1.frequency.setValueAtTime(410, audioCtx.currentTime);
+        hornOsc2.frequency.setValueAtTime(510, audioCtx.currentTime);
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass'; filter.frequency.setValueAtTime(1400, audioCtx.currentTime);
+        hornGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        hornGain.gain.linearRampToValueAtTime(0.16, audioCtx.currentTime + 0.04);
+
+        hornOsc1.connect(filter); hornOsc2.connect(filter);
+        filter.connect(hornGain); hornGain.connect(audioCtx.destination);
+        hornOsc1.start(); hornOsc2.start();
+        document.getElementById('horn-pad').classList.add('honking');
+    }
+
+    function stopContinuousHorn() {
+        if (hornOsc1) {
+            try {
+                hornGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                hornOsc1.stop(audioCtx.currentTime + 0.06);
+                hornOsc2.stop(audioCtx.currentTime + 0.06);
+            } catch (e) {}
+            hornOsc1 = null; hornOsc2 = null;
+        }
+        document.getElementById('horn-pad').classList.remove('honking');
+    }
+
+    function playIndicatorTick(high) {
+        if (!audioCtx || audioCtx.state !== 'running') return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(high ? 920 : 680, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.03);
+    }
+
+    let sprayBuffer = null;
+    function playSpraySound() {
+        ensureAudio();
+        if (!sprayBuffer) {
+            const size = Math.floor(audioCtx.sampleRate * 0.35);
+            sprayBuffer = audioCtx.createBuffer(1, size, audioCtx.sampleRate);
+            const data = sprayBuffer.getChannelData(0);
+            for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = sprayBuffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass'; filter.frequency.value = 3200;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+        noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+        noise.start();
+    }
+
+    function playLowFuelTinTin() {
+        ensureAudio();
+        [0, 0.22].forEach(delay => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1320, audioCtx.currentTime + delay);
+            gain.gain.setValueAtTime(0.11, audioCtx.currentTime + delay);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + 0.16);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + delay);
+            osc.stop(audioCtx.currentTime + delay + 0.16);
+        });
+    }
+
+    function playPotholeThud() {
+        ensureAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(32, audioCtx.currentTime + 0.22);
+        gain.gain.setValueAtTime(0.28, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.22);
+    }
+
+    const tracks = [
+        { name: "FM 98.3 Mirchi Delhi", notes: [261.6, 329.6, 392.0, 493.9] },
+        { name: "NH-9 Highway Beats", notes: [220.0, 261.6, 329.6, 392.0] },
+        { name: "Hill Folk Lo-Fi", notes: [196.0, 246.9, 293.7, 392.0] }
+    ];
+    let currentTrack = 0, musicPlaying = false, musicInterval = null, noteIdx = 0;
+
+    function playNote() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        const freqs = tracks[currentTrack].notes;
+        osc.frequency.setValueAtTime(freqs[noteIdx % freqs.length], audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+        noteIdx++;
+    }
+    function startMusicLoop() { if (!musicInterval) musicInterval = setInterval(playNote, 420); }
+    function stopMusicLoop() { clearInterval(musicInterval); musicInterval = null; }
+
+    document.getElementById('music-toggle').addEventListener('click', () => {
+        ensureAudio();
+        musicPlaying = !musicPlaying;
+        document.getElementById('music-toggle').textContent = musicPlaying ? "⏸" : "▶";
+        document.getElementById('track-status').textContent = musicPlaying ? "Playing • Cabin Audio ON" : "Paused • Tap ▶ for Audio";
+        if (musicPlaying) startMusicLoop(); else stopMusicLoop();
+    });
+    document.getElementById('music-next').addEventListener('click', () => {
+        currentTrack = (currentTrack + 1) % tracks.length;
+        document.getElementById('track-name').textContent = tracks[currentTrack].name;
+    });
+
+    const glovebox = document.getElementById('glovebox');
+    glovebox.addEventListener('click', () => {
+        glovebox.classList.toggle('open');
+        document.getElementById('glove-content').innerText = glovebox.classList.contains('open')
+            ? "📄 RC, PUC & Fuel Card" : "SIDE DRAWER (TAP)";
+    });
+
+    const container = document.getElementById('game-container');
+    const scene = new THREE.Scene();
+    const daySmogColor = new THREE.Color(0x8e8675);
+    const nightColor = new THREE.Color(0x090b12);
+    scene.background = daySmogColor.clone();
+    const fog = new THREE.FogExp2(0x8e8675, 0.016);
+    scene.fog = fog;
+    scene.autoUpdate = false;
+
+    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 180);
+    camera.position.set(2.5, 1.78, 0);
+
+    const mirrorCamera = new THREE.PerspectiveCamera(56, 124 / 72, 0.1, 100);
+    const mirrorCanvas = document.getElementById('mirror-canvas');
+    const mirrorRenderer = new THREE.WebGLRenderer({ canvas: mirrorCanvas, antialias: false, powerPreference: "high-performance" });
+    mirrorRenderer.setSize(124, 72);
+
+    const centerMirrorCamera = new THREE.PerspectiveCamera(52, 150 / 42, 0.1, 100);
+    const centerMirrorCanvas = document.getElementById('center-mirror-canvas');
+    const centerMirrorRenderer = new THREE.WebGLRenderer({ canvas: centerMirrorCanvas, antialias: false, powerPreference: "high-performance" });
+    centerMirrorRenderer.setSize(150, 42);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    container.insertBefore(renderer.domElement, container.firstChild);
+
+    const ambientLight = new THREE.AmbientLight(0xd8cfc0, 0.92);
+    scene.add(ambientLight);
+    const sunLight = new THREE.DirectionalLight(0xffe4b5, 0.7);
+    sunLight.position.set(12, 26, -20);
+    scene.add(sunLight);
+
+    const lightStates = { head: true, tail: true, defl: false, int: false, dash: true, wiper: false };
+    let manualIndicator = 0;
+    let wiperPhase = 0;
+
+    const headLightL = new THREE.SpotLight(0xfff8e7, 2.2, 65, Math.PI / 5, 0.45, 1);
+    headLightL.position.set(1.8, 1.2, -1.8);
+    headLightL.target.position.set(1.8, 0.3, -30);
+
+    const headLightR = new THREE.SpotLight(0xfff8e7, 2.2, 65, Math.PI / 5, 0.45, 1);
+    headLightR.position.set(3.2, 1.2, -1.8);
+    headLightR.target.position.set(3.2, 0.3, -30);
+    scene.add(headLightL, headLightL.target, headLightR, headLightR.target);
+
+    const deflectorLight = new THREE.SpotLight(0xffaa2b, 0, 52, Math.PI / 3.2, 0.65, 1);
+    deflectorLight.position.set(2.5, 2.05, -1.2);
+    deflectorLight.target.position.set(2.5, 0.2, -22);
+    scene.add(deflectorLight, deflectorLight.target);
+
+    const tailLightGlow = new THREE.PointLight(0xff1744, 1.8, 14);
+    tailLightGlow.position.set(2.5, 1.1, 1.5);
+    scene.add(tailLightGlow);
+
+    function syncLightButtons() {
+        document.getElementById('btn-headlight').classList.toggle('on', lightStates.head);
+        document.getElementById('btn-taillight').classList.toggle('on', lightStates.tail);
+        document.getElementById('btn-deflector').classList.toggle('on', lightStates.defl);
+        document.getElementById('btn-interior').classList.toggle('on', lightStates.int);
+        document.getElementById('btn-dashlight').classList.toggle('on', lightStates.dash);
+        document.getElementById('btn-wiper').classList.toggle('on', lightStates.wiper);
+
+        const headIntensity = lightStates.head ? (isNightMode ? 3.8 : 1.8) : 0;
+        headLightL.intensity = headIntensity;
+        headLightR.intensity = headIntensity;
+        deflectorLight.intensity = lightStates.defl ? (isNightMode ? 3.2 : 1.5) : 0;
+        tailLightGlow.intensity = lightStates.tail ? (isNightMode ? 3.0 : 1.2) : 0;
+
+        document.getElementById('interior-glow').classList.toggle('active', lightStates.int);
+        document.getElementById('thar-dashboard').classList.toggle('dash-lit', lightStates.dash);
+    }
+
+    document.getElementById('btn-headlight').addEventListener('click', () => { lightStates.head = !lightStates.head; syncLightButtons(); });
+    document.getElementById('btn-taillight').addEventListener('click', () => { lightStates.tail = !lightStates.tail; syncLightButtons(); });
+    document.getElementById('btn-deflector').addEventListener('click', () => { lightStates.defl = !lightStates.defl; syncLightButtons(); });
+    document.getElementById('btn-interior').addEventListener('click', () => { lightStates.int = !lightStates.int; syncLightButtons(); });
+    document.getElementById('btn-dashlight').addEventListener('click', () => { lightStates.dash = !lightStates.dash; syncLightButtons(); });
+    document.getElementById('btn-wiper').addEventListener('click', () => { lightStates.wiper = !lightStates.wiper; syncLightButtons(); });
+
+    const windshieldFx = document.getElementById('windshield-fx');
+    document.getElementById('btn-spray').addEventListener('click', () => {
+        playSpraySound();
+        const dropCount = Math.min(20, Math.max(0, 60 - windshieldFx.childElementCount));
+        for (let i = 0; i < dropCount; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'water-drop';
+            drop.style.left = (22 + Math.random() * 56) + '%';
+            drop.style.top = (25 + Math.random() * 32) + '%';
+            windshieldFx.appendChild(drop);
+            setTimeout(() => drop.remove(), 1850);
+        }
+        if (!lightStates.wiper) {
+            lightStates.wiper = true;
+            syncLightButtons();
+            setTimeout(() => { lightStates.wiper = false; syncLightButtons(); }, 2200);
+        }
+    });
+
+    document.getElementById('ind-left').addEventListener('click', () => { manualIndicator = manualIndicator === -1 ? 0 : -1; });
+    document.getElementById('ind-right').addEventListener('click', () => { manualIndicator = manualIndicator === 1 ? 0 : 1; });
+
+    const tharGroup = new THREE.Group();
+    const hoodMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1.75, 0.24, 2.2),
+        new THREE.MeshStandardMaterial({ color: 0x1b1c20, roughness: 0.35, metalness: 0.6 })
+    );
+    hoodMesh.position.set(0, 1.12, -1.8);
+    tharGroup.add(hoodMesh);
+
+    const fenderMat = new THREE.MeshStandardMaterial({ color: 0x0d0d10, roughness: 0.8 });
+    const leftFender = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 1.9), fenderMat);
+    leftFender.position.set(-0.98, 1.08, -1.8);
+    const rightFender = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 1.9), fenderMat);
+    rightFender.position.set(0.98, 1.08, -1.8);
+    tharGroup.add(leftFender, rightFender);
+    scene.add(tharGroup);
+
+    const roadSegments = [];
+    const segCount = 55;
+    const segLen = 6;
+    const roadSegMat = new THREE.MeshStandardMaterial({ color: 0x252629, roughness: 0.92 });
+    const kerbMat = new THREE.MeshStandardMaterial({ color: 0x524f4a });
+    const lineMat = new THREE.MeshBasicMaterial({ color: 0xd0d0d0 });
+
+    const asphaltGeo = new THREE.PlaneGeometry(18, segLen + 0.2);
+    const divGeo = new THREE.BoxGeometry(0.45, 0.45, segLen - 0.3);
+    const dashGeo = new THREE.PlaneGeometry(0.18, 3.4);
+    const kerbGeo = new THREE.BoxGeometry(1.1, 0.7, segLen + 0.2);
+    const divYellowMat = new THREE.MeshStandardMaterial({ color: 0xfbc02d });
+    const divBlackMat = new THREE.MeshStandardMaterial({ color: 0x1c1c1e });
+
+    for (let i = 0; i < segCount; i++) {
+        const segGroup = new THREE.Group();
+        const asphalt = new THREE.Mesh(asphaltGeo, roadSegMat);
+        asphalt.rotation.x = -Math.PI / 2;
+        segGroup.add(asphalt);
+
+        const divBlock = new THREE.Mesh(divGeo, i % 2 === 0 ? divYellowMat : divBlackMat);
+        divBlock.position.set(0, 0.22, 0);
+        segGroup.add(divBlock);
+
+        if (i % 2 === 0) {
+            [-4.5, 4.5].forEach(lx => {
+                const dash = new THREE.Mesh(dashGeo, lineMat);
+                dash.rotation.x = -Math.PI / 2;
+                dash.position.set(lx, 0.02, 0);
+                segGroup.add(dash);
+            });
+        }
+
+        const lKerb = new THREE.Mesh(kerbGeo, kerbMat);
+        lKerb.position.set(-9.4, 0.35, 0);
+        const rKerb = new THREE.Mesh(kerbGeo, kerbMat);
+        rKerb.position.set(9.4, 0.35, 0);
+        segGroup.add(lKerb, rKerb);
+
+        segGroup.position.z = 50 - i * segLen;
+        scene.add(segGroup);
+        roadSegments.push(segGroup);
+    }
+
+    const roundaboutGroup = new THREE.Group();
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 4.0, 0.65, 16), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
+    island.position.y = 0.32;
+    const islandRim = new THREE.Mesh(new THREE.TorusGeometry(3.8, 0.22, 6, 16), new THREE.MeshStandardMaterial({ color: 0xfbc02d }));
+    islandRim.rotation.x = Math.PI / 2; islandRim.position.y = 0.3;
+    const monument = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.7, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0xd7ccc8 }));
+    monument.position.y = 1.9;
+    const ringRoad = new THREE.Mesh(new THREE.RingGeometry(4.4, 10.5, 28), roadSegMat);
+    ringRoad.rotation.x = -Math.PI / 2; ringRoad.position.y = 0.03;
+    const sideRoadGeo = new THREE.PlaneGeometry(32, 12);
+    const sideLineGeo = new THREE.PlaneGeometry(32, 0.18);
+    roundaboutGroup.add(island, islandRim, monument, ringRoad);
+    [-1, 1].forEach(side => {
+        const sideRoad = new THREE.Mesh(sideRoadGeo, roadSegMat);
+        sideRoad.rotation.x = -Math.PI / 2; sideRoad.position.set(side * 24, 0.025, 0);
+        const sideLine = new THREE.Mesh(sideLineGeo, lineMat);
+        sideLine.rotation.x = -Math.PI / 2; sideLine.position.set(side * 24, 0.04, 0);
+        roundaboutGroup.add(sideRoad, sideLine);
+    });
+    roundaboutGroup.position.set(0, 0, -260);
+    roundaboutGroup.visible = false;
+    scene.add(roundaboutGroup);
+
+    let roadCurveAmp = 0;
+    let roadCurveFreq = 0.016;
+    let roadPhase = 0;
+
+    function getRoadCurveX(z) {
+        let baseCurve = Math.sin(z * roadCurveFreq + roadPhase) * roadCurveAmp;
+        if (roundaboutGroup.visible) {
+            const dz = z - roundaboutGroup.position.z;
+            if (Math.abs(dz) < 26) {
+                const bulge = Math.cos((dz / 26) * (Math.PI / 2)) * 4.2;
+                baseCurve += bulge;
+            }
+        }
+        return baseCurve;
+    }
+
+    const streetLightList = [];
+    const poleMat = new THREE.MeshStandardMaterial({ color: 0x3b3d45, metalness: 0.7, roughness: 0.4 });
+    const bulbOffMat = new THREE.MeshBasicMaterial({ color: 0x888888 });
+    const bulbOnMat = new THREE.MeshBasicMaterial({ color: 0xffe082 });
+    const groundGlowMat = new THREE.MeshBasicMaterial({ color: 0xffb300, transparent: true, opacity: 0.0 });
+    const poleGeo = new THREE.CylinderGeometry(0.11, 0.14, 6.8, 6);
+    const armGeo = new THREE.BoxGeometry(2.4, 0.1, 0.1);
+    const lampGeo = new THREE.BoxGeometry(0.65, 0.14, 0.28);
+    const bulbGeo = new THREE.BoxGeometry(0.52, 0.06, 0.2);
+    const poolGeo = new THREE.CircleGeometry(3.4, 12);
+
+    for (let z = 40; z > -280; z -= 40) {
+        [-1, 1].forEach(side => {
+            const slGroup = new THREE.Group();
+            const pole = new THREE.Mesh(poleGeo, poleMat);
+            pole.position.set(side * 9.5, 3.4, 0);
+            const arm = new THREE.Mesh(armGeo, poleMat);
+            arm.position.set(side * 8.3, 6.7, 0);
+            const lampHead = new THREE.Mesh(lampGeo, poleMat);
+            lampHead.position.set(side * 7.2, 6.65, 0);
+            const bulb = new THREE.Mesh(bulbGeo, bulbOffMat);
+            bulb.position.set(side * 7.2, 6.57, 0);
+            const roadPool = new THREE.Mesh(poolGeo, groundGlowMat);
+            roadPool.rotation.x = -Math.PI / 2;
+            roadPool.position.set(side * 6.2, 0.015, 0);
+            roadPool.visible = false;
+
+            slGroup.add(pole, arm, lampHead, bulb, roadPool);
+            slGroup.position.z = z;
+            scene.add(slGroup);
+            streetLightList.push({ group: slGroup, bulb, pool: roadPool });
+        });
+    }
+
+    const sceneryList = [];
+    const farmMat = new THREE.MeshStandardMaterial({ color: 0x388e3c, roughness: 0.9 });
+    const cropMat = new THREE.MeshStandardMaterial({ color: 0x7cb342 });
+    const mountainMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.95 });
+    const snowMat = new THREE.MeshStandardMaterial({ color: 0xeceff1 });
+    const fieldGeo = new THREE.PlaneGeometry(24, 22);
+    const trunkGeo = new THREE.CylinderGeometry(0.25, 0.35, 2.4, 5);
+    const crownGeo = new THREE.DodecahedronGeometry(1.7);
+    const peakGeo = new THREE.ConeGeometry(14, 22, 5);
+    const snowGeo = new THREE.ConeGeometry(4.5, 6.5, 5);
+    const shopGeo = new THREE.BoxGeometry(5, 4.5, 14);
+    const shopMat = new THREE.MeshStandardMaterial({ color: 0xd84315 });
+
+    function createSceneryBatch() {
+        for (let i = 0; i < 12; i++) {
+            const z = -i * 26 - 20;
+            [-1, 1].forEach(side => {
+                const prop = new THREE.Group();
+                const farmGroup = new THREE.Group();
+                const field = new THREE.Mesh(fieldGeo, farmMat);
+                field.rotation.x = -Math.PI / 2; field.position.set(side * 22, 0.05, 0);
+                const treeTrunk = new THREE.Mesh(trunkGeo, mountainMat);
+                treeTrunk.position.set(side * 13.5, 1.2, 0);
+                const treeCrown = new THREE.Mesh(crownGeo, cropMat);
+                treeCrown.position.set(side * 13.5, 3.0, 0);
+                farmGroup.add(field, treeTrunk, treeCrown);
+                farmGroup.visible = false;
+
+                const hillGroup = new THREE.Group();
+                const peak = new THREE.Mesh(peakGeo, mountainMat);
+                peak.position.set(side * 26, 10, 0);
+                const snowCap = new THREE.Mesh(snowGeo, snowMat);
+                snowCap.position.set(side * 26, 18, 0);
+                hillGroup.add(peak, snowCap);
+                hillGroup.visible = false;
+
+                const laneGroup = new THREE.Group();
+                const shop = new THREE.Mesh(shopGeo, shopMat);
+                shop.position.set(side * 13, 2.25, 0);
+                laneGroup.add(shop);
+                laneGroup.visible = false;
+
+                prop.add(farmGroup, hillGroup, laneGroup);
+                prop.position.z = z;
+                scene.add(prop);
+                sceneryList.push({ prop, farmGroup, hillGroup, laneGroup });
+            });
+        }
+    }
+    createSceneryBatch();
+
+    const oncomingLanes = [-6.5, -2.5];
+    const forwardLanes = [2.5, 6.5];
+    const trafficList = [];
+    const potholeList = [];
+    const constructionList = [];
+    const pedestrianList = [];
+    const cartList = [];
+
+    const paintMatCache = {};
+    const sharedGlassMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.42, roughness: 0.1 });
+    const sharedDarkMat = new THREE.MeshStandardMaterial({ color: 0x16171a, roughness: 0.8 });
+    function getPaintMat(color) {
+        return paintMatCache[color] || (paintMatCache[color] = new THREE.MeshStandardMaterial({ color, roughness: 0.35, metalness: 0.3 }));
+    }
+
+    function buildDetailedVehicle(type, isOncoming) {
+        const group = new THREE.Group();
+        const wheels = [];
+        let width, height, length, color, speed;
+
+        if (type === 'dtc_bus') {
+            width = 2.2; height = 2.7; length = 7.2; color = 0xd9381e; speed = 0.25;
+        } else if (type === 'auto') {
+            width = 1.32; height = 1.68; length = 2.55; color = 0x1b7a32; speed = 0.28;
+        } else {
+            width = 1.75; height = 1.35; length = 4.1;
+            const colors = [0xe0e0e0, 0x2b2d42, 0x1976d2, 0xb71c1c];
+            color = colors[Math.floor(Math.random() * colors.length)];
+            speed = 0.36;
+        }
+
+        const paintMat = getPaintMat(color);
+        const glassMat = sharedGlassMat;
+        const darkMat = sharedDarkMat;
+
+        if (type === 'car') {
+            const lowerBody = new THREE.Mesh(new THREE.BoxGeometry(width, 0.58, length), paintMat);
+            lowerBody.position.y = 0.52;
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(width - 0.18, 0.58, 2.0), glassMat);
+            cabin.position.set(0, 1.08, 0.1);
+            group.add(lowerBody, cabin);
+        } else if (type === 'dtc_bus') {
+            const lowerBus = new THREE.Mesh(new THREE.BoxGeometry(width, 1.3, length), paintMat);
+            lowerBus.position.y = 0.9;
+            group.add(lowerBus);
+        } else {
+            const autoBase = new THREE.Mesh(new THREE.BoxGeometry(width, 0.68, length), paintMat);
+            autoBase.position.y = 0.56;
+            const blackCanopy = new THREE.Mesh(new THREE.BoxGeometry(width + 0.02, 0.58, length - 0.45), darkMat);
+            blackCanopy.position.set(0, 1.36, 0.2);
+            group.add(autoBase, blackCanopy);
+        }
+
+        const wheelRadius = type === 'dtc_bus' ? 0.46 : (type === 'auto' ? 0.25 : 0.35);
+        const wheelGeo = new THREE.CylinderGeometry(wheelRadius, wheelRadius, 0.22, 8);
+        wheelGeo.rotateZ(Math.PI / 2);
+
+        const addWheel = (wx, wz) => {
+            const w = new THREE.Mesh(wheelGeo, darkMat);
+            w.position.set(wx, wheelRadius, wz);
+            group.add(w);
+            wheels.push(w);
+        };
+
+        if (type === 'auto') {
+            addWheel(0, -length / 2 + 0.35);
+            addWheel(-width / 2 - 0.02, length / 2 - 0.55);
+            addWheel(width / 2 + 0.02, length / 2 - 0.55);
+        } else {
+            [-length / 2 + 0.75, length / 2 - 0.75].forEach(wz => {
+                [-width / 2 - 0.02, width / 2 + 0.02].forEach(wx => addWheel(wx, wz));
+            });
+        }
+
+        if (isOncoming) group.rotation.y = Math.PI;
+        return { group, width, length, speed, wheels };
+    }
+
+    const pitGeo = new THREE.CircleGeometry(0.8, 10);
+    const pitMat = new THREE.MeshBasicMaterial({ color: 0x0d0d0f });
+    const pitRimGeo = new THREE.RingGeometry(0.8, 1.15, 14);
+    const pitRimMat = new THREE.MeshBasicMaterial({ color: 0x3d3d42 });
+    const bumpList = [];
+    const signalList = [];
+    const bumpCanvas = document.createElement('canvas');
+    bumpCanvas.width = 128; bumpCanvas.height = 8;
+    const bumpCtx = bumpCanvas.getContext('2d');
+    for (let i = 0; i < 8; i++) { bumpCtx.fillStyle = i % 2 ? '#1c1c1e' : '#fbc02d'; bumpCtx.fillRect(i * 16, 0, 16, 8); }
+    const bumpTex = new THREE.CanvasTexture(bumpCanvas);
+    bumpTex.wrapS = THREE.RepeatWrapping;
+    bumpTex.repeat.set(3, 1);
+    const bumpGeo = new THREE.BoxGeometry(18, 0.16, 1.6);
+    const bumpMat = new THREE.MeshStandardMaterial({ map: bumpTex, roughness: 0.8 });
+    const sigPoleGeo = new THREE.CylinderGeometry(0.1, 0.12, 5, 6);
+    const sigArmGeo = new THREE.BoxGeometry(5.5, 0.1, 0.1);
+    const sigTimerGeo = new THREE.PlaneGeometry(0.8, 0.5);
+    const SIGNAL_TIMES = [15, 12, 3];
+    const sigHeadGeo = new THREE.BoxGeometry(0.5, 1.2, 0.4);
+    const sigLampGeo = new THREE.SphereGeometry(0.19, 8, 6);
+    const sigLineGeo = new THREE.PlaneGeometry(9, 0.5);
+    const sigDarkMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.6 });
+    const sigLineMat = new THREE.MeshBasicMaterial({ color: 0xe8e8e8 });
+
+    function applySignalState(s) {
+        s.redMat.color.setHex(s.state === 0 ? 0xff1a1a : 0x330808);
+        s.yellowMat.color.setHex(s.state === 2 ? 0xffc400 : 0x332a00);
+        s.greenMat.color.setHex(s.state === 1 ? 0x22ff55 : 0x07300f);
+    }
+
+    function drawSignalTimer(s) {
+        const secs = Math.max(0, Math.ceil(s.t));
+        const key = s.state * 100 + secs;
+        if (s.drawn === key) return;
+        s.drawn = key;
+        const c = s.ctx;
+        c.fillStyle = '#050505'; c.fillRect(0, 0, 64, 40);
+        c.strokeStyle = '#444'; c.strokeRect(1, 1, 62, 38);
+        c.fillStyle = ['#ff3b30', '#32d74b', '#ffd60a'][s.state];
+        c.font = 'bold 30px monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillText(String(secs).padStart(2, '0'), 32, 22);
+        s.tex.needsUpdate = true;
+    }
+
+    function stepSignals() {
+        for (let i = 0; i < signalList.length; i++) {
+            const s = signalList[i];
+            s.t -= 1 / 60;
+            if (s.t <= 0) {
+                s.state = s.state === 0 ? 1 : (s.state === 1 ? 2 : 0);
+                s.t = SIGNAL_TIMES[s.state];
+                applySignalState(s);
+            }
+            drawSignalTimer(s);
+        }
+    }
+
+    function trafficTarget(v) {
+        let target = v.speed;
+        const dir = v.isOncoming ? 1 : -1;
+        const vz = v.mesh.position.z;
+        for (let i = 0; i < signalList.length; i++) {
+            const s = signalList[i];
+            if (s.state === 1) continue;
+            const lineZ = s.group.position.z + (v.isOncoming ? -2.5 : 2.5);
+            const gap = (lineZ - vz) * dir - v.length / 2;
+            if (gap > -0.3 && gap < 16 && !(s.state === 2 && gap < 6)) {
+                target = Math.min(target, gap < 1 ? 0 : v.speed * Math.min(1, (gap - 1) / 12));
+            }
+        }
+        for (let j = 0; j < trafficList.length; j++) {
+            const w = trafficList[j];
+            if (w === v || w.isOncoming !== v.isOncoming || Math.abs(w.laneOffset - v.laneOffset) > 0.5) continue;
+            const gap = (w.mesh.position.z - vz) * dir - (v.length + w.length) / 2;
+            if (gap > -0.5 && gap < 6) {
+                target = Math.min(target, gap < 1.5 ? 0 : Math.min(v.speed, w.curSpeed + (gap - 1.5) * 0.03));
+            }
+        }
+        return target;
+    }
+
+    function initWorldObjects() {
+        for (let i = 0; i < 6; i++) {
+            const type = i % 2 === 0 ? 'auto' : 'car';
+            const v = buildDetailedVehicle(type, false);
+            const lane = forwardLanes[i % 2];
+            v.group.position.set(lane, 0, -i * 55 - 40);
+            scene.add(v.group);
+            trafficList.push({ mesh: v.group, width: v.width, length: v.length, speed: v.speed, isOncoming: false, laneOffset: lane, wheels: v.wheels, curSpeed: v.speed });
+        }
+
+        for (let i = 0; i < 5; i++) {
+            const v = buildDetailedVehicle('car', true);
+            const lane = oncomingLanes[i % 2];
+            v.group.position.set(lane, 0, -i * 60 - 50);
+            scene.add(v.group);
+            trafficList.push({ mesh: v.group, width: v.width, length: v.length, speed: v.speed, isOncoming: true, laneOffset: lane, wheels: v.wheels, curSpeed: v.speed });
+        }
+
+        for (let i = 0; i < 9; i++) {
+            const phGroup = new THREE.Group();
+            const rim = new THREE.Mesh(pitRimGeo, pitRimMat);
+            rim.rotation.x = -Math.PI / 2; rim.position.y = 0.005;
+            const innerPit = new THREE.Mesh(pitGeo, pitMat);
+            innerPit.rotation.x = -Math.PI / 2; innerPit.position.y = 0.01;
+            phGroup.add(rim, innerPit);
+            const depth = 0.7 + Math.random() * 0.8;
+            phGroup.scale.set(depth, 1, depth);
+            const laneOff = [-6.5, -2.5, 2.5, 6.5][i % 4];
+            phGroup.position.set(laneOff, 0.02, -i * 32 - 40);
+            scene.add(phGroup);
+            potholeList.push({ mesh: phGroup, laneOffset: laneOff, hitCooldown: 0, depth });
+        }
+
+        for (let i = 0; i < 6; i++) {
+            const bump = new THREE.Mesh(bumpGeo, bumpMat);
+            bump.position.set(0, 0.06, -i * 70 - 60);
+            scene.add(bump);
+            bumpList.push({ mesh: bump, hitCooldown: 0 });
+        }
+
+        for (let i = 0; i < 4; i++) {
+            const group = new THREE.Group();
+            const redMat = new THREE.MeshBasicMaterial({ color: 0xff1a1a });
+            const yellowMat = new THREE.MeshBasicMaterial({ color: 0x332a00 });
+            const greenMat = new THREE.MeshBasicMaterial({ color: 0x07300f });
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 40;
+            const tex = new THREE.CanvasTexture(canvas);
+            const timerMat = new THREE.MeshBasicMaterial({ map: tex });
+            [-1, 1].forEach(side => {
+                const pole = new THREE.Mesh(sigPoleGeo, poleMat);
+                pole.position.set(side * 9.6, 2.5, 0);
+                const arm = new THREE.Mesh(sigArmGeo, poleMat);
+                arm.position.set(side * 6.85, 4.95, 0);
+                const head = new THREE.Mesh(sigHeadGeo, sigDarkMat);
+                head.position.set(side * 6.0, 4.4, 0);
+                const lampRed = new THREE.Mesh(sigLampGeo, redMat);
+                lampRed.position.set(side * 6.0, 4.75, 0.22);
+                const lampYellow = new THREE.Mesh(sigLampGeo, yellowMat);
+                lampYellow.position.set(side * 6.0, 4.4, 0.22);
+                const lampGreen = new THREE.Mesh(sigLampGeo, greenMat);
+                lampGreen.position.set(side * 6.0, 4.05, 0.22);
+                const timer = new THREE.Mesh(sigTimerGeo, timerMat);
+                timer.position.set(side * 4.9, 4.4, 0.05);
+                group.add(pole, arm, head, lampRed, lampYellow, lampGreen, timer);
+            });
+            [4.5, -4.5].forEach((lx, k) => {
+                const stopLine = new THREE.Mesh(sigLineGeo, sigLineMat);
+                stopLine.rotation.x = -Math.PI / 2;
+                stopLine.position.set(lx, 0.03, k === 0 ? 2.5 : -2.5);
+                group.add(stopLine);
+            });
+            group.position.z = -i * 110 - 50;
+            scene.add(group);
+            const state = i % 2;
+            const s = { group, state, t: SIGNAL_TIMES[state] * (0.4 + Math.random() * 0.6), redMat, yellowMat, greenMat, ctx: canvas.getContext('2d'), tex, drawn: -1 };
+            applySignalState(s);
+            drawSignalTimer(s);
+            signalList.push(s);
+        }
+
+        for (let i = 0; i < 3; i++) {
+            const cart = new THREE.Group();
+            const cartBed = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.35, 2.2), new THREE.MeshStandardMaterial({ color: 0x6d4c41 }));
+            cartBed.position.y = 0.85;
+            cart.add(cartBed);
+            cart.visible = false;
+            const laneOff = i % 2 === 0 ? 6.6 : -6.6;
+            cart.position.set(laneOff, 0, -i * 70 - 50);
+            scene.add(cart);
+            cartList.push({ mesh: cart, laneOffset: laneOff, speed: 0.05 });
+        }
+    }
+    initWorldObjects();
+
+    const pCount = 350;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount * 3; i += 3) {
+        pPos[i] = (Math.random() - 0.5) * 26;
+        pPos[i + 1] = Math.random() * 8;
+        pPos[i + 2] = 20 - Math.random() * 120;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const smogMat = new THREE.PointsMaterial({ color: 0xb8af9e, size: 0.09, transparent: true, opacity: 0.6 });
+    const smogParticles = new THREE.Points(pGeo, smogMat);
+    smogParticles.frustumCulled = false;
+    scene.add(smogParticles);
+
+    const zones = [
+        { id: 'DELHI', title: 'DELHI NCR SMOG ZONE', sub: 'Heavy AQI 485 • Manual Mode', aqi: 485, fogDensity: 0.017, skyHex: 0x8e8675, smogOpacity: 0.65, trafficGap: 55, curveAmp: 1.5, scenery: 'none', hasCart: false, roundabout: false },
+        { id: 'GHAZIABAD', title: 'WELCOME TO GHAZIABAD!', sub: 'Smog Cleared • Roundabout Ahead', aqi: 112, fogDensity: 0.0025, skyHex: 0x87ceeb, smogOpacity: 0.05, trafficGap: 80, curveAmp: 4.5, scenery: 'farm', hasCart: false, roundabout: true },
+        { id: 'HIGHWAY', title: 'NH-9 EXPRESS HIGHWAY', sub: 'Test 120 KM/H Top Speed!', aqi: 88, fogDensity: 0.0018, skyHex: 0x64b5f6, smogOpacity: 0.0, trafficGap: 120, curveAmp: 2.2, scenery: 'farm', hasCart: false, roundabout: false },
+        { id: 'FARMS', title: 'GREEN VILLAGE FARMLAND', sub: 'Lush Farms & Winding Village Turns', aqi: 62, fogDensity: 0.002, skyHex: 0x81d4fa, smogOpacity: 0.0, trafficGap: 90, curveAmp: 6.2, scenery: 'farm', hasCart: false, roundabout: true },
+        { id: 'HILLS', title: 'HIMALAYAN FOOTHILLS', sub: 'Sharp Mountain Curves Ahead!', aqi: 45, fogDensity: 0.0035, skyHex: 0x90caf9, smogOpacity: 0.08, trafficGap: 95, curveAmp: 8.5, scenery: 'hill', hasCart: false, roundabout: false },
+        { id: 'LANE', title: 'OLD BAZAAR LANE', sub: 'Vegetable Carts on the Road • Honk Gently!', aqi: 165, fogDensity: 0.004, skyHex: 0xb0bec5, smogOpacity: 0.12, trafficGap: 85, curveAmp: 3.5, scenery: 'lane', hasCart: true, roundabout: false }
+    ];
+
+    let currentZoneIdx = 0;
+
+    let bannerTimer = 0;
+    function showZoneBanner(title, sub) {
+        const banner = document.getElementById('zone-banner');
+        banner.innerHTML = `${title}<span id="zone-sub">${sub}</span>`;
+        banner.style.display = 'block';
+        clearTimeout(bannerTimer);
+        bannerTimer = setTimeout(() => { banner.style.display = 'none'; }, 3400);
+    }
+
+    function applyZone(zIdx) {
+        currentZoneIdx = zIdx;
+        const z = zones[zIdx];
+        document.getElementById('zone-hud').innerText = z.id;
+        document.getElementById('aqi-val').innerText = z.aqi;
+        document.getElementById('aqi-val').style.color = z.aqi > 300 ? '#ff453a' : (z.aqi > 150 ? '#ff9f0a' : '#32d74b');
+
+        roadCurveAmp = z.curveAmp;
+        smogMat.opacity = z.smogOpacity;
+        smogParticles.visible = z.smogOpacity > 0;
+
+        if (!isNightMode) {
+            scene.background.setHex(z.skyHex);
+            fog.color.setHex(z.skyHex);
+            fog.density = z.fogDensity;
+            document.getElementById('smog-vignette').style.opacity = z.smogOpacity > 0.2 ? 0.85 : 0.12;
+        }
+
+        sceneryList.forEach(s => {
+            s.farmGroup.visible = (z.scenery === 'farm');
+            s.hillGroup.visible = (z.scenery === 'hill');
+            s.laneGroup.visible = (z.scenery === 'lane');
+        });
+
+        cartList.forEach(t => { t.mesh.visible = z.hasCart; });
+
+        if (z.roundabout) {
+            roundaboutGroup.visible = true;
+            roundaboutGroup.position.z = -240;
+        } else {
+            roundaboutGroup.visible = false;
+        }
+
+        let fCount = 0, oCount = 0;
+        trafficList.forEach(v => {
+            v.curSpeed = v.speed;
+            if (!v.isOncoming) {
+                v.mesh.position.z = -40 - fCount * z.trafficGap;
+                fCount++;
+            } else {
+                v.mesh.position.z = -55 - oCount * (z.trafficGap * 1.15);
+                oCount++;
+            }
+        });
+
+        showZoneBanner(z.title, z.sub);
+    }
+
+    document.querySelectorAll('.zone-pick').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.zone-pick').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            const zIdx = parseInt(e.currentTarget.getAttribute('data-z'));
+            applyZone(zIdx);
+        });
+    });
+
+    let isNightMode = false;
+    const modeDayBtn = document.getElementById('mode-day-btn');
+    const modeNightBtn = document.getElementById('mode-night-btn');
+
+    function applyDayNightTheme(night) {
+        isNightMode = night;
+        const z = zones[currentZoneIdx];
+        if (night) {
+            modeNightBtn.classList.add('active'); modeDayBtn.classList.remove('active');
+            scene.background = nightColor.clone();
+            fog.color.copy(nightColor);
+            ambientLight.color.setHex(0x283552); ambientLight.intensity = 0.35;
+            sunLight.intensity = 0.08;
+            document.getElementById('smog-vignette').style.background =
+                "radial-gradient(circle, rgba(10,14,25,0.15) 35%, rgba(0,0,0,0.78) 100%)";
+            document.getElementById('smog-vignette').style.opacity = 1;
+            streetLightList.forEach(sl => { sl.bulb.material = bulbOnMat; sl.pool.visible = true; });
+            groundGlowMat.opacity = 0.24;
+            lightStates.head = true; lightStates.tail = true; lightStates.dash = true;
+        } else {
+            modeDayBtn.classList.add('active'); modeNightBtn.classList.remove('active');
+            scene.background.setHex(z.skyHex);
+            fog.color.setHex(z.skyHex);
+            fog.density = z.fogDensity;
+            ambientLight.color.setHex(0xd8cfc0); ambientLight.intensity = 0.92;
+            sunLight.intensity = 0.7;
+            document.getElementById('smog-vignette').style.background =
+                "radial-gradient(circle, rgba(168,155,130,0.04) 45%, rgba(75,70,60,0.5) 100%)";
+            document.getElementById('smog-vignette').style.opacity = z.smogOpacity > 0.2 ? 0.85 : 0.12;
+            streetLightList.forEach(sl => { sl.bulb.material = bulbOffMat; sl.pool.visible = false; });
+            groundGlowMat.opacity = 0.0;
+        }
+        syncLightButtons();
+    }
+
+    modeDayBtn.addEventListener('click', () => applyDayNightTheme(false));
+    modeNightBtn.addEventListener('click', () => applyDayNightTheme(true));
+
+    let steeringSmoothness = 0.65;
+    document.getElementById('steer-smooth-slider').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        document.getElementById('steer-smooth-txt').innerText = val + "%";
+        steeringSmoothness = val / 100;
+    });
+
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    settingsBtn.addEventListener('click', () => {
+        settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+    });
+    document.getElementById('close-settings').addEventListener('click', () => settingsPanel.style.display = 'none');
+
+    const wheelWrapper = document.getElementById('steering-wrapper');
+    const arrowControls = document.getElementById('arrow-steer-controls');
+    const modeWheelBtn = document.getElementById('mode-wheel-btn');
+    const modeArrowsBtn = document.getElementById('mode-arrows-btn');
+
+    modeWheelBtn.addEventListener('click', () => {
+        modeWheelBtn.classList.add('active'); modeArrowsBtn.classList.remove('active');
+        wheelWrapper.style.display = 'block'; arrowControls.style.display = 'none';
+    });
+    modeArrowsBtn.addEventListener('click', () => {
+        modeArrowsBtn.classList.add('active'); modeWheelBtn.classList.remove('active');
+        wheelWrapper.style.display = 'none'; arrowControls.style.display = 'flex';
+    });
+
+    let targetSteeringAngle = 0, steeringAngle = 0, isDraggingWheel = false, lastPointerAngle = 0;
+
+    function getAngleFromCenter(clientX, clientY) {
+        const rect = wheelWrapper.getBoundingClientRect();
+        return Math.atan2(clientY - (rect.top + rect.height / 2), clientX - (rect.left + rect.width / 2)) * (180 / Math.PI);
+    }
+
+    wheelWrapper.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('#horn-pad')) return;
+        isDraggingWheel = true;
+        lastPointerAngle = getAngleFromCenter(e.clientX, e.clientY);
+        wheelWrapper.setPointerCapture(e.pointerId);
+    });
+
+    wheelWrapper.addEventListener('pointermove', (e) => {
+        if (!isDraggingWheel) return;
+        const currentAngle = getAngleFromCenter(e.clientX, e.clientY);
+        let delta = currentAngle - lastPointerAngle;
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+        targetSteeringAngle = Math.max(-140, Math.min(140, targetSteeringAngle + delta * 1.1));
+        lastPointerAngle = currentAngle;
+    });
+
+    const releaseWheel = () => { isDraggingWheel = false; };
+    wheelWrapper.addEventListener('pointerup', releaseWheel);
+    wheelWrapper.addEventListener('pointercancel', releaseWheel);
+
+    const hornPad = document.getElementById('horn-pad');
+    hornPad.addEventListener('pointerdown', (e) => { e.stopPropagation(); startContinuousHorn(); });
+    hornPad.addEventListener('pointerup', stopContinuousHorn);
+    hornPad.addEventListener('pointerleave', stopContinuousHorn);
+    hornPad.addEventListener('pointercancel', stopContinuousHorn);
+
+    const keys = { left: false, right: false, gas: false, brake: false };
+    const accelPedal = document.getElementById('accel-pedal');
+    const brakePedal = document.getElementById('brake-pedal');
+
+    accelPedal.addEventListener('pointerdown', (e) => { e.preventDefault(); keys.gas = true; accelPedal.classList.add('pressed'); });
+    const releaseAccel = () => { if (keys.gas) coastHoldTimer = 115; keys.gas = false; accelPedal.classList.remove('pressed'); };
+    accelPedal.addEventListener('pointerup', releaseAccel);
+    accelPedal.addEventListener('pointerleave', releaseAccel);
+    accelPedal.addEventListener('pointercancel', releaseAccel);
+
+    brakePedal.addEventListener('pointerdown', (e) => { e.preventDefault(); keys.brake = true; coastHoldTimer = 0; brakePedal.classList.add('pressed'); });
+    const releaseBrake = () => { if (keys.brake) coastHoldTimer = 130; keys.brake = false; brakePedal.classList.remove('pressed'); };
+    brakePedal.addEventListener('pointerup', releaseBrake);
+    brakePedal.addEventListener('pointerleave', releaseBrake);
+    brakePedal.addEventListener('pointercancel', releaseBrake);
+
+    window.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { keys.gas = true; accelPedal.classList.add('pressed'); }
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { keys.brake = true; coastHoldTimer = 0; brakePedal.classList.add('pressed'); }
+        if (e.key === 'h' || e.key === 'H') startContinuousHorn();
+    });
+    window.addEventListener('keyup', e => {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') releaseAccel();
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') releaseBrake();
+        if (e.key === 'h' || e.key === 'H') stopContinuousHorn();
+    });
+
+    const bindHoldBtn = (id, key) => {
+        const el = document.getElementById(id);
+        el.addEventListener('pointerdown', (e) => { e.preventDefault(); keys[key] = true; });
+        el.addEventListener('pointerup', () => keys[key] = false);
+        el.addEventListener('pointerleave', () => keys[key] = false);
+    };
+    bindHoldBtn('left-btn', 'left'); bindHoldBtn('right-btn', 'right');
+
+    let gameActive = false;
+    let lives = 3, invulnerableTimer = 0;
+    let tharLocalX = 2.5;
+    let speed = 0, prevSpeed = 0, coastHoldTimer = 0;
+    const maxSpeed = 1.20;
+    let distance = 0;
+    let fuel = 85, lowFuelChimeTimer = 0;
+
+    function refillGas() {
+        if (!gameActive) return;
+        fuel = 100;
+        document.getElementById('fill-gas-popup').style.display = 'none';
+        document.getElementById('top-fuel-widget').classList.remove('fuel-low-blink');
+        showToast("⛽ Diesel Tank Full (100%)!", "rgba(46, 125, 50, 0.92)");
+    }
+    document.getElementById('top-fuel-widget').addEventListener('click', refillGas);
+    document.getElementById('fill-gas-popup').addEventListener('click', refillGas);
+
+    let suspensionY = 0, suspensionVel = 0;
+
+    let toastTimer = 0;
+    function showToast(text, bg = "rgba(211, 47, 47, 0.92)") {
+        const toast = document.getElementById('toast-msg');
+        toast.textContent = text;
+        toast.style.background = bg;
+        toast.style.display = 'block';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 1700);
+    }
+
+    function updateLivesUI() {
+        document.getElementById('lives-val').textContent = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, 3 - lives));
+    }
+
+    function resetGame() {
+        lives = 3; updateLivesUI();
+        invulnerableTimer = 60;
+        tharLocalX = 2.5;
+        speed = 0.16; prevSpeed = 0.16; coastHoldTimer = 150;
+        distance = 0; fuel = 85; lowFuelChimeTimer = 0;
+        targetSteeringAngle = 0; steeringAngle = 0;
+        suspensionY = 0; suspensionVel = 0;
+        roadPhase = 0;
+        applyZone(currentZoneIdx);
+
+        document.getElementById('fill-gas-popup').style.display = 'none';
+        document.getElementById('overlay-screen').style.display = 'none';
+        gameActive = true;
+        syncLightButtons();
+    }
+    document.getElementById('start-btn').addEventListener('click', () => { ensureAudio(); resetGame(); });
+
+    function handleHit(reason) {
+        if (invulnerableTimer > 0) return;
+        lives--;
+        updateLivesUI();
+        invulnerableTimer = 95;
+        speed *= 0.45; coastHoldTimer = 90;
+        suspensionVel = 0.09;
+        playPotholeThud();
+
+        const vig = document.getElementById('smog-vignette');
+        vig.classList.add('hit');
+        setTimeout(() => vig.classList.remove('hit'), 250);
+
+        if (lives > 0) {
+            showToast(`⚠️ ${reason} (${lives} ${lives === 1 ? 'life' : 'lives'} left!)`);
+        } else {
+            gameActive = false; speed = 0; stopContinuousHorn();
+            const ov = document.getElementById('overlay-screen');
+            ov.querySelector('h1').innerText = "GAME OVER!";
+            ov.querySelector('p').innerHTML = `${reason}<br>Total Distance: <b>${distance.toFixed(2)} km</b>`;
+            document.getElementById('start-btn').innerText = "TRY AGAIN";
+            ov.style.display = 'flex';
+        }
+    }
+
+    const wheelEl = document.getElementById('steering-wheel');
+    const charmEl = document.getElementById('hanging-charm');
+    const speedEl = document.getElementById('speed-display');
+    const accelEl = document.getElementById('accel-display');
+    const rpmEl = document.getElementById('rpm-display');
+    const gearEl = document.getElementById('gear-display');
+    const distEl = document.getElementById('dist-val');
+    const fuelFillEl = document.getElementById('fuel-fill');
+    const fuelPctTxt = document.getElementById('fuel-pct-txt');
+    const topFuelWidget = document.getElementById('top-fuel-widget');
+    const fillGasPopup = document.getElementById('fill-gas-popup');
+    const indLeftEl = document.getElementById('ind-left');
+    const indRightEl = document.getElementById('ind-right');
+    const wiperLeftEl = document.getElementById('wiper-left');
+    const wiperRightEl = document.getElementById('wiper-right');
+    let lastBlinkState = false;
+
+    const STEP_MS = 1000 / 60;
+    const MOVE = 1.35;
+    const portraitQuery = window.matchMedia('(orientation: portrait)');
+    const hudCache = {};
+    let lastTime = 0, accumulator = 0, mirrorTick = 0, renderBudget = 6, viewX = 0;
+    let frameAvg = 16.7, frameCount = 0;
+    let pixelRatio = renderer.getPixelRatio();
+    const MIN_PIXEL_RATIO = 0.75;
+
+    function changed(key, value) {
+        if (hudCache[key] === value) return false;
+        hudCache[key] = value;
+        return true;
+    }
+
+    function stepGame() {
+        if (invulnerableTimer > 0) invulnerableTimer--;
+        prevSpeed = speed;
+
+        if (fuel <= 0) {
+            speed = Math.max(0, speed - (keys.brake ? 0.0045 + speed * 0.0035 : 0.0014));
+        } else if (keys.gas) {
+            const accelRate = 0.0023 * (1.15 - (speed / maxSpeed) * 0.55);
+            speed = Math.min(maxSpeed, speed + accelRate);
+            coastHoldTimer = 115;
+            fuel = Math.max(0, fuel - 0.022);
+        } else if (keys.brake) {
+            speed = Math.max(0, speed - (0.0045 + speed * 0.0035));
+        } else {
+            if (coastHoldTimer > 0) coastHoldTimer--;
+            else speed = Math.max(0, speed - 0.00055);
+            if (speed > 0.01) fuel = Math.max(0, fuel - 0.0025);
+        }
+
+        if (fuel <= 18 && --lowFuelChimeTimer <= 0) {
+            playLowFuelTinTin();
+            lowFuelChimeTimer = 200;
+        }
+
+        const turnSpeed = 2.5 + steeringSmoothness * 4.5;
+        if (keys.left) targetSteeringAngle = Math.max(-140, targetSteeringAngle - turnSpeed);
+        else if (keys.right) targetSteeringAngle = Math.min(140, targetSteeringAngle + turnSpeed);
+        else if (!isDraggingWheel) targetSteeringAngle *= (0.95 - steeringSmoothness * 0.10);
+        steeringAngle += (targetSteeringAngle - steeringAngle) * (0.10 + (1.0 - steeringSmoothness) * 0.25);
+
+        roadPhase += speed * MOVE * roadCurveFreq;
+        const steerNorm = steeringAngle / 140;
+        tharLocalX += steerNorm * 0.095 * (0.45 + speed * 0.65) * Math.min(1, speed / 0.15);
+        const junctionNear = roundaboutGroup.visible && Math.abs(roundaboutGroup.position.z + 1.8) < 13;
+        const xLimit = junctionNear ? 30 : 7.6;
+        if (Math.abs(tharLocalX) > xLimit) tharLocalX -= Math.sign(tharLocalX) * Math.min(0.4, Math.abs(tharLocalX) - xLimit);
+
+        suspensionVel = (suspensionVel - 0.18 * suspensionY) * 0.80;
+        suspensionY += suspensionVel;
+        distance += speed * 0.014;
+
+        const move = speed * MOVE;
+        for (let i = 0; i < roadSegments.length; i++) {
+            const seg = roadSegments[i];
+            seg.position.z += move;
+            if (seg.position.z > 50) seg.position.z -= segCount * segLen;
+            seg.position.x = getRoadCurveX(seg.position.z);
+        }
+
+        if (roundaboutGroup.visible) {
+            roundaboutGroup.position.z += move;
+            if (roundaboutGroup.position.z > 40) {
+                if (zones[currentZoneIdx].roundabout) roundaboutGroup.position.z = -320 - Math.random() * 180;
+                else roundaboutGroup.visible = false;
+            }
+            roundaboutGroup.position.x = getRoadCurveX(roundaboutGroup.position.z);
+            const carX = getRoadCurveX(0) + tharLocalX;
+            if (Math.hypot(roundaboutGroup.position.x - carX, roundaboutGroup.position.z + 1.8) < 4.5) {
+                handleHit("Crashed into the roundabout!");
+            }
+        }
+
+        for (let i = 0; i < sceneryList.length; i++) {
+            const s = sceneryList[i];
+            s.prop.position.z += move;
+            if (s.prop.position.z > 30) s.prop.position.z -= 12 * 26;
+            s.prop.position.x = getRoadCurveX(s.prop.position.z);
+        }
+
+        for (let i = 0; i < streetLightList.length; i++) {
+            const sl = streetLightList[i];
+            sl.group.position.z += move;
+            if (sl.group.position.z > 45) sl.group.position.z -= 280;
+            sl.group.position.x = getRoadCurveX(sl.group.position.z);
+        }
+
+        if (smogParticles.visible) {
+            const pArr = smogParticles.geometry.attributes.position.array;
+            const dz = speed * 1.15 + 0.04;
+            for (let i = 2; i < pArr.length; i += 3) {
+                pArr[i] += dz;
+                if (pArr[i] > 20) pArr[i] = -100;
+            }
+        }
+
+        for (let i = 0; i < potholeList.length; i++) {
+            const ph = potholeList[i];
+            ph.mesh.position.z += move;
+            if (ph.hitCooldown > 0) ph.hitCooldown--;
+            if (ph.mesh.position.z > 25) {
+                ph.mesh.position.z = -280 - Math.random() * 40;
+                ph.laneOffset = [-6.5, -2.5, 2.5, 6.5][Math.floor(Math.random() * 4)];
+                ph.depth = 0.7 + Math.random() * 0.8;
+                ph.mesh.scale.set(ph.depth, 1, ph.depth);
+            }
+            ph.mesh.position.x = getRoadCurveX(ph.mesh.position.z) + ph.laneOffset;
+
+            if (Math.abs(ph.mesh.position.z + 1.6) < 1.1 * ph.depth && Math.abs(ph.laneOffset - tharLocalX) < 1.25 * ph.depth && speed > 0.08 && ph.hitCooldown === 0) {
+                ph.hitCooldown = 45;
+                suspensionVel = -0.14 * ph.depth * (0.5 + speed * 0.7);
+                playPotholeThud();
+            }
+        }
+
+        stepSignals();
+
+        for (let i = 0; i < bumpList.length; i++) {
+            const b = bumpList[i];
+            b.mesh.position.z += move;
+            if (b.hitCooldown > 0) b.hitCooldown--;
+            if (b.mesh.position.z > 25) b.mesh.position.z = -300 - Math.random() * 80;
+            b.mesh.position.x = getRoadCurveX(b.mesh.position.z);
+            if (Math.abs(b.mesh.position.z + 1.6) < 0.9 && b.hitCooldown === 0 && speed > 0.03) {
+                b.hitCooldown = 40;
+                suspensionVel = 0.1 * (0.4 + speed * 0.9);
+                playPotholeThud();
+            }
+        }
+
+        for (let i = 0; i < signalList.length; i++) {
+            const g = signalList[i].group;
+            g.position.z += move;
+            if (g.position.z > 45) g.position.z -= 440;
+            g.position.x = getRoadCurveX(g.position.z);
+        }
+
+        for (let i = 0; i < cartList.length; i++) {
+            const t = cartList[i];
+            if (!t.mesh.visible) continue;
+            t.mesh.position.z += move - t.speed;
+            if (t.mesh.position.z > 30) t.mesh.position.z = -220 - Math.random() * 40;
+            t.mesh.position.x = getRoadCurveX(t.mesh.position.z) + t.laneOffset;
+
+            if (Math.abs(t.mesh.position.z + 1.8) < 1.4 && Math.abs(t.laneOffset - tharLocalX) < 1.35) {
+                handleHit("Hit a vegetable cart!");
+            }
+        }
+
+        const zGap = zones[currentZoneIdx].trafficGap;
+        for (let i = 0; i < trafficList.length; i++) {
+            const v = trafficList[i];
+            v.curSpeed += Math.max(-0.015, Math.min(0.004, trafficTarget(v) - v.curSpeed));
+            for (let w = 0; w < v.wheels.length; w++) v.wheels[w].rotation.x -= v.curSpeed * 0.45;
+
+            if (v.isOncoming) {
+                v.mesh.position.z += speed * MOVE + v.curSpeed * 0.95;
+                if (v.mesh.position.z > 60) {
+                    v.mesh.position.z = -260 - Math.random() * zGap;
+                    v.curSpeed = v.speed;
+                }
+                v.mesh.position.x = getRoadCurveX(v.mesh.position.z) + v.laneOffset;
+
+                if (Math.abs(v.mesh.position.z + 1.8) < (v.length / 2 + 0.72) && Math.abs(v.laneOffset - tharLocalX) < (v.width / 2 + 0.62) && tharLocalX < -0.6) {
+                    handleHit("Collided with oncoming traffic across the divider!");
+                }
+            } else {
+                v.mesh.position.z += speed * MOVE - v.curSpeed;
+                const dzFromPlayer = v.mesh.position.z + 1.8;
+                v.mesh.position.x = getRoadCurveX(v.mesh.position.z) + v.laneOffset;
+
+                const minSafeZ = (v.length / 2) + 1.65;
+                if (Math.abs(v.laneOffset - tharLocalX) < (v.width / 2 + 0.75) && dzFromPlayer < 0 && dzFromPlayer > -minSafeZ) {
+                    v.mesh.position.z = -1.8 - minSafeZ;
+                    speed = Math.min(speed, v.curSpeed * 0.72);
+                }
+
+                if (v.mesh.position.z > 65) {
+                    v.mesh.position.z = -260 - Math.random() * zGap;
+                    v.curSpeed = v.speed;
+                    v.laneOffset = forwardLanes[Math.floor(Math.random() * 2)];
+                } else if (v.mesh.position.z < -340) {
+                    v.mesh.position.z = 48 + Math.random() * 20;
+                    v.laneOffset = tharLocalX < 4.5 ? 6.5 : 2.5;
+                }
+            }
+            if (!gameActive) return;
+        }
+    }
+
+    function updateHUD() {
+        updateScrubSound();
+        if (lightStates.wiper) {
+            wiperPhase += 0.12;
+            const angle = (-Math.abs(Math.sin(wiperPhase)) * 100).toFixed(1);
+            wiperLeftEl.style.transform = wiperRightEl.style.transform = `rotate(${angle}deg)`;
+            hudCache.wiperRest = false;
+        } else if (!hudCache.wiperRest) {
+            wiperLeftEl.style.transform = wiperRightEl.style.transform = 'rotate(0deg)';
+            hudCache.wiperRest = true;
+        }
+
+        const fuelPct = fuel.toFixed(0) + "%";
+        if (changed('fuelW', fuelPct)) fuelFillEl.style.width = fuelPct;
+        if (changed('fuelT', Math.ceil(fuel))) fuelPctTxt.textContent = Math.ceil(fuel) + "%";
+
+        const lowState = fuel <= 0 ? 2 : (fuel <= 18 ? 1 : 0);
+        if (changed('fuelLow', lowState)) {
+            const low = lowState > 0;
+            fuelFillEl.style.background = low ? "#ff3b30" : "#32d74b";
+            topFuelWidget.classList.toggle('fuel-low-blink', low);
+            fillGasPopup.style.display = low ? 'block' : 'none';
+            if (low) fillGasPopup.textContent = lowState === 2 ? "⛽ TANK EMPTY! TAP TO FILL GAS" : "⛽ LOW FUEL! TAP TO FILL GAS";
+        }
+
+        const gForce = (speed - prevSpeed) * 140;
+        const gText = (gForce >= 0 ? "+" : "") + gForce.toFixed(2) + " G";
+        if (changed('g', gText)) {
+            accelEl.textContent = gText;
+            accelEl.style.color = gForce > 0.03 ? "#32d74b" : (gForce < -0.04 ? "#ff453a" : "#00e5ff");
+        }
+
+        const activeDir = manualIndicator !== 0 ? manualIndicator : (steeringAngle < -18 ? -1 : (steeringAngle > 18 ? 1 : 0));
+        const blinkPulse = Math.floor(Date.now() / 320) % 2 === 0;
+        if (activeDir !== 0 && blinkPulse !== lastBlinkState) {
+            playIndicatorTick(blinkPulse);
+            lastBlinkState = blinkPulse;
+        }
+        const leftOn = activeDir === -1 && blinkPulse;
+        const rightOn = activeDir === 1 && blinkPulse;
+        if (changed('indL', leftOn)) indLeftEl.classList.toggle('blink-on', leftOn);
+        if (changed('indR', rightOn)) indRightEl.classList.toggle('blink-on', rightOn);
+
+        const wheelDeg = steeringAngle.toFixed(1);
+        if (changed('wheel', wheelDeg)) wheelEl.style.transform = `rotate(${wheelDeg}deg)`;
+        const swing = ((-steeringAngle / 140) * 22 + Math.sin(distance * 35) * (speed * 5)).toFixed(2);
+        charmEl.style.transform = `rotate(${swing}deg) translateY(${(suspensionY * 35).toFixed(2)}px)`;
+
+        const kmh = Math.min(120, Math.round(speed * 100));
+        if (changed('kmh', kmh)) {
+            speedEl.textContent = kmh;
+            gearEl.textContent = kmh === 0 ? "N" : (kmh < 25 ? "D1" : (kmh < 50 ? "D2" : (kmh < 80 ? "D3" : (kmh < 105 ? "D4" : "D5"))));
+        }
+        const distText = distance.toFixed(2) + " km";
+        if (changed('dist', distText)) distEl.textContent = distText;
+        const rpmText = (0.8 + (speed / maxSpeed) * 4.5 + (keys.gas ? 0.45 : 0)).toFixed(1);
+        if (changed('rpm', rpmText)) rpmEl.textContent = rpmText;
+    }
+
+    function updateView() {
+        viewX = getRoadCurveX(0) + tharLocalX;
+        const steerNorm = steeringAngle / 140;
+
+        tharGroup.position.x = viewX;
+        tharGroup.position.y = suspensionY * 0.6;
+        const roughY = (Math.sin(distance * 173) + Math.sin(distance * 311 + 1.7)) * 0.0025 * speed * zoneRough[currentZoneIdx];
+        camera.position.set(viewX + 0.42, 1.78 + suspensionY + roughY + Math.sin(distance * 45) * (speed * 0.010), 0);
+
+        const aheadRoadX = getRoadCurveX(-28) + tharLocalX;
+        camera.lookAt(aheadRoadX + 0.42, 1.55, -28);
+        camera.rotation.z = -steerNorm * 0.025;
+        camera.rotation.x += suspensionY * 0.5 + suspensionVel * 0.6;
+
+        headLightL.position.x = viewX - 0.68;
+        headLightL.target.position.x = aheadRoadX - 0.68;
+        headLightR.position.x = viewX + 0.68;
+        headLightR.target.position.x = aheadRoadX + 0.68;
+        deflectorLight.position.x = viewX;
+        deflectorLight.target.position.x = aheadRoadX;
+        tailLightGlow.position.x = viewX;
+
+        if (lightStates.tail) {
+            const baseTail = isNightMode ? 2.5 : 1.0;
+            tailLightGlow.intensity = keys.brake ? baseTail * 2.4 : baseTail;
+        } else {
+            tailLightGlow.intensity = 0;
+        }
+
+        smogParticles.position.x = viewX;
+        if (smogParticles.visible) smogParticles.geometry.attributes.position.needsUpdate = true;
+    }
+
+    function renderAll() {
+        scene.updateMatrixWorld();
+        renderer.render(scene, camera);
+
+        mirrorTick ^= 1;
+        if (mirrorTick) {
+            mirrorCamera.position.set(viewX + 1.05, 1.52 + suspensionY, -0.6);
+            mirrorCamera.lookAt(getRoadCurveX(35) + tharLocalX + 1.2, 1.15, 35);
+            mirrorRenderer.render(scene, mirrorCamera);
+        } else {
+            centerMirrorCamera.position.set(viewX, 1.85 + suspensionY, -0.5);
+            centerMirrorCamera.lookAt(getRoadCurveX(40) + tharLocalX, 1.2, 40);
+            centerMirrorRenderer.render(scene, centerMirrorCamera);
+        }
+    }
+
+    function adaptQuality() {
+        if (frameAvg > 24 && pixelRatio > MIN_PIXEL_RATIO) {
+            pixelRatio = Math.max(MIN_PIXEL_RATIO, pixelRatio - 0.25);
+            renderer.setPixelRatio(pixelRatio);
+            frameAvg = 16.7;
+        }
+    }
+
+    function animate(now) {
+        requestAnimationFrame(animate);
+
+        if (portraitQuery.matches || document.hidden) {
+            lastTime = now;
+            return;
+        }
+
+        const delta = Math.min(now - lastTime, 100);
+        lastTime = now;
+        let steps = 0;
+
+        if (gameActive) {
+            accumulator += delta;
+            while (accumulator >= STEP_MS && steps < 3 && gameActive) {
+                stepGame();
+                accumulator -= STEP_MS;
+                steps++;
+            }
+            if (accumulator > STEP_MS) accumulator = 0;
+
+            frameAvg += (delta - frameAvg) * 0.05;
+            if (++frameCount % 90 === 0) adaptQuality();
+        }
+
+        if (steps > 0) {
+            updateHUD();
+            renderBudget = 3;
+        } else if (renderBudget <= 0) {
+            return;
+        } else {
+            renderBudget--;
+        }
+
+        updateView();
+        renderAll();
+    }
+
+    const zoneRough = [1, 0.6, 0.25, 1.2, 1, 1.4];
+    const acBtn = document.getElementById('ac-btn');
+    const fanBtn = document.getElementById('fan-btn');
+    const vents = document.querySelectorAll('.ac-vent');
+    const FAN_LABELS = ['OFF', '1', '2', '3'];
+    const FAN_GAIN = [0, 0.04, 0.08, 0.14];
+    const FAN_FREQ = [0, 600, 900, 1400];
+    let acOn = false, fanLevel = 0;
+    let airSource = null, airGain = null, airFilter = null, airBuffer = null;
+
+    function getNoiseBuffer() {
+        if (!airBuffer) {
+            const size = audioCtx.sampleRate * 2;
+            airBuffer = audioCtx.createBuffer(1, size, audioCtx.sampleRate);
+            const d = airBuffer.getChannelData(0);
+            for (let i = 0; i < size; i++) d[i] = Math.random() * 2 - 1;
+        }
+        return airBuffer;
+    }
+
+    let scrubSource = null, scrubGain = null, lastSteerAngle = 0;
+    function updateScrubSound() {
+        const vel = Math.abs(steeringAngle - lastSteerAngle);
+        lastSteerAngle = steeringAngle;
+        if (!audioCtx || audioCtx.state !== 'running') return;
+        const level = (gameActive && speed < 0.05) ? Math.min(0.07, vel * 0.04) : 0;
+        if (!scrubSource) {
+            if (level < 0.004) return;
+            scrubSource = audioCtx.createBufferSource();
+            scrubSource.buffer = getNoiseBuffer();
+            scrubSource.loop = true;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass'; filter.frequency.value = 420;
+            scrubGain = audioCtx.createGain();
+            scrubGain.gain.value = 0;
+            scrubSource.connect(filter); filter.connect(scrubGain); scrubGain.connect(audioCtx.destination);
+            scrubSource.start();
+        }
+        scrubGain.gain.setTargetAtTime(level, audioCtx.currentTime, 0.05);
+    }
+
+    function setFanSound(level) {
+        if (level === 0) {
+            if (airSource) {
+                const src = airSource;
+                airGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+                setTimeout(() => { try { src.stop(); } catch (e) {} }, 400);
+                airSource = null;
+            }
+            return;
+        }
+        ensureAudio();
+        if (!airSource) {
+            getNoiseBuffer();
+            airSource = audioCtx.createBufferSource();
+            airSource.buffer = airBuffer;
+            airSource.loop = true;
+            airFilter = audioCtx.createBiquadFilter();
+            airFilter.type = 'bandpass'; airFilter.Q.value = 0.4;
+            airGain = audioCtx.createGain();
+            airGain.gain.value = 0;
+            airSource.connect(airFilter); airFilter.connect(airGain); airGain.connect(audioCtx.destination);
+            airSource.start();
+        }
+        const t = audioCtx.currentTime;
+        airFilter.frequency.setTargetAtTime(FAN_FREQ[level], t, 0.08);
+        airGain.gain.setTargetAtTime(FAN_GAIN[level], t, 0.1);
+    }
+
+    function refreshClimateUI() {
+        acBtn.classList.toggle('on', acOn);
+        fanBtn.classList.toggle('on', fanLevel > 0);
+        document.getElementById('ac-state').textContent = acOn ? 'ON' : 'OFF';
+        document.getElementById('fan-state').textContent = FAN_LABELS[fanLevel];
+        document.getElementById('temp-state').textContent = acOn ? '22°C' : '--';
+        document.getElementById('climate-strip').classList.toggle('ac-on', acOn);
+        vents.forEach(v => v.classList.toggle('air-on', fanLevel > 0));
+    }
+
+    acBtn.addEventListener('click', () => {
+        acOn = !acOn;
+        refreshClimateUI();
+        showToast(acOn ? '❄️ A/C ON' : 'A/C OFF', 'rgba(0, 90, 190, 0.92)');
+    });
+    fanBtn.addEventListener('click', () => {
+        fanLevel = (fanLevel + 1) % 4;
+        refreshClimateUI();
+        setFanSound(fanLevel);
+    });
+
+    const portNames = { 'HDMI': 'HDMI display', 'AUX': 'Headphones', 'USB-A': 'USB phone charger', 'USB-C': 'USB-C fast charger' };
+    document.querySelectorAll('.port').forEach(port => port.addEventListener('click', () => {
+        const on = port.classList.toggle('active');
+        showToast(`${portNames[port.dataset.port]} ${on ? 'connected' : 'disconnected'}`, 'rgba(0, 105, 120, 0.92)');
+    }));
+
+    let resizePending = false;
+    window.addEventListener('resize', () => {
+        if (resizePending) return;
+        resizePending = true;
+        requestAnimationFrame(() => {
+            resizePending = false;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderBudget = 3;
+        });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopMusicLoop();
+            stopContinuousHorn();
+            setFanSound(0);
+        } else {
+            lastTime = performance.now();
+            accumulator = 0;
+            if (musicPlaying) startMusicLoop();
+            if (fanLevel > 0) setFanSound(fanLevel);
+        }
+    });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    [...roadSegments, ...streetLightList.map(s => s.group), ...sceneryList.map(s => s.prop),
+     ...potholeList.map(p => p.mesh), ...signalList.map(s => s.group), ...cartList.map(t => t.mesh), roundaboutGroup, tharGroup
+    ].forEach(group => {
+        group.children.forEach(child => child.traverse(o => { o.updateMatrix(); o.matrixAutoUpdate = false; }));
+    });
+
+    lastTime = performance.now();
+    updateView();
+    requestAnimationFrame(animate);
+</script>
+</body>
+</html>
