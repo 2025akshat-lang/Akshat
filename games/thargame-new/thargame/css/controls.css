@@ -1,0 +1,73 @@
+/* thargame/css/controls.css
+   Steering wheel, horn pad, arrow buttons, foot pedals */
+#steering-wrapper {
+    position: absolute; bottom: -22px; right: 5.5%;
+    width: 158px; height: 158px; z-index: 28;
+    touch-action: none;
+}
+#steering-wheel {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 15px solid #16171a;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.95), inset 0 0 8px #3a3a42;
+    position: relative; cursor: grab;
+    background: radial-gradient(circle, transparent 56%, rgba(255,255,255,0.06) 60%);
+}
+#steering-wheel::before {
+    content: ''; position: absolute; top: -15px; left: 46%;
+    width: 8%; height: 15px; background: #ff3b30;
+}
+.spoke-horiz {
+    position: absolute; top: 44%; left: 0; width: 100%; height: 14px;
+    background: linear-gradient(180deg, #25262b, #141518);
+}
+.spoke-vert {
+    position: absolute; bottom: 0; left: 42%; width: 16%; height: 46%;
+    background: linear-gradient(90deg, #5e3523, #824b33, #5e3523);
+}
+#horn-pad {
+    position: absolute; top: 28%; left: 28%; width: 44%; height: 44%;
+    border-radius: 50%; background: radial-gradient(circle, #26272d, #111215);
+    border: 2px solid #555; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #ff3b30; font-size: 9.5px; font-weight: 900; letter-spacing: 1px;
+    cursor: pointer; z-index: 3; touch-action: none;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.8);
+    transition: transform 0.08s, border-color 0.08s;
+}
+#horn-pad span { font-size: 6.5px; color: #888; font-weight: normal; margin-top: 1px; }
+#horn-pad.honking { transform: scale(0.92); border-color: #ff9f0a; background: #2b1414; }
+
+#arrow-steer-controls {
+    display: none; position: absolute; bottom: 16px; right: 7%;
+    gap: 10px; z-index: 28;
+}
+.ctrl-btn {
+    width: 50px; height: 46px; border-radius: 10px;
+    background: rgba(24, 25, 30, 0.9); border: 2px solid #484a54;
+    color: #fff; font-weight: 800; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; touch-action: manipulation;
+}
+
+#foot-pedals {
+    position: absolute; bottom: 8px; left: 3.5%;
+    display: flex; align-items: flex-end; gap: 12px; z-index: 32;
+}
+.pedal {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    cursor: pointer; touch-action: none;
+    background: linear-gradient(180deg, #32343b 0%, #18191d 100%);
+    border: 2px solid #555863; color: #ddd;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.9), inset 0 2px 3px rgba(255,255,255,0.15);
+    transition: transform 0.07s ease, border-color 0.07s;
+    padding-bottom: 6px;
+}
+#brake-pedal { width: 56px; height: 52px; border-radius: 8px 8px 12px 12px; border-bottom: 4px solid #ff453a; }
+#accel-pedal { width: 46px; height: 74px; border-radius: 10px 10px 8px 8px; border-bottom: 4px solid #32d74b; }
+.pedal-grooves {
+    width: 70%; height: 60%; margin-bottom: 4px;
+    background: repeating-linear-gradient(0deg, #111 0px, #111 4px, #444 4px, #444 7px);
+    border-radius: 3px; opacity: 0.8;
+}
+.pedal-lbl { font-size: 8px; font-weight: 900; letter-spacing: 0.5px; }
+.pedal.pressed { transform: perspective(180px) rotateX(22deg) translateY(4px) scale(0.96); border-color: #fff; }

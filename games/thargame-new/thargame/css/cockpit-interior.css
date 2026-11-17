@@ -1,0 +1,111 @@
+/* thargame/css/cockpit-interior.css
+   Pillars, roof, rear-view mirror, hanging charm, side mirror, Buddha idol */
+.pillar-left {
+    position: absolute; top: 0; left: 0; width: 6%; height: 68%;
+    background: linear-gradient(90deg, #0b0b0d 65%, #1f1f24 100%);
+    transform: skewX(-10deg); transform-origin: top left; z-index: 8; pointer-events: none;
+}
+.pillar-right {
+    position: absolute; top: 0; right: 0; width: 6%; height: 68%;
+    background: linear-gradient(-90deg, #0b0b0d 65%, #1f1f24 100%);
+    transform: skewX(10deg); transform-origin: top right; z-index: 8; pointer-events: none;
+}
+.roof-liner {
+    position: absolute; top: 0; left: 0; width: 100%; height: 12px;
+    background: #121215; z-index: 8; pointer-events: none;
+}
+
+#center-mirror-assembly {
+    position: absolute; top: 38px; left: 50%; transform: translateX(-50%);
+    z-index: 15; display: flex; flex-direction: column; align-items: center;
+    pointer-events: none;
+}
+#center-mirror {
+    width: 150px; height: 42px; background: #141418; border: 3px solid #09090b;
+    border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.85);
+    position: relative;
+}
+#center-mirror-canvas { width: 100%; height: 100%; display: block; transform: scaleX(-1); }
+
+#hanging-charm {
+    transform-origin: top center;
+    display: flex; flex-direction: column; align-items: center;
+    margin-top: -2px;
+}
+.garland-loop {
+    width: 18px; height: 24px;
+    border: 3px dotted #8d4925; border-top: none;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+.id-card-tag {
+    width: 22px; height: 28px; background: linear-gradient(135deg, #fff8e7, #e6d5b8);
+    border: 1px solid #b8860b; border-radius: 3px; margin-top: -2px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.7);
+}
+.id-stripe { width: 100%; height: 5px; background: #d32f2f; margin-bottom: 3px; }
+.id-symbol { font-size: 9px; color: #b71c1c; font-weight: bold; line-height: 1; }
+
+#side-mirror {
+    position: absolute; bottom: 34%; right: 3%;
+    width: 124px; height: 72px;
+    background: #1b1a18; border: 5px solid #121214;
+    border-radius: 26px 14px 14px 14px;
+    overflow: hidden; z-index: 15;
+    box-shadow: 4px 8px 20px rgba(0,0,0,0.85);
+    transform: perspective(320px) rotateY(-16deg);
+}
+#mirror-canvas { width: 100%; height: 100%; display: block; transform: scaleX(-1); }
+#mirror-label {
+    position: absolute; bottom: 2px; left: 8px; font-size: 8px;
+    color: rgba(255,255,255,0.65); pointer-events: none;
+}
+
+#dashboard-buddha {
+    position: absolute; bottom: 32.5%; left: 50%; transform: translateX(-50%);
+    z-index: 16; display: flex; flex-direction: column; align-items: center;
+    pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.9));
+}
+.buddha-stage { position: relative; display: flex; align-items: flex-end; justify-content: center; }
+.buddha-halo {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.42) 0%, rgba(255, 180, 0, 0.12) 68%, transparent 100%);
+    border: 1.5px solid rgba(255, 215, 0, 0.65);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.35);
+}
+.buddha-figure { font-size: 22px; line-height: 1; filter: sepia(1) saturate(4) hue-rotate(8deg) brightness(1.15); }
+.buddha-pedestal {
+    width: 56px; height: 8px;
+    background: linear-gradient(90deg, #3e2723, #8d6e63, #3e2723);
+    border: 1px solid #ffd54f; border-radius: 4px; margin-top: -3px;
+}
+.incense-holder { position: absolute; right: -10px; bottom: 2px; width: 14px; height: 28px; pointer-events: none; }
+.incense-stick {
+    position: absolute; bottom: 0; left: 3px; width: 2px; height: 22px;
+    background: linear-gradient(180deg, #4e342e 0%, #8d6e63 100%);
+    transform: rotate(14deg); transform-origin: bottom center; border-radius: 1px;
+}
+.incense-ember {
+    position: absolute; top: -2px; left: -1px; width: 4px; height: 4px; border-radius: 50%;
+    background: #ff5722; box-shadow: 0 0 6px #ff3d00, 0 0 10px #ffab00;
+    animation: emberPulse 1.1s infinite alternate;
+}
+@keyframes emberPulse { from { transform: scale(0.85); opacity: 0.75; } to { transform: scale(1.25); opacity: 1; } }
+.smoke-wisp {
+    position: absolute; top: -6px; left: 5px; width: 9px; height: 9px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(240, 244, 248, 0.85) 0%, rgba(200, 210, 220, 0) 75%);
+    filter: blur(1.6px); animation: riseSmoke 3.6s infinite ease-out;
+}
+.smoke-wisp:nth-child(2) { animation-delay: 0.6s; }
+.smoke-wisp:nth-child(3) { animation-delay: 1.2s; }
+.smoke-wisp:nth-child(4) { animation-delay: 1.8s; }
+.smoke-wisp:nth-child(5) { animation-delay: 2.4s; }
+.smoke-wisp:nth-child(6) { animation-delay: 3.0s; }
+@keyframes riseSmoke {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0.9; }
+    30% { transform: translate(-7px, -26px) scale(1.5); opacity: 0.7; }
+    65% { transform: translate(8px, -58px) scale(2.6); opacity: 0.4; }
+    100% { transform: translate(-4px, -92px) scale(4.2); opacity: 0; }
+}

@@ -1,0 +1,45 @@
+/* thargame/css/overlays-misc.css
+   Toast, start overlay, climate/ports, low-FX mode, quality buttons */
+#toast-msg {
+    position: absolute; top: 96px; left: 50%; transform: translateX(-50%);
+    background: rgba(211, 47, 47, 0.92); color: #fff; padding: 6px 16px;
+    border-radius: 8px; font-size: 12px; font-weight: bold; z-index: 40;
+    display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+#overlay-screen {
+    position: absolute; inset: 0; background: rgba(10, 10, 12, 0.92);
+    z-index: 80; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px;
+}
+#overlay-screen h1 { font-size: 24px; color: #ff453a; margin-bottom: 8px; }
+#overlay-screen p { max-width: 600px; font-size: 12.5px; color: #ccc; line-height: 1.5; margin-bottom: 18px; }
+#start-btn {
+    padding: 12px 34px; font-size: 15px; font-weight: bold;
+    background: #d32f2f; color: #fff; border: none; border-radius: 8px; cursor: pointer;
+}
+#smog-vignette.hit { background: radial-gradient(circle, rgba(255,0,0,0.25) 30%, rgba(180,0,0,0.7) 100%) !important; }
+#steering-wheel, #hanging-charm, .wiper-blade { will-change: transform; }
+.climate-strip { pointer-events: auto; gap: 4px; }
+.climate-strip.ac-on { border-color: #4da3ff; box-shadow: 0 0 8px rgba(77, 163, 255, 0.45); }
+.cl-btn { background: #1d1f26; border: 1px solid #3a3d47; color: #aaa; font-size: 8px; font-weight: 800; padding: 1px 6px; border-radius: 3px; cursor: pointer; }
+.cl-btn.on { color: #fff; background: #007aff; border-color: #4da3ff; }
+#fan-btn.on { background: #0a8a52; border-color: #32d74b; }
+.ac-vent.air-on { animation: ventAir 0.6s infinite alternate; }
+@keyframes ventAir {
+    from { box-shadow: inset 0 0 8px #000, 0 0 3px rgba(120, 220, 255, 0.3); }
+    to { box-shadow: inset 0 0 8px #000, 0 0 12px rgba(120, 220, 255, 0.95); }
+}
+.port-panel { display: flex; gap: 6px; margin-top: 3px; padding: 2px 6px; background: #101116; border: 1px solid #2f3138; border-radius: 6px; pointer-events: auto; align-self: flex-start; }
+.port { display: flex; flex-direction: column; align-items: center; gap: 1px; cursor: pointer; }
+.port i { font-style: normal; font-size: 5px; color: #888; font-weight: 800; }
+.port-hole { display: block; position: relative; background: #050505; box-shadow: inset 0 0 0 1px #555; }
+.port-hole.hdmi { width: 18px; height: 7px; clip-path: polygon(0 0, 100% 0, 100% 55%, 88% 100%, 12% 100%, 0 55%); }
+.port-hole.aux { width: 9px; height: 9px; border-radius: 50%; }
+.port-hole.usb { width: 14px; height: 7px; }
+.port-hole.usb::after { content: ''; position: absolute; left: 2px; right: 2px; top: 3px; height: 2px; background: #8a8a90; }
+.port-hole.usbc { width: 12px; height: 6px; border-radius: 4px; }
+.port.active .port-hole { box-shadow: 0 0 6px #00e5ff, inset 0 0 0 1px #00e5ff; }
+.port.active i { color: #00e5ff; }
+body.lowfx * { animation: none !important; filter: none !important; box-shadow: none !important; text-shadow: none !important; transition: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.q-pick.active { background: #0a84ff; border-color: #64b5ff; color: #fff; }

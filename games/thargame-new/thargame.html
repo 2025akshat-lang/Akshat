@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Delhi to Hills: Thar 4x4 Off-Road & Mountain Edition</title>
+    <link rel="stylesheet" href="thargame/css/base-effects.css">
+    <link rel="stylesheet" href="thargame/css/hud.css">
+    <link rel="stylesheet" href="thargame/css/cockpit-interior.css">
+    <link rel="stylesheet" href="thargame/css/dashboard.css">
+    <link rel="stylesheet" href="thargame/css/controls.css">
+    <link rel="stylesheet" href="thargame/css/overlays-misc.css">
+</head>
+<body>
+
+<div id="rotate-warning">
+    <div class="phone-icon">📱</div>
+    <h2>Please Rotate Your Phone</h2>
+    <p style="color:#aaa; margin-top:8px; font-size:14px;">Rotate your phone to <b>Landscape Mode</b> for the wide cockpit view and foot pedals.</p>
+</div>
+
+<div id="game-container">
+    <div id="smog-vignette"></div>
+    <div id="interior-glow"></div>
+
+    <div id="windshield-fx">
+        <div class="wiper-blade" id="wiper-left"></div>
+        <div class="wiper-blade" id="wiper-right"></div>
+    </div>
+
+    <div id="toast-msg">⚠️ ALERT!</div>
+    <div id="zone-banner">DELHI SMOG ZONE<span id="zone-sub">Manual Zone Mode Active</span></div>
+
+    <div id="drift-score-hud">
+        <div id="drift-title">🔥 DRIFT COMBO</div>
+        <div id="drift-pts">0 PTS</div>
+    </div>
+
+    <div id="top-bar">
+        <div class="hud-item">
+            <span class="hud-label">LIVES:</span>
+            <span id="lives-val">❤️❤️❤️</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">ZONE:</span>
+            <span class="hud-val" style="color:#64d2ff;" id="zone-hud">DELHI</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">AQI:</span>
+            <span class="hud-val" style="color:#ff453a;" id="aqi-val">485</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">DIST:</span>
+            <span class="hud-val" id="dist-val">0.00 km</span>
+        </div>
+        <button id="settings-btn" title="Settings">⚙️</button>
+    </div>
+
+    <div id="top-fuel-widget" title="Tap to Refuel">
+        <div class="tf-row">
+            <span>⛽ FUEL</span>
+            <span id="fuel-pct-txt">85%</span>
+        </div>
+        <div class="tf-bar-bg">
+            <div id="fuel-fill"></div>
+        </div>
+    </div>
+
+    <div id="fill-gas-popup">⛽ FILL GAS (TAP HERE)</div>
+
+    <div id="settings-panel">
+        <h3>⚙️ THAR OFF-ROAD & TERRAIN SETTINGS</h3>
+        <div class="setting-row">
+            <label>Graphics Quality:</label>
+            <div class="toggle-group">
+                <button class="toggle-btn q-pick" data-q="low">Low</button>
+                <button class="toggle-btn q-pick" data-q="med">Medium</button>
+                <button class="toggle-btn q-pick" data-q="high">High</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Select Drive Terrain (Alag-Alag Raste):</label>
+            <div class="toggle-group" style="margin-top:4px;">
+                <button class="toggle-btn zone-pick active" data-z="0">Delhi Asphalt</button>
+                <button class="toggle-btn zone-pick" data-z="1">Ghaziabad</button>
+                <button class="toggle-btn zone-pick" data-z="2">NH-9 Highway</button>
+                <button class="toggle-btn zone-pick" data-z="3">Gaon Kacchi Road</button>
+                <button class="toggle-btn zone-pick" data-z="4">Pahadi Hairpins</button>
+                <button class="toggle-btn zone-pick" data-z="5">Old Bazaar Dirt</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Time of Day:</label>
+            <div class="toggle-group">
+                <button class="toggle-btn active" id="mode-day-btn">☀️ Day</button>
+                <button class="toggle-btn" id="mode-night-btn">🌙 Night</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Steering Control Type:</label>
+            <div class="toggle-group">
+                <button class="toggle-btn active" id="mode-wheel-btn">Wheel (○)</button>
+                <button class="toggle-btn" id="mode-arrows-btn">Buttons (◀ ▶)</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>Steering Smoothness: <span id="steer-smooth-txt">65%</span></label>
+            <input type="range" id="steer-smooth-slider" min="15" max="100" value="65">
+        </div>
+        <button class="toggle-btn" style="width:100%; background:#333; color:#fff; margin-top:4px;" id="close-settings">DONE</button>
+    </div>
+
+    <div class="roof-liner"></div>
+    <div class="pillar-left"></div>
+    <div class="pillar-right"></div>
+
+    <div id="center-mirror-assembly">
+        <div id="center-mirror">
+            <canvas id="center-mirror-canvas"></canvas>
+        </div>
+        <div id="hanging-charm">
+            <div class="garland-loop"></div>
+            <div class="id-card-tag">
+                <div class="id-stripe"></div>
+                <div class="id-symbol">ॐ</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-buddha">
+        <div class="buddha-stage">
+            <div class="buddha-halo">
+                <div class="buddha-figure">🧘‍♂️</div>
+            </div>
+            <div class="incense-holder">
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="smoke-wisp"></div>
+                <div class="incense-stick">
+                    <div class="incense-ember"></div>
+                </div>
+            </div>
+        </div>
+        <div class="buddha-pedestal"></div>
+    </div>
+
+    <div id="side-mirror">
+        <canvas id="mirror-canvas"></canvas>
+        <div id="mirror-label">SIDE MIRROR</div>
+    </div>
+
+    <div id="thar-dashboard" class="dash-lit">
+        <div class="dash-left">
+            <div class="dash-left-top">
+                <div class="ac-vent"></div>
+                <div class="grab-handle">THAR 4x4</div>
+            </div>
+            <div id="glovebox" title="Tap to open/close side drawer">
+                <div class="glove-latch"></div>
+                <div id="glove-content">SIDE DRAWER (TAP)</div>
+            </div>
+        </div>
+
+        <div class="dash-center">
+            <div class="infotainment-bezel">
+                <div class="music-screen">
+                    <div class="track-info">
+                        <div class="track-title" id="track-name">FM 98.3 Mirchi Delhi</div>
+                        <div class="track-sub" id="track-status">Paused • Tap ▶ for Audio</div>
+                    </div>
+                    <div class="music-btns">
+                        <button class="m-btn" id="music-toggle">▶</button>
+                        <button class="m-btn" id="music-next">⏭</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="light-switch-panel">
+                <button class="lt-btn on" data-light="head" id="btn-headlight" title="Headlights">
+                    HEAD<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn on" data-light="tail" id="btn-taillight" title="Tail Lights">
+                    TAIL<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="defl" id="btn-deflector" title="Fog Lights">
+                    DEFL<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="int" id="btn-interior" title="Cabin Light">
+                    INT<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn on" data-light="dash" id="btn-dashlight" title="Dash Glow">
+                    DASH<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="wiper" id="btn-wiper" title="Windshield Wipers">
+                    WIPER<div class="lt-led"></div>
+                </button>
+                <button class="lt-btn" data-light="spray" id="btn-spray" title="Water Sprinkler">
+                    💦<div class="lt-led"></div>
+                </button>
+            </div>
+
+            <div class="climate-strip" id="climate-strip">
+                <button class="cl-btn" id="ac-btn">A/C <b id="ac-state">OFF</b></button>
+                <button class="cl-btn" id="fan-btn">FAN <b id="fan-state">OFF</b></button>
+                <span>TEMP: <b id="temp-state">--</b></span>
+            </div>
+        </div>
+
+        <div class="dash-right">
+            <div class="driver-cluster-row">
+                <div class="instrument-hood">
+                    <div class="dial">
+                        <div class="dial-val" id="speed-display">0</div>
+                        <div class="dial-lbl">KM/H</div>
+                    </div>
+
+                    <div class="mid-cluster">
+                        <div class="ind-row">
+                            <span class="ind-arrow" id="ind-left" title="Left Indicator">◀</span>
+                            <span style="font-size:10px; color:#fff; font-weight:900;" id="gear-display">N</span>
+                            <span class="ind-arrow" id="ind-right" title="Right Indicator">▶</span>
+                        </div>
+                        <div class="accel-tag" id="accel-display">0.00 G</div>
+                    </div>
+
+                    <div class="dial" style="border-color:#00e5ff;">
+                        <div class="dial-val" id="rpm-display">0.0</div>
+                        <div class="dial-lbl" style="color:#00e5ff;">RPM x1k</div>
+                    </div>
+                </div>
+                <div class="ac-vent"></div>
+            </div>
+            <div class="port-panel">
+                <div class="port" data-port="HDMI"><span class="port-hole hdmi"></span><i>HDMI</i></div>
+                <div class="port" data-port="AUX"><span class="port-hole aux"></span><i>AUX</i></div>
+                <div class="port" data-port="USB-A"><span class="port-hole usb"></span><i>USB-A</i></div>
+                <div class="port" data-port="USB-C"><span class="port-hole usbc"></span><i>USB-C</i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENGINE START/STOP PUSH BUTTON NEAR STEERING -->
+    <button id="engine-btn" title="Tap to Start/Stop Engine">ENGINE<br>START</button>
+
+    <div id="steering-wrapper">
+        <div id="steering-wheel">
+            <div class="spoke-horiz"></div>
+            <div class="spoke-vert"></div>
+            <div id="horn-pad">THAR<span>HOLD HORN</span></div>
+        </div>
+    </div>
+
+    <div id="arrow-steer-controls">
+        <button class="ctrl-btn" id="left-btn">◀</button>
+        <button class="ctrl-btn" id="right-btn">▶</button>
+    </div>
+
+    <div id="foot-pedals">
+        <div class="pedal" id="brake-pedal">
+            <div class="pedal-grooves"></div>
+            <div class="pedal-lbl" style="color:#ff453a;">BRAKE</div>
+        </div>
+        <div class="pedal" id="accel-pedal">
+            <div class="pedal-grooves"></div>
+            <div class="pedal-lbl" style="color:#32d74b;">ACCEL</div>
+        </div>
+    </div>
+
+    <div id="overlay-screen">
+        <h1>DELHI TO HILLS: THAR 4x4 OFF-ROAD</h1>
+        
+        <button id="start-btn">ENTER COCKPIT</button>
+    </div>
+</div>
+
+<!-- three.js (3D engine) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Game code: classic scripts, ORDER MATTERS (upar se neeche load hote hain, sab ek hi global scope share karte hain) -->
+<script src="thargame/js/core/boot-check.js"></script>
+<script src="thargame/js/core/config.js"></script>
+<script src="thargame/js/audio/audio-engine-fx.js"></script>
+<script src="thargame/js/audio/audio-music.js"></script>
+<script src="thargame/js/render/scene-setup.js"></script>
+<script src="thargame/js/ui/cockpit-controls.js"></script>
+<script src="thargame/js/car/car-model.js"></script>
+<script src="thargame/js/world/road-terrain.js"></script>
+<script src="thargame/js/world/street-lights.js"></script>
+<script src="thargame/js/world/scenery.js"></script>
+<script src="thargame/js/traffic/vehicles.js"></script>
+<script src="thargame/js/traffic/obstacles-signals.js"></script>
+<script src="thargame/js/world/world-init.js"></script>
+<script src="thargame/js/world/particles.js"></script>
+<script src="thargame/js/game/zones-theme.js"></script>
+<script src="thargame/js/ui/settings-panel.js"></script>
+<script src="thargame/js/input/controls.js"></script>
+<script src="thargame/js/game/state.js"></script>
+<script src="thargame/js/game/hud.js"></script>
+<script src="thargame/js/game/physics.js"></script>
+<script src="thargame/js/render/view.js"></script>
+<script src="thargame/js/game/main-loop.js"></script>
+<script src="thargame/js/audio/climate-ac.js"></script>
+<script src="thargame/js/main.js"></script>
+</body>
+</html>

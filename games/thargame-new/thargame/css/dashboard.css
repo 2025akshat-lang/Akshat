@@ -1,0 +1,164 @@
+/* thargame/css/dashboard.css
+   Dashboard, AC vents, glovebox, music screen, light switches, dials, engine button */
+#thar-dashboard {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 33%;
+    background: linear-gradient(180deg, #232429 0%, #141518 45%, #0c0c0e 100%);
+    border-top: 3px solid #35363d;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.9);
+    z-index: 12; display: flex; justify-content: space-between; align-items: stretch;
+    padding: 8px 4% 4px 4%;
+    transition: box-shadow 0.3s, border-color 0.3s;
+}
+#thar-dashboard.dash-lit {
+    border-top-color: #00e5ff;
+    box-shadow: 0 -8px 25px rgba(0, 229, 255, 0.22);
+}
+#thar-dashboard.dash-lit .instrument-hood {
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.45), inset 0 0 10px rgba(0, 229, 255, 0.2);
+    border-color: #00e5ff;
+}
+#thar-dashboard.dash-lit .climate-strip {
+    border-color: #ff9f0a;
+    box-shadow: 0 0 8px rgba(255, 159, 10, 0.35);
+}
+
+.dash-left {
+    width: 28%; display: flex; flex-direction: column; justify-content: space-between;
+    padding-right: 10px; border-right: 1px solid #2a2b30;
+}
+.dash-left-top { display: flex; align-items: center; justify-content: space-between; }
+.ac-vent {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: radial-gradient(circle, #0d0d10 40%, #2a2a30 75%, #484852 100%);
+    border: 3px solid #3c3d45; position: relative;
+    box-shadow: inset 0 0 8px #000, 0 2px 5px rgba(0,0,0,0.7);
+}
+.ac-vent::before, .ac-vent::after { content: ''; position: absolute; background: #222; }
+.ac-vent::before { top: 46%; left: 10%; width: 80%; height: 3px; }
+.ac-vent::after { left: 46%; top: 10%; width: 3px; height: 80%; }
+
+.grab-handle {
+    flex: 1; margin-left: 10px; height: 18px;
+    background: linear-gradient(180deg, #7c4a32 0%, #4e2b1b 100%);
+    border: 2px solid #222; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 2px; font-weight: bold;
+}
+
+#glovebox {
+    width: 100%; height: 30%; background: #191a1e;
+    border: 1.5px solid #2e3036; border-radius: 5px;
+    cursor: pointer; pointer-events: auto;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: transform 0.25s ease;
+    margin-bottom: 66px;
+}
+.glove-latch { width: 22px; height: 7px; background: #363840; border-radius: 3px; border: 1px solid #555; }
+#glove-content { font-size: 8px; color: #888; }
+#glovebox.open { transform: translateY(4px); border-color: #ff9f0a; }
+
+.dash-center {
+    width: 36%; display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between; padding: 0 8px;
+}
+.infotainment-bezel {
+    width: 100%; background: linear-gradient(180deg, #6e3f2a 0%, #462618 100%);
+    padding: 3px; border-radius: 8px; pointer-events: auto;
+}
+.music-screen {
+    background: #0b0e14; border-radius: 5px; padding: 3px 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    color: #fff; border: 1px solid #222;
+}
+.track-title { font-size: 9.5px; font-weight: bold; color: #00e5ff; }
+.track-sub { font-size: 7.5px; color: #aaa; }
+.music-btns { display: flex; gap: 4px; }
+.m-btn {
+    background: #1f242d; border: 1px solid #444; color: #fff;
+    padding: 2px 6px; border-radius: 4px; font-size: 9px; cursor: pointer;
+}
+
+.light-switch-panel {
+    width: 100%; background: #111216; border: 1px solid #32343d;
+    border-radius: 6px; padding: 3px 4px;
+    display: flex; align-items: center; justify-content: space-between; gap: 2.5px;
+    pointer-events: auto;
+}
+.lt-btn {
+    flex: 1; padding: 3px 1px; border-radius: 4px;
+    background: #1d1f26; border: 1px solid #3a3d47;
+    color: #777; font-size: 7px; font-weight: 800;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s ease; line-height: 1.1;
+}
+.lt-led {
+    width: 10px; height: 2.5px; border-radius: 2px;
+    background: #333; margin-top: 2px; transition: background 0.15s, box-shadow 0.15s;
+}
+.lt-btn.on { color: #fff; background: #262932; border-color: #666; }
+.lt-btn.on[data-light="head"] .lt-led { background: #00e5ff; box-shadow: 0 0 6px #00e5ff; }
+.lt-btn.on[data-light="tail"] .lt-led { background: #ff3b30; box-shadow: 0 0 6px #ff3b30; }
+.lt-btn.on[data-light="defl"] .lt-led { background: #ff9f0a; box-shadow: 0 0 6px #ff9f0a; }
+.lt-btn.on[data-light="int"] .lt-led  { background: #ffd60a; box-shadow: 0 0 6px #ffd60a; }
+.lt-btn.on[data-light="dash"] .lt-led { background: #32d74b; box-shadow: 0 0 6px #32d74b; }
+.lt-btn.on[data-light="wiper"] .lt-led { background: #64d2ff; box-shadow: 0 0 6px #64d2ff; }
+.lt-btn:active[data-light="spray"] .lt-led { background: #0a84ff; box-shadow: 0 0 8px #0a84ff; }
+
+.climate-strip {
+    width: 96%; height: 20px; background: #141519; border: 1px solid #2f3138;
+    border-radius: 5px; display: flex; align-items: center; justify-content: space-around;
+    font-size: 8px; color: #ccc; transition: all 0.3s;
+}
+
+.dash-right {
+    width: 34%; display: flex; flex-direction: column; align-items: flex-end;
+    justify-content: flex-start; padding-left: 8px; border-left: 1px solid #2a2b30;
+}
+.driver-cluster-row { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+.instrument-hood {
+    flex: 1; margin-right: 6px; height: 64px;
+    background: #080a0f; border: 2.5px solid #2c2d35; border-radius: 22px 22px 8px 8px;
+    display: flex; align-items: center; justify-content: space-around; padding: 0 4px;
+    pointer-events: auto; transition: all 0.3s;
+}
+.dial {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 2px solid #ff3b30; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; background: #0e121a;
+}
+.dial-val { font-size: 12px; font-weight: 900; color: #fff; line-height: 1; }
+.dial-lbl { font-size: 5.5px; color: #ff453a; margin-top: 2px; }
+
+.mid-cluster {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; width: 54px;
+}
+.ind-row { display: flex; align-items: center; gap: 6px; }
+.ind-arrow {
+    font-size: 11px; font-weight: 900; color: #223826;
+    cursor: pointer; padding: 0 2px; border-radius: 3px;
+    transition: color 0.08s, text-shadow 0.08s;
+}
+.ind-arrow.blink-on {
+    color: #32d74b;
+    text-shadow: 0 0 8px #32d74b, 0 0 14px #32d74b;
+}
+.accel-tag { font-size: 7.5px; color: #00e5ff; font-weight: 800; letter-spacing: 0.3px; }
+
+/* ENGINE START/STOP PUSH BUTTON NEAR STEERING */
+#engine-btn {
+    position: absolute; bottom: 6px; right: calc(0.5% + 1px);
+    width: 46px; height: 46px; border-radius: 50%;
+    background: radial-gradient(circle, #2a2c34 0%, #111216 80%);
+    border: 3px solid #ff3b30;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.9), 0 0 10px rgba(255,59,48,0.6);
+    color: #ff453a; font-size: 7px; font-weight: 900;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.1; cursor: pointer; z-index: 30;
+    transition: all 0.2s ease; pointer-events: auto;
+}
+#engine-btn.running {
+    border-color: #32d74b; color: #32d74b;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.9), 0 0 14px rgba(50,215,75,0.75);
+}
+#engine-btn:active { transform: scale(0.9); }
