@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,37 +17,52 @@
 
   body {
     margin: 0;
-    padding: 0;
-    background-color: #0b0f19;
-    color: #fff;
+    padding: 32px 24px;
+    background-color: #f3f6f5;
+    color: #202b29;
     overflow-x: hidden;
-    width: 100vw;
     min-height: 100vh;
+  }
+
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .page-header p {
+    margin: 8px 0 0;
+    color: #64736f;
+    line-height: 1.5;
   }
 
   .albums-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
+    gap: 16px;
     width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 8px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .card {
-    background: #0d1117;
-    border-radius: 10px;
+    background: #ffffff;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #dce5e2;
   }
 
   .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 35px rgba(0, 229, 255, 0.25);
+    border-color: #8eaaa3;
+    box-shadow: 0 4px 14px rgba(32, 55, 49, 0.08);
   }
 
   .card-thumbnail {
@@ -55,7 +70,7 @@
     height: 180px;
     position: relative;
     overflow: hidden;
-    background: #eef7ff;
+    background: #e8efec;
   }
 
   .card-thumbnail svg {
@@ -65,15 +80,15 @@
   }
 
   .card-content {
-    padding: 12px 14px;
-    background: #0d1117;
+    padding: 16px;
+    background: #ffffff;
   }
 
   .card-title {
     font-size: 15px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 6px;
+    font-weight: 600;
+    color: #202b29;
+    margin-bottom: 8px;
     line-height: 1.3;
   }
 
@@ -86,44 +101,43 @@
 
   .card-author {
     font-size: 12px;
-    color: #94a3b8;
+    color: #64736f;
   }
 
   .actions-group {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     align-items: center;
   }
 
   .badge {
-    background: #16a34a;
+    background: #28675e;
     color: #ffffff;
-    padding: 5px 10px;
+    padding: 6px 10px;
     border-radius: 6px;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.3px;
+    font-weight: 500;
+    font-size: 12px;
     text-decoration: none;
     transition: 0.2s;
   }
 
   .badge:hover {
-    background: #15803d;
+    background: #1d514a;
   }
 
   .new-tab-btn {
-    background: #3b82f6;
-    color: #ffffff;
-    padding: 5px 8px;
+    background: #e8f0ed;
+    color: #28675e;
+    padding: 6px 10px;
     border-radius: 6px;
-    font-weight: 600;
-    font-size: 11px;
+    font-weight: 500;
+    font-size: 12px;
     text-decoration: none;
     transition: 0.2s;
   }
 
   .new-tab-btn:hover {
-    background: #2563eb;
+    background: #dce9e5;
   }
 
   .modal-overlay {
@@ -142,7 +156,7 @@
   }
 
   .modal-container {
-    background: #111827;
+    background: #f3f6f5;
     width: 100vw;
     height: 100vh;
     border-radius: 0;
@@ -155,17 +169,17 @@
 
   .modal-header {
     padding: 10px 16px;
-    background: #1f2937;
+    background: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid #dce5e2;
   }
 
   .modal-title {
     font-size: 15px;
-    font-weight: 700;
-    color: #22c55e;
+    font-weight: 600;
+    color: #28675e;
   }
 
   .modal-actions {
@@ -175,41 +189,41 @@
   }
 
   .modal-new-tab {
-    background: #3b82f6;
-    color: white;
+    background: #e8f0ed;
+    color: #28675e;
     text-decoration: none;
     padding: 5px 10px;
     border-radius: 6px;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 12px;
     transition: 0.2s;
   }
 
   .modal-new-tab:hover {
-    background: #2563eb;
+    background: #dce9e5;
   }
 
   .close-btn {
-    background: #ef4444;
-    color: white;
+    background: #f0e7e5;
+    color: #794c47;
     border: none;
     padding: 5px 12px;
     border-radius: 6px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     font-size: 12px;
     transition: 0.2s;
   }
 
   .close-btn:hover {
-    background: #dc2626;
+    background: #e7d8d5;
   }
 
   .modal-body {
     flex: 1;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: #ffffff;
     overflow: hidden;
   }
 
@@ -222,6 +236,11 @@
 </head>
 <body>
 
+  <header class="page-header">
+    <h1>Games</h1>
+    <p>Choose a game to play in the window or open it in a new tab.</p>
+  </header>
+
   <div class="albums-grid" id="cardsGrid"></div>
 
   <div class="modal-overlay" id="simModal">
@@ -229,8 +248,8 @@
       <div class="modal-header">
         <span class="modal-title" id="modalTitle">Game</span>
         <div class="modal-actions">
-          <a id="modalNewTabBtn" href="" target="_blank" class="modal-new-tab">Open in New Tab ↗</a>
-          <button class="close-btn" onclick="closeModal()">✕ Close</button>
+          <a id="modalNewTabBtn" href="" target="_blank" rel="noopener" class="modal-new-tab">Open in new tab</a>
+          <button class="close-btn" onclick="closeModal()">Close</button>
         </div>
       </div>
       <div class="modal-body">
