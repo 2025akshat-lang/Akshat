@@ -120,46 +120,14 @@
             min-height: 100vh;
 
             margin: 0;
-            padding: 30px 15px;
+            padding: 24px 16px;
 
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
 
             color: var(--text-dark);
 
-            background:
-                linear-gradient(
-                    -45deg,
-                    #064e3b,
-                    #0f172a,
-                    #0c4a6e,
-                    #022c22
-                );
-
-            background-size: 400% 400%;
-
-            animation:
-                gradientBG 15s ease infinite;
-        }
-
-
-        /* =====================================================
-           03. BACKGROUND ANIMATION
-        ====================================================== */
-
-        @keyframes gradientBG {
-
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            background: #f3f6f5;
         }
 
 
@@ -368,28 +336,18 @@
             z-index: 5;
 
             width: 100%;
-            max-width: 100%;
+            max-width: 1200px;
 
             margin: 0 auto;
 
-            padding: 25px;
+            padding: 32px;
 
-            background:
-                var(--card-bg);
+            background: #ffffff;
 
             border:
-                1px solid rgba(255, 255, 255, 0.40);
+                1px solid #dce5e2;
 
-            border-radius: 24px;
-
-            box-shadow:
-                var(--shadow-large);
-
-            backdrop-filter:
-                blur(16px);
-
-            -webkit-backdrop-filter:
-                blur(16px);
+            border-radius: 12px;
         }
 
 
@@ -429,26 +387,11 @@
             text-align: center;
 
             font-size: 1.6rem;
-            font-weight: 700;
+            font-weight: 600;
 
             line-height: 1.3;
 
-            letter-spacing: -0.5px;
-
-            text-transform: uppercase;
-
-            background:
-                linear-gradient(
-                    120deg,
-                    #059669,
-                    #0284c7,
-                    #0d9488
-                );
-
-            -webkit-background-clip: text;
-            background-clip: text;
-
-            -webkit-text-fill-color: transparent;
+            color: #28675e;
         }
 
         .sub-heading {
@@ -457,10 +400,10 @@
 
             text-align: center;
 
-            color: #0d9488;
+            color: #64736f;
 
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 400;
 
             line-height: 1.4;
         }
@@ -1063,7 +1006,25 @@
         ====================================================== */
 
 
-    </style>
+        .bg-loader-wrapper {
+            display: none;
+        }
+
+        .cat-btn.active,
+        .cat-btn:hover {
+            background: #28675e;
+            border-color: #28675e;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        @media (max-width: 767px) {
+            .report-wrapper {
+                padding: 16px;
+            }
+        }
+
+        </style>
 </head>
 
 
@@ -1097,7 +1058,7 @@
     <div class="category-container">
         <button
             class="cat-btn active"
-            onclick="openTab('p0')">home
+            onclick="openTab('p0')">Home
         </button>
         <button
             class="cat-btn"

@@ -16,7 +16,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-color: #0f17a;
+      background-color: #f3f6f5;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       padding: 24px 16px;
       color: #f8fafc;
@@ -58,7 +58,7 @@
     .view-section {
       display: none;
       width: 100%;
-      max-width: 340px;
+      max-width: 440px;
       flex-direction: column;
       align-items: center;
     }
@@ -461,7 +461,7 @@
     .portfolio-footer {
       margin-top: 40px;
       width: 100%;
-      max-width: 340px;
+      max-width: 440px;
       border-top: 1px solid #334155;
       padding-top: 20px;
       display: flex;
@@ -550,6 +550,191 @@
       font-weight: 700;
       cursor: pointer;
     }
+
+    body {
+      background: #f3f6f5;
+      color: #202b29;
+    }
+
+    .tab-container {
+      background: #ffffff;
+      border-color: #dce5e2;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      max-width: 440px;
+    }
+
+    .tab-btn {
+      color: #64736f;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .tab-btn.active {
+      background: #28675e;
+      color: #ffffff;
+      box-shadow: none;
+    }
+
+    .card-inner {
+      border-radius: 12px;
+      box-shadow: none;
+    }
+
+    .card-face {
+      border-radius: 12px;
+    }
+
+    .card-front,
+    .cert-front-bg,
+    .exp-front-bg,
+    .card-back {
+      background: #ffffff;
+      color: #202b29;
+      border: 1px solid #dce5e2;
+    }
+
+    .card-chip {
+      background: #e8f0ed;
+      border: 1px solid #c8d8d2;
+      box-shadow: none;
+    }
+
+    .card-icon,
+    .main-logo {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      color: #28675e;
+      border-radius: 8px;
+    }
+
+    .card-icon svg,
+    .main-logo svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .status-badge,
+    .cert-status-badge,
+    .exp-status-badge {
+      background: #e8f0ed;
+      border: 1px solid #dce5e2;
+      color: #28675e;
+      border-radius: 6px;
+      font-weight: 500;
+      letter-spacing: normal;
+      text-transform: none;
+      backdrop-filter: none;
+    }
+
+    .front-title,
+    .back-title,
+    .student-name {
+      color: #28675e;
+      font-weight: 600;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .front-subtitle,
+    .hover-prompt {
+      color: #64736f;
+    }
+
+    .card-bottom {
+      border-top-color: #dce5e2;
+    }
+
+    .timeline-circle {
+      background: #28675e;
+      box-shadow: none;
+    }
+
+    .connector-line,
+    .portfolio-footer {
+      background: #dce5e2;
+      border-color: #dce5e2;
+    }
+
+    .exp-item,
+    .degree-item {
+      background: #f3f6f5;
+      border-color: #dce5e2;
+      border-radius: 8px;
+    }
+
+    .exp-title,
+    .degree-title {
+      color: #202b29;
+      font-weight: 600;
+    }
+
+    .exp-desc,
+    .focus-text,
+    .copyright-text,
+    .disclaimer-card {
+      color: #64736f;
+    }
+
+    .skill-chip,
+    .score-tag {
+      background: #e8f0ed;
+      border-color: #dce5e2;
+      color: #28675e;
+    }
+
+    .main-logo {
+      background: #e8f0ed;
+      border-color: #dce5e2;
+    }
+
+    .portfolio-btn,
+    .cert-action-btn {
+      background: #28675e;
+      color: #ffffff;
+      border-radius: 6px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .select-label {
+      color: #28675e;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .cert-select-dropdown {
+      background-color: #ffffff;
+      color: #202b29;
+      border-color: #dce5e2;
+    }
+
+    .portfolio-footer {
+      background: transparent;
+    }
+
+    .modal-image {
+      box-shadow: none;
+    }
+
+    .modal-overlay {
+      background: rgba(32, 43, 41, 0.4);
+      backdrop-filter: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card-inner {
+        transition-duration: 0.01ms;
+      }
+    }
   </style>
 </head>
 <body>
@@ -567,8 +752,8 @@
       <div class="card-inner">
         <div class="card-face card-front">
           <div class="card-top">
-            <div style="font-size:28px;">🎓</div>
-            <div class="status-badge">ACADEMIC PROFILE</div>
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9 12 4l9 5-9 5-9-5Z"/><path d="M7 11v5c3 2 7 2 10 0v-5M21 9v6"/></svg></div>
+            <div class="status-badge">Academic profile</div>
           </div>
           <div>
             <div class="front-title">Education Overview</div>
@@ -576,7 +761,7 @@
           </div>
           <div class="card-bottom">
             <div class="student-name">Akshat Raj</div>
-            <div class="hover-prompt">Hover / Tap to Expand ↕</div>
+            <div class="hover-prompt">Select to view details</div>
           </div>
         </div>
 
@@ -585,7 +770,7 @@
           <div class="linkedin-timeline">
             <div class="timeline-group">
               <div class="timeline-left" style="width:32px;">
-                <div class="main-logo">🏫</div>
+                <div class="main-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-7h6v7M8 9h.01M12 9h.01M16 9h.01"/></svg></div>
                 <div class="connector-line"></div>
               </div>
               <div class="timeline-right">
@@ -601,7 +786,7 @@
 
             <div class="timeline-group">
               <div class="timeline-left" style="width:32px;">
-                <div class="main-logo">🧪</div>
+                <div class="main-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 3h6m-5 0v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M7 15h10"/></svg></div>
               </div>
               <div class="timeline-right">
                 <div class="degree-item">
@@ -630,7 +815,7 @@
         <div class="card-face card-front exp-front-bg">
           <div class="card-top">
             <div class="card-chip"></div>
-            <div class="exp-status-badge">SKILLS & EXPERIENCES</div>
+            <div class="exp-status-badge">Skills and experience</div>
           </div>
           <div>
             <div class="front-title">Lab Work & Pedagogy</div>
@@ -638,7 +823,7 @@
           </div>
           <div class="card-bottom">
             <div class="student-name" style="color: #2dd4bf;">Akshat Raj</div>
-            <div class="hover-prompt">Hover / Tap to Expand ↕</div>
+            <div class="hover-prompt">Select to view details</div>
           </div>
         </div>
 
@@ -731,7 +916,7 @@
         <div class="card-face card-front cert-front-bg">
           <div class="card-top">
             <div class="card-chip"></div>
-            <div class="cert-status-badge">VERIFIED CREDENTIALS</div>
+            <div class="cert-status-badge">Verified credentials</div>
           </div>
           <div>
             <div class="front-title">Certifications</div>
@@ -739,18 +924,18 @@
           </div>
           <div class="card-bottom">
             <div class="student-name">Akshat Raj</div>
-            <div class="hover-prompt">Hover / Tap to Expand ↕</div>
+            <div class="hover-prompt">Select to view details</div>
           </div>
         </div>
 
         <div class="card-face card-back" onclick="event.stopPropagation()">
           <div class="card-top" style="margin-bottom: 8px;">
             <div class="card-chip"></div>
-            <div class="cert-status-badge">VERIFIED CREDENTIALS</div>
+            <div class="cert-status-badge">Verified credentials</div>
           </div>
           
           <div class="nested-select-wrapper">
-            <label class="select-label">Select Certificate</label>
+            <label class="select-label" for="certSelector">Select a certificate</label>
             <select class="cert-select-dropdown" id="certSelector">
               <option value="https://i.postimg.cc/7ZKgmVT3/Screenshot-20260829-095411-Drive.jpg">Teacher Readiness for School</option>
               <option value="https://i.postimg.cc/RZgcXRnH/DOC-20260829-WA0007-page-0001.jpg">Growth Mindset</option>
@@ -760,7 +945,7 @@
             </select>
           </div>
 
-          <button class="cert-action-btn" onclick="openSelectedCertificate()">View Selected Document ↗</button>
+          <button class="cert-action-btn" onclick="openSelectedCertificate()">View selected document</button>
         </div>
       </div>
     </div>

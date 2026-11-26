@@ -253,7 +253,7 @@
         </div>
       </div>
       <div class="modal-body">
-        <iframe id="modalFrame" src=""></iframe>
+        <iframe id="modalFrame" src="" title="Game preview"></iframe>
       </div>
     </div>
   </div>
@@ -404,7 +404,7 @@
           <div class="card-footer">
             <span class="card-author">${item.author}</span>
             <div class="actions-group">
-              <a href="${item.file}" target="_blank" class="new-tab-btn" title="Open in new tab">↗</a>
+              <a href="${item.file}" target="_blank" rel="noopener" class="new-tab-btn" title="Open in new tab">Open</a>
               <span class="badge" onclick="openModal('${item.title}', '${item.file}')">Play</span>
             </div>
           </div>

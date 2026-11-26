@@ -15,39 +15,42 @@
   html,body{width:100%;min-height:100%;margin:0}
   body{
     min-height:100vh;min-height:100dvh;
-    padding:clamp(10px,3vw,28px);
-    padding-left:max(clamp(10px,3vw,28px),env(safe-area-inset-left));
-    padding-right:max(clamp(10px,3vw,28px),env(safe-area-inset-right));
-    background:#0a0a0a radial-gradient(circle at 15% 10%,rgba(123,156,255,.18),transparent 45%),radial-gradient(circle at 85% 90%,rgba(255,123,136,.16),transparent 45%);
-    background-attachment:fixed;
-    color:#fff;overflow-x:hidden;
+    padding:24px;
+    padding-left:max(24px,env(safe-area-inset-left));
+    padding-right:max(24px,env(safe-area-inset-right));
+    background:#f3f6f5;
+    color:#202b29;overflow-x:hidden;
   }
 
   
   .albums-grid{
     display:grid;width:100%;margin:0 auto;
-    grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));
-    gap:clamp(14px,2.5vw,26px);
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));
+    gap:16px;
   }
 
-  .behance-card{background:#111;border-radius:16px;overflow:hidden;cursor:pointer;box-shadow:0 10px 25px rgba(0,0,0,.3);transition:transform .3s ease;border:1px solid rgba(255,255,255,.08)}
-  .behance-card:hover{transform:translateY(-6px)}
-  .img-wrapper{width:100%;aspect-ratio:4/3;background:#222}
+  .page-header{width:100%;max-width:1200px;margin:0 auto 24px}
+  .page-header h1{font-size:clamp(24px,4vw,32px);font-weight:600;line-height:1.2}
+  .page-header p{margin-top:8px;color:#64736f;line-height:1.5}
+
+  .behance-card{background:#fff;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease;border:1px solid #dce5e2}
+  .behance-card:hover{border-color:#8eaaa3;box-shadow:0 4px 14px rgba(32,55,49,.08)}
+  .img-wrapper{width:100%;aspect-ratio:4/3;background:#e8efec}
   .img-wrapper img{width:100%;height:100%;object-fit:cover;display:block}
   .card-info{padding:16px}
-  .card-title{font-size:clamp(14px,1.2vw+10px,18px);font-weight:600;margin:0 0 8px;color:#fff}
-  .card-meta{font-size:12px;color:#aaa;display:flex;justify-content:space-between;align-items:center}
-  .badge{background:rgba(255,255,255,.12);padding:3px 8px;border-radius:4px}
+  .card-title{font-size:clamp(14px,1.2vw+10px,18px);font-weight:600;margin:0 0 8px;color:#202b29}
+  .card-meta{font-size:12px;color:#64736f;display:flex;justify-content:space-between;align-items:center}
+  .badge{background:#e8f0ed;color:#28675e;padding:4px 8px;border-radius:6px}
 
   
-  .gallery-view,.notes-view{display:none;width:100%;margin:0 auto;background:#0d0d0d;border-radius:16px;padding:clamp(12px,2.5vw,26px);box-shadow:0 12px 35px rgba(0,0,0,.4);animation:fadeIn .4s ease-in-out;color:#fff}
+  .gallery-view,.notes-view{display:none;width:100%;margin:0 auto;background:#fff;border:1px solid #dce5e2;border-radius:12px;padding:clamp(16px,2.5vw,24px);color:#202b29}
   .gallery-view{position:relative;overflow:hidden}
   @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .gallery-header{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.15)}
-  .back-btn{background:#000;color:#fff;border:1px solid rgba(255,255,255,.2);padding:9px 15px;border-radius:20px;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap}
-  .gallery-title{font-size:clamp(14px,2vw+8px,20px);font-weight:700;color:#fff;margin:0;text-align:right}
-  .gallery-stream{position:relative;z-index:3;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px}
-  .gallery-stream img{width:100%;height:auto;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,.3)}
+  .back-btn{background:#e8f0ed;color:#28675e;border:1px solid #dce5e2;padding:8px 12px;border-radius:6px;font-weight:500;font-size:12px;cursor:pointer;white-space:nowrap}
+  .gallery-title{font-size:clamp(14px,2vw+8px,20px);font-weight:600;color:#202b29;margin:0;text-align:right}
+  .gallery-stream{position:relative;z-index:3;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+  .gallery-stream img{width:100%;height:auto;border-radius:8px}
 
   
   .modal-fire-bg,.modal-science-bg{display:none;position:absolute;top:0;right:0;width:100%;height:200px;pointer-events:none;z-index:1}
@@ -73,33 +76,32 @@
 
   
   .kids-card{
-    background:#fff;border-radius:24px;padding:clamp(16px,3vw,26px);
+    background:#fff;border-radius:12px;padding:clamp(16px,3vw,24px);
     display:flex;flex-direction:column;align-items:center;text-align:center;
-    border:3px solid #f0e6d2;box-shadow:0 10px 25px rgba(0,0,0,.3);
+    border:1px solid #dce5e2;
     text-decoration:none;color:#333;cursor:pointer;position:relative;overflow:hidden;
-    transition:transform .3s ease;-webkit-tap-highlight-color:transparent;
+    transition:border-color .2s ease,box-shadow .2s ease;-webkit-tap-highlight-color:transparent;
   }
-  .kids-card:hover{transform:translateY(-6px)}
+  .kids-card:hover{border-color:#8eaaa3;box-shadow:0 4px 14px rgba(32,55,49,.08)}
   .kids-card:active{transform:scale(.97)}
   .character-container{position:relative;width:clamp(120px,38%,180px);aspect-ratio:1;display:flex;justify-content:center;align-items:flex-end;margin-bottom:8px}
-  .floating-file{position:absolute;top:0;z-index:2;width:clamp(42px,30%,56px);aspect-ratio:1;background:#ff7b88;border-radius:12px;box-shadow:0 8px 18px rgba(255,123,136,.4);display:flex;align-items:center;justify-content:center;border:2px solid #fff;animation:floatFile 2.5s infinite ease-in-out}
+  .floating-file{position:absolute;top:0;z-index:2;width:clamp(42px,30%,56px);aspect-ratio:1;background:#28675e;border-radius:8px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
   @keyframes floatFile{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(4deg)}}
   .floating-file svg{width:56%;height:56%;fill:#fff}
   .bob-cut-child{width:72%;height:72%}
-  .tag-btn{background:#e2f0cb;color:#5b8a3c;font-size:clamp(11px,1.2vw+7px,13px);font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:6px}
-  .kids-title{color:#4a4e69;font-size:clamp(20px,3vw+10px,28px);font-weight:800;margin:2px 0}
-  .click-text{color:#ff9aa2;font-size:clamp(12px,1.2vw+8px,15px);font-weight:700;margin:6px 0 12px}
-  .card-footer{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:2px dashed #f0e6d2;padding-top:10px;margin-top:auto}
-  .class-label{color:#9a8c98;font-size:12px;font-weight:700}
-  .view-badge{background:#b5ead7;color:#2e6f51;font-size:11px;font-weight:800;padding:5px 11px;border-radius:12px;white-space:nowrap}
+  .tag-btn{background:#e8f0ed;color:#28675e;font-size:12px;font-weight:500;padding:4px 8px;border-radius:6px;margin-bottom:8px}
+  .kids-title{color:#202b29;font-size:clamp(20px,3vw+10px,28px);font-weight:600;margin:2px 0}
+  .click-text{color:#64736f;font-size:clamp(12px,1.2vw+8px,15px);font-weight:400;margin:6px 0 12px}
+  .card-footer{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #dce5e2;padding-top:10px;margin-top:auto}
+  .class-label{color:#64736f;font-size:12px;font-weight:400}
+  .view-badge{background:#e8f0ed;color:#28675e;font-size:12px;font-weight:500;padding:4px 8px;border-radius:6px;white-space:nowrap}
 
   
-  .notes-card{border-color:#d6e0ff;background:linear-gradient(180deg,#fff,#f3f6ff)}
-  .notes-card .floating-file{background:#7b9cff;box-shadow:0 8px 18px rgba(123,156,255,.45)}
-  .notes-card .tag-btn{background:#dfe7ff;color:#3f5bd6}
-  .notes-card .click-text{color:#7b9cff}
-  .notes-card .card-footer{border-top-color:#d6e0ff}
-  .notes-card .view-badge{background:#cfe0ff;color:#2c4aa8}
+  .notes-card{border-color:#dce5e2;background:#fff}
+  .notes-card .floating-file{background:#28675e}
+  .notes-card .tag-btn,.notes-card .view-badge{background:#e8f0ed;color:#28675e}
+  .notes-card .click-text{color:#64736f}
+  .notes-card .card-footer{border-top-color:#dce5e2}
   .notes-card .character-container{width:clamp(130px,44%,200px)}
   .mascot{width:100%;height:100%;overflow:visible;animation:hop 2.6s infinite ease-in-out;transform-origin:50% 100%}
   .notes-card:hover .mascot{animation-duration:.8s}
@@ -118,23 +120,24 @@
   @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 
   
-  .notes-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
-  .note-item{background:#161a2b;border:1px solid rgba(123,156,255,.35);border-radius:14px;padding:clamp(14px,2.5vw,22px);cursor:pointer;display:flex;align-items:center;gap:12px;transition:transform .25s,background .25s}
-  .note-item:hover{transform:translateY(-4px);background:#1d2340}
-  .note-emoji{font-size:30px}
+  .notes-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
+  .note-item{background:#fff;color:#202b29;border:1px solid #dce5e2;border-radius:8px;padding:clamp(16px,2.5vw,24px);cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .2s,box-shadow .2s}
+  .note-item:hover{border-color:#8eaaa3;box-shadow:0 4px 14px rgba(32,55,49,.08)}
+  .note-emoji{width:32px;height:32px;color:#28675e;flex:0 0 auto}
+  .note-emoji svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   .note-name{font-size:clamp(15px,1.2vw+10px,18px);font-weight:700;margin:0}
-  .note-type{font-size:11px;color:#9fb0ee;margin-top:3px}
+  .note-type{font-size:12px;color:#64736f;margin-top:4px}
   .note-frame-wrap{display:none}
   .note-frame-wrap iframe{width:100%;height:calc(100vh - 150px);height:calc(100dvh - 150px);min-height:420px;border:0;border-radius:12px;background:#fff}
-  .open-tab-link{color:#9fb0ee;font-size:12px;text-decoration:none;border:1px solid rgba(255,255,255,.2);padding:8px 12px;border-radius:20px}
+  .open-tab-link{color:#28675e;font-size:12px;text-decoration:none;border:1px solid #dce5e2;padding:8px 12px;border-radius:6px}
 
 
   
-  #bgFx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  #bgFx{display:none}
   #bgFx span{position:absolute;bottom:-50px;opacity:0;animation:riseFx linear infinite;will-change:transform}
   @keyframes riseFx{0%{transform:translateY(0) rotate(-10deg);opacity:0}10%,85%{opacity:.55}100%{transform:translateY(-115vh) rotate(25deg);opacity:0}}
   .albums-grid,.gallery-view,.notes-view{position:relative;z-index:1}
-  .gallery-view,.notes-view{background:rgba(13,13,13,.55)}
+  .gallery-view,.notes-view{background:#fff}
 
   
   .back-btn{padding:6px 12px;font-size:11px}
@@ -143,17 +146,29 @@
 
   
   body.note-open{padding:0}
-  body.note-open .notes-view{padding:0;border-radius:0;box-shadow:none;background:#0d0d0d;animation:none}
+  body.note-open .notes-view{padding:0;border-radius:0;box-shadow:none;background:#fff;animation:none}
   body.note-open .gallery-header{margin:0;padding:6px 8px;gap:8px;border-bottom:1px solid rgba(255,255,255,.12)}
   body.note-open .gallery-title{flex:1;text-align:center;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   body.note-open .open-tab-link{display:inline-block}
   body.note-open .note-frame-wrap iframe{height:calc(100vh - 42px);height:calc(100dvh - 42px);min-height:0;border-radius:0}
 
+  .modal-glow-fire,.modal-glow-science,.lab-icon,.flame-layer{display:none}
+  .mascot,.eye,.pencil,.spark,.notes-card::before,.notes-card::after{animation:none}
+  .gallery-view,.notes-view{box-shadow:none}
+  .gallery-header{border-bottom-color:#dce5e2}
+  .albums-grid,.gallery-view,.notes-view{max-width:1200px}
+
+  @media (max-width:600px){body{padding:16px}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#bgFx{display:none}}
 </style>
 </head>
 <body>
   <div id="bgFx" aria-hidden="true"></div>
+
+  <header class="page-header">
+    <h1>School experience program</h1>
+    <p>Teaching materials, notes, and classroom activities.</p>
+  </header>
 
   <div id="albumsGrid" class="albums-grid">
 
@@ -173,12 +188,12 @@
           <path d="M 30 76 Q 50 68, 70 76 L 75 100 L 25 100 Z" fill="#ffb7b2"/>
         </svg>
       </div>
-      <span class="tag-btn">🎨 Practical File</span>
-      <h2 class="kids-title">science</h2>
-      <div class="click-text">✨ Click to Open File 📂 ✨</div>
+      <span class="tag-btn">Practical file</span>
+      <h2 class="kids-title">Science</h2>
+      <div class="click-text">Open file</div>
       <div class="card-footer">
         <span class="class-label">Upper Primary Class</span>
-        <span class="view-badge">VIEW FILE ➔</span>
+        <span class="view-badge">View file</span>
       </div>
     </a>
 
@@ -223,12 +238,12 @@
           <path class="spark s4" d="M108 96 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z" fill="#a78bfa"/>
         </svg>
       </div>
-      <span class="tag-btn">🧠 </span>
+      <span class="tag-btn">Notes</span>
       <h2 class="kids-title">Blackboard work</h2>
-      <div class="click-text">✨ Click to Open 📝 ✨</div>
+      <div class="click-text">Open notes</div>
       <div class="card-footer">
         <span class="class-label">Mind Maps &amp; Revision</span>
-        <span class="view-badge">OPEN ➔</span>
+        <span class="view-badge">Open</span>
       </div>
     </div>
 
@@ -248,12 +263,12 @@
           <circle cx="62" cy="26" r="11" fill="#facc15"/>
         </svg>
       </div>
-      <span class="tag-btn" style="background:#fef3c7;color:#b45309">🎮 Games</span>
+      <span class="tag-btn">Games</span>
       <h2 class="kids-title">Games Dashboard</h2>
-      <div class="click-text" style="color:#d97706">✨ Click to Play 🕹️ ✨</div>
+      <div class="click-text">Play game</div>
       <div class="card-footer" style="border-top-color:#fde68a">
         <span class="class-label">Interactive Tools</span>
-        <span class="view-badge" style="background:#fef3c7;color:#b45309">PLAY ➔</span>
+        <span class="view-badge">Play</span>
       </div>
     </div>
 
@@ -311,15 +326,8 @@
       images: ["https://i.postimg.cc/T3kb4TLP/20260804-131206.jpg"] }
   ];
 
-  const BG = {
-    home:    ['⭐','☁️','🎈','🌈','✨','🦋','🌸','💫','🐥','🍭'],
-    notes:   ['✏️','📚','🖍️','💡','📝','🌟','🎨','🧠','📘','✨','🖼'],
-    science: ['🧪','🔬','🫧','⚗️','🌟','🚀','🫧','🧬'],
-    fire:    ['🔥','✨','🌟','🧯','💥','🔥','⭐']
-  };
-  function setBg(k) {
-    document.getElementById('bgFx').innerHTML = BG[k].map((e, i) =>
-      `<span style="left:${(i * 17 + 5) % 94}%;font-size:${18 + (i % 4) * 7}px;animation-duration:${10 + (i % 5) * 2}s;animation-delay:${-i * 2.1}s">${e}</span>`).join('');
+  function setBg() {
+    document.getElementById('bgFx').replaceChildren();
   }
 
   function renderAlbums() {
@@ -363,13 +371,13 @@
 
   
   const notesData = [
-    { title: "Mixtures Mind Map", emoji: "🧪", type: "Mind Map",
+    { title: "Mixtures Mind Map", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="m10 10-3.5-3.5m7 0L17 7m-7 7-3.5 3.5m7 0L17 17"/></svg>', type: "Mind Map",
       url: "https://2025akshat-lang.github.io/Akshat/sep/mixtures.html" },
-    { title: "Neuron Doodle Notes", emoji: "🧠", type: "Doodle Notes",
+    { title: "Neuron Doodle Notes", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v5m0 0-5-3m5 3 5-3M12 9v5m0 0-5 3m5-3 5 3M7 8v8m10-8v8"/></svg>', type: "Doodle Notes",
       url: "https://2025akshat-lang.github.io/Akshat/sep/Neuron%20Doodle%20Notes.html" },
-    { title: "Class 6th Revision Notes", emoji: "📘", type: "Revision Notes",
+    { title: "Class 6th Revision Notes", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v17H7.5A2.5 2.5 0 0 0 5 21.5zM5 4.5v17m4-16h7m-7 4h7"/></svg>', type: "Revision Notes",
       url: "https://2025akshat-lang.github.io/Akshat/sep/class-6th-revision-notes.html" },
-    { title: "Blackboard Summary", emoji: "🖼", type: "Revision Notes",
+    { title: "Blackboard Summary", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="1"/><path d="M8 21h8m-4-4v4M7 13l3-4 3 3 2-2 2 3"/></svg>', type: "Revision Notes",
       url: "https://2025akshat-lang.github.io/Akshat/sep/blackboard/index.html" }   
   ];
 
@@ -379,7 +387,7 @@
     const list = document.getElementById('notesList');
     list.innerHTML = notesData.map((n, i) => `
       <div class="note-item" onclick="openNote(${i})">
-        <div class="note-emoji">${n.emoji}</div>
+        <div class="note-emoji">${n.icon}</div>
         <div><div class="note-name">${n.title}</div><div class="note-type">${n.type}</div></div>
       </div>`).join('');
     document.getElementById('albumsGrid').style.display = 'none';
