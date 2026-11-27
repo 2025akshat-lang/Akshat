@@ -31,5 +31,5 @@ damp:{k:'d',v:'wilt',n:['Damping-off of seedlings','पौध का गलन (
   PV.sim.reg('hmatch',el,draw);
   const name=()=>L('🔎 Symptom helper','🔎 लक्षण सहायक');
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__hmatch';b.textContent=name();b.onclick=()=>{sym=null;age=null;PV.sim.open('hmatch')};n.insertBefore(b,n.firstChild)});
-  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__hmatch"]');if(b)b.textContent=name()});
+  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__hmatch"],#app-actions [data-id="__hmatch"]');if(b)b.textContent=name()});
 })();

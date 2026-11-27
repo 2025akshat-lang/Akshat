@@ -81,14 +81,25 @@ function placeH(){const w=$v[1].clientWidth,h=$v[1].clientHeight,V=H.V,o=H.group
     if(!labelsOn||!d.show(V)){l.el.hidden=true;return}
     const s=d.k==='s'?Math.max(V.shoot,.05):d.k==='r'?Math.max(V.root,.05):1,q=d.p().multiplyScalar(s).add(o),v=H.pivot.localToWorld(q);v.project(H.camera);
     const x=(v.x*.5+.5)*w,y=(-v.y*.5+.5)*h;
-    l.el.hidden=false;if(!l.w){l.w=l.el.offsetWidth;l.h=l.el.offsetHeight}
-    const x0=d.side==='r'?x+22:x-22-l.w,r={x0:x0,x1:x0+l.w,y0:y-l.h/2,y1:y+l.h/2};
-    if(r.x0<0||r.x1>w||r.y0<0||r.y1>h||placed.some(p=>r.x0<p.x1+3&&r.x1>p.x0-3&&r.y0<p.y1+2&&r.y1>p.y0-2)){l.el.hidden=true;return}
-    placed.push(r);l.el.style.left=x+'px';l.el.style.top=y+'px'});
+    l.el.hidden=false;l.w=l.el.offsetWidth;l.h=l.el.offsetHeight;
+    const sides=[d.side,d.side==='r'?'l':'r'],offsets=[0,-18,18,-36,36,-54,54,-72,72,-90,90,-110,110];
+    let best=null,score=Infinity;
+    sides.forEach(side=>offsets.forEach(dy=>{
+      const target=side==='r'?x+22:x-22-l.w,left=Math.max(4,Math.min(w-l.w-4,target));
+      const cy=Math.max(l.h/2+4,Math.min(h-l.h/2-4,y+dy)),r={x0:left,x1:left+l.w,y0:cy-l.h/2,y1:cy+l.h/2};
+      const overlaps=placed.filter(p=>r.x0<p.x1+3&&r.x1>p.x0-3&&r.y0<p.y1+2&&r.y1>p.y0-2).length;
+      if(overlaps<score){score=overlaps;best={side,left,cy,r,edge:Math.abs(target-left)>1}}
+      if(!overlaps){score=0;best={side,left,cy,r,edge:Math.abs(target-left)>1};return}
+    }));
+    if(score>0){l.el.hidden=true;return}
+    const b=best;l.el.className='lab '+b.side+(b.edge?' edge':'');
+    l.el.style.left=(b.edge?b.left:(b.side==='r'?b.left-22:b.left+l.w+22))+'px';l.el.style.top=b.cy+'px';
+    placed.push(b.r)});
   const t=$('#hlbl');
   if(H.sel&&H.selPt&&labelsOn){const v=H.pivot.localToWorld(H.selPt.clone());v.project(H.camera);
     if(t._n!==H.selName){t._n=H.selName;t.firstChild.textContent=H.selName;t.lastChild.hidden=true}
-    t.hidden=false;t.style.left=Math.max(50,Math.min(w-50,(v.x*.5+.5)*w))+'px';t.style.top=Math.max(40,Math.min(h-10,(-v.y*.5+.5)*h))+'px'}
+    t.hidden=false;const half=t.offsetWidth/2;t.style.left=Math.max(half+4,Math.min(w-half-4,(v.x*.5+.5)*w))+'px';
+    t.style.top=Math.max(t.offsetHeight*1.5+4,Math.min(h-4,(-v.y*.5+.5)*h))+'px'}
   else t.hidden=true}
 function tapH(e){const cv=H.renderer.domElement,r=cv.getBoundingClientRect();
   H.ray.setFromCamera(new T.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1),H.camera);
@@ -105,13 +116,19 @@ function bindH(cv){
   cv.addEventListener('pointermove',e=>{const p=H.ptrs.get(e.pointerId);if(!p)return;
     const dx=e.clientX-p.x,dy=e.clientY-p.y;
     if(H.ptrs.size===2){const o=[...H.ptrs.entries()].find(([k])=>k!==e.pointerId)[1];
-      const d0=Math.hypot(p.x-o.x,p.y-o.y),d1=Math.hypot(e.clientX-o.x,e.clientY-o.y);if(d0>0)H.zoom=Math.max(.5,Math.min(3,H.zoom*d1/d0));setCamH()}
-    else{H.rotY+=dx*.008;H.rotX=Math.max(-1.5,Math.min(1.5,H.rotX+dy*.008))}
+      const d0=Math.hypot(p.x-o.x,p.y-o.y),d1=Math.hypot(e.clientX-o.x,e.clientY-o.y),cx0=(p.x+o.x)/2,cy0=(p.y+o.y)/2,cx1=(e.clientX+o.x)/2,cy1=(e.clientY+o.y)/2;
+      if(d0>0){const z0=H.zoom,u0=2*Math.tan(H.camera.fov*Math.PI/360)*H.camera.position.z/cv.clientHeight;H.zoom=Math.max(.5,Math.min(3,H.zoom*d1/d0));
+        const u1=u0*z0/H.zoom;
+        H.panX-=(cx1-cx0)*u1;H.panY+=(cy1-cy0)*u1;
+        H.panX+=(cx0-cv.clientWidth/2)*(u0-u1);H.panY-=(cy0-cv.clientHeight/2)*(u0-u1)}setCamH()}
+    else if(e.pointerType==='mouse'&&(e.shiftKey||e.buttons===2)){H.rotY+=dx*.008;H.rotX=Math.max(-1.5,Math.min(1.5,H.rotX+dy*.008))}
+    else{const u=2*Math.tan(H.camera.fov*Math.PI/360)*H.camera.position.z/cv.clientHeight;H.panX-=dx*u;H.panY+=dy*u;setCamH()}
     if(H.down)H.down.moved+=Math.abs(dx)+Math.abs(dy);p.x=e.clientX;p.y=e.clientY});
   const up=e=>{H.ptrs.delete(e.pointerId);const d=H.down;
     if(d&&e.type==='pointerup'&&d.moved<8&&performance.now()-d.t<400&&H.ptrs.size===0)tapH(e);if(H.ptrs.size===0)H.down=null};
   cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
   cv.addEventListener('wheel',e=>{e.preventDefault();H.zoom=Math.max(.5,Math.min(3,H.zoom*(e.deltaY<0?1.1:.9)));setCamH()},{passive:false});
+  cv.addEventListener('contextmenu',e=>e.preventDefault());
 }
 function applyFilter(){const f=FILT[st.filt||'all'];
   if(H&&H.ready)Object.keys(H.parts).forEach(k=>{const dim=!!f&&f.indexOf(k)<0;H.parts[k].mats.forEach(m=>{m.transparent=dim;m.opacity=dim?.2:1;m.depthWrite=!dim;m.needsUpdate=true})});

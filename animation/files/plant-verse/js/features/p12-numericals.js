@@ -38,6 +38,6 @@
   PV.sim.reg('numericals',el,build);
   const name=()=>L('🧮 Numericals','🧮 अंकगणित');
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__num';b.textContent=name();b.onclick=()=>{q=null;PV.sim.open('numericals')};n.insertBefore(b,n.firstChild)});
-  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__num"]');if(b)b.textContent=name()});
+  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__num"],#app-actions [data-id="__num"]');if(b)b.textContent=name()});
   PV.numericals={gen:G};
 })();

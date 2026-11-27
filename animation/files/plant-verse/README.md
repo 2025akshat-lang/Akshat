@@ -32,3 +32,8 @@ Naya core file banaya (jaise naya scene)? Uska path `js/manifest.js` ke `core` l
 - Quiz, search, Hindi/English labels → `js/features/quiz.js`, `search.js`, `i18n.js`
 
 Load order sirf `js/manifest.js` mein likha hai; `js/loader.js` ko chhoone ki zarurat nahi.
+
+## Plant reproduction module
+- `js/features/p14-reproduction-data.js` contains bilingual flower-part, reproduction-step, and propagation descriptions.
+- `js/features/p14-reproduction.js` renders the interactive anatomy, sexual-reproduction sequence, and vegetative-propagation views.
+- `css/features.css` styles the module and its responsive SVG illustrations.

@@ -20,12 +20,14 @@ h1{margin:4px 0 2px;font:700 22px/1.15 var(--display);text-wrap:balance}
 .view svg{width:100%;height:100%;display:block}
 #v3 canvas,#v1 canvas{width:100%;height:100%;display:block;touch-action:none}
 #hlbl,#hlbl2{pointer-events:none;position:absolute;left:0;top:0;display:flex;align-items:center;gap:6px;min-height:36px;padding:6px 8px 6px 12px;border-radius:10px;
-  background:var(--panel);border:1px solid var(--accent);color:var(--fg);font:700 12px var(--mono);letter-spacing:.04em;white-space:nowrap;cursor:pointer;transform:translate(-50%,-135%)}
+  background:var(--panel);border:1px solid var(--accent);color:var(--fg);font:700 12px var(--mono);letter-spacing:.04em;white-space:normal;max-width:calc(100% - 8px);text-align:center;cursor:pointer;transform:translate(-50%,-135%)}
 #hlbl i,#hlbl2 i{font-style:normal;color:var(--accent);font-size:17px;line-height:1}
 #hlbl::after,#hlbl2::after{content:"";position:absolute;left:50%;bottom:-5px;width:8px;height:8px;background:var(--panel);border-right:1px solid var(--accent);border-bottom:1px solid var(--accent);transform:translateX(-50%) rotate(45deg)}
 .lab{position:absolute;left:0;top:0;pointer-events:none;padding:3px 7px;border-radius:8px;background:var(--panel);border:1px solid var(--line);
   color:var(--fg);font:700 11px var(--mono);letter-spacing:.05em;white-space:nowrap}
 .lab.r{transform:translate(22px,-50%)}.lab.l{transform:translate(calc(-100% - 22px),-50%)}
+.lab.edge{transform:translateY(-50%)}
+.lab.edge::before,.lab.edge::after{display:none}
 .lab::before{content:"";position:absolute;top:50%;height:1px;width:22px;background:var(--accent)}
 .lab::after{content:"";position:absolute;top:50%;width:5px;height:5px;border-radius:50%;background:var(--accent);transform:translateY(-50%)}
 .lab.r::before{left:-23px}.lab.l::before{right:-23px}
@@ -37,6 +39,12 @@ h1{margin:4px 0 2px;font:700 22px/1.15 var(--display);text-wrap:balance}
 .dock-actions{display:flex;align-items:center;gap:5px;min-width:0}
 .dock-actions button,.dock .seg button,.dock-action,.dock .tools button{flex:none;min-height:38px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:0 10px;font-size:12px;white-space:nowrap}
 .dock-actions button[aria-pressed="true"],.dock .seg button[aria-pressed="true"],.dock .tools button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dock-more{position:relative;flex:none}
+.dock-more summary{min-height:38px;display:grid;place-items:center;list-style:none;border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:0 10px;font-size:12px;cursor:pointer}
+.dock-more summary::-webkit-details-marker{display:none}
+#app-more{position:absolute;right:0;bottom:calc(100% + 6px);display:flex;flex-wrap:wrap;gap:5px;width:min(300px,calc(100vw - 40px));padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 8px 24px #18322522;z-index:7}
+.dock-more:not([open]) #app-more{display:none}
+#app-more button{min-height:38px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:0 10px;font-size:12px}
 .dock [hidden]{display:none!important}
 @media(max-width:760px){
   .dock{display:grid;grid-template-columns:1fr;gap:5px;padding:6px}
@@ -44,8 +52,20 @@ h1{margin:4px 0 2px;font:700 22px/1.15 var(--display);text-wrap:balance}
   .dock-label{width:48px}
   .dock-actions{flex:1;overflow-x:auto;scrollbar-width:none}
   .dock-actions::-webkit-scrollbar{display:none}
-  .dock .seg{flex:1;overflow-x:auto;scrollbar-width:none}
-  .dock .seg::-webkit-scrollbar{display:none}
-  .dock .seg button{padding:0 8px}
+  .dock .seg{flex:1;flex-wrap:nowrap;overflow:visible;justify-content:space-between}
+  .dock .seg button{min-height:34px;padding:0 4px;font-size:10px}
+  .dock-group.dock-views{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:5px}
+  .dock-group.dock-views .dock-label{grid-column:1}
+  .dock-group.dock-views .seg{grid-column:2}
+  .dock-group:last-child{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:5px;row-gap:5px}
+  .dock-group:last-child .dock-label{grid-column:1;grid-row:1 / span 3}
+  .dock-group:last-child .tools,.dock-group:last-child #app-actions{grid-column:2;min-width:0;max-width:100%;overflow:visible;flex-wrap:wrap}
+  .dock-group:last-child .tools{grid-row:1}
+  .dock-group:last-child #app-actions{grid-row:2}
+  .dock-group:last-child .dock-more{grid-column:2;grid-row:3}
+  .dock-group:last-child .tools button{min-height:34px;padding:0 6px}
+  .dock-group:last-child #app-actions .dock-action{min-height:34px;padding:0 8px}
+  .dock-group:last-child #app-more{bottom:calc(100% + 225px)}
 }
 @media(max-height:680px) and (min-width:761px){.dock{padding:4px 6px}.dock-actions button,.dock .seg button,.dock .tools button{min-height:34px}}
+@media(max-height:620px){.stage{min-height:80px}.dock{padding:4px}.chips{padding:5px 0}}
