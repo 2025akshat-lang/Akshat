@@ -190,27 +190,70 @@ body[data-surface="chemistry"] .bg-loader-wrapper,
 body[data-surface="biochemistry"] .bg-loader-wrapper {
   display: flex !important;
   z-index: 0;
-  opacity: 0.12;
+  opacity: 0.22;
 }
 
 body[data-surface="chemistry"] .bg-loader-wrapper .loader,
 body[data-surface="chemistry"] .bg-loader-wrapper .loader span,
 body[data-surface="biochemistry"] .bg-loader-wrapper .loader,
 body[data-surface="biochemistry"] .bg-loader-wrapper .loader span {
-  border: 1px solid rgba(40, 103, 94, 0.9);
-  border-radius: 0.65em;
-  background: transparent !important;
-  mix-blend-mode: normal;
+  border: 0.25em solid rgba(255, 255, 255, 0.9);
+  border-radius: 1em;
+  mix-blend-mode: multiply;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper {
+  opacity: 0.28;
 }
 
 body[data-surface="chemistry"] .bg-loader-wrapper .loader,
 body[data-surface="biochemistry"] .bg-loader-wrapper .loader {
-  animation: rotating 34s linear infinite;
+  animation: rotating 2s linear infinite;
 }
 
 body[data-surface="chemistry"] .bg-loader-wrapper .loader span,
 body[data-surface="biochemistry"] .bg-loader-wrapper .loader span {
-  animation: de-rotating 48s ease-in-out infinite;
+  animation: de-rotating 4s linear infinite;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader {
+  background-color: gold !important;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader span:nth-child(1) {
+  background-color: dodgerblue !important;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader span:nth-child(2) {
+  background-color: hotpink !important;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader span:nth-child(3) {
+  background-color: mediumpurple !important;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader span:nth-child(4) {
+  background-color: limegreen !important;
+}
+
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader {
+  background-color: #6684e8 !important;
+}
+
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader span:nth-child(1) {
+  background-color: #43a77b !important;
+}
+
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader span:nth-child(2) {
+  background-color: #e8ad45 !important;
+}
+
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader span:nth-child(3) {
+  background-color: #9b75d1 !important;
+}
+
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader span:nth-child(4) {
+  background-color: #7aa4ee !important;
 }
 
 body[data-surface="chemistry"] > :not(.bg-loader-wrapper):not(script):not(style),
@@ -224,8 +267,8 @@ body[data-surface="instrumental"] .rotating-bg {
 }
 
 body[data-surface="instrumental"] .node-layer {
-  opacity: 0.52;
-  filter: saturate(0.58);
+  opacity: 0.22;
+  filter: saturate(1.05);
 }
 
 body[data-surface="instrumental"] .node-center {

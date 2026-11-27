@@ -74,7 +74,7 @@ body {
   font-family: 'Poppins', sans-serif;
   line-height: 1.6;
   margin: 0;
-  padding: 24px 16px;
+  padding: 0 16px 24px;
   background: #f3f6f5;
   color: var(--text-dark);
   min-height: 100vh;
@@ -1180,8 +1180,6 @@ iframe {
   .report-wrapper, .container { padding: 16px; }
 }
 
-.bg-loader-wrapper { display: none; }
-
 h1, h2, h3, h4 {
   color: #202b29;
   font-weight: 600;
@@ -1208,6 +1206,14 @@ h1, h2, h3, h4 {
   border-radius: 8px;
   box-shadow: none;
   font-weight: 600;
+  margin-top: 0;
+}
+
+.main-heading:after { content: ' +'; }
+.main-heading.active:after { content: ' -'; }
+
+.main-heading.active {
+  color: #ffffff;
 }
 
 .cat-btn.active,
@@ -1243,10 +1249,6 @@ h1, h2, h3, h4 {
   letter-spacing: normal;
 }
 
-.bg-loader-wrapper .loader,
-.bg-loader-wrapper .loader span {
-  animation: none;
-}
 </style>
 
 
@@ -1267,12 +1269,12 @@ h1, h2, h3, h4 {
   </div>
 
   
-  <button class="main-heading">
+  <button class="main-heading active">
     Chemistry practicals <span id="main-toggle-icon"> </span>
   </button>
 
   
-  <div id="main-db-content" class="inside-content" style="display: none; padding: 15px;">
+  <div id="main-db-content" class="inside-content" style="display: block; padding: 15px;">
     
     
     <div class="category-container">
@@ -14425,6 +14427,8 @@ function toggleMainDatabase() {
     }
 }
 
+var initialCategory = document.querySelector(".category-container .cat-btn");
+if (initialCategory) initialCategory.click();
 
 </script>
  </body>
