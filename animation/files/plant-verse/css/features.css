@@ -32,9 +32,6 @@
 
 .pv-lf svg{width:100%;height:92px;background:var(--panel2);border-radius:10px}
 .pv-cap{display:flex;font:700 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px}.pv-cap span{flex:1;text-align:center}
-.top .seg{flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
-.top .seg::-webkit-scrollbar{display:none}
-.top>.x{flex:none}
 @media (max-width:600px){.pv-sim,.pv-panel:not(.pv-b){max-height:56%;overflow:auto}.top{gap:8px}}
 .pv-stick{position:sticky;top:-10px;z-index:2;background:var(--panel);padding:2px 0 6px;margin:0 -2px;border-bottom:1px solid var(--line)}
 #pv-sds{width:100%;accent-color:var(--accent);margin-top:8px}
@@ -52,3 +49,67 @@
 html.pv-hc,html.pv-hc:root,html.pv-hc:root[data-theme]{--fg:#000;--muted:#1a1a1a;--line:#000;--panel:#fff;--panel2:#fff;--panel3:#e8e8e8;--bg:#fff;--accent:#0b5d1e;--accent-ink:#fff}
 html.pv-hc button,html.pv-hc .pv-panel,html.pv-hc .lab{border-color:#000!important}
 .pv-textalt h4,#pv-textalt h4{margin:10px 0 0;font-size:13px}
+.pv-reproduction{inset:10px auto 10px 10px;width:min(560px,calc(100% - 20px));max-height:none;overflow:auto;z-index:6}
+.pv-reproduction>b{font:700 17px var(--display)}
+.pv-repro-tabs,.pv-repro-controls,.pv-repro-partlist{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.pv-repro-tabs button,.pv-repro-controls button,.pv-repro-partlist button{min-height:38px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:0 10px;font:500 12px var(--body);color:var(--fg)}
+.pv-repro-tabs button[aria-pressed=true],.pv-repro-partlist button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pv-repro-svg{display:block;width:100%;height:auto;max-height:300px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),var(--panel2))}
+.pv-flower-drawing{stroke:var(--leaf2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pv-petal-shape{fill:url(#pv-petal-grad);stroke:#bf467b}.pv-petal-back{opacity:.82}
+.pv-sepal-shape{fill:#8cba70}.pv-filament{stroke:#809f53;stroke-width:4}
+.pv-anther ellipse{fill:var(--pollen);stroke:#9b6200}.pv-style{stroke:#5a9a56;stroke-width:7}.pv-stigma{fill:#68a75d}
+.pv-ovary{fill:url(#pv-ovary-grad);stroke:#548b4f}.pv-ovule{fill:#f4df9b;stroke:#ad8542;stroke-width:1.5}
+.pv-receptacle{fill:#74a95f}.pv-pedicel{stroke:#6f9955;stroke-width:9}
+.pv-anatomy-labels{stroke:var(--accent);stroke-width:1.3;fill:var(--fg);font:700 10px var(--mono)}
+.pv-r-hotspot{cursor:pointer}.pv-r-hotspot circle{fill:var(--accent);stroke:var(--panel);stroke-width:2}
+.pv-r-hotspot text{stroke:var(--bg);stroke-width:3px;paint-order:stroke;letter-spacing:-.03em}
+.pv-r-hotspot:hover text,.pv-r-hotspot:focus text,.pv-r-hotspot[aria-pressed=true] text{fill:var(--accent);text-decoration:underline}
+.pv-r-hotspot:focus{outline:none}.pv-r-hotspot:focus circle{stroke:var(--pollen);stroke-width:4}
+.pv-repro-partlist{max-height:100px;overflow:auto}
+.pv-repro-description{padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:var(--panel2)}
+.pv-repro-description b{font:700 13px var(--display);color:var(--accent)}
+.pv-repro-description p,.pv-repro-step p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.pv-repro-step{margin-top:8px}.pv-repro-step>span{font:700 11px var(--mono);color:var(--accent)}
+.pv-repro-controls{justify-content:space-between}.pv-repro-controls button{flex:1}
+.pv-repro-controls button:disabled{opacity:.45}
+.pv-proc-petal{fill:#e998b8;stroke:#bf467b;stroke-width:2}
+.pv-proc-stamen{fill:none;stroke:#7d9c58;stroke-width:4;stroke-linecap:round}
+.pv-proc-anther{fill:var(--pollen);stroke:#9b6200;stroke-width:2}
+.pv-proc-stigma{fill:#68a75d;stroke:#4e8848;stroke-width:2}
+.pv-proc-style{stroke:#5a9a56;stroke-width:7;stroke-linecap:round}
+.pv-proc-ovary{fill:#a6ca8d;stroke:#548b4f;stroke-width:2}
+.pv-proc-sac{fill:#f8edc4;stroke:#ad8542;stroke-width:1.5}.pv-proc-egg,.pv-proc-polar{fill:#d95b91}
+.pv-proc-gamete{fill:#326aa0;opacity:0}
+.pv-proc-tube{fill:none;stroke:#e0a33a;stroke-width:3;stroke-linecap:round;stroke-dasharray:110;stroke-dashoffset:110;opacity:0}
+.pv-proc-pollen{fill:var(--pollen);stroke:#fff;stroke-width:2}
+.pv-proc-fruit{fill:#d94d38;stroke:#a93729;stroke-width:2;transform-box:fill-box;transform-origin:center;opacity:0}
+.pv-proc-seed{fill:#f6e7a8;stroke:#ad8542;stroke-width:2;opacity:0}
+.pv-proc-note{fill:var(--muted);font:700 10px var(--mono)}
+.pv-process[data-stage="0"] .pv-proc-pollen{animation:pv-pollen-flight 1.8s ease-in-out infinite alternate}
+.pv-process[data-stage="1"] .pv-proc-tube{opacity:1;stroke-dashoffset:0;transition:stroke-dashoffset 2s ease}
+.pv-process[data-stage="2"] .pv-proc-tube{opacity:1;stroke-dashoffset:0}
+.pv-process[data-stage="2"] .pv-proc-egg{animation:pv-fuse 1.2s ease-in-out infinite alternate}
+.pv-process[data-stage="2"] .pv-proc-polar{animation:pv-fuse 1.2s ease-in-out infinite alternate-reverse}
+.pv-process[data-stage="2"] .pv-gamete-egg{opacity:1;animation:pv-gamete-to-egg 1.4s ease-in-out infinite alternate}
+.pv-process[data-stage="2"] .pv-gamete-polar{opacity:1;animation:pv-gamete-to-polar 1.4s ease-in-out infinite alternate}
+.pv-process[data-stage="3"] .pv-proc-fruit{opacity:1;transform:scale(1.12);transition:transform 1s ease}
+.pv-process[data-stage="3"] .pv-proc-seed{opacity:1}
+@keyframes pv-pollen-flight{to{transform:translate(59px,21px)}}
+@keyframes pv-fuse{to{transform:translateY(-3px)}}
+@keyframes pv-gamete-to-egg{to{transform:translateY(51px)}}
+@keyframes pv-gamete-to-polar{to{transform:translateY(41px)}}
+.pv-veg-soil{fill:#d9c3a6}.pv-veg-plant path:not(.pv-veg-roots){fill:#70a95b;stroke:#3e7d48;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.pv-veg-roots{fill:none;stroke:#a47b52;stroke-width:3;stroke-linecap:round}
+.pv-veg-runner,.pv-veg-stem{fill:none;stroke:#6c9953;stroke-width:8;stroke-linecap:round}
+.pv-veg-tuber{fill:#c89a5c;stroke:#966d3e;stroke-width:2}.pv-veg-eye{fill:#6d5032}
+.pv-veg-scion{fill:none;stroke:#5d9951;stroke-width:9;stroke-linecap:round}
+.pv-veg-stock{fill:none;stroke:#b37c48;stroke-width:13;stroke-linecap:round}
+.pv-veg-bud{fill:#7db65f;stroke:#477f45;stroke-width:2}
+.pv-veg text{fill:var(--fg);font:700 11px var(--mono)}
+@media(max-width:600px){
+  .pv-reproduction{inset:6px;width:calc(100% - 12px);max-height:calc(100% - 12px);padding:9px}
+  .pv-repro-svg{max-height:36vh}
+  .pv-anatomy-labels{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.pv-process *{animation:none!important;transition:none!important}}

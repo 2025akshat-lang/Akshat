@@ -78,6 +78,9 @@ function buildPlant(){
     put('blade',new T.Mesh(strip(0),edgeM),g);put('blade',new T.Mesh(strip(NV),edgeM),g);
     const mid=[];for(let i=0;i<=NU-1;i++){const q=pp(i,NV/2,0);mid.push(new T.Vector3(q[0],q[1],q[2]))}
     put('vein',new T.Mesh(tube(mid,.035,.012,8),veinM),g);
+    for(let i=3;i<NU-2;i+=3){const a=pp(i,NV/2,.025);
+      [1,NV-1].forEach(j=>{const b=pp(i,j,.025),c=[a[0]+(b[0]-a[0])*.58,a[1]+(b[1]-a[1])*.58,a[2]+(b[2]-a[2])*.58+.035];
+        put('vein',new T.Mesh(tube([new T.Vector3(...a),new T.Vector3(...c),new T.Vector3(...b)],.014,.004,5),veinM),g)})}
     const pd=pet.clone().normalize();
     put('petiole',new T.Mesh(tube([V3(0,0,0),pet.clone().multiplyScalar(.5).add(V3(0,.05,0)),pet.clone()],.055,.042,8),petM),lg);
     const lb=put('lbase',new T.Mesh(new T.CylinderGeometry(.045,.12,.22,12),lbM),lg);lb.position.copy(pd.clone().multiplyScalar(.1));lb.quaternion.copy(dirQ(pd));
@@ -151,10 +154,10 @@ function buildPlant(){
     if(o.cracks){x.strokeStyle='rgba(25,25,30,.55)';x.lineWidth=2;for(let i=0;i<10;i++){let px=rng()*w,py=rng()*h;x.beginPath();x.moveTo(px,py);for(let k=0;k<5;k++){px+=(rng()-.5)*120;py+=(rng()-.5)*30;x.lineTo(px,py)}x.stroke()}}
     const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(0,0,0,.16)');gr.addColorStop(.1,'rgba(0,0,0,0)');gr.addColorStop(.88,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.3)');x.fillStyle=gr;x.fillRect(0,0,w,h);
     return new T.CanvasTexture(c)};
-  const LAY=[['Topsoil',0,-1.3,'#4a3326',['#2c1d14','#6a4a33','#5a3f2c','#7b5a43'],1400,{min:1,max:3}],
-    ['Subsoil',-1.3,-3,'#8c5b36',['#a8704a','#70472a','#c28a5c','#5e3b22'],1100,{min:1.5,max:4.5,chips:1}],
-    ['Weathered rock',-3,-4.3,'#a39a86',['#cfc6b0','#7e7765','#b8ae96','#6b6554'],800,{min:3,max:9,chips:1}],
-    ['Bedrock',-4.3,-5.1,'#6b6f75',['#868a90','#55585d','#7a7e84'],400,{min:4,max:12,chips:1,cracks:1}]];
+  const LAY=[['Topsoil',0,-1.3,'#765844',['#594332','#94765e','#6b503c','#a08369'],1400,{min:1,max:3}],
+    ['Subsoil',-1.3,-3,'#b58660',['#c69b76','#9b704d','#d0a77f','#886242'],1100,{min:1.5,max:4.5,chips:1}],
+    ['Weathered rock',-3,-4.3,'#c4bca9',['#ded6c4','#a9a18f','#d2c9b6','#98917f'],800,{min:3,max:9,chips:1}],
+    ['Bedrock',-4.3,-5.1,'#92938c',['#b3b4ad','#777970','#a5a69e'],400,{min:4,max:12,chips:1,cracks:1}]];
   LAY.forEach(([name,top,bot,base,dots,cnt,o])=>{
     const tex=mkTex(1024,160,base,dots,cnt,o),back=new T.MeshBasicMaterial({map:tex,side:T.BackSide}),side=new T.MeshBasicMaterial({map:tex,side:T.BackSide,color:0xa8a8a8});
     const m=new T.Mesh(new T.BoxGeometry(sw,top-bot,sd).translate(0,(top+bot)/2,0),[side,side,side,side,back,back]);
