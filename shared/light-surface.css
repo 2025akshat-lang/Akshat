@@ -1,0 +1,259 @@
+:root {
+  color-scheme: light;
+  --surface-canvas: #f5f6f8;
+  --surface-card: #ffffff;
+  --surface-edge: rgba(15, 23, 42, 0.07);
+  --surface-shadow: 0 8px 22px rgba(24, 39, 54, 0.06), 0 2px 6px rgba(24, 39, 54, 0.035);
+  --surface-shadow-hover: 0 14px 28px rgba(24, 39, 54, 0.1), 0 4px 10px rgba(24, 39, 54, 0.05);
+}
+
+body[data-surface] {
+  min-height: 100vh;
+  background-color: var(--surface-canvas) !important;
+}
+
+body[data-surface="chemistry"] {
+  background-image:
+    radial-gradient(ellipse at 8% 2%, rgba(16, 185, 129, 0.045), transparent 34%),
+    radial-gradient(ellipse at 94% 18%, rgba(59, 130, 246, 0.035), transparent 32%) !important;
+}
+
+body[data-surface="biochemistry"] {
+  background-image:
+    radial-gradient(ellipse at 92% 4%, rgba(16, 185, 129, 0.045), transparent 34%),
+    radial-gradient(ellipse at 5% 48%, rgba(14, 165, 233, 0.035), transparent 34%) !important;
+}
+
+body[data-surface="instrumental"] {
+  background-image:
+    radial-gradient(ellipse at 8% 4%, rgba(59, 130, 246, 0.045), transparent 34%),
+    radial-gradient(ellipse at 94% 48%, rgba(139, 92, 246, 0.03), transparent 35%) !important;
+}
+
+body[data-surface="gallery"] {
+  background-image:
+    radial-gradient(ellipse at 94% 2%, rgba(59, 130, 246, 0.045), transparent 34%),
+    radial-gradient(ellipse at 4% 55%, rgba(16, 185, 129, 0.035), transparent 35%) !important;
+}
+
+body[data-surface="portfolio"] {
+  background-image:
+    radial-gradient(ellipse at 5% 4%, rgba(59, 130, 246, 0.04), transparent 34%),
+    radial-gradient(ellipse at 95% 55%, rgba(168, 85, 247, 0.03), transparent 35%) !important;
+}
+
+body[data-surface="games"] {
+  background-image:
+    radial-gradient(ellipse at 95% 4%, rgba(245, 158, 11, 0.04), transparent 34%),
+    radial-gradient(ellipse at 5% 60%, rgba(59, 130, 246, 0.035), transparent 35%) !important;
+}
+
+body[data-surface="lab"] {
+  background-image:
+    radial-gradient(ellipse at 5% 4%, rgba(16, 185, 129, 0.04), transparent 34%),
+    radial-gradient(ellipse at 95% 55%, rgba(245, 158, 11, 0.03), transparent 35%) !important;
+}
+
+body[data-surface="sep"] {
+  background-image:
+    radial-gradient(ellipse at 95% 4%, rgba(59, 130, 246, 0.04), transparent 34%),
+    radial-gradient(ellipse at 5% 55%, rgba(16, 185, 129, 0.03), transparent 35%) !important;
+}
+
+body[data-surface="templates"] {
+  background-image:
+    radial-gradient(ellipse at 5% 4%, rgba(245, 158, 11, 0.04), transparent 34%),
+    radial-gradient(ellipse at 95% 55%, rgba(59, 130, 246, 0.03), transparent 35%) !important;
+}
+
+.page-header,
+.albums-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.ambient-icons {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-icon {
+  position: absolute;
+  display: grid;
+  width: 58px;
+  height: 48px;
+  place-items: center;
+  color: rgba(40, 103, 94, 0.58);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(24, 39, 54, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: ambient-drift 12s ease-in-out infinite;
+}
+
+.ambient-icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.ambient-icon-atom {
+  top: 24%;
+  left: 7%;
+}
+
+.ambient-icon-flask {
+  top: 49%;
+  right: 7%;
+  animation-delay: -3s;
+}
+
+.ambient-icon-leaf {
+  bottom: 17%;
+  left: 13%;
+  animation-delay: -6s;
+}
+
+.ambient-icon-orbit {
+  right: 19%;
+  bottom: 26%;
+  animation-delay: -9s;
+}
+
+@keyframes ambient-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(0, -9px, 0) rotate(2deg); }
+}
+
+.card,
+.behance-card,
+.experiment-card,
+.grid-card,
+.interactive-grid,
+.image-proof-card,
+.kids-card,
+.notes-card,
+.note-item,
+.degree-item,
+.exp-item,
+.disclaimer-card,
+.report-wrapper,
+.table-container,
+.section-block,
+.container {
+  background-color: var(--surface-card) !important;
+  border-color: var(--surface-edge) !important;
+  box-shadow: var(--surface-shadow);
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 220ms ease;
+}
+
+.card:hover,
+.behance-card:hover,
+.experiment-card:hover,
+.grid-card:hover,
+.image-proof-card:hover,
+.kids-card:hover,
+.notes-card:hover,
+.note-item:hover,
+.degree-item:hover,
+.exp-item:hover,
+.disclaimer-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(40, 103, 94, 0.24) !important;
+  box-shadow: var(--surface-shadow-hover) !important;
+}
+
+button:not([disabled]) {
+  transition:
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 240ms ease,
+    border-color 180ms ease;
+}
+
+button:not([disabled]):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(24, 39, 54, 0.1);
+}
+
+button:not([disabled]):active {
+  transform: translateY(0) scale(0.99);
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper,
+body[data-surface="biochemistry"] .bg-loader-wrapper {
+  display: flex !important;
+  z-index: 0;
+  opacity: 0.12;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader,
+body[data-surface="chemistry"] .bg-loader-wrapper .loader span,
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader,
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader span {
+  border: 1px solid rgba(40, 103, 94, 0.9);
+  border-radius: 0.65em;
+  background: transparent !important;
+  mix-blend-mode: normal;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader,
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader {
+  animation: rotating 34s linear infinite;
+}
+
+body[data-surface="chemistry"] .bg-loader-wrapper .loader span,
+body[data-surface="biochemistry"] .bg-loader-wrapper .loader span {
+  animation: de-rotating 48s ease-in-out infinite;
+}
+
+body[data-surface="chemistry"] > :not(.bg-loader-wrapper):not(script):not(style),
+body[data-surface="biochemistry"] > :not(.bg-loader-wrapper):not(script):not(style) {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-surface="instrumental"] .rotating-bg {
+  animation-duration: 36s;
+}
+
+body[data-surface="instrumental"] .node-layer {
+  opacity: 0.52;
+  filter: saturate(0.58);
+}
+
+body[data-surface="instrumental"] .node-center {
+  box-shadow: 0 8px 22px rgba(24, 39, 54, 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-surface="chemistry"] .bg-loader-wrapper .loader,
+  body[data-surface="chemistry"] .bg-loader-wrapper .loader span,
+  body[data-surface="biochemistry"] .bg-loader-wrapper .loader,
+  body[data-surface="biochemistry"] .bg-loader-wrapper .loader span,
+  body[data-surface="instrumental"] .rotating-bg,
+  .ambient-icon {
+    animation: none !important;
+  }
+
+  .card,
+  .behance-card,
+  .experiment-card,
+  .grid-card,
+  .image-proof-card,
+  .kids-card,
+  .notes-card,
+  .note-item,
+  .degree-item,
+  .exp-item,
+  .disclaimer-card,
+  button:not([disabled]) {
+    transition-duration: 0.01ms;
+  }
+}
