@@ -4,7 +4,7 @@ function openHome(){show(1);st.part=null;st.scene=null;
   head('PLANT / WHOLE / DICOT EXAMPLE','Plantverse','');card('','');
   homeChips();
   if(initH()){fitH();startH()}
-  else{$('#tools').hidden=true;if(!$v[1].querySelector('svg'))$v[1].insertAdjacentHTML('afterbegin',L1)}
+  else{if(!$v[1].querySelector('svg'))$v[1].insertAdjacentHTML('afterbegin',L1)}
   applyFilter()}
 const FILT={all:null,shoot:['internode','node','branch','abud','axbud','fbud','trich','blade','vein','petiole','lbase','stipule'],root:['taproot','lateral','rcap','rhair'],repro:['petal','sepal','stamen','carpel','pericarp','flesh','fseed','calyx','pedicel']};
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;

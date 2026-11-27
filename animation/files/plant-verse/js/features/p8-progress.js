@@ -41,5 +41,5 @@
   PV.sim.reg('progress',el,build);
   const name=()=>L('📊 My progress','📊 मेरी प्रगति');
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__progress';b.textContent=name();b.onclick=()=>PV.sim.open('progress');n.insertBefore(b,n.firstChild)});
-  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__progress"]');if(b)b.textContent=name()});
+  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__progress"],#app-actions [data-id="__progress"]');if(b)b.textContent=name()});
 })();

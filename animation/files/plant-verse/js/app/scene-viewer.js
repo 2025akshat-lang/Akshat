@@ -5,7 +5,7 @@ function init3(){
   if(R)return true;
   try{
     const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<=800?1.5:2));
     $v[3].insertBefore(renderer.domElement,$('#lbl'));
     const scene=new T.Scene(),camera=new T.PerspectiveCamera(38,1,.1,100),pivot=new T.Group();
     pivot.rotation.order='YXZ';scene.add(pivot);
@@ -13,10 +13,16 @@ function init3(){
     const d1=new T.DirectionalLight(0xffffff,.95);d1.position.set(2,3,5);scene.add(d1);
     const d2=new T.DirectionalLight(0x9fd8ff,.35);d2.position.set(-4,-1,-3);scene.add(d2);
     R={renderer,scene,camera,pivot,clock:new T.Clock(),raf:0,ray:new T.Raycaster(),ptrs:new Map(),down:null};
-    new ResizeObserver(fit).observe($v[3]);
+    if(window.ResizeObserver)new ResizeObserver(fit).observe($v[3]);else window.addEventListener('resize',fit);
     bind3(renderer.domElement);
+    renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();show(2);sceneFallback()});
     return true;
-  }catch(err){card('3D not available','WebGL is not available on this device.');return false}
+  }catch(err){console.warn('[Plantverse] Scene WebGL unavailable:',err);return false}
+}
+function sceneFallback(){
+  let note=$('#pv-scene-fallback');
+  if(!note){note=document.createElement('p');note.id='pv-scene-fallback';note.className='scene-fallback';note.setAttribute('role','status');$v[2].prepend(note)}
+  note.textContent='3D is unavailable on this device. Use the labeled anatomical diagram and part buttons instead.';
 }
 function fit(){if(!R)return;const w=$v[3].clientWidth,h=$v[3].clientHeight;if(!w||!h)return;
   R.renderer.setSize(w,h,false);R.camera.aspect=w/h;R.camera.updateProjectionMatrix();setCam()}
@@ -24,7 +30,7 @@ function setCam(){if(!S)return;const a=R.camera.aspect,base=S.cam*(a<1?1.25/Math
 function resetView(){rotX=0;rotY=0;zoom=1;panX=0;panY=0;setCam()}
 function openScene(id){
   const pid=SCENE_PART[id];st.part=pid;st.scene=id;show(3);
-  if(!init3())return;
+  if(!init3()){show(2);sceneFallback();return}
   if(S){R.pivot.remove(S.group);S.group.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
   S=SC[id]();R.pivot.add(S.group);sel=null;resetView();
   const spot=DIA[pid].spots.find(s=>s[0]===id);
@@ -57,6 +63,7 @@ function pick(id){
   S.parts.forEach(p=>p.mats.forEach(m=>{if(m.emissive){const on=p.id===sel||(sel&&S.byId[sel].members&&S.byId[sel].members.indexOf(p.id)>=0);m.userData.e0=m.userData.e0||m.emissive.getHex();m.emissive.setHex(on?0x2f7d4a:m.userData.e0);m.emissiveIntensity=on?.9:(m.userData.i0===undefined?m.emissiveIntensity:m.userData.i0)}}));
   if(sel){const p=S.byId[sel];card(p.name,p.desc)}else card('Tap a part','Drag to pan, shift-drag to rotate, pinch to zoom.')}
 function bind3(cv){
+  cv.style.touchAction='none';
   cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);R.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});R.down={x:e.clientX,y:e.clientY,t:performance.now(),moved:0}});
   cv.addEventListener('pointermove',e=>{const p=R.ptrs.get(e.pointerId);if(!p)return;
     const dx=e.clientX-p.x,dy=e.clientY-p.y;
