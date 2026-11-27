@@ -13,40 +13,41 @@
 <div class="app">
   <header class="top">
     <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-5 6-8 10-10"/></svg></div>
-    <div id="brandbox" hidden><div class="brand">PLANTVERSE</div><div class="badge">PROCEDURAL 3D</div></div>
-  </header>
-  <section class="hd">
-    <div><div class="crumb" id="crumb"></div><h1 id="ttl"></h1><p id="sub"></p></div>
+    <div class="brandbox"><div class="brand">PLANTVERSE</div><div class="badge">BOTANICAL ATLAS</div></div>
+    <div class="top-title"><div class="crumb" id="crumb"></div><h1 id="ttl"></h1><p id="sub"></p></div>
+    <div class="header-actions" id="header-actions"></div>
     <button class="x" id="close" hidden aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </section>
+    <details class="tools-menu" id="tools-menu">
+      <summary aria-label="Open tools">Tools ☰</summary>
+      <div class="tools-panel">
+        <div class="tools" id="tools" aria-label="Plant tools"></div>
+        <div class="app-actions" id="app-actions"></div>
+        <div class="app-more" id="app-more"></div>
+      </div>
+    </details>
+  </header>
   <main class="stage">
     <div id="v1" class="view"></div>
     <div id="v2" class="view" hidden></div>
     <div id="v3" class="view" hidden><div id="lbl" hidden></div></div>
-    <div class="card" id="card"></div>
   </main>
-  <nav class="chips" id="chips" aria-label="Parts"></nav>
+  <details class="parts-menu" id="parts-menu">
+    <summary>Explore parts ▾</summary>
+    <nav class="chips" id="chips" aria-label="Parts"></nav>
+  </details>
   <nav class="dock" aria-label="Plant controls">
-    <div class="dock-group dock-views">
-      <span class="dock-label">Views</span>
-      <div class="seg" id="seg" role="group" aria-label="Choose plant view">
-        <button data-f="all" aria-pressed="true">Whole</button>
-        <button data-f="shoot" aria-pressed="false">Shoot</button>
-        <button data-f="root" aria-pressed="false">Roots</button>
-        <button data-f="repro" aria-pressed="false">Reproduction</button>
-      </div>
+    <div class="seg" id="seg" role="group" aria-label="Choose plant view">
+      <button data-f="all" aria-pressed="true">Whole</button>
+      <button data-f="shoot" aria-pressed="false">Shoot</button>
+      <button data-f="root" aria-pressed="false">Roots</button>
+      <button data-f="repro" aria-pressed="false">Repro</button>
     </div>
-    <div class="dock-group">
-      <span class="dock-label">Tools</span>
-      <div class="tools" id="tools">
-        <button id="lblt" aria-label="Labels on/off" aria-pressed="true" title="Labels">Lbl</button>
-        <button id="t3d" aria-label="3D detail on/off" aria-pressed="false" title="3D detail">3D</button>
-        <button id="zin" aria-label="Zoom in" title="Zoom in">+</button>
-        <button id="zout" aria-label="Zoom out" title="Zoom out">&minus;</button>
-        <button id="rst" aria-label="Reset view" title="Reset view">↺</button>
-      </div>
-      <div class="dock-actions" id="app-actions"></div>
-      <details class="dock-more"><summary>More</summary><div id="app-more"></div></details>
+    <div class="tools" id="view-tools" aria-label="View controls">
+      <button id="lblt" aria-label="Labels on/off" aria-pressed="true" title="Labels">Labels</button>
+      <button id="t3d" aria-label="3D detail on/off" aria-pressed="false" title="3D detail">3D</button>
+      <button id="zin" aria-label="Zoom in" title="Zoom in">+</button>
+      <button id="zout" aria-label="Zoom out" title="Zoom out">&minus;</button>
+      <button id="rst" aria-label="Reset view" title="Reset view">Reset</button>
     </div>
   </nav>
 </div>
