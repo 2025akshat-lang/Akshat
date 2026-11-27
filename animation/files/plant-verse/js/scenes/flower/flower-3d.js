@@ -1,5 +1,5 @@
 
-SC['flower-3d']=()=>{const S=new Sc();S.title='Flower: inner parts (front petal removed)';S.sub='Petals and sepals outside, stamens inside, pistil in the middle.';S.cam=6.4;S.view=[.5,-.35];
+SC['flower-3d']=()=>{const S=new Sc();S.title='Flower: inner parts (front petal removed)';S.sub='Petals and sepals outside, stamens inside, pistil in the middle.';S.cam=5.2;S.view=[.5,-.35];
   S.part('petal','Petals (corolla)','Attract insects with colour and scent.',[1.2,1.3,.2]);
   S.part('sepal','Sepals (calyx)','Leaf-like and green: cover and protect the bud.',[-1.1,-.15,.2]);
   S.part('stamen','Stamens','Filament + anther. Pollen is made in the anther (male part).',[.8,1.15,.1]);

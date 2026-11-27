@@ -1,6 +1,6 @@
 
 window.PV_MANIFEST={
-  v:'20261027a',            
+  v:'20261127e',
   useBundle:false,          
   bundle:'dist/plantverse.bundle.js',
   core:[

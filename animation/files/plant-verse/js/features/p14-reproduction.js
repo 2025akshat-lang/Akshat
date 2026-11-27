@@ -75,16 +75,17 @@
   });
   el.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const g=e.target.closest('.pv-r-hotspot');if(g){e.preventDefault();part=g.dataset.part;draw()}});
   PV.sim.reg('plant-reproduction',el,draw);
-  const launch=PV.ui.addTopButton('🌼 '+L('Repro lab','जनन प्रयोगशाला'),()=>{stop();view='anatomy';part='stigma';PV.sim.open('plant-reproduction')});
+  const launch=PV.ui.addTopButton('🌼 '+L('Repro Lab','जनन प्रयोगशाला'),()=>{stop();view='anatomy';part='stigma';PV.sim.open('plant-reproduction')});
   launch.classList.add('dock-action');
   launch.setAttribute('aria-label',L('Interactive plant reproduction','पौधों का संवादात्मक जनन'));
-  PV.onLang&&PV.onLang(()=>{launch.textContent='🌼 '+L('Repro lab','जनन प्रयोगशाला');if(!el.hidden)draw()});
+  PV.onLang&&PV.onLang(()=>{launch.textContent='🌼 '+L('Repro Lab','जनन प्रयोगशाला');if(!el.hidden)draw()});
   PV.before('homeChips',()=>document.querySelectorAll('#app-actions [data-id^="__"]').forEach(b=>b.remove()));
   PV.after('homeChips',()=>{
     ['__hmatch','__health','__num','__theory','__progress'].forEach(id=>{
       const b=document.querySelector(`#chips [data-id="${id}"]`);
       if(b){b.classList.add('dock-action');document.querySelector('#app-actions').appendChild(b)}
     });
+    document.querySelector('#parts-menu summary').textContent='Explore · '+document.querySelectorAll('#chips .chip').length;
   });
   ['#pv-view','#pv-focus','.dock-action[aria-label="Plant Explorer"]','.dock-action[aria-label="Accessibility settings"]'].forEach(sel=>{
     const b=document.querySelector(sel);if(b)document.querySelector('#app-more').appendChild(b);

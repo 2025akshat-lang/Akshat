@@ -35,7 +35,7 @@
   el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
     if(b.dataset.tab){tab=b.dataset.tab;cur=null;draw()}else if(b.dataset.c!==undefined){cur=b.dataset.c||null;draw()}});
   PV.sim.reg('health',el,draw);
-  const name=()=>L('🩺 Plant health','🩺 पौधे का स्वास्थ्य');
+  const name=()=>L('🩺 Plant Health','🩺 पौधे का स्वास्थ्य');
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__health';b.textContent=name();b.onclick=()=>{cur=null;PV.sim.open('health')};n.insertBefore(b,n.firstChild)});
   PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__health"],#app-actions [data-id="__health"]');if(b)b.textContent=name()});
 })();

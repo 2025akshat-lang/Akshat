@@ -9,6 +9,7 @@ function show(n){st.lv=n;[1,2,3].forEach(i=>$v[i].hidden=i!==n);
 function head(c,t,s){$('#crumb').textContent=c;$('#ttl').textContent=t;$('#sub').textContent=s||''}
 function card(){}
 function chips(list,onPick,active){const n=$('#chips');n.innerHTML='';n.scrollLeft=0;
-  const summary=$('#parts-menu summary');if(summary)summary.textContent=list.length?`Explore parts · ${list.length}`:'Explore parts';
+  const summary=$('#parts-menu summary'),label=st.lv===2?'Sub-parts':st.lv===3?'Scene parts':'Explore';
+  if(summary)summary.textContent=`${label} · ${list.length}`;
   list.forEach(([id,label])=>{const b=document.createElement('button');b.className='chip'+(String(id).slice(0,2)==='__'?' mode':'');b.textContent=label;b.setAttribute('aria-pressed',String(id===active));b.dataset.id=id;b.onclick=()=>{$('#parts-menu').open=false;onPick(id)};n.appendChild(b)})}
 function pressChip(id){document.querySelectorAll('#chips .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===id)))}
