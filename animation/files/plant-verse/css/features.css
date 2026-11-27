@@ -32,9 +32,6 @@
 
 .pv-lf svg{width:100%;height:92px;background:var(--panel2);border-radius:10px}
 .pv-cap{display:flex;font:700 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px}.pv-cap span{flex:1;text-align:center}
-.top .seg{flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
-.top .seg::-webkit-scrollbar{display:none}
-.top>.x{flex:none}
 @media (max-width:600px){.pv-sim,.pv-panel:not(.pv-b){max-height:56%;overflow:auto}.top{gap:8px}}
 .pv-stick{position:sticky;top:-10px;z-index:2;background:var(--panel);padding:2px 0 6px;margin:0 -2px;border-bottom:1px solid var(--line)}
 #pv-sds{width:100%;accent-color:var(--accent);margin-top:8px}

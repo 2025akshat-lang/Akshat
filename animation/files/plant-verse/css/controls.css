@@ -1,6 +1,6 @@
 
-.tools{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:8px}
-.tools button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;font:500 20px var(--body)}
+.tools{display:flex;align-items:center;gap:5px}
+.tools button{min-width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);display:grid;place-items:center;font:500 13px var(--body);padding:0 8px}
 .tools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
 .card{position:absolute;left:10px;right:10px;bottom:10px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);
   background:var(--panel);font-size:13px;color:var(--muted);pointer-events:none}
