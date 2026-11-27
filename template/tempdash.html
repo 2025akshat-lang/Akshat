@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,32 +12,49 @@
 
   body {
     margin: 0;
-    padding: 20px;
-    background-color: #0b0f19;
-    color: #fff;
+    padding: 32px 24px;
+    background-color: #f3f6f5;
+    color: #202b29;
+  }
+
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .page-header p {
+    margin: 8px 0 0;
+    color: #64736f;
+    line-height: 1.5;
   }
 
   .albums-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
     max-width: 1200px;
     margin: 0 auto;
   }
 
   .card {
-    background: #0d1117;
-    border-radius: 18px;
+    background: #ffffff;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #dce5e2;
   }
 
   .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(0, 229, 255, 0.2);
+    border-color: #8eaaa3;
+    box-shadow: 0 4px 14px rgba(32, 55, 49, 0.08);
   }
 
   .card-thumbnail {
@@ -45,7 +62,7 @@
     height: 190px;
     position: relative;
     overflow: hidden;
-    background: #eef7ff;
+    background: #e8efec;
   }
 
   .card-thumbnail svg {
@@ -56,13 +73,13 @@
 
   .card-content {
     padding: 16px;
-    background: #0d1117;
+    background: #ffffff;
   }
 
   .card-title {
     font-size: 16px;
-    font-weight: 700;
-    color: #ffffff;
+    font-weight: 600;
+    color: #202b29;
     margin-bottom: 8px;
     line-height: 1.3;
   }
@@ -76,17 +93,16 @@
 
   .card-author {
     font-size: 13px;
-    color: #94a3b8;
+    color: #64736f;
   }
 
   .badge {
-    background: #9333ea;
-    color: #ffffff;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.3px;
+    background: #e8f0ed;
+    color: #28675e;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 12px;
   }
 
   .modal-overlay {
@@ -105,7 +121,7 @@
   }
 
   .modal-container {
-    background: #111827;
+    background: #f3f6f5;
     width: 100%;
     max-width: 1000px;
     height: 90vh;
@@ -113,46 +129,45 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #dce5e2;
   }
 
   .modal-header {
     padding: 14px 20px;
-    background: #1f2937;
+    background: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid #dce5e2;
   }
 
   .modal-title {
     font-size: 16px;
-    font-weight: 700;
-    color: #c084fc;
+    font-weight: 600;
+    color: #28675e;
   }
 
   .close-btn {
-    background: #ef4444;
-    color: white;
+    background: #f0e7e5;
+    color: #794c47;
     border: none;
     padding: 6px 14px;
     border-radius: 8px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     font-size: 13px;
     transition: 0.2s;
   }
 
   .close-btn:hover {
-    background: #dc2626;
+    background: #e7d8d5;
   }
 
   .modal-body {
     flex: 1;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: #ffffff;
   }
 
   .modal-body iframe {
@@ -164,6 +179,11 @@
 </head>
 <body>
 
+  <header class="page-header">
+    <h1>Interactive templates</h1>
+    <p>Browse small visual experiments and open any item to explore it.</p>
+  </header>
+
   
   <div class="albums-grid" id="cardsGrid"></div>
 
@@ -172,7 +192,7 @@
     <div class="modal-container">
       <div class="modal-header">
         <span class="modal-title" id="modalTitle">Template</span>
-        <button class="close-btn" onclick="closeModal()">✕ Close</button>
+        <button class="close-btn" onclick="closeModal()">Close</button>
       </div>
       <div class="modal-body">
         <iframe id="modalFrame" src=""></iframe>

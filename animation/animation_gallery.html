@@ -11,13 +11,13 @@
   <link rel="canonical" href="https://2025akshat-lang.github.io/Akshat/animation/animation_gallery.html">
 <style>
   :root {
-    --bg-dark: #090d16;
-    --card-bg: #121826;
-    --border-color: rgba(56, 189, 248, 0.18);
-    --hover-border: rgba(56, 189, 248, 0.6);
-    --accent-blue: #38bdf8;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --bg-dark: #f3f6f5;
+    --card-bg: #ffffff;
+    --border-color: #dce5e2;
+    --hover-border: #8eaaa3;
+    --accent-blue: #28675e;
+    --text-primary: #202b29;
+    --text-secondary: #64736f;
   }
 
   * {
@@ -27,18 +27,35 @@
 
   body {
     margin: 0;
-    padding: 30px 20px;
-    background: radial-gradient(circle at 50% 0%, #1e293b 0%, #090d16 80%);
-    background-attachment: fixed;
+    padding: 32px 24px;
+    background: var(--bg-dark);
     min-height: 100vh;
     color: var(--text-primary);
   }
 
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .page-header p {
+    margin: 8px 0 0;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
   .albums-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 22px;
-    max-width: 1280px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    max-width: 1200px;
     margin: 0 auto;
   }
 
@@ -49,31 +66,19 @@
     text-decoration: none;
     color: inherit;
     background: var(--card-bg);
-    border-radius: 18px;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
     border: 1px solid var(--border-color);
-    transition: transform 0.25s ease, border-color 0.25s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     -webkit-tap-highlight-color: transparent;
-    opacity: 0;
-    animation: fadeInUp 0.5s ease forwards;
   }
 
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
+  .card:hover {
+    border-color: var(--hover-border);
+    box-shadow: 0 4px 14px rgba(32, 55, 49, 0.08);
   }
 
-  @media (hover: hover) {
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--hover-border);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .card { animation: none; opacity: 1; }
-  }
 
   
   .card-thumbnail {
@@ -81,8 +86,8 @@
     aspect-ratio: 300 / 190;
     position: relative;
     overflow: hidden;
-    background: #0b1329;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: #e8efec;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .card-thumbnail svg {
@@ -92,21 +97,20 @@
   }
 
   .card-content {
-    padding: 16px 18px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex-grow: 1;
-    background: #0d1117;
+    background: var(--card-bg);
   }
 
   .card-title {
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 12px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
     line-height: 1.4;
-    letter-spacing: 0.2px;
   }
 
   .card-footer {
@@ -120,25 +124,27 @@
   .card-author {
     font-size: 13px;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 400;
   }
 
   .badge {
-    background: #0284c7;
-    color: #ffffff;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    background: #e8f0ed;
+    color: var(--accent-blue);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 12px;
     white-space: nowrap;
   }
 </style>
 </head>
 <body>
 
-  
+  <header class="page-header">
+    <h1>Science animations</h1>
+    <p>Explore visual explanations and interactive science models.</p>
+  </header>
+
   <div class="albums-grid" id="cardsGrid"></div>
 
 <script>

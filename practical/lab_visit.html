@@ -522,6 +522,183 @@
       background: linear-gradient(to top, #ffddaa, #ffffff);
     }
 
+    :root {
+      --bg-dark: #f3f6f5;
+      --card-bg: #ffffff;
+      --card-hover: #ffffff;
+      --accent-cyan: #28675e;
+      --accent-glow: rgba(40, 103, 94, 0.08);
+      --accent-blue: #28675e;
+      --text-primary: #202b29;
+      --text-secondary: #64736f;
+      --border-subtle: #dce5e2;
+      --border-hover: #8eaaa3;
+    }
+
+    body {
+      padding: 24px 16px;
+      color: var(--text-primary);
+      background: var(--bg-dark);
+    }
+
+    .portfolio-header {
+      margin-bottom: 24px;
+      padding: 24px;
+      background: #ffffff;
+      border-radius: 12px;
+      backdrop-filter: none;
+    }
+
+    .portfolio-header::before {
+      height: 2px;
+      background: var(--accent-cyan);
+    }
+
+    .header-content h1 {
+      color: var(--text-primary);
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      font-weight: 600;
+    }
+
+    .meta-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #e8f0ed;
+      color: var(--accent-cyan);
+      border-color: var(--border-subtle);
+    }
+
+    .instrument-grid,
+    .albums-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card,
+    .behance-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      backdrop-filter: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover,
+    .behance-card:hover {
+      background: #ffffff;
+      border-color: var(--border-hover);
+      transform: none;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .card-info {
+      padding: 16px;
+    }
+
+    .card-title,
+    .gallery-title,
+    .modal-title {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .card:hover .card-title {
+      color: var(--accent-cyan);
+    }
+
+    .card-sub,
+    .card-meta,
+    .header-content p,
+    .modal-desc {
+      color: var(--text-secondary);
+    }
+
+    .category-badge,
+    .modal-category {
+      color: var(--accent-cyan);
+      background: #e8f0ed;
+      border-color: var(--border-subtle);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .card-img-overlay {
+      display: none;
+    }
+
+    .card-img-wrapper {
+      background: #e8efec;
+    }
+
+    .card-img-wrapper img {
+      opacity: 1;
+    }
+
+    .modal-content,
+    .gallery-view {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(32, 55, 49, 0.12);
+      color: var(--text-primary);
+    }
+
+    .modal-overlay {
+      background: rgba(32, 43, 41, 0.4);
+      backdrop-filter: none;
+      padding: 16px;
+    }
+
+    .modal-content,
+    .modal-overlay.active .modal-content {
+      transform: none;
+      transition: none;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-close,
+    .back-btn {
+      background: #e8f0ed;
+      color: var(--accent-cyan);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+    }
+
+    .modal-close:hover {
+      background: #dce9e5;
+      color: var(--text-primary);
+    }
+
+    .gallery-header {
+      border-bottom-color: var(--border-subtle);
+    }
+
+    .gallery-stream {
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .portfolio-header,
+      .gallery-view {
+        padding: 16px;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
     @keyframes real-flicker {
       0% {
         opacity: 0.85;
@@ -661,7 +838,7 @@
     <header class="portfolio-header">
       <div class="header-content">
         <h1>Biochemistry Lab Instrumentation</h1>
-        <div class="meta-badge">🔬 11 Research Instruments</div>
+        <div class="meta-badge">11 research instruments</div>
       </div>
     </header>
 
