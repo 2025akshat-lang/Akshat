@@ -276,6 +276,10 @@ body[data-surface="instrumental"] .node-center {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body[data-surface="chemistry"] .bg-loader-wrapper .loader,
+  body[data-surface="chemistry"] .bg-loader-wrapper .loader span,
+  body[data-surface="biochemistry"] .bg-loader-wrapper .loader,
+  body[data-surface="biochemistry"] .bg-loader-wrapper .loader span,
   body[data-surface="instrumental"] .rotating-bg,
   .ambient-icon {
     animation: none !important;

@@ -1206,6 +1206,14 @@ h1, h2, h3, h4 {
   border-radius: 8px;
   box-shadow: none;
   font-weight: 600;
+  margin-top: 0;
+}
+
+.main-heading:after { content: ' +'; }
+.main-heading.active:after { content: ' -'; }
+
+.main-heading.active {
+  color: #ffffff;
 }
 
 .cat-btn.active,
