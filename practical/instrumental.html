@@ -301,8 +301,8 @@
     :root {
       --bg-color: #f3f6f5;
       --card-bg: #ffffff;
-      --accent-uv: #28675e;
-      --accent-bio: #28675e;
+      --accent-uv: #6684e8;
+      --accent-bio: #43a77b;
       --text-main: #202b29;
       --text-sub: #64736f;
     }
@@ -328,9 +328,16 @@
       border-color: #28675e;
     }
 
-    .node-layer,
-    .rotating-bg {
-      display: none;
+    .layer-1 { background: #6684e8; }
+    .layer-2 { background: #9b75d1; }
+    .layer-3 { background: #43a77b; }
+    .layer-4 { background: #e8ad45; }
+
+    .chip.locked {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px dashed #cbd5e1;
+      color: #64736f;
+      backdrop-filter: blur(8px);
     }
 
     .node-center {

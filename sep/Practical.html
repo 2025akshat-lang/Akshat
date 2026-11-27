@@ -133,11 +133,15 @@
 
 
   
-  #bgFx{display:none}
+  #bgFx{
+    position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+    opacity:.14;background-size:240px 240px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%2328675e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='.8'%3E%3Cellipse cx='54' cy='54' rx='27' ry='10' transform='rotate(-28 54 54)'/%3E%3Cellipse cx='54' cy='54' rx='27' ry='10' transform='rotate(28 54 54)'/%3E%3Ccircle cx='54' cy='54' r='3' fill='%2328675e'/%3E%3Cpath d='M158 28h16m-12 0v19l-15 28q-4 8 5 8h29q9 0 5-8l-15-28V28m-24 40h36M29 151h39v49H29zM35 158h27m-27 8h20m-20 8h24m-24 8h16'/%3E%3Cpath d='M137 177q-12-19 2-31 13-11 24 1 11-11 23-1 14 13 1 31l-24 21zM161 145v16m0 0-12-8m12 8 11-9m-11 9v17'/%3E%3C/g%3E%3Cg fill='none' stroke='%23d79b38' stroke-width='2' stroke-linecap='round' opacity='.75'%3E%3Cpath d='M96 117l4-11 4 11 11 4-11 4-4 11-4-11-11-4zM213 111l3-8 3 8 8 3-8 3-3 8-3-8-8-3z'/%3E%3C/g%3E%3C/svg%3E");
+  }
   #bgFx span{position:absolute;bottom:-50px;opacity:0;animation:riseFx linear infinite;will-change:transform}
   @keyframes riseFx{0%{transform:translateY(0) rotate(-10deg);opacity:0}10%,85%{opacity:.55}100%{transform:translateY(-115vh) rotate(25deg);opacity:0}}
   .albums-grid,.gallery-view,.notes-view{position:relative;z-index:1}
-  .gallery-view,.notes-view{background:#fff}
+  .gallery-view,.notes-view{background:rgba(255,255,255,.84);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 
   
   .back-btn{padding:6px 12px;font-size:11px}
@@ -159,7 +163,7 @@
   .albums-grid,.gallery-view,.notes-view{max-width:1200px}
 
   @media (max-width:600px){body{padding:16px}}
-  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#bgFx{display:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <link rel="stylesheet" href="../shared/light-surface.css">
 </head>
