@@ -275,6 +275,46 @@ body[data-surface="instrumental"] .node-center {
   box-shadow: 0 8px 22px rgba(24, 39, 54, 0.16);
 }
 
+@media (max-width: 600px) {
+  body[data-surface="sep"]:not(.note-open),
+  body[data-surface="chemistry"],
+  body[data-surface="biochemistry"],
+  body[data-surface="instrumental"] {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  body[data-surface="sep"] .albums-grid,
+  body[data-surface="sep"] .gallery-view,
+  body[data-surface="sep"] .notes-view {
+    max-width: 100%;
+  }
+
+  body[data-surface="sep"] .gallery-view,
+  body[data-surface="sep"] .notes-view {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  body[data-surface="chemistry"] .report-wrapper,
+  body[data-surface="chemistry"] .container,
+  body[data-surface="biochemistry"] .report-wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px !important;
+  }
+
+  body[data-surface="chemistry"] .inside-content {
+    padding: 8px !important;
+  }
+
+  body[data-surface="instrumental"] .app-bar,
+  body[data-surface="instrumental"] .experiment-card {
+    max-width: 100%;
+    padding: 10px !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body[data-surface="chemistry"] .bg-loader-wrapper .loader,
   body[data-surface="chemistry"] .bg-loader-wrapper .loader span,

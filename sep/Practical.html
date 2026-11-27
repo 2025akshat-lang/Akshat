@@ -58,10 +58,11 @@
   .modal-glow-fire{position:absolute;top:-20px;right:10px;width:180px;height:180px;border-radius:50%;background:rgba(255,69,0,.35);filter:blur(40px)}
   .modal-flame-wrapper{position:absolute;top:15px;right:30px;width:60px;height:70px}
   .flame-layer{position:absolute;bottom:0;left:50%;border-radius:50% 50% 35% 35%/60% 60% 40% 40%;transform-origin:center bottom}
-  .flame-main{width:50px;height:75px;margin-left:-25px;background:linear-gradient(to top,#ff2200,#ff6600,#ffae00,transparent);filter:blur(1px);animation:real-flicker .15s infinite alternate}
-  .flame-mid{width:32px;height:50px;margin-left:-16px;bottom:3px;background:linear-gradient(to top,#ff7700,#ffcc00,#ffffaa);filter:blur(.5px);animation:real-flicker .1s infinite alternate}
-  .flame-core{width:16px;height:30px;margin-left:-8px;bottom:5px;background:linear-gradient(to top,#ffddaa,#fff)}
+  .flame-main{width:50px;height:75px;margin-left:-25px;background:linear-gradient(to top,#ff2200,#ff6600,#ffae00,transparent);filter:blur(1px);animation:real-flicker .15s infinite alternate,flame-waver 1.1s ease-in-out infinite alternate}
+  .flame-mid{width:32px;height:50px;margin-left:-16px;bottom:3px;background:linear-gradient(to top,#ff7700,#ffcc00,#ffffaa);filter:blur(.5px);animation:real-flicker .1s infinite alternate,flame-waver .9s ease-in-out infinite alternate}
+  .flame-core{width:16px;height:30px;margin-left:-8px;bottom:5px;background:linear-gradient(to top,#ffddaa,#fff);animation:flame-waver .8s ease-in-out infinite alternate}
   @keyframes real-flicker{0%{opacity:.85;transform:scaleY(.98)}100%{opacity:1;transform:scaleY(1.04)}}
+  @keyframes flame-waver{from{translate:-2px 0;rotate:-2deg}to{translate:2px 0;rotate:2deg}}
 
   
   .modal-glow-science{position:absolute;top:-20px;right:10px;width:220px;height:250px;border-radius:50%;background:rgba(0,255,200,.25);filter:blur(50px);animation:pulse-lab 3s infinite alternate ease-in-out}
@@ -156,13 +157,12 @@
   body.note-open .open-tab-link{display:inline-block}
   body.note-open .note-frame-wrap iframe{height:calc(100vh - 42px);height:calc(100dvh - 42px);min-height:0;border-radius:0}
 
-  .modal-glow-fire,.modal-glow-science,.lab-icon,.flame-layer{display:none}
   .mascot,.eye,.pencil,.spark,.notes-card::before,.notes-card::after{animation:none}
   .gallery-view,.notes-view{box-shadow:none}
   .gallery-header{border-bottom-color:#dce5e2}
   .albums-grid,.gallery-view,.notes-view{max-width:1200px}
 
-  @media (max-width:600px){body{padding:16px}}
+  @media (max-width:600px){body{padding:16px 8px}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <link rel="stylesheet" href="../shared/light-surface.css">

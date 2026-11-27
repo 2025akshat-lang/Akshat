@@ -385,10 +385,32 @@
       color: var(--text-sub);
     }
 
+    #expData :not(svg)[style*="background: rgba(15, 23, 42"],
+    #expData :not(svg)[style*="background: rgba(30, 41, 59"],
+    #expData :not(svg)[style*="background: rgba(0,0,0"],
+    #expData :not(svg)[style*="background: #1e293b"] {
+      background: #FFFFFF !important;
+      border-color: #e2e8f0 !important;
+      color: #1f2937 !important;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+    }
+
+    #expData [style*="color: #cbd5e1"],
+    #expData [style*="color: #94a3b8"],
+    #expData [style*="color: #f8fafc"] {
+      color: #1f2937 !important;
+    }
+
+    #expData h3[style*="color: #38bdf8"],
+    #expData h4[style*="color: #38bdf8"],
+    #expData h5[style*="color: #38bdf8"] {
+      color: #28675e !important;
+    }
+
     @media (max-width: 600px) {
       .app-bar,
       .experiment-card {
-        padding: 16px;
+        padding: 10px;
       }
     }
 

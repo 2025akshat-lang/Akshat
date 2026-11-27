@@ -84,6 +84,11 @@ svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.7; s
 @keyframes pop{from{transform:scale(.2); opacity:0} to{transform:scale(1); opacity:1}}
 #nogl{position:fixed; inset:0; display:none; place-items:center; text-align:center; padding:24px; color:var(--dim)}
 @media (max-width:520px){ .brand span{display:none} }
+@media (max-width:600px){
+  body{padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+  .hud{padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+  #sheet{width:min(560px,calc(100% - 16px))}
+}
 @media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
 </style>
 
