@@ -110,14 +110,19 @@ function buildPlant(){
 
   
   const fg=new T.Group();fg.position.set(0,W3(0,96).y,0);shoot.add(fg);
-  const pm=mat('--petal'),sepM=mat('--leaf'),tilts=[];
+  const pm=mat('--petal'),sepM=mat('--leaf'),petalVeinM=flat(0xf4a8c4),tilts=[];
   for(let k=0;k<5;k++){const piv=new T.Group();piv.rotation.z=-(k*TAU/5+TAU/10);const s2=put('sepal',new T.Mesh(sph(1,14,10),sepM),piv);s2.scale.set(.14,.42,.04);s2.position.set(0,.72,-.07);s2.rotation.x=-.25;fg.add(piv)}
   for(let k=0;k<5;k++){const piv=new T.Group(),tilt=new T.Group();piv.rotation.z=-k*TAU/5;tilt.rotation.x=.22;piv.add(tilt);tilts.push(tilt);
-    const q=new T.Mesh(sph(1,28,18),pm);q.scale.set(.35,.675,.07);q.position.set(0,.7,.012*k);put('petal',q,tilt);fg.add(piv)}
-  const filM=flat(0xf0e08a),antM=flat(0xf5a31a);
+    const q=new T.Mesh(sph(1,32,20),pm);q.scale.set(.35,.675,.07);q.position.set(0,.7,.012*k);put('petal',q,tilt);
+    put('petal',new T.Mesh(tube([V3(0,.07,.07),V3(0,.48,.08),V3(0,.95,.05),V3(0,1.3,.025)],.009,.003,5),petalVeinM),tilt);
+    [-1,1].forEach(side=>[.42,.68,.92].forEach(y=>put('petal',new T.Mesh(tube([V3(0,y,.07),V3(side*.13,y+.1,.07),V3(side*.25,y+.22,.04)],.005,.002,4),petalVeinM),tilt)));
+    fg.add(piv)}
+  const filM=flat(0xf0e08a),antM=flat(0xf5a31a),grainM=flat(0xffdc68);
   for(let k=0;k<8;k++){const a=k*TAU/8+.2,b=V3(Math.cos(a)*.16,Math.sin(a)*.16,.1),tv=V3(Math.cos(a)*.3,Math.sin(a)*.3,.72),d=tv.clone().sub(b);
     const fl=put('stamen',new T.Mesh(new T.CylinderGeometry(.012,.012,d.length(),6),filM),fg);fl.position.copy(b.clone().add(tv).multiplyScalar(.5));fl.quaternion.copy(dirQ(d));
-    const an=put('stamen',mesh(sph(1,10,8),antM),fg);an.position.copy(tv);an.scale.set(.045,.08,.045);an.quaternion.copy(dirQ(d))}
+    const an=put('stamen',mesh(sph(1,16,12),antM),fg);an.position.copy(tv);an.scale.set(.045,.08,.045);an.quaternion.copy(dirQ(d));
+    for(let j=0;j<5;j++){const a=j*TAU/5,grain=put('stamen',mesh(sph(.012,8,6),grainM),fg);
+      grain.position.copy(tv.clone().add(V3(Math.cos(a)*.036,Math.sin(a)*.06,.027)))}}
   const pc=mesh(sph(.3,28,18),mat('--pollen'),0,0,.05);pc.scale.z=.75;put('carpel',pc,fg);
   put('carpel',mesh(new T.CylinderGeometry(.03,.03,.85,8).rotateX(Math.PI/2),flat(0xb7d66b),0,0,.52),fg);put('carpel',mesh(sph(.075,12,10),flat(0x9ccc65),0,0,.95),fg);
 

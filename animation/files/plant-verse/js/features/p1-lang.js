@@ -5,6 +5,7 @@
   PV.lang=()=>lang;PV.onLang=f=>cbs.push(f);
   PV.name=id=>{const d=PV_INFO[id];return lang==='hi'&&d?d.hi:NAMEH(id)};
   const b=PV.ui.addTopButton('',()=>{lang=lang==='en'?'hi':'en';try{localStorage.setItem('pv_lang',lang)}catch(e){}apply()});
+  b.classList.add('lang-toggle');document.querySelector('#header-actions').appendChild(b);
   b.setAttribute('aria-label','Language: English / हिन्दी');
   function fixSel(){if(H&&H.sel&&H.sel!=='soil')H.selName=PV.name(H.sel)}
   function apply(){b.textContent=lang==='en'?'हिं':'EN';

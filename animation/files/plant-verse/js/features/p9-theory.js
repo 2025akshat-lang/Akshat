@@ -28,5 +28,5 @@
   PV.sim.reg('theory',el,draw);
   const name=()=>L('📚 Theory','📚 सिद्धांत');
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__theory';b.textContent=name();b.onclick=()=>{mi=null;ti=null;q.value='';PV.sim.open('theory')};n.insertBefore(b,n.firstChild)});
-  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__theory"]');if(b)b.textContent=name()});
+  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__theory"],#app-actions [data-id="__theory"]');if(b)b.textContent=name()});
 })();

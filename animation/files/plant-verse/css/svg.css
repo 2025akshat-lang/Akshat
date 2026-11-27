@@ -26,4 +26,3 @@
 .core{fill:var(--pollen)}
 @keyframes pl{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.4);opacity:0}}
 @media (prefers-reduced-motion: reduce){.pulse{animation:none}}
-@media (max-width:380px){.seg button{padding:8px 7px;font-size:12px}h1{font-size:20px}}

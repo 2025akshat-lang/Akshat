@@ -6,7 +6,7 @@ Chalane ke liye: `index.html` double-click karo (internet chahiye: three.js + fo
 | Kaam | File |
 |---|---|
 | Rang / dark-light theme | `css/theme.css` |
-| Layout, buttons, chips, card | `css/layout.css`, `css/controls.css` |
+| Full-screen layout, drawers, and view controls | `css/layout.css`, `css/controls.css` |
 | Part ka naam / title | `js/data/parts-info.js` |
 | Level 2 diagram ya uske buttons (spots) | `js/data/level2/<part>.js` |
 | Kisi ek 3D cross-section ko badalna | `js/scenes/<part>/<scene>.js` (1 scene = 1 file) |

@@ -39,7 +39,7 @@
     if(b.dataset.p){PV.sim.hideAll();PV.selectPart(b.dataset.p)}
     else if(b.dataset.reset&&window.confirm(L('Erase all progress and bookmarks?','सारी प्रगति और बुकमार्क मिटाएँ?'))){D={seen:{},quiz:{best:0,total:0,attempts:0,last:0},bm:[]};save();build()}});
   PV.sim.reg('progress',el,build);
-  const name=()=>L('📊 My progress','📊 मेरी प्रगति');
+  const name=()=>L('📊 My Progress','📊 मेरी प्रगति');
   PV.after('homeChips',()=>{const b=document.createElement('button'),n=$('#chips');b.className='chip mode';b.dataset.id='__progress';b.textContent=name();b.onclick=()=>PV.sim.open('progress');n.insertBefore(b,n.firstChild)});
-  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__progress"]');if(b)b.textContent=name()});
+  PV.onLang&&PV.onLang(()=>{const b=document.querySelector('#chips [data-id="__progress"],#app-actions [data-id="__progress"]');if(b)b.textContent=name()});
 })();

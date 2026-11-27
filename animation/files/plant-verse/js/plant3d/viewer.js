@@ -2,15 +2,15 @@
 function pvFail(err){
   console.error('[Plantverse] 3D start nahi hua:',err);
   let b=document.getElementById('pvfail');
-  if(!b){b=document.createElement('div');b.id='pvfail';b.style.cssText='position:absolute;left:8px;right:8px;top:8px;z-index:9;padding:8px 10px;border-radius:8px;background:#b00020;color:#fff;font:12px/1.4 monospace';$v[1].appendChild(b)}
-  b.textContent='3D start nahi hua: '+(err&&err.message||err);
+  if(!b){b=document.createElement('div');b.id='pvfail';b.className='scene-fallback';b.setAttribute('role','status');$v[1].appendChild(b)}
+  b.textContent='3D is unavailable; showing the crisp SVG plant view instead.';
 }
 function initH(){
   if(H)return true;
   try{
     if(typeof THREE==='undefined')throw new Error('three.js load nahi hua (internet / ad-blocker check karo)');
     const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<=800?1.5:2));
     $v[1].insertBefore(renderer.domElement,$('#hlbl'));
     const scene=new T.Scene(),camera=new T.PerspectiveCamera(38,1,.1,200),pivot=new T.Group();
     pivot.rotation.order='YXZ';scene.add(pivot);
@@ -18,7 +18,7 @@ function initH(){
     const d1=new T.DirectionalLight(0xffffff,.38);d1.position.set(2,4,6);scene.add(d1);
     const d2=new T.DirectionalLight(0xffffff,.22);d2.position.set(-3,2,-5);scene.add(d2);
     const B=buildPlant();B.group.position.y=-.85;pivot.add(B.group);
-    H=Object.assign(B,{renderer,scene,camera,pivot,ray:new T.Raycaster(),ptrs:new Map(),down:null,raf:0,rotX:0,rotY:0,zoom:1,auto:false,sel:null,lbls:[],ready:true,V:Object.assign({},FULL),T:Object.assign({},FULL),last:performance.now(),t0:performance.now()});
+    H=Object.assign(B,{renderer,scene,camera,pivot,ray:new T.Raycaster(),ptrs:new Map(),down:null,raf:0,rotX:0,rotY:0,zoom:1,panX:0,panY:0,auto:false,sel:null,lbls:[],ready:true,V:Object.assign({},FULL),T:Object.assign({},FULL),last:performance.now(),t0:performance.now()});
     H.apply(H.V,0);H.ray.params.Line.threshold=.05;
     const V3=(x,y,z)=>new T.Vector3(x,y,z),an=H.anchors,fc=H.fcL,sd=H.n0;
     const defs=[
@@ -52,7 +52,7 @@ function initH(){
       {t:'Weathered rock',side:'l',k:null,p:()=>V3(3.9,-3.65,-2.1),show:V=>true},
       {t:'Bedrock',side:'l',k:null,p:()=>V3(3.9,-4.7,-2.1),show:V=>true}];
     H.labs=defs.map(d=>{const el=document.createElement('div');el.className='lab '+d.side;el.textContent=d.t;el.hidden=true;$v[1].appendChild(el);return {el,d}});
-    new ResizeObserver(fitH).observe($v[1]);
+    if(window.ResizeObserver)new ResizeObserver(fitH).observe($v[1]);else window.addEventListener('resize',fitH);
     bindH(renderer.domElement);
     $('#hlbl').onclick=$('#hlbl2').onclick=()=>{if(H.sel&&P[H.sel])openPart(H.sel)};
     $('#lblt').setAttribute('aria-pressed',String(labelsOn));
@@ -62,8 +62,8 @@ function initH(){
 function fitH(){if(!H)return;const w=$v[1].clientWidth,h=$v[1].clientHeight;if(!w||!h)return;
   H.renderer.setSize(w,h,false);H.camera.aspect=w/h;H.camera.updateProjectionMatrix();setCamH()}
 function setCamH(){const a=H.camera.aspect,tf=Math.tan(H.camera.fov*Math.PI/360),d=Math.max(11.9/2/tf,9/2/(tf*a))*1.1;
-  H.camera.position.set(0,0,d/H.zoom);H.camera.lookAt(0,0,0)}
-function resetH(){H.rotX=0;H.rotY=0;H.zoom=1;setCamH()}
+  H.camera.position.set(H.panX,H.panY,d/H.zoom);H.camera.lookAt(H.panX,H.panY,0)}
+function resetH(){H.rotX=0;H.rotY=0;H.zoom=1;H.panX=0;H.panY=0;setCamH()}
 function startH(){if(!H.raf)loopH()}
 function stopH(){if(H&&H.raf){cancelAnimationFrame(H.raf);H.raf=0}['#hlbl','#hlbl2'].forEach(s=>{const l=$(s);if(l)l.hidden=true});if(H){H.labs.forEach(l=>l.el.hidden=true);selectH(null);leaveMode()}}
 function loopH(){H.raf=requestAnimationFrame(loopH);
@@ -76,23 +76,26 @@ function glowH(id){Object.keys(H.parts).forEach(k=>{const on=k===id;H.parts[k].m
 function selectH(id,pt,layer){
   if(!id){H.sel=null;H.selPt=null;glowH(null);return}
   H.sel=id;H.selPt=pt;H.selName=(id==='soil'&&layer)?layer:NAMEH(id);glowH(id)}
-function placeH(){const w=$v[1].clientWidth,h=$v[1].clientHeight,V=H.V,o=H.group.position,placed=[];
+function placeH(){const w=$v[1].clientWidth,h=$v[1].clientHeight,V=H.V,o=H.group.position,placed=[],
+  primary=new Set(['Petals','Carpel','Leaf blade','Main stem','Fruit wall','Seeds','Primary root','Topsoil']);
   H.labs.forEach(l=>{const d=l.d;
-    if(!labelsOn||!d.show(V)){l.el.hidden=true;return}
+    const isPrimary=primary.has(d.t),selected=H.sel&&NAMEH(H.sel)===d.t;
+    if(!labelsOn||!d.show(V)||(!isPrimary&&H.zoom<1.35&&!selected)){l.el.hidden=true;return}
     const s=d.k==='s'?Math.max(V.shoot,.05):d.k==='r'?Math.max(V.root,.05):1,q=d.p().multiplyScalar(s).add(o),v=H.pivot.localToWorld(q);v.project(H.camera);
     const x=(v.x*.5+.5)*w,y=(-v.y*.5+.5)*h;
     l.el.hidden=false;l.w=l.el.offsetWidth;l.h=l.el.offsetHeight;
-    const sides=[d.side,d.side==='r'?'l':'r'],offsets=[0,-18,18,-36,36,-54,54,-72,72,-90,90,-110,110];
+    const sides=[d.side,d.side==='r'?'l':'r'],offsets=[0,-16,16,-32,32,-48,48,-64,64,-82,82,-100,100];
     let best=null,score=Infinity;
     sides.forEach(side=>offsets.forEach(dy=>{
       const target=side==='r'?x+22:x-22-l.w,left=Math.max(4,Math.min(w-l.w-4,target));
       const cy=Math.max(l.h/2+4,Math.min(h-l.h/2-4,y+dy)),r={x0:left,x1:left+l.w,y0:cy-l.h/2,y1:cy+l.h/2};
       const overlaps=placed.filter(p=>r.x0<p.x1+3&&r.x1>p.x0-3&&r.y0<p.y1+2&&r.y1>p.y0-2).length;
-      if(overlaps<score){score=overlaps;best={side,left,cy,r,edge:Math.abs(target-left)>1}}
-      if(!overlaps){score=0;best={side,left,cy,r,edge:Math.abs(target-left)>1};return}
+      const candidate=overlaps*1000+(side===d.side?0:12)+Math.abs(cy-y)+Math.abs(target-left)*2;
+      if(candidate<score){score=candidate;best={side,left,cy,r,edge:Math.abs(target-left)>1}}
     }));
-    if(score>0){l.el.hidden=true;return}
+    if(!best||score>=1000){l.el.hidden=true;return}
     const b=best;l.el.className='lab '+b.side+(b.edge?' edge':'');
+    l.el.classList.toggle('primary',isPrimary);
     l.el.style.left=(b.edge?b.left:(b.side==='r'?b.left-22:b.left+l.w+22))+'px';l.el.style.top=b.cy+'px';
     placed.push(b.r)});
   const t=$('#hlbl');
@@ -112,6 +115,7 @@ function tapH(e){const cv=H.renderer.domElement,r=cv.getBoundingClientRect();
   selectH(pid,H.pivot.worldToLocal(hit.point.clone()),hit.object.userData.layer);
   const org=ORG[pid]||pid;if(t3dOn&&P[org])openPart(org)}
 function bindH(cv){
+  cv.style.touchAction='none';
   cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);H.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});H.down={x:e.clientX,y:e.clientY,t:performance.now(),moved:0}});
   cv.addEventListener('pointermove',e=>{const p=H.ptrs.get(e.pointerId);if(!p)return;
     const dx=e.clientX-p.x,dy=e.clientY-p.y;
