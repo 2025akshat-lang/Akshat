@@ -78,7 +78,7 @@
   const launch=PV.ui.addTopButton('🌼 '+L('Repro Lab','जनन प्रयोगशाला'),()=>{stop();view='anatomy';part='stigma';PV.sim.open('plant-reproduction')});
   launch.classList.add('dock-action');
   launch.setAttribute('aria-label',L('Interactive plant reproduction','पौधों का संवादात्मक जनन'));
-  PV.onLang&&PV.onLang(()=>{launch.textContent='🌼 '+L('Repro Lab','जनन प्रयोगशाला');if(!el.hidden)draw()});
+  PV.onLang&&PV.onLang(()=>{launch.textContent='🌼 '+L('Repro Lab','जनन प्रयोगशाला');launch.setAttribute('aria-label',L('Interactive plant reproduction','पौधों का संवादात्मक जनन'));if(!el.hidden)draw()});
   PV.before('homeChips',()=>document.querySelectorAll('#app-actions [data-id^="__"]').forEach(b=>b.remove()));
   PV.after('homeChips',()=>{
     ['__hmatch','__health','__num','__theory','__progress'].forEach(id=>{
