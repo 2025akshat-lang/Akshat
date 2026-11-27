@@ -1,14 +1,16 @@
 :root {
   color-scheme: light;
-  --surface-canvas: #f5f6f8;
+  --surface-canvas: #f5f5f7;
   --surface-card: #ffffff;
-  --surface-edge: rgba(15, 23, 42, 0.07);
+  --surface-edge: rgba(0, 0, 0, 0.06);
   --surface-shadow: 0 8px 22px rgba(24, 39, 54, 0.06), 0 2px 6px rgba(24, 39, 54, 0.035);
   --surface-shadow-hover: 0 14px 28px rgba(24, 39, 54, 0.1), 0 4px 10px rgba(24, 39, 54, 0.05);
 }
 
 body[data-surface] {
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: clip;
   background-color: var(--surface-canvas) !important;
 }
 
@@ -170,6 +172,18 @@ body[data-surface="templates"] {
   box-shadow: var(--surface-shadow-hover) !important;
 }
 
+.card:focus-visible,
+.behance-card:focus-visible,
+.experiment-card:focus-visible,
+.grid-card:focus-visible,
+.image-proof-card:focus-visible,
+.kids-card:focus-visible,
+.notes-card:focus-visible,
+.note-item:focus-visible {
+  outline: 3px solid rgba(40, 103, 94, 0.45);
+  outline-offset: 3px;
+}
+
 button:not([disabled]) {
   transition:
     transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -312,6 +326,14 @@ body[data-surface="instrumental"] .node-center {
   body[data-surface="instrumental"] .experiment-card {
     max-width: 100%;
     padding: 10px !important;
+  }
+
+  body[data-surface="gallery"] {
+    padding: 12px 8px !important;
+  }
+
+  body[data-surface="portfolio"] {
+    padding: 12px 8px !important;
   }
 }
 

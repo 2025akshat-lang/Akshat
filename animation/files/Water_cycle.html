@@ -11,7 +11,7 @@
         h1 { font-size: 20px; color: #38bdf8; text-align: center; margin-top: 5px; font-weight: 700; }
         p.subtitle { color: #94a3b8; font-size: 12px; margin-bottom: 10px; text-align: center; }
 
-        .canvas-card { width: 100%; max-width: 100%; background: #1e293b; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; position: relative; }
+        .canvas-card { width: 100%; max-width: 100%; background: #1e293b; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.24), 0 2px 6px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.16); position: relative; }
         canvas { width: 100%; height: 370px; display: block; touch-action: none; }
 
         .controls-grid { width: 100%; max-width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
@@ -21,11 +21,11 @@
         .btn-loop { background: #8b5cf6; grid-column: span 2; font-size: 14px; font-weight: 700; }
         .btn-active { background: #e11d48 !important; }
 
-        .info-box { width: 100%; max-width: 100%; background: #1e293b; margin-top: 10px; padding: 12px 15px; border-radius: 12px; border-left: 4px solid #38bdf8; }
-        .info-box h3 { color: #38bdf8; font-size: 15px; margin-bottom: 4px; }
-        .info-box p { color: #cbd5e1; font-size: 12px; line-height: 1.4; margin: 0; }
+        .info-box { width: 100%; max-width: 100%; background: #fff; color: #1e293b; margin-top: 10px; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); border-left: 4px solid #0284c7; box-shadow: 0 8px 22px rgba(24,39,54,0.06), 0 2px 6px rgba(24,39,54,0.035); }
+        .info-box h3 { color: #075985; font-size: 15px; margin-bottom: 4px; }
+        .info-box p { color: #334155; font-size: 12px; line-height: 1.5; margin: 0; }
         
-        .stage-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; background: #334155; color: #38bdf8; font-size: 11px; font-weight: bold; margin-bottom: 5px;}
+        .stage-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; background: #e0f2fe; color: #075985; font-size: 11px; font-weight: bold; margin-bottom: 5px;}
     </style>
 </head>
 <body>
@@ -39,6 +39,7 @@
 
     <div class="controls-grid">
         <button class="btn btn-loop btn-active" id="loopBtn" onclick="toggleLoop()">🔄 Continuous Cycle Mode (Active)</button>
+        <button class="btn btn-loop" id="playBtn" aria-pressed="true" onclick="toggleAnimation()">⏸ Pause animation</button>
         <button class="btn" onclick="setMode('evap')">1. Evaporation</button>
         <button class="btn" onclick="setMode('transp')">2. Transpiration</button>
         <button class="btn" onclick="setMode('cond')">3. Condensation</button>
@@ -64,6 +65,8 @@
         window.addEventListener('resize', resizeCanvas);
 
         let autoLoop = true;
+        let isPlaying = true;
+        let animationFrame = null;
         let activeStage = 'loop';
         let cycleTimer = 0;
 
@@ -205,7 +208,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawTerrain();
 
-            if (autoLoop) {
+            if (autoLoop && isPlaying) {
                 cycleTimer = (cycleTimer + 1) % 850; 
                 updateStageTextByTimer(cycleTimer);
             }
@@ -214,11 +217,13 @@
             if (activeStage === 'evap' || (autoLoop && cycleTimer < 250)) {
                 ctx.fillStyle = '#38bdf8';
                 vaporParticles.forEach(p => {
-                    p.y -= p.speed;
-                    p.x += Math.sin(p.y * 0.04) * 0.4;
-                    if(p.y < 80) {
-                        p.y = 210;
-                        p.x = 30 + Math.random() * 90;
+                    if (isPlaying) {
+                        p.y -= p.speed;
+                        p.x += Math.sin(p.y * 0.04) * 0.4;
+                        if(p.y < 80) {
+                            p.y = 210;
+                            p.x = 30 + Math.random() * 90;
+                        }
                     }
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
@@ -230,11 +235,13 @@
             if (activeStage === 'transp' || (autoLoop && cycleTimer >= 100 && cycleTimer < 320)) {
                 ctx.fillStyle = '#4ade80'; 
                 transpParticles.forEach(tp => {
-                    tp.y -= tp.speed;
-                    tp.x += Math.cos(tp.y * 0.05) * 0.3;
-                    if(tp.y < 80) {
-                        tp.y = 195;
-                        tp.x = 175 + Math.random() * 12;
+                    if (isPlaying) {
+                        tp.y -= tp.speed;
+                        tp.x += Math.cos(tp.y * 0.05) * 0.3;
+                        if(tp.y < 80) {
+                            tp.y = 195;
+                            tp.x = 175 + Math.random() * 12;
+                        }
                     }
                     ctx.beginPath();
                     ctx.arc(tp.x, tp.y, 2.5, 0, Math.PI * 2);
@@ -245,8 +252,10 @@
             
             if (activeStage === 'cond' || (autoLoop && cycleTimer >= 220 && cycleTimer < 450)) {
                 condensationParticles.forEach(cp => {
-                    cp.alpha += 0.01;
-                    if(cp.alpha > 1) cp.alpha = 0.1;
+                    if (isPlaying) {
+                        cp.alpha += 0.01;
+                        if(cp.alpha > 1) cp.alpha = 0.1;
+                    }
                     ctx.fillStyle = '#bae6fd';
                     ctx.globalAlpha = cp.alpha;
                     ctx.beginPath();
@@ -261,10 +270,12 @@
                 ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = 2;
                 rainParticles.forEach(r => {
-                    r.y += r.speed;
-                    if(r.y > 220) {
-                        r.y = 70;
-                        r.x = 180 + Math.random() * 110;
+                    if (isPlaying) {
+                        r.y += r.speed;
+                        if(r.y > 220) {
+                            r.y = 70;
+                            r.x = 180 + Math.random() * 110;
+                        }
                     }
                     ctx.beginPath();
                     ctx.moveTo(r.x, r.y);
@@ -279,10 +290,12 @@
                 
                 
                 infiltrationParticles.forEach(ip => {
-                    ip.y += ip.speed;
-                    if(ip.y > 270) {
-                        ip.y = 220;
-                        ip.x = 160 + Math.random() * 120;
+                    if (isPlaying) {
+                        ip.y += ip.speed;
+                        if(ip.y > 270) {
+                            ip.y = 220;
+                            ip.x = 160 + Math.random() * 120;
+                        }
                     }
                     ctx.beginPath();
                     ctx.arc(ip.x, ip.y, 2, 0, Math.PI * 2);
@@ -291,15 +304,16 @@
 
                 
                 groundwaterFlow.forEach(gw => {
-                    gw.x -= gw.speed;
-                    if(gw.x < 20) gw.x = 270;
+                    if (isPlaying) {
+                        gw.x -= gw.speed;
+                        if(gw.x < 20) gw.x = 270;
+                    }
                     ctx.beginPath();
                     ctx.arc(gw.x, gw.y, 2, 0, Math.PI * 2);
                     ctx.fill();
                 });
             }
 
-            requestAnimationFrame(render);
         }
 
         function updateStageTextByTimer(timer) {
@@ -355,15 +369,37 @@
                 title.textContent = "5. Infiltration";
                 desc.textContent = "Land water seeps down soil, replenishing groundwater that flows back to ocean.";
             }
+            if (!isPlaying) render();
+        }
+
+        function toggleAnimation() {
+            isPlaying = !isPlaying;
+            const button = document.getElementById('playBtn');
+            button.textContent = isPlaying ? '⏸ Pause animation' : '▶ Resume animation';
+            button.setAttribute('aria-pressed', String(isPlaying));
+            if (isPlaying) {
+                if (animationFrame === null) animationFrame = requestAnimationFrame(animate);
+            } else {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+                render();
+            }
         }
 
         function toggleLoop() {
             autoLoop = true;
             activeStage = 'loop';
             document.getElementById('loopBtn').classList.add('btn-active');
+            if (!isPlaying) toggleAnimation();
         }
 
-        render();
+        function animate() {
+            render();
+            if (isPlaying) animationFrame = requestAnimationFrame(animate);
+            else animationFrame = null;
+        }
+
+        animate();
     </script>
 </body>
 </html>
