@@ -66,6 +66,7 @@
 
         let autoLoop = true;
         let isPlaying = true;
+        let animationFrame = null;
         let activeStage = 'loop';
         let cycleTimer = 0;
 
@@ -313,7 +314,6 @@
                 });
             }
 
-            requestAnimationFrame(render);
         }
 
         function updateStageTextByTimer(timer) {
@@ -369,6 +369,7 @@
                 title.textContent = "5. Infiltration";
                 desc.textContent = "Land water seeps down soil, replenishing groundwater that flows back to ocean.";
             }
+            if (!isPlaying) render();
         }
 
         function toggleAnimation() {
@@ -376,6 +377,13 @@
             const button = document.getElementById('playBtn');
             button.textContent = isPlaying ? '⏸ Pause animation' : '▶ Resume animation';
             button.setAttribute('aria-pressed', String(isPlaying));
+            if (isPlaying) {
+                if (animationFrame === null) animationFrame = requestAnimationFrame(animate);
+            } else {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+                render();
+            }
         }
 
         function toggleLoop() {
@@ -385,7 +393,13 @@
             if (!isPlaying) toggleAnimation();
         }
 
-        render();
+        function animate() {
+            render();
+            if (isPlaying) animationFrame = requestAnimationFrame(animate);
+            else animationFrame = null;
+        }
+
+        animate();
     </script>
 </body>
 </html>
