@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Cartoon Dance</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0d1117;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #1f2937 0%, #0d1117 100%);
+      --poster-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <model-viewer
+    src="./wee.glb"
+    alt="3D Cartoon Characters Dancing"
+    autoplay
+    animation-loop
+    camera-controls
+    touch-action="pan-y"
+    camera-orbit="0deg 78deg 105%"
+    field-of-view="32deg"
+    shadow-intensity="1"
+    exposure="1.1"
+    environment-image="neutral">
+  </model-viewer>
+</body>
+</html>
